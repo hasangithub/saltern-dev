@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Yahai')
-@section('content_header_title', 'Yahai')
+@section('content_header_title', 'Weighbridge')
 @section('content_header_subtitle', 'Welcome')
 @section('plugins.Datatables', true)
 
