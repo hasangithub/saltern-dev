@@ -9,8 +9,7 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
-<div class="container-fluid">
-    <div class="row">
+<div class="row">
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header border-0">
@@ -105,8 +104,6 @@
         </div>
 
     </div>
-
-</div>
 @stop
 
 {{-- Push extra CSS --}}
