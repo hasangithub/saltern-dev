@@ -37,7 +37,7 @@
 
 <strong>
     <a href="{{ config('app.company_url', '#') }}">
-        {{ config('app.company_name', 'Saltern') }}
+        {{ config('app.company_name', 'puttalamsalterns') }}
     </a>
 </strong>
 @stop
