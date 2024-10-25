@@ -5,6 +5,7 @@ use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\WeighbridgeEntryController;
 use App\Http\Controllers\YahaiController;
+use App\Http\Controllers\MembershipController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -12,10 +13,11 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-});
+})->name('dashboard');;
 
 Route::resource('owners', OwnerController::class);
 Route::resource('buyers', BuyerController::class);
+Route::resource('memberships', MembershipController::class);
 Route::get('/yahai', [YahaiController::class, 'index'])->name('yahai.index');
 
 Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
