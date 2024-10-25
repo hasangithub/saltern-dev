@@ -10,7 +10,7 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
-<div class="container">
+<div class="row">
     <div class="card card-default">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Owner List</h3>
@@ -52,10 +52,8 @@
                 </div>
             </div>
         </div>
-
+    
     </div>
-
-
 </div>
 
 @stop
