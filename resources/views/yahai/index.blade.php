@@ -14,6 +14,7 @@
     <div class="card card-default">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Yahai List</h3>
+            <a href="{{ route('yahai.create') }}" class="btn btn-primary ml-auto">Create Yahai</a>
         </div>
 
         <div class="card-body">
@@ -29,6 +30,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
+                                <th>&nbsp;</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -36,6 +38,13 @@
                             <tr>
                                 <td>{{ $yahai->id }}</td>
                                 <td>{{ $yahai->name }}</td>
+                                <td><a class="btn btn-info" href="{{ route('yahai.edit',$yahai) }}">Edit</a>
+                                    <form action="{{ route('yahai.destroy', $yahai) }}" method="POST" class="d-inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger">Delete</button>
+                                    </form>  
+                                    
                             </tr>
                             @endforeach
                         </tbody>

@@ -18,8 +18,10 @@ Route::get('/dashboard', function () {
 Route::resource('owners', OwnerController::class);
 Route::resource('buyers', BuyerController::class);
 Route::resource('memberships', MembershipController::class);
-Route::get('/yahai', [YahaiController::class, 'index'])->name('yahai.index');
 
 Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
 Route::get('/weighbridge/entries/create', [WeighbridgeEntryController::class, 'create'])->name('weighbridge_entries.create');
 Route::post('/weighbridge/entries', [WeighbridgeEntryController::class, 'store'])->name('weighbridge_entries.store');
+
+Route::resource('yahai', YahaiController::class);
+Route::resource('saltern',SalternController::class);
