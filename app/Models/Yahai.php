@@ -8,4 +8,8 @@ class Yahai extends Model
 {
     protected $table = 'yahai';
     protected $fillable = ['name'];
+
+    public function salterns(){
+        return $this->hasMany(Saltern::class);
+    }
 }

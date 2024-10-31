@@ -20,4 +20,8 @@ class Owner extends Model
         'address',
         'mobile_no',
     ];
+
+    public function salterns(){
+        return $this->hasMany(Saltern::class);
+    }
 }

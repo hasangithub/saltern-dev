@@ -44,8 +44,15 @@
                 <!-- Yahai -->
                 <li class="nav-item">
                     <a href="{{ route('yahai.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-water"></i>
+                        <i class="nav-icon fas fa-table"></i>
                         <p>Yahai</p>
+                    </a>
+                </li>
+                <!-- Saltern -->
+                <li class="nav-item">
+                    <a href="{{ route('saltern.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Saltern</p>
                     </a>
                 </li>
             </ul>

@@ -6,6 +6,7 @@ use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\WeighbridgeEntryController;
 use App\Http\Controllers\YahaiController;
 use App\Http\Controllers\MembershipController;
+use App\Http\Controllers\SalternController;
 
 Route::get('/', function () {
     return view('dashboard');
