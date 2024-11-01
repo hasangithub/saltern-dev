@@ -71,7 +71,9 @@
                             <label class="form-check-label" for="is_active">Active Membership</label>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Add Membership</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Create Membership
+                        </button>
                     </form>
                 </div>
             </div>
