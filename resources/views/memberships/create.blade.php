@@ -14,9 +14,13 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
                     <form method="POST" action="{{ route('memberships.store') }}" enctype="multipart/form-data">
                         @csrf
-
                         <div class="form-group">
                             <label for="saltern_id">Saltern</label>
                             <select class="form-control" name="saltern_id" id="saltern_id" required>
@@ -32,7 +36,7 @@
                             <select class="form-control" name="owner_id" id="owner_id" required>
                                 <option value="">Select Owner</option>
                                 @foreach($owners as $owner)
-                                <option value="{{ $owner->id }}">{{ $owner->name }}</option>
+                                <option value="{{ $owner->id }}">{{ $owner->full_name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -67,7 +71,7 @@
                         </div>
 
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" name="is_active" id="is_active" checked>
+                            <input type="checkbox" class="form-check-input" name="is_active" id="is_active" value="1">
                             <label class="form-check-label" for="is_active">Active Membership</label>
                         </div>
 

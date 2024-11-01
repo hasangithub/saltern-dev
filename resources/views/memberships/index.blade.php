@@ -1,0 +1,81 @@
+@extends('layout.app')
+
+{{-- Customize layout sections --}}
+
+@section('subtitle', 'Welcome')
+@section('content_header_title', 'Memberships')
+@section('content_header_subtitle', 'Welcome')
+
+{{-- Content body: main page content --}}
+
+@section('content_body')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Memberships List</h3>
+                    <a href="{{ route('memberships.create') }}" class="btn btn-success ml-auto"> <i
+                            class="fas fa-plus"></i> Create Membership</a>
+                </div>
+
+                <div class="card-body">
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    <div class="table-responsive">
+                        <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Saltern</th>
+                                    <th>Owner</th>
+                                    <th>Address</th>
+                                    <th>Mobile No</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($memberships as $membership)
+                                <tr>
+                                    <td>{{ $membership->id }}</td>
+                                    <td>{{ $membership->saltern->name }}</td>
+                                    <td>{{ $membership->owner->full_name }}</td>
+                                    <td>{{ $membership->address }}</td>
+                                    <td>{{ $membership->mobile_no }}</td>
+                                    <td><a href="{{ route('memberships.show', $membership->id) }}"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@stop
+
+{{-- Push extra CSS --}}
+
+@push('css')
+{{-- Add here extra stylesheets --}}
+{{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+@endpush
+
+{{-- Push extra scripts --}}
+
+@push('js')
+<script>
+$(document).ready(function() {
+    $('#membershipsTable').DataTable();
+});
+</script>
+@endpush

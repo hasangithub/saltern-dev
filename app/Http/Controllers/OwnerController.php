@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class OwnerController extends Controller
 {
-        public function index()
+    public function index()
     {
         $owners = Owner::all(); // Retrieve all owners
         return view('owners.index', compact('owners')); // Pass owners to view

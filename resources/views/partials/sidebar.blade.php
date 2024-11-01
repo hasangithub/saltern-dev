@@ -36,7 +36,7 @@
                 </li>
                 <!-- Memberships -->
                 <li class="nav-item">
-                    <a href="{{ route('memberships.create') }}" class="nav-link">
+                    <a href="{{ route('memberships.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-file-signature"></i>
                         <p>Memberships</p>
                     </a>
