@@ -23,14 +23,14 @@
     </div>
 
     <div class="card-body">
-    @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
         <form action="{{ route('saltern.store') }}" method="POST">
             @csrf
@@ -53,7 +53,7 @@
                 </select>
             </div>
             <div class="row">
-                <div class="col-md-6">      
+                <div class="col-md-6">
                     <div class="form-group">
                         <label for="name">Saltern Name</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="">
@@ -61,7 +61,9 @@
                 </div>
 
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save
+            </button>
         </form>
     </div>
 </div>

@@ -5,7 +5,6 @@
 @section('subtitle', 'Saltern')
 @section('content_header_title', 'Saltern')
 @section('content_header_subtitle', 'Welcome')
-@section('plugins.Datatables', true)
 
 {{-- Content body: main page content --}}
 
@@ -14,7 +13,7 @@
     <div class="card card-default">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Saltern List</h3>
-            <a href="{{ route('saltern.create') }}" class="btn btn-primary ml-auto">Create Saltern</a>
+            <a href="{{ route('saltern.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Saltern</a>
         </div>
 
         <div class="card-body">

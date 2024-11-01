@@ -16,7 +16,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Weighbridge Entries</h3>
-                    <a href="{{ route('weighbridge_entries.create') }}" class="btn btn-primary float-right">Create
+                    <a href="{{ route('weighbridge_entries.create') }}" class="btn btn-success float-right"> <i class="fas fa-plus"></i> Create
                         Entry</a>
                 </div>
                 <div class="card-body">

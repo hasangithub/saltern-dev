@@ -16,7 +16,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Buyer List</h3>
-                    <a href="{{ route('buyers.create') }}" class="btn btn-primary ml-auto">Create Buyer</a>
+                    <a href="{{ route('buyers.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Buyer</a>
                 </div>
 
                 <div class="card-body">

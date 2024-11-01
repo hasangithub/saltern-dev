@@ -14,7 +14,7 @@
     <div class="card card-default">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Yahai List</h3>
-            <a href="{{ route('yahai.create') }}" class="btn btn-primary ml-auto">Create Yahai</a>
+            <a href="{{ route('yahai.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Yahai</a>
         </div>
 
         <div class="card-body">
