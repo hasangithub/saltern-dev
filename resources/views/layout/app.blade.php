@@ -7,6 +7,8 @@
     <title>@yield('title', 'AdminLTE')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
+     <!-- DataTables CSS with Bootstrap 4 integration -->
+     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
 
     @yield('styles') <!-- For additional styles -->
 </head>
@@ -62,6 +64,12 @@
     <!-- AdminLTE App -->
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
+      <!-- DataTables JavaScript with Bootstrap 4 integration -->
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
+
     @yield('scripts') <!-- For additional scripts -->
+
+    @stack('js')
 </body>
 </html>
