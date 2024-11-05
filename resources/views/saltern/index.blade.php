@@ -24,10 +24,9 @@
                         {{ session('success') }}
                     </div>
                     @endif
-                    <table id="yahaiTable" class="table table-bordered table-hover" style="width:100%">
+                    <table id="salternTable" class="table table-bordered table-hover" style="width:100%">
                         <thead>
                             <tr>
-                                <th>Owner</th>
                                 <th>Yahai</th>
                                 <th>Saltern</th>
                                 <th>&nbsp;</th>
@@ -36,7 +35,6 @@
                         <tbody>
                             @foreach($salterns as $saltern)
                             <tr>
-                                <td>{{ $saltern->owner->full_name }}</td>
                                 <td>{{ $saltern->yahai->name }}</td>
                                 <td>{{ $saltern->name }}</td>
                                 <td><a class="btn btn-info" href="{{ route('saltern.edit',$saltern) }}">Edit</a>
@@ -70,7 +68,7 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        $('#yahaiTable').DataTable();
+        $('#salternTable').DataTable();
     });
 </script>
 @endpush

@@ -24,8 +24,8 @@ class SalternController extends Controller
     public function create()
     {
         $yahais = Yahai::all();
-        $owners = Owner::all();
-        return view('saltern.create', compact('yahais', 'owners'));
+
+        return view('saltern.create', compact('yahais'));
     }
 
     /**
@@ -34,7 +34,6 @@ class SalternController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'owner_id' => 'required|exists:owners,id',
             'yahai_id' => 'required|exists:yahai,id',
             'name' => 'required|string|max:255'
         ]);
@@ -58,8 +57,7 @@ class SalternController extends Controller
     public function edit(Saltern $saltern)
     {
         $yahais = Yahai::all();
-        $owners = Owner::all();
-        return view('saltern.edit', ['saltern'=>$saltern, 'yahais'=>$yahais, 'owners'=>$owners]);
+        return view('saltern.edit', ['saltern'=>$saltern, 'yahais'=>$yahais]);
     }
 
     /**
@@ -68,7 +66,6 @@ class SalternController extends Controller
     public function update(Request $request, Saltern $saltern)
     {
         $data = $request->validate([
-            'owner_id' => 'required|exists:owners,id',
             'yahai_id' => 'required|exists:yahai,id',
             'name' => 'required|string|max:255'
         ]);

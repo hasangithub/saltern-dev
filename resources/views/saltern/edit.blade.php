@@ -36,15 +36,6 @@
             @csrf
             @method('PUT')
             <div class="form-group">
-                <label for="owner_id">Owner</label>
-                <select name="owner_id" id="owner_id" class="form-control" required>
-                    <option value="">Select Owner</option>
-                    @foreach($owners as $owner)
-                    <option {{ $saltern->owner_id == $owner->id ?'selected':'' }} value="{{ $owner->id }}">{{ $owner->full_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group">
                 <label for="yahai_id">Yahai</label>
                 <select name="yahai_id" id="yahai_id" class="form-control" required>
                     <option value="">Select Yahai</option>
