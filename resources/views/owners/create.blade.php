@@ -53,6 +53,24 @@
                                     <label for="nic">NIC</label>
                                     <input type="text" name="nic" id="nic" class="form-control" required>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="gender">Gender</label>
+                                    <select name="gender" class="form-control" required>
+                                        @foreach($genders as $gender)
+                                        <option value="{{ $gender->value }}">{{ $gender->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="civil_status">Civil Status</label>
+                                    <select name="civil_status" class="form-control" required>
+                                        @foreach($civilStatuses as $status)
+                                        <option value="{{ $status->value }}">{{ $status->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="col-md-6">

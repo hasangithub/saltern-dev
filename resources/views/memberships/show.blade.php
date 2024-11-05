@@ -19,17 +19,29 @@
                     <h3 class="card-title">Owner Details</h3>
                 </div>
                 <div class="card-body">
-                    <p><strong>Name:</strong> {{ $membership->owner->name }}</p>
-                    <p><strong>Email:</strong> {{ $membership->owner->email }}</p>
-                    <p><strong>Phone:</strong> {{ $membership->owner->phone }}</p>
-                    <p><strong>Membership Date:</strong> {{ $membership->membership_date }}</p>
-                    <p><strong>Signature:</strong></p>
+                    <strong>Name</strong>
+                    <p class="text-muted">{{ $membership->owner->full_name }}</p>
+                    <hr>
+                    <strong>Email</strong>
+                    <p class="text-muted"> {{ $membership->owner->email }}</p>
+                    <hr>
+                    <strong>Phone</strong>
+                    <p class="text-muted"> {{ $membership->owner->phone }}</p>
+                    <hr>
+                    <strong>Membership Date</strong>
+                    <p class="text-muted"> {{ $membership->membership_date }}</p>
+                    <hr>
+                    <strong>Signature</strong>
+                    <p class="text-muted"></p>
                     @if($membership->owner_signature)
-                        <img src="{{ asset('storage/' . $membership->owner_signature) }}" class="img-fluid" alt="O Signature" style="width: 100px; height: auto;">
+                    <img src="{{ asset('storage/' . $membership->owner_signature) }}" class="img-fluid"
+                        alt="O Signature" style="width: 100px; height: auto;">
                     @else
-                        <p>No signature uploaded.</p>
+                    <p>No signature uploaded.</p>
                     @endif
-                    <p><strong>Is Active:</strong> {{ $membership->is_active ? 'Yes' : 'No' }}</p>
+                    <hr>
+                    <strong>Is Active:</strong> 
+                    <p class="text-muted"> {{ $membership->is_active ? 'Yes' : 'No' }}</p>
                 </div>
             </div>
             <!-- /.card -->
@@ -42,13 +54,25 @@
                     <h3 class="card-title">Representative Details</h3>
                 </div>
                 <div class="card-body">
-                    <p><strong>Name:</strong> {{ $membership->representative_name }}</p>
-                    <p><strong>Signature:</strong></p>
-                    @if($membership->representative_signature)
-                        <img src="{{ asset('storage/' . $membership->representative_signature) }}" class="img-fluid" alt="Representative Signature" style="width: 100px; height: auto;">
-                    @else
-                        <p>No signature uploaded.</p>
+
+                    <strong> Name</strong>
+
+                    <p class="text-muted">
+                        {{ $membership->representative_name }}
+                    </p>
+
+                    <hr>
+
+                    <strong> Signature</strong>
+
+                    <p class="text-muted">
+                        @if($membership->representative_signature)
+                        <img src="{{ asset('storage/' . $membership->representative_signature) }}" class="img-fluid"
+                            alt="Representative Signature" style="width: 100px; height: auto;">
+                        @else
+                    <p>No signature uploaded.</p>
                     @endif
+                    </p>
                 </div>
             </div>
             <!-- /.card -->

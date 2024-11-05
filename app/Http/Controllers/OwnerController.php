@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Owner;
 use Illuminate\Http\Request;
+use App\Enums\CivilStatus;
+use App\Enums\Gender;
 
 class OwnerController extends Controller
 {
@@ -15,7 +17,10 @@ class OwnerController extends Controller
 
     public function create()
     {
-        return view('owners.create'); // Return the create owner form view
+        return view('owners.create', [
+            'genders' => Gender::cases(),
+            'civilStatuses' => CivilStatus::cases(),
+        ]); 
     }
 
     public function store(Request $request)
@@ -32,6 +37,8 @@ class OwnerController extends Controller
         // Create a new owner record in the database
         Owner::create([
             'full_name' => $request->full_name,
+            'gender' => 'male',
+            'civil_status' => CivilStatus::Single,
             'dob' => $request->dob,
             'nic' => $request->nic,
             'address' => $request->address,

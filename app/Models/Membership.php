@@ -23,4 +23,9 @@ class Membership extends Model
     public function saltern(){
         return $this->belongsTo(Saltern::class);
     }
+
+    public function representatives()
+    {
+        return $this->hasMany(Representative::class);
+    }
 }
