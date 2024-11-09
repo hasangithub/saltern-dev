@@ -33,7 +33,7 @@
                                     <th>Saltern</th>
                                     <th>Owner</th>
                                     <th>Address</th>
-                                    <th>Mobile No</th>
+                                    <th>Mobile</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -43,8 +43,8 @@
                                     <td>{{ $membership->id }}</td>
                                     <td>{{ $membership->saltern->name }}</td>
                                     <td>{{ $membership->owner->full_name }}</td>
-                                    <td>{{ $membership->address }}</td>
-                                    <td>{{ $membership->mobile_no }}</td>
+                                    <td>{{ $membership->owner->address_line_1 }}</td>
+                                    <td>{{ $membership->owner->phone_number }}</td>
                                     <td><a href="{{ route('memberships.show', $membership->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
