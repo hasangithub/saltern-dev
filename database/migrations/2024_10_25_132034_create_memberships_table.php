@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id(); // BIGINT
             $table->unsignedBigInteger('saltern_id'); // BIGINT
             $table->unsignedBigInteger('owner_id'); // BIGINT
+            $table->string('membership_no'); 
             $table->date('membership_date'); // DATE
             $table->text('owner_signature'); // BLOB or TEXT
             $table->string('representative_name'); // VARCHAR(255)
             $table->text('representative_signature'); // BLOB or TEXT
+            $table->date('representative_authorised_date'); // DATE
             $table->boolean('is_active')->default(true); // BOOLEAN
             $table->timestamps(); // created_at and updated_at
 

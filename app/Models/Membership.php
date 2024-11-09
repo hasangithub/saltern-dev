@@ -11,8 +11,8 @@ class Membership extends Model
         'owner_id',
         'membership_date',
         'owner_signature',
-        'representative_name',
         'representative_signature',
+        'representative_authorised_date',
         'is_active',
     ];
 
@@ -24,8 +24,8 @@ class Membership extends Model
         return $this->belongsTo(Saltern::class);
     }
 
-    public function representatives()
+    public function representative()
     {
-        return $this->hasMany(Representative::class);
+        return $this->hasOne(Representative::class);
     }
 }

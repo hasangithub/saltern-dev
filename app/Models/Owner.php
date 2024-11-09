@@ -18,7 +18,7 @@ class Owner extends Model
     protected $fillable = [
         'full_name', 'gender', 'civil_status', 'date_of_birth', 'nic',
         'phone_number', 'secondary_phone_number', 'email', 'address_line_1',
-        'address_line_2', 'profile_picture', 'membership_no',
+        'address_line_2', 'profile_picture',
     ];
 
     protected $casts = [

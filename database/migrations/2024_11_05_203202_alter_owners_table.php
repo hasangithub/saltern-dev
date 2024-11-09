@@ -10,7 +10,6 @@ class AlterOwnersTable extends Migration
     {
         Schema::table('owners', function (Blueprint $table) {
             $table->dropColumn(['mobile_no', 'address', 'dob', 'nic']);
-            $table->string('membership_no')->after('id'); // membership_no after id
             $table->string('gender')->after('full_name'); // gender after full_name
             $table->string('civil_status')->after('gender'); // civil_status after gender
             $table->string('phone_number')->nullable()->after('civil_status'); // phone_number

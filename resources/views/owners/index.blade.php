@@ -15,7 +15,8 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Owner List</h3>
-                    <a href="{{ route('owners.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Owner</a>
+                    <a href="{{ route('owners.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i>
+                        Create Owner</a>
                 </div>
 
                 <div class="card-body">
@@ -34,6 +35,7 @@
                                     <th>NIC</th>
                                     <th>Address</th>
                                     <th>Mobile No</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,10 +43,19 @@
                                 <tr>
                                     <td>{{ $owner->id }}</td>
                                     <td>{{ $owner->full_name }}</td>
-                                    <td>{{ $owner->dob }}</td>
+                                    <td>{{ $owner->date_of_birth }}</td>
                                     <td>{{ $owner->nic }}</td>
-                                    <td>{{ $owner->address }}</td>
-                                    <td>{{ $owner->mobile_no }}</td>
+                                    <td>{{ $owner->address_line_1 }}</td>
+                                    <td>{{ $owner->phone_number }}</td>
+                                    <td><a href="{{ route('owners.show', $owner->id) }}"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ route('owners.edit', $owner->id) }}"
+                                            class="btn btn-warning btn-xs">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

@@ -12,67 +12,174 @@
 @section('content_body')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
+        <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+                <div class="card-body box-profile">
+                    <div class="text-center">
+                        <img class="profile-user-img img-fluid img-square"
+                            src="{{asset('adminlte/img/user4-128x128.jpg')}}" alt="Owner profile picture">
+                    </div>
+
+                    <h3 class="profile-username text-center">{{ $membership->owner->full_name }}</h3>
+
+                    <p class="text-muted text-center">{{ $membership->owner->nic }}</p>
+
+                    <a href="#" class="btn btn-primary btn-block"><b>Owner Profile</b></a>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-9">
             <!-- Owner Details Card -->
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Owner Details</h3>
                 </div>
                 <div class="card-body">
-                    <strong>Name</strong>
-                    <p class="text-muted">{{ $membership->owner->full_name }}</p>
-                    <hr>
-                    <strong>Email</strong>
-                    <p class="text-muted"> {{ $membership->owner->email }}</p>
-                    <hr>
-                    <strong>Phone</strong>
-                    <p class="text-muted"> {{ $membership->owner->phone }}</p>
-                    <hr>
-                    <strong>Membership Date</strong>
-                    <p class="text-muted"> {{ $membership->membership_date }}</p>
-                    <hr>
-                    <strong>Signature</strong>
-                    <p class="text-muted"></p>
-                    @if($membership->owner_signature)
-                    <img src="{{ asset('storage/' . $membership->owner_signature) }}" class="img-fluid"
-                        alt="O Signature" style="width: 100px; height: auto;">
-                    @else
-                    <p>No signature uploaded.</p>
-                    @endif
-                    <hr>
-                    <strong>Is Active:</strong> 
-                    <p class="text-muted"> {{ $membership->is_active ? 'Yes' : 'No' }}</p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Name</strong>
+                            <p class="text-muted">{{ $membership->owner->full_name }}</p>
+                            <hr>
+                            <strong>Gender</strong>
+                            <p class="text-muted"> {{ $membership->owner->gender }}</p>
+                            <hr>
+                            <strong>Civil Status</strong>
+                            <p class="text-muted"> {{ $membership->owner->civil_status }}</p>
+                            <hr>
+                            <strong>Date of Birth</strong>
+                            <p class="text-muted"> {{ $membership->owner->date_of_birth }}</p>
+                            <hr>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Phone Number 1</strong>
+                            <p class="text-muted">{{ $membership->owner->phone_number }}</p>
+                            <hr>
+                            <strong>Phone Number 2</strong>
+                            <p class="text-muted"> {{ $membership->owner->secondary_phone_number }}</p>
+                            <hr>
+                            <strong>Email</strong>
+                            <p class="text-muted"> {{ $membership->owner->email }}</p>
+                            <hr>
+                            <strong>Address 1</strong>
+                            <p class="text-muted"> {{ $membership->owner->address_line_1 }}</p>
+                            <hr>
+                            <strong>Address 2</strong>
+                            <p class="text-muted"> {{ $membership->owner->address_line_2 }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Membership No</strong>
+                            <p class="text-muted"> {{ $membership->membership_no }}</p>
+                            <hr>
+                            <strong>Membership Issued</strong>
+                            <p class="text-muted">{{ $membership->membership_date }}</p>
+                            <hr>
+                            <strong>Status</strong>
+                            <p class="text-muted"> {{ $membership->is_active }}</p>
+                            <hr>
+                            <strong>Email</strong>
+                            <p class="text-muted"> {{ $membership->owner->email }}</p>
+                            <hr>
+                            <strong>Owner Signature</strong>
+                            @if($membership->owner_signature)
+                            <p>
+                                <img src="{{ asset('storage/' . $membership->owner_signature) }}" class="img-fluid"
+                                    alt="O Signature" style="width: 100px; height: auto;">
+                            </p>
+                            @else
+                            <p>No signature uploaded.</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- /.card -->
         </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
 
-        <div class="col-12">
-            <!-- Representative Details Card -->
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+                <div class="card-body box-profile">
+                    <div class="text-center">
+                        <img class="profile-user-img img-fluid img-square"
+                            src="{{asset('adminlte/img/user4-128x128.jpg')}}" alt="User profile picture">
+                    </div>
+
+                    <h3 class="profile-username text-center">{{ $membership->representative->full_name }}</h3>
+
+                    <p class="text-muted text-center">{{ $membership->representative->nic }}</p>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-9">
+            <!-- Owner Details Card -->
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Representative Details</h3>
                 </div>
                 <div class="card-body">
-
-                    <strong> Name</strong>
-
-                    <p class="text-muted">
-                        {{ $membership->representative_name }}
-                    </p>
-
-                    <hr>
-
-                    <strong> Signature</strong>
-
-                    <p class="text-muted">
-                        @if($membership->representative_signature)
-                        <img src="{{ asset('storage/' . $membership->representative_signature) }}" class="img-fluid"
-                            alt="Representative Signature" style="width: 100px; height: auto;">
-                        @else
-                    <p>No signature uploaded.</p>
-                    @endif
-                    </p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Name</strong>
+                            <p class="text-muted">{{ $membership->representative->full_name }}</p>
+                            <hr>
+                            <strong>Gender</strong>
+                            <p class="text-muted"> {{ $membership->representative->gender }}</p>
+                            <hr>
+                            <strong>Civil Status</strong>
+                            <p class="text-muted"> {{ $membership->representative->civil_status }}</p>
+                            <hr>
+                            <strong>Date of Birth</strong>
+                            <p class="text-muted"> {{ $membership->representative->date_of_birth }}</p>
+                            <hr>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Phone Number 1</strong>
+                            <p class="text-muted">{{ $membership->representative->phone_number }}</p>
+                            <hr>
+                            <strong>Phone Number 2</strong>
+                            <p class="text-muted"> {{ $membership->representative->secondary_phone_number }}</p>
+                            <hr>
+                            <strong>Email</strong>
+                            <p class="text-muted"> {{ $membership->representative->email }}</p>
+                            <hr>
+                            <strong>Address 1</strong>
+                            <p class="text-muted"> {{ $membership->representative->address_line_1 }}</p>
+                            <hr>
+                            <strong>Address 2</strong>
+                            <p class="text-muted"> {{ $membership->representative->address_line_2 }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Phone Number 1</strong>
+                            <p class="text-muted">{{ $membership->representative->phone_number }}</p>
+                            <hr>
+                            <strong>Phone Number 2</strong>
+                            <p class="text-muted"> {{ $membership->representative->secondary_phone_number }}</p>
+                            <hr>
+                            <strong>Email</strong>
+                            <p class="text-muted"> {{ $membership->representative->email }}</p>
+                            <hr>
+                            <strong>Address 1</strong>
+                            <p class="text-muted"> {{ $membership->representative->address_line_1 }}</p>
+                            <hr>
+                            <strong>Representative Signature</strong>
+                            @if($membership->representative_signature)
+                            <p>
+                                <img src="{{ asset('storage/' . $membership->representative_signature) }}"
+                                    class="img-fluid" alt="R Signature" style="width: 100px; height: auto;">
+                            </p>
+                            @else
+                            <p>No signature uploaded.</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- /.card -->
