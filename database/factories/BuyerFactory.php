@@ -27,7 +27,7 @@ class BuyerFactory extends Factory
             'service_out' => $this->faker->boolean(), // True/False for service_out
             'address_1' => $this->faker->streetAddress(), // Random street address
             'address_2' => $this->faker->secondaryAddress(), // Secondary address
-            'phone_no' => $this->faker->phoneNumber(), // Random phone number
+            'phone_no' => '0' . $this->faker->numerify('#########'),
         ];
     }
 }

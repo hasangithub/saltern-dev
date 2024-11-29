@@ -156,12 +156,14 @@
                                         value="{{ old('address_line_2') }}">
                                 </div>
 
-                                <!-- Profile Picture -->
-                                <!-- <div class="form-group">
+                                <div class="form-group">
                                     <label for="profile_picture">Profile Picture</label>
-                                    <input type="file" name="profile_picture" id="profile_picture" class="form-control"
-                                        value="{{ old('profile_picture') }}">
-                                </div> -->
+                                    <input type="file" class="form-control" name="profile_picture" id="profile_picture"
+                                        accept="image/*" required
+                                        onchange="previewImage(event, 'profilePicturePreview')">
+                                    <img id="profilePicturePreview" src="#" alt="Owner Profile Preview"
+                                        style="display:none; width:200px; margin-top:10px;">
+                                </div>
 
                             </div>
 

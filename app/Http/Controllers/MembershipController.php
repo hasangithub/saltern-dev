@@ -12,6 +12,8 @@ use App\Enums\CivilStatus;
 use App\Enums\Gender;
 use App\Http\Requests\StoreMembershipRequest;
 use App\Http\Requests\StoreRepresentativeRequest;
+use App\Http\Requests\UpdateMembershipRequest;
+
 
 class MembershipController extends Controller
 {
@@ -41,6 +43,11 @@ class MembershipController extends Controller
 
         // Add the membership_id to the representative data
         $representativeData = $representativeRequest->validated();
+        if ($representativeRequest->hasFile('profile_picture')) {
+            $ownerSignaturePath = $representativeRequest->file('profile_picture')->store('profile', 'public');
+            $representativeData['profile_picture'] = $ownerSignaturePath;
+        }
+
         $representativeData['membership_id'] = $membership->id;
 
         // Store the representative, linking it to the membership
@@ -69,5 +76,52 @@ class MembershipController extends Controller
         $membership = Membership::with('owner', 'saltern')->findOrFail($id);
         
         return view('memberships.show', compact('membership'));
+    }
+
+    public function edit(Membership $membership)
+    {
+        $salterns = Saltern::all();
+        $owners = Owner::all();
+        return view('memberships.edit', ['membership'=>$membership, 'salterns'=>$salterns, 'owners'=>$owners]);
+    }
+
+    public function update(UpdateMembershipRequest $request, Membership $membership)
+    {   
+        // $validatedData = $request->validated();
+        // $representativeData = $representativeRequest->validated();
+
+        $membershipData = $request->validated()['membership'];
+        $representativeData = $request->validated()['representative'];
+
+        if ($request->hasFile('membership.owner_signature')) {
+            $ownerSignaturePath = $request->file('membership.owner_signature')->store('signatures', 'public');
+            $membershipData['owner_signature'] = $ownerSignaturePath;
+        }
+
+        if ($request->hasFile('membership.representative_signature')) {
+            $representativeSignaturePath = $request->file('membership.representative_signature')->store('signatures', 'public');
+            $membershipData['representative_signature'] = $representativeSignaturePath;
+        }
+ 
+        $membership->update($membershipData);
+
+        if ($request->hasFile('representative.profile_picture')) {
+
+            // Delete the old profile picture if it exists
+            if (Storage::disk('public')->exists($membership->representative->profile_picture)) {
+                Storage::disk('public')->delete($membership->representative->profile_picture);
+            }
+    
+            // Store the new profile picture
+            $representativeData['profile_picture'] = $request->file('representative.profile_picture')->store('profile', 'public');
+        }
+
+        $membership->representative()->updateOrCreate(
+            ['membership_id' => $membership->id], // Match by membership_id
+            $representativeData
+        );
+
+        // Redirect back with a success message
+        return redirect()->route('memberships.edit', $membership->id)->with('success', 'Membership updated successfully');
     }
 }

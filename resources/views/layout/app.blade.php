@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- DataTables CSS with Bootstrap 4 integration -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
+   
 
     @yield('styles')
     <!-- For additional styles -->
@@ -72,6 +73,8 @@
     <!-- DataTables JavaScript with Bootstrap 4 integration -->
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
+
+    <script src="https://adminlte.io/themes/v3/plugins/chart.js/Chart.min.js"></script>
 
     @yield('scripts')
     <!-- For additional scripts -->

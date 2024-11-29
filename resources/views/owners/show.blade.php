@@ -19,7 +19,7 @@
                 <div class="card-body box-profile">
                     <div class="text-center">
                         <img class="profile-user-img img-fluid img-square"
-                            src="{{asset('adminlte/img/user4-128x128.jpg')}}" alt="User profile picture">
+                            src="{{ asset('storage/' . $membership->profile_picture) }}" alt="User profile picture">
                     </div>
 
                     <h3 class="profile-username text-center">{{ $membership->full_name }}</h3>

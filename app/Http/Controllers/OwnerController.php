@@ -8,6 +8,7 @@ use App\Enums\CivilStatus;
 use App\Enums\Gender;
 use App\Http\Requests\StoreOwnerRequest;
 use App\Http\Requests\UpdateOwnerRequest;
+use Illuminate\Support\Facades\Storage;
 
 class OwnerController extends Controller
 {
@@ -28,7 +29,14 @@ class OwnerController extends Controller
     public function store(StoreOwnerRequest $request)
     {
         $owner = Owner::create($request->validated());
-        // Redirect back to the owners list with a success message
+
+        if ($owner) {
+            if ($request->hasFile('profile_picture')) {
+                $ownerProfilePath = $request->file('profile_picture')->store('profile', 'public');
+                $owner->update(['profile_picture' => $ownerProfilePath]);
+            }
+        }
+        
         return redirect()->route('owners.index')->with('success', 'Owner created successfully.');
     }
 
@@ -51,6 +59,16 @@ class OwnerController extends Controller
     {
         // Validate the incoming request using the StoreOwnerRequest
         $validatedData = $request->validated();
+
+        if ($request->hasFile('profile_picture')) {
+    
+            if (Storage::disk('public')->exists($owner->profile_picture)) {
+                Storage::disk('public')->delete($owner->profile_picture);
+            }
+    
+            // Store the new profile picture
+            $validatedData['profile_picture'] = $request->file('profile_picture')->store('profile', 'public');
+        }
 
         // Update the owner details
         $owner->update($validatedData);

@@ -35,13 +35,13 @@
                         </ul>
                     </div>
                     @endif
-                    <form action="{{ route('owners.store') }}" method="POST">
+                    <form action="{{ route('owners.store') }}" method="POST"  enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="full_name">Full Name</label>
-                                    <input type="text" name="full_name" id="full_name" class="form-control" required>
+                                    <input type="text" name="full_name" id="full_name" class="form-control" value="{{ old('full_name') }}" required>
                                 </div>
 
                                 <div class="form-group">
@@ -51,7 +51,7 @@
 
                                 <div class="form-group">
                                     <label for="nic">NIC</label>
-                                    <input type="text" name="nic" id="nic" class="form-control" required>
+                                    <input type="text" name="nic" id="nic" class="form-control" value="{{ old('nic') }}" required>
                                 </div>
 
                                 <div class="form-group">
@@ -109,15 +109,15 @@
                                         value="{{ old('address_line_2') }}">
                                 </div>
 
-                                <!-- Profile Picture -->
-                                <!-- <div class="form-group">
+                                <div class="form-group">
                                     <label for="profile_picture">Profile Picture</label>
-                                    <input type="file" name="profile_picture" id="profile_picture" class="form-control"
-                                        value="{{ old('profile_picture') }}">
-                                </div> -->
-
+                                    <input type="file" class="form-control" name="profile_picture" id="profile_picture"
+                                        accept="image/*" required
+                                        onchange="previewImage(event, 'profilePicturePreview')">
+                                    <img id="profilePicturePreview" src="#" alt="Owner Profile Preview"
+                                        style="display:none; width:200px; margin-top:10px;">
+                                </div>
                             </div>
-
                         </div>
 
                         <button type="submit" class="btn btn-primary">
@@ -142,6 +142,14 @@
 
 @push('js')
 <script>
-console.log("Hi, I'm using the Laravel-AdminLTE package!");
+function previewImage(event, previewElementId) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById(previewElementId);
+        output.src = reader.result;
+        output.style.display = 'block'; // Show the image
+    }
+    reader.readAsDataURL(event.target.files[0]); // Read the selected file
+}
 </script>
 @endpush

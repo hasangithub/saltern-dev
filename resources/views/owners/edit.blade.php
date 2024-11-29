@@ -38,7 +38,7 @@
         </div>
         @endif
 
-        <form action="{{ route('owners.update', $owner->id) }}" method="POST">
+        <form action="{{ route('owners.update', $owner->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -123,13 +123,18 @@
                         <input type="text" name="address_line_2" id="address_line_2" class="form-control"
                             value="{{ old('address_line_2', $owner->address_line_2) }}">
                     </div>
+
+                    <div class="form-group">
+                        <label for="profile_picture">Profile Picture</label>
+                        <input type="file" class="form-control" name="profile_picture" id="profile_picture"
+                            accept="image/*" required onchange="previewImage(event, 'profilePicturePreview')">
+                        <img id="profilePicturePreview" src="#" alt="Owner Profile Preview"
+                            style="display:none; width:200px; margin-top:10px;">
+                    </div>
                 </div>
             </div>
-
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </form>
-
-
     </div>
 </div>
 
@@ -145,5 +150,15 @@
 {{-- Push extra scripts --}}
 
 @push('js')
-
+<script>
+function previewImage(event, previewElementId) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById(previewElementId);
+        output.src = reader.result;
+        output.style.display = 'block'; // Show the image
+    }
+    reader.readAsDataURL(event.target.files[0]); // Read the selected file
+}
+</script>
 @endpush

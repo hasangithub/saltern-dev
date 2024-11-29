@@ -8,17 +8,14 @@ use App\Http\Controllers\YahaiController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\SalternController;
 
-Route::get('/', function () {
-    return view('dashboard');
-});
+use App\Http\Controllers\DashboardController;
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 
 Route::get('/test', function () {
     return view('test');
 });
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');;
 
 Route::resource('owners', OwnerController::class);
 Route::resource('buyers', BuyerController::class);

@@ -36,7 +36,7 @@ class UpdateOwnerRequest extends FormRequest
             'email' => ['required', 'email', 'unique:owners,email,' . $ownerId], // Email should be unique except for the current owner
             'address_line_1' => 'required|string|max:255', // First line of address, required
             'address_line_2' => 'nullable|string|max:255', // Second line of address, optional
-           // 'profile_picture' => 'nullable|image|max:2048', // Profile picture, optional but should be an image
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Profile picture, optional but should be an image
          //   'membership_no' => 'required|string|max:50|unique:owners', // Membership number, required and unique
         ];
     }

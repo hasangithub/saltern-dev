@@ -6,6 +6,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\Gender;
 use App\Enums\CivilStatus;
+use App\Models\Membership;
 
 class StoreMembershipRequest extends FormRequest
 {
@@ -27,11 +28,22 @@ class StoreMembershipRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'saltern_id' => 'required|exists:salterns,id',
+            'saltern_id' => [
+                'required',
+                'exists:salterns,id', // Ensure the saltern exists in the salterns table
+                function ($attribute, $value, $fail) {
+                    // Check if there is a membership with the same saltern_id where is_active is false
+                    $exists = Membership::where('saltern_id', $value)
+                        ->where('is_active', true)
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('This saltern is already assigned to an active membership. You cannot create a new membership with this saltern.');
+                    }
+                },
+            ],
             'owner_id' => 'required|exists:owners,id',
             'membership_date' => 'required|date',
-            'owner_signature' => 'required|image|max:2048',
-            'representative_signature' => 'required|image|max:2048',
             'is_active' => 'boolean',
             'owner_signature' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Owner's signature validation
             'representative_signature' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Representative's signature validation

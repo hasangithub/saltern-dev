@@ -49,6 +49,10 @@
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
+                                        <a href="{{ route('memberships.edit', $membership->id) }}"
+                                            class="btn btn-warning btn-xs">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
                                     </td>
                                 </tr>
                                 @endforeach
