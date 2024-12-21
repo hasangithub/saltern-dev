@@ -13,35 +13,37 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header">
                     <h3 class="card-title"></h3>
-                    <a href="{{ route('sub-account-groups.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i>
-                         Sub Accounts</a>
-                        <a href="{{ route('ledgers.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i>
-                         Ledgers</a>
-                        <a href="{{ route('sub-ledgers.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i>
-                         Sub Ledgers</a>
+                    <a href="{{ route('sub-account-groups.create') }}" class="btn btn-success btn-sm"> <i
+                            class="fas fa-plus"></i>
+                        Sub Accounts</a>
+                    <a href="{{ route('ledgers.create') }}" class="btn btn-success btn-sm"> <i class="fas fa-plus"></i>
+                        Ledgers</a>
+                    <a href="{{ route('sub-ledgers.create') }}" class="btn btn-success btn-sm"> <i class="fas fa-plus"></i>
+                        Sub Ledgers</a>
                 </div>
 
                 <div class="card-body">
-                    <ul >
+                    <ul class="list-group list-group-flush">
                         @foreach($accounts as $key => $account)
-                        <li >
+                        <li class="list-group-item">
                             <strong>{{ ++$key ." ". $account->name }}</strong>
                             @if($account->subAccountGroups->isNotEmpty())
-                            <ul class="list-group ml-3">
+                            <ul class="list-group list-group-flush ml-3">
                                 @foreach($account->subAccountGroups as $subKey => $subAccount)
-                                <li >
+                                <li class="list-group-item">
                                     {{ $key . "." . ++$subKey . " " .$subAccount->name }}
                                     @if($subAccount->ledgers->isNotEmpty())
-                                    <ul class="list-group ml-3">
+                                    <ul class="list-group ml-3 list-group-flush">
                                         @foreach($subAccount->ledgers as $ledgerKey => $ledger)
-                                        <li >
+                                        <li class="list-group-item">
                                             {{ $key . "." . $subKey . "." .++$ledgerKey. " ". $ledger->name }}
                                             @if($ledger->subLedgers->isNotEmpty())
-                                            <ul class="list-group ml-3">
+                                            <ul class="list-group ml-3 list-group-flush">
                                                 @foreach($ledger->subLedgers as $subLedgerKey => $subLedger)
-                                                <li >{{$key . "." . $subKey . "." .$ledgerKey. ".". ++$subLedgerKey. " ".  $subLedger->name }}</li>
+                                                <li class="list-group-item">{{$key . "." . $subKey . "." .$ledgerKey. ".". ++$subLedgerKey. " ".  $subLedger->name }}
+                                                </li>
                                                 @endforeach
                                             </ul>
                                             @endif
