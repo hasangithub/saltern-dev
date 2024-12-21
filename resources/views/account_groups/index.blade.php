@@ -28,21 +28,22 @@
                     <ul class="list-group list-group-flush">
                         @foreach($accounts as $key => $account)
                         <li class="list-group-item">
-                            <strong>{{ ++$key ." ". $account->name }}</strong>
+                            <h6 class="mb-1 font-weight-bold">{{ ++$key ." ". $account->name }}</h6>
                             @if($account->subAccountGroups->isNotEmpty())
-                            <ul class="list-group list-group-flush ml-3">
+                            <ul class="list-group ml-3">
                                 @foreach($account->subAccountGroups as $subKey => $subAccount)
                                 <li class="list-group-item">
-                                    {{ $key . "." . ++$subKey . " " .$subAccount->name }}
+                                <h6 class="mb-1">{{ $key . "." . ++$subKey . " " .$subAccount->name }}</h6>
                                     @if($subAccount->ledgers->isNotEmpty())
                                     <ul class="list-group ml-3 list-group-flush">
                                         @foreach($subAccount->ledgers as $ledgerKey => $ledger)
-                                        <li class="list-group-item">
-                                            {{ $key . "." . $subKey . "." .++$ledgerKey. " ". $ledger->name }}
+                                        <li class="list-group-item list-group-item-secondary">
+                                        <h6 class="mb-1 font-weight-lighter">{{ $key . "." . $subKey . "." .++$ledgerKey. " ". $ledger->name }}</h6>
                                             @if($ledger->subLedgers->isNotEmpty())
-                                            <ul class="list-group ml-3 list-group-flush">
+                                            <ul class="list-group ml-3">
                                                 @foreach($ledger->subLedgers as $subLedgerKey => $subLedger)
-                                                <li class="list-group-item">{{$key . "." . $subKey . "." .$ledgerKey. ".". ++$subLedgerKey. " ".  $subLedger->name }}
+                                                <li class="list-group-item">
+                                                <h6 class="mb-1 font-italic">{{$key . "." . $subKey . "." .$ledgerKey. ".". ++$subLedgerKey. " ".  $subLedger->name }}</h6>
                                                 </li>
                                                 @endforeach
                                             </ul>

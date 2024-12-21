@@ -16,7 +16,7 @@ use App\Http\Controllers\SubLedgerController;
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('home');
 
 Route::get('/test', function () {
     return view('test');
