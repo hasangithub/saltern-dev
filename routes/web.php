@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountGroupController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\BuyerController;
@@ -9,6 +10,10 @@ use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\SalternController;
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LedgerController;
+use App\Http\Controllers\SubAccountGroupController;
+use App\Http\Controllers\SubLedgerController;
+
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -27,3 +32,7 @@ Route::post('/weighbridge/entries', [WeighbridgeEntryController::class, 'store']
 
 Route::resource('yahai', YahaiController::class);
 Route::resource('saltern',SalternController::class);
+Route::resource('sub-account-groups',SubAccountGroupController::class);
+Route::resource('ledgers',LedgerController::class);
+Route::resource('sub-ledgers',SubLedgerController::class);
+Route::resource('accounts',AccountGroupController::class);

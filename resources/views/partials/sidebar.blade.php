@@ -55,6 +55,12 @@
                         <p>Saltern</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('accounts.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Accounts</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
