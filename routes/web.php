@@ -10,10 +10,11 @@ use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\SalternController;
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\JournalEntryController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\SubAccountGroupController;
 use App\Http\Controllers\SubLedgerController;
-
+use App\Http\Controllers\VoucherController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/', [DashboardController::class, 'index'])->name('home');
@@ -35,4 +36,9 @@ Route::resource('saltern',SalternController::class);
 Route::resource('sub-account-groups',SubAccountGroupController::class);
 Route::resource('ledgers',LedgerController::class);
 Route::resource('sub-ledgers',SubLedgerController::class);
-Route::resource('accounts',AccountGroupController::class);
+Route::resource('accounts', AccountGroupController::class);
+Route::resource('journal-entries', JournalEntryController::class);
+Route::resource('vouchers', VoucherController::class);
+Route::get('test/',function() {
+    return view('journal_entries.test');
+});
