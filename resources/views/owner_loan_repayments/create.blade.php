@@ -54,6 +54,16 @@
                             <strong>Address 2</strong>
                             <p class="text-muted"> {{ $ownerLoan->membership->owner->address_line_2 }}</p>
                         </div>
+                        <div class="col-md-4">
+                            <strong>Requested Amount</strong>
+                            <p class="text-muted"> {{ $ownerLoan->requested_amount }}</p>
+                            <hr>
+                            <strong>Approved Amount</strong>
+                            <p class="text-muted"> {{ $ownerLoan->approved_amount }}</p>
+                            <hr>
+                            <strong>Outstanding Balance</strong>
+                            <p class="text-muted"> {{ $outstandingBalance  }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

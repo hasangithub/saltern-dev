@@ -12,6 +12,7 @@ class OwnerLoanRepaymentController extends Controller
     {
         $ownerLoan = OwnerLoan::with(['membership', 'ownerLoanRepayment'])->findOrFail($loanId);
         $outstandingBalance = $ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount');
+        $outstandingBalance = number_format($outstandingBalance, 2);
 
         return view('owner_loan_repayments.create', compact('ownerLoan', 'outstandingBalance'));
     }
