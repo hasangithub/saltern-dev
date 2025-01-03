@@ -19,7 +19,7 @@
                     <h3 class="card-title">Owner Details</h3>
                 </div>
                 <div class="card-body">
-                @if(session('success'))
+                    @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
@@ -76,8 +76,11 @@
                             <strong>Approved Amount</strong>
                             <p class="text-muted"> {{ $ownerLoan->approved_amount }}</p>
                             <hr>
-                            <strong>Status</strong>
-                            <p class="text-muted"> {{ $ownerLoan->status }}</p>
+                            <strong>Status</strong><br>
+                            <span class="badge {{ $ownerLoan->status === 'approved' ? 'badge-success' : 'badge-danger' }}">
+                                {{ ucfirst($ownerLoan->status) }}
+                            </span>
+                           
                             <hr>
                             @if ($ownerLoan->status === 'pending')
                             <button type="button" class="btn btn-warning" data-toggle="modal"
@@ -102,7 +105,7 @@
                 @method('PUT')
                 <div class="modal-header">
                     <h5 class="modal-title" id="approveLoanModalLabel">Approve Loan Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -112,12 +115,13 @@
                     </div>
                     <div class="mb-3">
                         <label for="comments" class="form-label">Comments</label>
-                        <textarea class="form-control" id="approval_comments" name="approval_comments" rows="3"></textarea>
+                        <textarea class="form-control" id="approval_comments" name="approval_comments"
+                            rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
