@@ -28,7 +28,6 @@ class WeighbridgeEntryController extends Controller
         $request->validate([
             'vehicle_id' => 'required|string',
             'initial_weight' => 'required|numeric',
-            'tare_weight' => 'required|numeric',
             'transaction_date' => 'required|date',
             'owner_id' => 'required|exists:owners,id',
             'buyer_id' => 'required|exists:buyers,id',
