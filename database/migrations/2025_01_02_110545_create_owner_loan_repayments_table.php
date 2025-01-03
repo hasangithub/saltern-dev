@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('owner_loan_repayments', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->unsignedBigInteger('loan_id'); // Foreign key to owner_loans
+            $table->unsignedBigInteger('owner_loan_id'); // Foreign key to owner_loans
             $table->decimal('amount', 10, 2); // Repayment amount
             $table->date('repayment_date'); // Date of repayment
             $table->string('payment_method')->nullable(); // Optional payment method (e.g., cash, bank transfer)

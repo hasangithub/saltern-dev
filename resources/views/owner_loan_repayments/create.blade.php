@@ -61,40 +61,43 @@
         </div>
     </div>
     <div class="row">
-        <!-- Loan Repayment History -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5>Repayment History</h5>
-                @if ($ownerLoan->ownerLoanRepayment->isEmpty())
-                <p>No repayments made yet.</p>
-                @else
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Payment Method</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($ownerLoan->ownerLoanRepayment as $repayment)
-                        <tr>
-                            <td>{{ $repayment->repayment_date }}</td>
-                            <td>{{ number_format($repayment->amount, 2) }}</td>
-                            <td>{{ $repayment->payment_method }}</td>
-                            <td>{{ $repayment->notes }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                @endif
+        <div class="col-md-12">
+            <!-- Loan Repayment History -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Repayment History</h5>
+                    @if ($ownerLoan->ownerLoanRepayment->isEmpty())
+                    <p>No repayments made yet.</p>
+                    @else
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ownerLoan->ownerLoanRepayment as $repayment)
+                                <tr>
+                                    <td>{{ $repayment->repayment_date }}</td>
+                                    <td>{{ number_format($repayment->amount, 2) }}</td>
+                                    <td>{{ $repayment->payment_method }}</td>
+                                    <td>{{ $repayment->notes }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
+                </div>
             </div>
         </div>
-
     </div>
     @if ($outstandingBalance > 0)
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#repaymentModal">
+    <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#repaymentModal">
         Add Repayment
     </button>
     @else
