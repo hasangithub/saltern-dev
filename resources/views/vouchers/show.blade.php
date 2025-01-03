@@ -56,13 +56,13 @@
                         </div>
                         <div class="col-md-4">
                             <strong>Bank</strong>
-                            <p class="text-muted"> {{ $voucher->amount }}</p>
+                            <p class="text-muted"> {{ @@$voucher->bank->bank_name }}</p>
                             <hr>
                             <strong>Cheque No</strong>
-                            <p class="text-muted"> {{ $voucher->note }}</p>
+                            <p class="text-muted"> {{ $voucher->cheque_no }}</p>
                             <hr>
                             <strong>Cheque Date</strong>
-                            <p class="text-muted"> {{ $voucher->status }}</p>
+                            <p class="text-muted"> {{ $voucher->cheque_date }}</p>
                         </div>
                     </div>
                     @if ($voucher->status === 'pending')

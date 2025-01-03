@@ -41,8 +41,8 @@
                             <strong>Date</strong>
                             <p class="text-muted">{{ $weighbridgeEntry->transaction_date }}</p>
                             <hr>
-                            <strong>Description</strong>
-                            <p class="text-muted"> {{ $weighbridgeEntry->description }}</p>
+                            <strong>Vehicle No</strong>
+                            <p class="text-muted"> {{ $weighbridgeEntry->vehicle_id }}</p>
                         </div>
                         <div class="col-md-4">
                             <strong>Initial Weight</strong>
