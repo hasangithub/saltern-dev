@@ -36,6 +36,7 @@
                                     <th>Transaction Date</th>
                                     <th>Owner</th>
                                     <th>Buyer</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,6 +49,11 @@
                                     <td>{{ $entry->transaction_date }}</td>
                                     <td>{{ $entry->owner->full_name ?? 'N/A' }}</td>
                                     <td>{{ $entry->buyer->name ?? 'N/A' }}</td>
+                                    <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

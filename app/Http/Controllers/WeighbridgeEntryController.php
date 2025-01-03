@@ -38,4 +38,28 @@ class WeighbridgeEntryController extends Controller
 
         return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
     }
+
+    public function show($id)
+    {
+        $weighbridgeEntry = WeighbridgeEntry::findOrFail($id);
+
+        return view('weighbridge_entries.show', compact('weighbridgeEntry'));
+    }
+
+    public function addTare(Request $request, $id)
+    {
+        $WeighbridgeEntry = WeighbridgeEntry::findOrFail($id);
+
+        // Validate and save the approved amount
+        $request->validate([
+            'tare_weight' => 'required',
+        ]);
+
+        $WeighbridgeEntry->tare_weight   = $request->tare_weight;
+        $WeighbridgeEntry->save();
+
+        return redirect()->route('weighbridge_entries.show', $WeighbridgeEntry->id)
+            ->with('success', 'Tare weight updated successfully.');
+    }
+
 }

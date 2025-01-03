@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('vehicle_id'); // Vehicle ID
             $table->decimal('initial_weight', 10, 2); // Initial weight
-            $table->decimal('tare_weight', 10, 2); // Tare weight
+            $table->decimal('tare_weight', 10, 2)->nullable(); // Tare weight
             $table->date('transaction_date'); // Transaction date
             $table->foreignId('owner_id')->constrained()->onDelete('cascade'); // Owner reference
             $table->foreignId('buyer_id')->constrained()->onDelete('cascade'); // Buyer reference

@@ -36,4 +36,11 @@ class SubLedgerController extends Controller
         return redirect()->route('sub-ledgers.create')->with('success', 'Sub-Ledger created successfully');
     }
 
+    public function getSubledgers($ledgerId)
+{
+    $subledgers = Subledger::where('ledger_id', $ledgerId)->get();
+    return response()->json($subledgers);
+}
+
+
 }

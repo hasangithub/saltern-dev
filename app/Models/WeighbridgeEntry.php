@@ -24,4 +24,9 @@ class WeighbridgeEntry extends Model
     {
         return $this->belongsTo(Buyer::class);
     }
+
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'source');
+    }
 }

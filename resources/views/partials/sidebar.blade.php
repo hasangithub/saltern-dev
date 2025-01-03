@@ -13,6 +13,64 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            Accounts
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('accounts.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Chart of Accounts</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            Salterns
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <!-- Yahai -->
+                        <li class="nav-item">
+                            <a href="{{ route('yahai.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-table"></i>
+                                <p>Yahai</p>
+                            </a>
+                        </li>
+                        <!-- Saltern -->
+                        <li class="nav-item">
+                            <a href="{{ route('saltern.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Saltern</p>
+                            </a>
+                        </li>
+                        <!-- Owners -->
+                        <li class="nav-item">
+                            <a href="{{ route('owners.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>Owners</p>
+                            </a>
+                        </li>
+                        <!-- Memberships -->
+                        <li class="nav-item">
+                            <a href="{{ route('memberships.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-file-signature"></i>
+                                <p>Memberships</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <!-- Buyers -->
                 <li class="nav-item">
                     <a href="{{ route('buyers.index') }}" class="nav-link">
@@ -20,13 +78,7 @@
                         <p>Buyers</p>
                     </a>
                 </li>
-                <!-- Owners -->
-                <li class="nav-item">
-                    <a href="{{ route('owners.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
-                        <p>Owners</p>
-                    </a>
-                </li>
+
                 <!-- Weighbridge -->
                 <li class="nav-item">
                     <a href="{{ route('weighbridge_entries.index') }}" class="nav-link">
@@ -34,32 +86,41 @@
                         <p>Weighbridge</p>
                     </a>
                 </li>
-                <!-- Memberships -->
+
                 <li class="nav-item">
-                    <a href="{{ route('memberships.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-file-signature"></i>
-                        <p>Memberships</p>
-                    </a>
-                </li>
-                <!-- Yahai -->
-                <li class="nav-item">
-                    <a href="{{ route('yahai.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-table"></i>
-                        <p>Yahai</p>
-                    </a>
-                </li>
-                <!-- Saltern -->
-                <li class="nav-item">
-                    <a href="{{ route('saltern.index') }}" class="nav-link">
+                    <a href="{{ route('vouchers.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>
-                        <p>Saltern</p>
+                        <p>Vouchers</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('accounts.index') }}" class="nav-link">
+                    <a href="{{ route('journal-entries.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>
-                        <p>Accounts</p>
+                        <p>Journal</p>
                     </a>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            Loans
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('owner-loans.create') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Request Loan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('owner-loans.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Owner Loan Management</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </nav>
