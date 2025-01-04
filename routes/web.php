@@ -12,6 +12,7 @@ use App\Http\Controllers\SalternController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JournalEntryController;
 use App\Http\Controllers\LedgerController;
+use App\Http\Controllers\OtherIncomeController;
 use App\Http\Controllers\OwnerLoanController;
 use App\Http\Controllers\OwnerLoanRepaymentController;
 use App\Http\Controllers\SubAccountGroupController;
@@ -65,3 +66,4 @@ Route::get('loan-requests', [OwnerLoanController::class, 'index'])->name('loan-r
 Route::get('loan-requests/create', [OwnerLoanController::class, 'create'])->name('loan-requests.create');  // Request a new loan
 Route::post('loan-requests', [OwnerLoanController::class, 'store'])->name('loan-requests.store');  // Submit loan request
 Route::get('loan-requests/{loan_request}', [OwnerLoanController::class, 'show'])->name('loan-requests.show');  // View a specific loan request
+Route::resource('other_incomes', OtherIncomeController::class);
