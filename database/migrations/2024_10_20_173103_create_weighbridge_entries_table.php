@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('membership_id')->constrained()->onDelete('cascade'); 
             $table->foreignId('owner_id')->constrained()->onDelete('cascade'); 
             $table->foreignId('buyer_id')->constrained()->onDelete('cascade'); 
-            $table->enum('status', ['pending', 'completed', 'canceled'])->default('pending');
+            $table->enum('status', ['approved','pending', 'completed', 'canceled'])->default('pending');
             $table->timestamps();
         });
     }

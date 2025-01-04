@@ -10,11 +10,45 @@ use Illuminate\Http\Request;
 
 class WeighbridgeEntryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Fetch all weighbridge entries with related owners and buyers
-        $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership'])->get();
-        return view('weighbridge_entries.index', compact('entries'));
+        $status = $request->get('status');
+
+        $pendingCount = WeighbridgeEntry::where('status', 'pending')->count();
+        $approvedCount = WeighbridgeEntry::where('status', 'approved')->count();
+        $completedCount = WeighbridgeEntry::where('status', 'completed')->count();
+        $rejectedCount = WeighbridgeEntry::where('status', 'rejected')->count();
+        $cardOutline = "";
+
+        $entriesQuery = WeighbridgeEntry::with(['owner', 'buyer', 'membership']);
+
+        if ($status) {
+            $entriesQuery->where('status', $status);
+
+            switch ($status) {
+                case 'pending':
+                    $cardOutline = " card-outline card-warning ";
+                    break;
+                case 'approved':
+                    $cardOutline = " card-outline card-primary ";
+                    break;
+                case 'completed':
+                    $cardOutline = " card-outline card-success ";
+                    break;
+                case 'rejected':
+                    $cardOutline = " card-outline card-danger ";
+                    break;
+                default:
+                    // If no specific status is provided, get all entries
+                    break;
+            }
+
+        }
+    
+        $entries = $entriesQuery->get();
+    
+        // Return the view with the entries and status counts
+        return view('weighbridge_entries.index', compact('entries', 'pendingCount', 'approvedCount', 'rejectedCount', 'cardOutline'));
     }
     
     public function create()
@@ -62,6 +96,7 @@ class WeighbridgeEntryController extends Controller
 
         $WeighbridgeEntry->tare_weight   = $request->tare_weight;
         $WeighbridgeEntry->bag_price = 50;
+        $WeighbridgeEntry->status = 'approved';
         $WeighbridgeEntry->save();
 
         return redirect()->route('weighbridge_entries.show', $WeighbridgeEntry->id)
