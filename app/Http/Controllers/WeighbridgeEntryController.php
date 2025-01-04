@@ -13,7 +13,7 @@ class WeighbridgeEntryController extends Controller
     public function index()
     {
         // Fetch all weighbridge entries with related owners and buyers
-        $entries = WeighbridgeEntry::with(['owner', 'buyer'])->get();
+        $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership'])->get();
         return view('weighbridge_entries.index', compact('entries'));
     }
     
@@ -38,7 +38,7 @@ class WeighbridgeEntryController extends Controller
         $membership = Membership::findOrFail($request->membership_id);
         $data = $request->all();
         $data['owner_id'] = $membership->owner_id;
-
+       
         WeighbridgeEntry::create($data);
 
         return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
@@ -57,10 +57,11 @@ class WeighbridgeEntryController extends Controller
 
         // Validate and save the approved amount
         $request->validate([
-            'tare_weight' => 'required',
+            'tare_weight' => 'required|numeric|min:0|gte:' . $WeighbridgeEntry->initial_weight,
         ]);
 
         $WeighbridgeEntry->tare_weight   = $request->tare_weight;
+        $WeighbridgeEntry->bag_price = 50;
         $WeighbridgeEntry->save();
 
         return redirect()->route('weighbridge_entries.show', $WeighbridgeEntry->id)

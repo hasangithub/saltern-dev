@@ -31,9 +31,10 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Vehicle ID</th>
-                                    <th>Initial Weight</th>
-                                    <th>Tare Weight</th>
-                                    <th>Transaction Date</th>
+                                    <th>Initial Weight(Kg)</th>
+                                    <th>Tare Weight(Kg)</th>
+                                    <th>Yahai</th>
+                                    <th>Saltern</th>
                                     <th>Owner</th>
                                     <th>Buyer</th>
                                     <th></th>
@@ -45,8 +46,9 @@
                                     <td>{{ $entry->transaction_date }}</td>
                                     <td>{{ $entry->vehicle_id }}</td>
                                     <td>{{ $entry->initial_weight }}</td>
-                                    <td>{{ $entry->tare_weight }}</td>
-                                    <td>{{ $entry->transaction_date }}</td>
+                                    <td> {!! $entry->tare_weight ?? '<span class="badge bg-warning">Pending</span>' !!} </td>
+                                    <td>{{ $entry->membership->saltern->yahai->name }}</td>
+                                    <td>{{ $entry->membership->saltern->name }}</td>
                                     <td>{{ $entry->owner->full_name ?? 'N/A' }}</td>
                                     <td>{{ $entry->buyer->name ?? 'N/A' }}</td>
                                     <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"

@@ -34,7 +34,7 @@
                     </div>
                     @endif
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <strong>Buyer Name</strong>
                             <p class="text-muted">{{ $weighbridgeEntry->buyer->name }}</p>
                             <hr>
@@ -44,17 +44,27 @@
                             <strong>Vehicle No</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->vehicle_id }}</p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <strong>Initial Weight</strong>
-                            <p class="text-muted"> {{ $weighbridgeEntry->initial_weight }}</p>
+                            <p class="text-muted"> {{ $weighbridgeEntry->formatted_initial_weight  }}</p>
                             <hr>
                             <strong>Tare Weight</strong>
-                            <p class="text-muted"> {{ $weighbridgeEntry->tare_weight }}</p>
+                            <p class="text-muted"> {{ $weighbridgeEntry->formatted_tare_weight }}</p>
                             <hr>
-                            <strong>Bags</strong>
-                            <p class="text-muted"> </p>
+                            <strong>Net Weight</strong>
+                            <p class="text-muted"> {{ $weighbridgeEntry->formatted_net_weight }}</p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <strong>Bags</strong>
+                            <p class="text-muted"> {{ $weighbridgeEntry->bags_count }}</p>
+                            <hr>
+                            <strong>Price/Bag</strong>
+                            <p class="text-muted"> {{ $weighbridgeEntry->bag_price }}</p>
+                            <hr>
+                            <strong>Total Amount</strong>
+                            <p class="text-muted"> {{ $weighbridgeEntry->formatted_total_amount  }}</p>
+                        </div>
+                        <div class="col-md-3">
                             <strong>Owner</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->owner->full_name }}</p>
                             <hr>
