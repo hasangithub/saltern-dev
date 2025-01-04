@@ -126,7 +126,7 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#buyersTable').DataTable();
+    
 });
 </script>
 @endpush

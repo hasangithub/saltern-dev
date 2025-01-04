@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- DataTables CSS with Bootstrap 4 integration -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
-   
+
 
     @yield('styles')
     <!-- For additional styles -->
@@ -71,13 +71,30 @@
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
     <!-- DataTables JavaScript with Bootstrap 4 integration -->
-    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js" defer></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js" defer></script>
 
-    <script src="https://adminlte.io/themes/v3/plugins/chart.js/Chart.min.js"></script>
+    <script src="https://adminlte.io/themes/v3/plugins/chart.js/Chart.min.js" defer></script>
 
     @yield('scripts')
     <!-- For additional scripts -->
+    <script>
+    /** add active class and stay opened when selected */
+    var url = window.location;
+    const allLinks = document.querySelectorAll('.nav-item a');
+    const currentLink = [...allLinks].filter(e => {
+        return e.href == url;
+    });
+
+    if (currentLink.length > 0) { //this filter because some links are not from menu
+        currentLink[0].classList.add("active");
+        currentLink[0].closest(".nav-treeview").style.display = "block";
+        
+        if (currentLink[0].closest(".has-treeview"))
+            currentLink[0].closest(".has-treeview").classList.add("active");
+    }
+</script>
+
 
     @stack('js')
 </body>
