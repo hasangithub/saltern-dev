@@ -29,7 +29,7 @@
                         <table id="weighbridgeTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Date</th>
                                     <th>Vehicle ID</th>
                                     <th>Initial Weight</th>
                                     <th>Tare Weight</th>
@@ -42,7 +42,7 @@
                             <tbody>
                                 @foreach($entries as $entry)
                                 <tr>
-                                    <td>{{ $entry->id }}</td>
+                                    <td>{{ $entry->transaction_date }}</td>
                                     <td>{{ $entry->vehicle_id }}</td>
                                     <td>{{ $entry->initial_weight }}</td>
                                     <td>{{ $entry->tare_weight }}</td>
