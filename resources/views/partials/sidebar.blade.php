@@ -139,6 +139,12 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('expenses.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-weight"></i>
+                        <p>Expense</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

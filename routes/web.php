@@ -10,6 +10,7 @@ use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\SalternController;
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\JournalEntryController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\OtherIncomeController;
@@ -67,3 +68,4 @@ Route::get('loan-requests/create', [OwnerLoanController::class, 'create'])->name
 Route::post('loan-requests', [OwnerLoanController::class, 'store'])->name('loan-requests.store');  // Submit loan request
 Route::get('loan-requests/{loan_request}', [OwnerLoanController::class, 'show'])->name('loan-requests.show');  // View a specific loan request
 Route::resource('other_incomes', OtherIncomeController::class);
+Route::resource('expenses', ExpenseController::class);
