@@ -24,11 +24,13 @@
                         {{ session('success') }}
                     </div>
                     @endif
-                    <table id="salternTable" class="table table-bordered table-hover" style="width:100%">
+                    <table id="salternTable" class="table table-sm" style="width:100%">
                         <thead>
                             <tr>
                                 <th>Yahai</th>
                                 <th>Saltern</th>
+                                <th>CreatedAt</th>
+                                <th>UpdatedAt</th>
                                 <th>&nbsp;</th>
                             </tr>
                         </thead>
@@ -37,13 +39,9 @@
                             <tr>
                                 <td>{{ $saltern->yahai->name }}</td>
                                 <td>{{ $saltern->name }}</td>
-                                <td><a class="btn btn-info" href="{{ route('saltern.edit',$saltern) }}">Edit</a>
-                                    <form action="{{ route('saltern.destroy', $saltern) }}" method="POST" class="d-inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger">Delete</button>
-                                    </form>  
-                                    
+                                <td>{{ $saltern->created_at }}</td>
+                                <td>{{ $saltern->updated_at }}</td>
+                                <td><a class="btn btn-warning btn-xs" href="{{ route('saltern.edit',$saltern) }}"> <i class="fas fa-edit"></i> Edit</a> 
                             </tr>
                             @endforeach
                         </tbody>

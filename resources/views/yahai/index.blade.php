@@ -25,11 +25,13 @@
                         {{ session('success') }}
                     </div>
                     @endif
-                    <table id="yahaiTable" class="table table-bordered table-hover" style="width:100%">
+                    <table id="yahaiTable" class="table table-sm" style="width:100%">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
+                                <th>CreatedAt</th>
+                                <th>UpdatedAt</th>
                                 <th>&nbsp;</th>
                             </tr>
                         </thead>
@@ -38,13 +40,9 @@
                             <tr>
                                 <td>{{ $yahai->id }}</td>
                                 <td>{{ $yahai->name }}</td>
-                                <td><a class="btn btn-info" href="{{ route('yahai.edit',$yahai) }}">Edit</a>
-                                    <form action="{{ route('yahai.destroy', $yahai) }}" method="POST" class="d-inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger">Delete</button>
-                                    </form>  
-                                    
+                                <td>{{ $yahai->created_at }}</td>
+                                <td>{{ $yahai->updated_at }}</td>
+                                <td><a class="btn btn-warning btn-xs" href="{{ route('yahai.edit',$yahai) }}"> <i class="fas fa-edit"></i> Edit</a>      
                             </tr>
                             @endforeach
                         </tbody>
