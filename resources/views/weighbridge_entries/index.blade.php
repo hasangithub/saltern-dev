@@ -57,7 +57,7 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="weighbridgeTable" class="table table-bordered table-hover" style="width:100%">
+                        <table id="weighbridgeTable" class="table table-sm" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Date</th>

@@ -26,7 +26,7 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="ownersTable" class="table table-bordered table-hover" style="width:100%">
+                        <table id="ownersTable" class="table table-sm" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>ID</th>
