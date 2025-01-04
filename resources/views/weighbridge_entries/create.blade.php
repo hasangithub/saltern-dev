@@ -41,11 +41,11 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="owner_id">Owner</label>
-                                    <select name="owner_id" id="owner_id" class="form-control" required>
+                                    <label for="membership_id">Owner</label>
+                                    <select name="membership_id" id="membership_id" class="form-control" required>
                                         <option value="">Select Owner</option>
-                                        @foreach($owners as $owner)
-                                        <option value="{{ $owner->id }}">{{ $owner->full_name }}</option>
+                                        @foreach($memberships as $membership)
+                                        <option value="{{ $membership->id }}">{{ $membership->owner->full_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

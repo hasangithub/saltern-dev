@@ -12,12 +12,18 @@ class WeighbridgeEntry extends Model
         'tare_weight',
         'transaction_date',
         'owner_id',
+        'membership_id',
         'buyer_id',
     ];
 
     public function owner()
     {
         return $this->belongsTo(Owner::class);
+    }
+
+    public function membership()
+    {
+        return $this->belongsTo(Membership::class);
     }
 
     public function buyer()

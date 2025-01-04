@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buyer;
+use App\Models\Membership;
 use App\Models\Owner;
 use App\Models\WeighbridgeEntry;
 use Illuminate\Http\Request;
@@ -20,7 +21,8 @@ class WeighbridgeEntryController extends Controller
     {
         $owners = Owner::all(); // Fetch all owners
         $buyers = Buyer::all(); // Fetch all buyers
-        return view('weighbridge_entries.create', compact('owners', 'buyers'));
+        $memberships = Membership::all(); 
+        return view('weighbridge_entries.create', compact('owners', 'buyers', 'memberships'));
     }
 
     public function store(Request $request)
@@ -29,11 +31,15 @@ class WeighbridgeEntryController extends Controller
             'vehicle_id' => 'required|string',
             'initial_weight' => 'required|numeric',
             'transaction_date' => 'required|date',
-            'owner_id' => 'required|exists:owners,id',
+            'membership_id' => 'required|exists:memberships,id',
             'buyer_id' => 'required|exists:buyers,id',
         ]);
 
-        WeighbridgeEntry::create($request->all());
+        $membership = Membership::findOrFail($request->membership_id);
+        $data = $request->all();
+        $data['owner_id'] = $membership->owner_id;
+
+        WeighbridgeEntry::create($data);
 
         return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
     }

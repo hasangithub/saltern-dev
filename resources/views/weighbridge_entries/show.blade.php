@@ -59,10 +59,10 @@
                             <p class="text-muted"> {{ $weighbridgeEntry->owner->full_name }}</p>
                             <hr>
                             <strong>Saltern</strong>
-                            <p class="text-muted"> {{ $weighbridgeEntry->note }}</p>
+                            <p class="text-muted"> {{ $weighbridgeEntry->membership->saltern->name }}</p>
                             <hr>
                             <strong>Yahai</strong>
-                            <p class="text-muted"> {{ $weighbridgeEntry->status }}</p>
+                            <p class="text-muted"> {{ $weighbridgeEntry->membership->saltern->yahai->name }}</p>
                         </div>
                     </div>
                     @if (empty($weighbridgeEntry->tare_weight))
