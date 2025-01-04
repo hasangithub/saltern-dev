@@ -29,7 +29,7 @@
                         <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Date</th>
                                     <th>Name</th>
                                     <th>Amount</th>
                                     <th>Description</th>
@@ -41,7 +41,7 @@
                             <tbody>
                                 @foreach($memberships as $membership)
                                 <tr>
-                                    <td>{{ $membership->id }}</td>
+                                    <td>{{ $membership->created_at }}</td>
                                     <td>{{ $membership->name }}</td>
                                     <td>{{ $membership->amount }}</td>
                                     <td>{{ $membership->description }}</td>

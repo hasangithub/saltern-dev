@@ -43,6 +43,9 @@
                             <hr>
                             <strong>Description</strong>
                             <p class="text-muted"> {{ $voucher->description }}</p>
+                            <hr>
+                            <strong>Date</strong>
+                            <p class="text-muted"> {{ $voucher->created_at }}</p>
                         </div>
                         <div class="col-md-4">
                             <strong>Amount</strong>
