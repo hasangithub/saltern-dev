@@ -70,6 +70,9 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
+                        <strong>Date</strong>
+                            <p class="text-muted">{{ $ownerLoan->created_at }}</p>
+                            <hr>
                             <strong>Requested Amount</strong>
                             <p class="text-muted">{{ $ownerLoan->requested_amount }}</p>
                             <hr>

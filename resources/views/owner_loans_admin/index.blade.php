@@ -27,7 +27,7 @@
                         <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Date</th>
                                     <th>Name</th>
                                     <th>Requested Amount</th>
                                     <th>Approved Amount</th>
@@ -39,7 +39,7 @@
                             <tbody>
                                 @foreach($ownerLoans as $ownerLoan)
                                 <tr>
-                                    <td>{{ $ownerLoan->id }}</td>
+                                    <td>{{ $ownerLoan->created_at }}</td>
                                     <td>{{ $ownerLoan->membership->owner->full_name }}</td>
                                     <td>{{ $ownerLoan->requested_amount }}</td>
                                     <td>{{ $ownerLoan->approved_amount }}</td>
