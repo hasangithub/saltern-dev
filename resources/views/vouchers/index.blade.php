@@ -10,9 +10,39 @@
 
 @section('content_body')
 <div class="container-fluid">
+<div class="row">
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>{{ $approvedCount }}</h3>
+                    <p>Approved</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <a href="{{ route('vouchers.index', ['status' => 'approved']) }}" class="small-box-footer">
+                    List <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ $pendingCount }}</h3>
+                    <p>Pending</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <a href="{{ route('vouchers.index', ['status' => 'pending']) }}" class="small-box-footer">
+                    List <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card {{ $cardOutline }}">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Vouchers</h3>
                     <a href="{{ route('vouchers.create') }}" class="btn btn-success ml-auto"> <i
