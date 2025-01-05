@@ -13,31 +13,31 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-primary">
-                <div class="inner">
-                    <h3>{{ $approvedCount }}</h3>
-                    <p>Approved</p>
+            <div class="info-box shadow">
+                <span class="info-box-icon bg-primary"><i class="far fa-copy"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Approved</span>
+                    <span class="info-box-number">{{ $approvedCount }}</span>
+                    <a href="{{ route('weighbridge_entries.index', ['status' => 'approved']) }}"
+                        class="small-box-footer">
+                        List <i class="fas fa-arrow-circle-right"></i>
+                    </a>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <a href="{{ route('weighbridge_entries.index', ['status' => 'approved']) }}" class="small-box-footer">
-                    List <i class="fas fa-arrow-circle-right"></i>
-                </a>
+                <!-- /.info-box-content -->
             </div>
         </div>
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{ $pendingCount }}</h3>
-                    <p>Pending</p>
+            <div class="info-box shadow">
+                <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Pending</span>
+                    <span class="info-box-number">{{ $pendingCount }}</span>
+                    <a href="{{ route('weighbridge_entries.index', ['status' => 'pending']) }}"
+                        class="small-box-footer">
+                        List <i class="fas fa-arrow-circle-right"></i>
+                    </a>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <a href="{{ route('weighbridge_entries.index', ['status' => 'pending']) }}" class="small-box-footer">
-                    List <i class="fas fa-arrow-circle-right"></i>
-                </a>
+                <!-- /.info-box-content -->
             </div>
         </div>
     </div>

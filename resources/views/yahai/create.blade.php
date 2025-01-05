@@ -35,8 +35,15 @@
                                     <label for="name">Yahai Name</label>
                                     <input type="text" class="form-control" id="name" name="name" placeholder="">
                                 </div>
+                                <div class="form-group">
+                                    <label for="side">Side</label>
+                                    <select name="side" id="side" class="form-control" required>
+                                        <option value="">Select Side</option>
+                                        <option value="East">East</option>
+                                        <option value="West">West</option>
+                                    </select>
+                                </div>
                             </div>
-
                         </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Save

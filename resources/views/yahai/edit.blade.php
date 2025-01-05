@@ -15,26 +15,34 @@
     </div>
 
     <div class="card-body">
-    @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
         <form action="{{ route('yahai.update', $yahai) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="row">
-                <div class="col-md-6">      
+                <div class="col-md-6">
                     <div class="form-group">
                         <label for="name">Yahai Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="" value="{{ $yahai->name }}"> 
+                        <input type="text" class="form-control" id="name" name="name" placeholder=""
+                            value="{{ $yahai->name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="side">Side</label>
+                        <select name="side" id="side" class="form-control" required>
+                            <option value="">Select Side</option>
+                            <option value="East" {{ $yahai->side == 'East' ? 'selected' : '' }}>East</option>
+                            <option value="West" {{ $yahai->side == 'West' ? 'selected' : '' }}>West</option>
+                        </select>
                     </div>
                 </div>
-
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{{ route('yahai.index') }}" class="btn btn-danger ml-1">Cancel</a>
