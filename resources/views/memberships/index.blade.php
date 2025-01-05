@@ -30,7 +30,10 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Membership No</th>
+                                    <th>Yahai</th>
                                     <th>Saltern</th>
+                                    <th>Side</th>
                                     <th>Owner</th>
                                     <th>Address</th>
                                     <th>Mobile</th>
@@ -41,7 +44,10 @@
                                 @foreach($memberships as $membership)
                                 <tr>
                                     <td>{{ $membership->id }}</td>
+                                    <td>{{ $membership->membership_no }}</td>
+                                    <td>{{ $membership->saltern->yahai->name }}</td>
                                     <td>{{ $membership->saltern->name }}</td>
+                                    <td>{{ $membership->saltern->yahai->side }}</td>
                                     <td>{{ $membership->owner->full_name }}</td>
                                     <td>{{ $membership->owner->address_line_1 }}</td>
                                     <td>{{ $membership->owner->phone_number }}</td>
