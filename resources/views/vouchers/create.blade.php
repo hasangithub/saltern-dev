@@ -29,7 +29,7 @@
             {{ session('success') }}
         </div>
         @endif
-        <form id="transactionForm" action="{{ route('vouchers.store') }}" method="post">
+        <form id="transactionForm" action="{{ route('vouchers.store') }}" method="post" autocomplete="off">
             @csrf
             <div class="row">
                 <div class="col-md-6">
