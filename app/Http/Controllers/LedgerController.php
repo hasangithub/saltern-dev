@@ -25,7 +25,7 @@ class LedgerController extends Controller
     {
         $request->validate([
             'sub_account_group_id' => 'required|exists:sub_account_groups,id',
-            'name'                 => 'required|string|max:255|unique:ledgers,name',
+            'name'                 => 'required|string|max:255',
         ]);
 
         Ledger::create([

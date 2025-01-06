@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sub_ledgers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ledger_id')->constrained('ledgers')->onDelete('cascade');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->timestamps();
         });
     }

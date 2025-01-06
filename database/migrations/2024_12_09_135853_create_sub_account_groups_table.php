@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sub_account_groups', function (Blueprint $table) {
             $table->id();
             $table->foreignId('account_group_id')->constrained('account_groups')->onDelete('cascade');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->timestamps();
         });
     }

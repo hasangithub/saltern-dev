@@ -24,7 +24,7 @@ class SubAccountGroupController extends Controller
     {
         $request->validate([
             'account_group_id' => 'required|exists:account_groups,id',
-            'name' => 'required|string|max:255|unique:sub_account_groups,name',
+            'name' => 'required|string|max:255',
         ]);
 
         SubAccountGroup::create([
