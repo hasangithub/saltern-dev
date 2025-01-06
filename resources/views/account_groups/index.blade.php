@@ -9,6 +9,29 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
+<style>
+.treeview {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.treeview-item {
+    cursor: pointer;
+}
+
+.treeview-item i {
+    margin-right: 5px;
+}
+
+.nested {
+    display: none;
+}
+
+.open>.nested {
+    display: block;
+}
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -20,45 +43,47 @@
                         Sub Accounts</a>
                     <a href="{{ route('ledgers.create') }}" class="btn btn-success btn-sm"> <i class="fas fa-plus"></i>
                         Ledgers</a>
-                    <a href="{{ route('sub-ledgers.create') }}" class="btn btn-success btn-sm"> <i class="fas fa-plus"></i>
+                    <a href="{{ route('sub-ledgers.create') }}" class="btn btn-success btn-sm"> <i
+                            class="fas fa-plus"></i>
                         Sub Ledgers</a>
                 </div>
 
                 <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        @foreach($accounts as $key => $account)
-                        <li class="list-group-item">
-                            <h6 class="mb-1 font-weight-bold">{{ ++$key ." ". $account->name }}</h6>
-                            @if($account->subAccountGroups->isNotEmpty())
-                            <ul class="list-group ml-3">
+                    <div class="container mt-4">
+                        <ul class="treeview">
+                            @foreach($accounts as $key => $account)
+                            <li class="treeview-item">
+                                <i class="fas fa-folder"></i> {{ $account->name }}
+                                @if($account->subAccountGroups->isNotEmpty())
                                 @foreach($account->subAccountGroups as $subKey => $subAccount)
-                                <li class="list-group-item">
-                                <h6 class="mb-1">{{ $key . "." . ++$subKey . " " .$subAccount->name }}</h6>
-                                    @if($subAccount->ledgers->isNotEmpty())
-                                    <ul class="list-group ml-3 list-group-flush">
+                                <ul class="nested">
+                                    <li class="treeview-item">
+                                        <i class="fas fa-folder"></i> {{ $subAccount->name }}
+                                        @if($subAccount->ledgers->isNotEmpty())
                                         @foreach($subAccount->ledgers as $ledgerKey => $ledger)
-                                        <li class="list-group-item list-group-item-secondary">
-                                        <h6 class="mb-1 font-weight-lighter">{{ $key . "." . $subKey . "." .++$ledgerKey. " ". $ledger->name }}</h6>
-                                            @if($ledger->subLedgers->isNotEmpty())
-                                            <ul class="list-group ml-3">
+                                        <ul class="nested">
+                                            <li class="treeview-item">
+                                                <i class="fas fa-folder"></i> {{ $ledger->name }}
+                                                @if($ledger->subLedgers->isNotEmpty())
                                                 @foreach($ledger->subLedgers as $subLedgerKey => $subLedger)
-                                                <li class="list-group-item">
-                                                <h6 class="mb-1 font-italic">{{$key . "." . $subKey . "." .$ledgerKey. ".". ++$subLedgerKey. " ".  $subLedger->name }}</h6>
-                                                </li>
+                                                <ul class="nested">
+                                                    <li class="treeview-item"><i class="fas fa-file"></i>
+                                                        {{$subLedger->name}}</li>
+                                                </ul>
                                                 @endforeach
-                                            </ul>
-                                            @endif
-                                        </li>
+                                                @endif
+                                            </li>
+                                        </ul>
                                         @endforeach
-                                    </ul>
-                                    @endif
-                                </li>
+                                        @endif
+                                    </li>
+                                </ul>
                                 @endforeach
-                            </ul>
-                            @endif
-                        </li>
-                        @endforeach
-                    </ul>
+                                @endif
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,7 +103,11 @@
 @push('js')
 <script>
 $(document).ready(function() {
-
+    $('.treeview-item').click(function(e) {
+        e.stopPropagation(); // Prevent triggering parent clicks
+        $(this).toggleClass('open');
+        $(this).find('i').first().toggleClass('fa-folder fa-folder-open');
+    });
 });
 </script>
 @endpush
