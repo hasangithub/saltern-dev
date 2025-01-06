@@ -35,7 +35,7 @@
                         </ul>
                     </div>
                     @endif
-                    <form action="{{ route('owners.store') }}" method="POST"  enctype="multipart/form-data">
+                    <form action="{{ route('owners.store') }}" method="POST"  enctype="multipart/form-data" autocomplete="off">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
