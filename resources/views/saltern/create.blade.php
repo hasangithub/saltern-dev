@@ -39,7 +39,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="name">Saltern Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="" autocomplete="off">
                     </div>
                 </div>
 
