@@ -28,7 +28,7 @@
                         </ul>
                     </div>
                     @endif
-                    <form method="POST" action="{{ route('memberships.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('memberships.store') }}" enctype="multipart/form-data" autocomplete="off">
                         @csrf
                         <div class="row">
                             <div class="col-md-12">

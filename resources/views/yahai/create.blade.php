@@ -27,7 +27,7 @@
                         </ul>
                     </div>
                     @endif
-                    <form action="{{ route('yahai.store') }}" method="POST">
+                    <form action="{{ route('yahai.store') }}" method="POST" autocomplete="off">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">

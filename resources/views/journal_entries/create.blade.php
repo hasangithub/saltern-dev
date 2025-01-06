@@ -31,7 +31,7 @@
             {{ session('success') }}
         </div>
         @endif
-        <form action="{{ route('journal-entries.store') }}" method="POST">
+        <form action="{{ route('journal-entries.store') }}" method="POST" autocomplete="off">
             @csrf
             <div class="form-group">
                 <label for="ledger_id">Sub Ledger</label>

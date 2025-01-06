@@ -24,7 +24,7 @@
             </ul>
         </div>
         @endif
-        <form action="{{ route('saltern.store') }}" method="POST">
+        <form action="{{ route('saltern.store') }}" method="POST" autocomplete="off">
             @csrf
             <div class="form-group">
                 <label for="yahai_id">Yahai</label>
@@ -39,7 +39,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="name">Saltern Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="" autocomplete="off">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="" >
                     </div>
                 </div>
 

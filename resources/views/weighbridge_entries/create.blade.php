@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form action="{{ route('weighbridge_entries.store') }}" method="POST">
+                    <form action="{{ route('weighbridge_entries.store') }}" method="POST" autocomplete="off">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">

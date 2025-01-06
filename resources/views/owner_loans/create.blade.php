@@ -28,7 +28,7 @@
                         </ul>
                     </div>
                     @endif
-                    <form method="POST" action="{{ route('owner-loans.store') }}">
+                    <form method="POST" action="{{ route('owner-loans.store') }}" autocomplete="off">
                         @csrf
                         <div class="row">
                             <div class="col-md-12">

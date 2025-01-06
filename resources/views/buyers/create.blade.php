@@ -35,7 +35,7 @@
                         </ul>
                     </div>
                     @endif
-                    <form action="{{ route('buyers.store') }}" method="POST">
+                    <form action="{{ route('buyers.store') }}" method="POST" autocomplete="off">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">

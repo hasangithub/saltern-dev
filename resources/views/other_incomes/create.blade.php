@@ -32,7 +32,7 @@
                         {{ session('success') }}
                     </div>
                     @endif
-                    <form action="{{ route('other_incomes.store') }}" method="POST">
+                    <form action="{{ route('other_incomes.store') }}" method="POST" autocomplete="off">
                         @csrf
                         <div class="form-group">
                             <label for="received_date">Received Date</label>

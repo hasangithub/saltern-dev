@@ -37,7 +37,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        <form action="{{ route('sub-account-groups.store') }}" method="POST">
+        <form action="{{ route('sub-account-groups.store') }}" method="POST" autocomplete="off">
             @csrf
             <div class="form-group">
                 <label for="yahai_id">Account Group</label>
