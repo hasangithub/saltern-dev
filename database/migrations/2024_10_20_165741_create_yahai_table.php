@@ -18,14 +18,6 @@ return new class extends Migration
             $table->unsignedBigInteger('side_id');
             $table->timestamps();
         });
-
-        // Predefine Yahai names
-        DB::table('yahai')->insert([
-            ['name' => 'Yahai 1', 'side_id' => 1],
-            ['name' => 'Yahai 2', 'side_id' => 1],
-            ['name' => 'Yahai 3', 'side_id' => 1],
-            ['name' => 'Yahai 4', 'side_id' => 1],
-        ]);
     }
 
     /**
