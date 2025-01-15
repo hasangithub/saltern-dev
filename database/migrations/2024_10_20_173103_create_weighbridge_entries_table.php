@@ -17,9 +17,9 @@ return new class extends Migration
             $table->decimal('initial_weight', 10, 2); // Initial weight
             $table->decimal('tare_weight', 10, 2)->nullable(); // Tare weight
             $table->decimal('net_weight', 10, 2)->nullable(); 
-            $table->integer('bags_count')->nullable(); // Number of bags (calculated as net weight / 50)
-            $table->float('bag_price')->default(50); // Price per bag (default Rs. 50)
-            $table->float('total_amount')->nullable(); 
+            $table->decimal('bags_count', 10, 2)->nullable(); // Number of bags (calculated as net weight / 50)
+            $table->decimal('bag_price', 10, 2)->default(50); // Price per bag (default Rs. 50)
+            $table->decimal('total_amount', 10, 2)->nullable();
             $table->date('transaction_date'); 
             $table->foreignId('membership_id')->constrained()->onDelete('cascade'); 
             $table->foreignId('owner_id')->constrained()->onDelete('cascade'); 

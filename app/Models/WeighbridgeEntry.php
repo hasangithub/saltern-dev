@@ -41,16 +41,21 @@ class WeighbridgeEntry extends Model
         return $this->morphMany(Payment::class, 'source');
     }
 
+    protected $casts = [
+        'bags_count' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+    ];
+
     protected static function booted()
     {
         static::creating(function ($entry) {
             // Calculate net_weight when a new record is created
-            $entry->net_weight = $entry->tare_weight - $entry->initial_weight;
+            $entry->net_weight = bcsub($entry->tare_weight, $entry->initial_weight, 2);
         
             // Calculate bags_count and total_amount based on net_weight
             if (!is_null($entry->net_weight)) {
-                $entry->bags_count = (int) floor($entry->net_weight / 50); // Net weight divided by 50
-                $entry->total_amount = $entry->bags_count * $entry->bag_price; // Bags count multiplied by price
+                $entry->bags_count = bcdiv($entry->net_weight, 50, 2); // Divide net_weight by 50, keep 2 decimal places
+                $entry->total_amount = bcmul($entry->bags_count, $entry->bag_price, 2);
             }
         });        
     }
