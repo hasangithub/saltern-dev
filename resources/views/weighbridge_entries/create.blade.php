@@ -244,13 +244,8 @@ $(document).ready(function() {
             $.ajax({
                 url: "{{ route('get.saltern.details', '') }}/" + salternId,
                 type: "GET",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        $('#saltern_details').html(response.html);
-                    } else {
-                        $('#saltern_details').html(
-                            '<p>Failed to load details. Please try again.</p>');
-                    }
+                success: function(loans) {
+                    $('#saltern_details').html(loans);
                 },
                 error: function() {
                     $('#saltern_details').html(
