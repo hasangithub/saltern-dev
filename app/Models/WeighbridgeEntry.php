@@ -43,17 +43,16 @@ class WeighbridgeEntry extends Model
 
     protected static function booted()
     {
-        static::saving(function ($entry) {
-            if ($entry->isDirty('tare_weight')) { // Only update if tare_weight is changed
-                $entry->net_weight = $entry->tare_weight - $entry->initial_weight;
-            }
-
-            // Calculate bags_count and total_amount based on updated net_weight
+        static::creating(function ($entry) {
+            // Calculate net_weight when a new record is created
+            $entry->net_weight = $entry->tare_weight - $entry->initial_weight;
+        
+            // Calculate bags_count and total_amount based on net_weight
             if (!is_null($entry->net_weight)) {
                 $entry->bags_count = (int) floor($entry->net_weight / 50); // Net weight divided by 50
                 $entry->total_amount = $entry->bags_count * $entry->bag_price; // Bags count multiplied by price
             }
-        });
+        });        
     }
 
     public function getFormattedTotalAmountAttribute()

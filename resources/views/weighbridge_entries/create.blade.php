@@ -285,8 +285,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (initialWeight > 0 && tareWeight > 0 && tareWeight >= initialWeight) {
             const netWeight = tareWeight - initialWeight;
-            const serviceCharge = netWeight * SERVICE_CHARGE_RATE;
             const bags = netWeight / 50;
+            const serviceCharge = bags * SERVICE_CHARGE_RATE;
+            
 
             netWeightInput.value = netWeight.toFixed(2); // Display net weight
             serviceChargeInput.value = serviceCharge.toFixed(2); // Display service charge

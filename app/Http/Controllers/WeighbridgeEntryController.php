@@ -69,7 +69,7 @@ class WeighbridgeEntryController extends Controller
        $validated=  $request->validate([
             'vehicle_id' => 'required|string',
             'initial_weight' => 'required|numeric',
-            'tare_weight' => 'required|numeric',
+            'tare_weight' => 'required|numeric|min:0|gte:initial_weight',
             'transaction_date' => 'nullable|date',
             'membership_id' => 'required|exists:memberships,id',
             'buyer_id' => 'required|exists:buyers,id',
@@ -79,6 +79,8 @@ class WeighbridgeEntryController extends Controller
         $data = $request->all();
         $data['owner_id'] = $membership->owner_id;
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
+        $data['bag_price'] = 50;
+        $data['status'] = 'approved';
 
         WeighbridgeEntry::create($data);
 
