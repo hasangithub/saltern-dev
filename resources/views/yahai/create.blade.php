@@ -32,16 +32,17 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="name">Yahai Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="">
+                                    <label for="side">Side</label>
+                                    <select name="side_id" id="side_id" class="form-control" required>
+                                        <option value="">Select Side</option>
+                                        @foreach ($sides as $side)
+                                        <option value="{{ $side->id }}">{{ ucfirst($side->name) }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="side">Side</label>
-                                    <select name="side" id="side" class="form-control" required>
-                                        <option value="">Select Side</option>
-                                        <option value="East">East</option>
-                                        <option value="West">West</option>
-                                    </select>
+                                    <label for="name">Yahai Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="">
                                 </div>
                             </div>
                         </div>

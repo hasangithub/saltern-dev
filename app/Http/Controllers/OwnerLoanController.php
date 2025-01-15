@@ -58,4 +58,17 @@ class OwnerLoanController extends Controller
         return redirect()->route('owner-loans.show', $loan->id)
             ->with('success', 'Loan request approved successfully.');
     }
+
+    public function getSalternDetails($saltern_id)
+    {
+        $saltern = [];
+        $loans = [];
+        $html = view('weighbridge_entries.loan-details', [
+            'saltern' => $saltern,
+            'membership' => '',
+            'loans' => $loans,
+        ])->render();
+    
+        return response()->json(['status' => 'success', 'html' => $html]);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Side;
 use App\Models\Yahai;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,8 @@ class YahaiController extends Controller
      */
     public function create()
     {
-        return view('yahai.create');
+        $sides = Side::all(); 
+        return view('yahai.create', compact('sides')); 
     }
 
     /**
@@ -31,7 +33,7 @@ class YahaiController extends Controller
     {
          $request->validate([
             'name' => 'required|string|max:255',
-            'side' => 'required|string'
+            'side_id' => 'required|exists:sides,id'
         ]);
 
         Yahai::create($request->all());
@@ -52,8 +54,8 @@ class YahaiController extends Controller
      */
     public function edit(Yahai $yahai)
     {
-        
-        return view('yahai.edit', ['yahai' => $yahai]);
+        $sides = Side::all(); 
+        return view('yahai.edit', ['yahai' => $yahai, 'sides' => $sides]);
     }
 
     /**
@@ -63,7 +65,7 @@ class YahaiController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'side' => 'required|string'
+            'side_id' => 'required|exists:sides,id',
         ]);
 
         $yahai->update($data);

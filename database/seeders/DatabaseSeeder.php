@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AccountGroupsTableSeeder::class);
         $this->call(ExpenseCategorySeeder::class);
         $this->call(IncomeCategoriesSeeder::class);
+        $this->call(SideSeeder::class);
     }
 }

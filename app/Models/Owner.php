@@ -16,9 +16,8 @@ class Owner extends Model
 
     // Define the fillable fields
     protected $fillable = [
-        'full_name', 'gender', 'civil_status', 'date_of_birth', 'nic',
-        'phone_number', 'secondary_phone_number', 'email', 'address_line_1',
-        'address_line_2', 'profile_picture',
+        'full_name', 'name_with_initial', 'gender', 'civil_status', 'date_of_birth', 'nic',
+        'phone_number', 'whatsapp_number', 'email', 'address_line_1', 'profile_picture',
     ];
 
     protected $casts = [

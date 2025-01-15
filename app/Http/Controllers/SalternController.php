@@ -84,4 +84,10 @@ class SalternController extends Controller
 
         return to_route('saltern.index')->with('success', 'Saltern was deleted.');
     }
+
+    function getByYahai($yahaiId)
+    {
+        $salterns = Saltern::where('yahai_id', $yahaiId)->get();
+        return response()->json($salterns);
+    }
 }

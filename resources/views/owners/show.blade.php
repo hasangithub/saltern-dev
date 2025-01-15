@@ -61,20 +61,17 @@
                             <hr>
                         </div>
                         <div class="col-md-6">
-                            <strong>Phone Number 1</strong>
+                            <strong>Phone Number</strong>
                             <p class="text-muted">{{ $membership->phone_number }}</p>
                             <hr>
-                            <strong>Phone Number 2</strong>
-                            <p class="text-muted"> {{ $membership->secondary_phone_number }}</p>
+                            <strong>Whatsapp Number</strong>
+                            <p class="text-muted"> {{ $membership->whatsapp_number }}</p>
                             <hr>
                             <strong>Email</strong>
                             <p class="text-muted"> {{ $membership->email }}</p>
                             <hr>
                             <strong>Address 1</strong>
                             <p class="text-muted"> {{ $membership->address_line_1 }}</p>
-                            <hr>
-                            <strong>Address 2</strong>
-                            <p class="text-muted"> {{ $membership->address_line_2 }}</p>
                         </div>
                     </div>
                 </div>

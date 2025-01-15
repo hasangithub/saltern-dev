@@ -33,33 +33,45 @@
         </div>
         @endif
         @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
         @endif
-        <form action="{{ route('sub-ledgers.store') }}" method="POST" autocomplete="off">
+        <form action="{{ route('sub_ledgers.store') }}" method="POST" autocomplete="off">
             @csrf
             <div class="form-group">
-                <label for="ledger_id">Ledger</label>
-                <select name="ledger_id" id="ledger_id" class="form-control" required>
-                    <option value="">Select Ledger</option>
-                    @foreach($ledgers  as $ledger)
-                    <option value="{{ $ledger->id }}">{{ $ledger->name }}</option>
+                <label for="account_id">Accounts</label>
+                <select id="account_id" name="account_id" class="form-control">
+                    <option value="">Select Account</option>
+                    @foreach($accounts as $account)
+                    <option value="{{ $account->id }}">{{ $account->name }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="name">Sub Ledger Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="">
-                    </div>
-                </div>
 
+            <div class="form-group">
+                <label for="sub_account_id">Sub-Accounts</label>
+                <select id="sub_account_id" name="sub_account_id" class="form-control select2" disabled>
+                    <option value="">Select Sub-Account</option>
+                </select>
+                <input type="hidden" id="new_sub_account_name" name="new_sub_account_name" value="">
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Save
-            </button>
+
+            <div class="form-group">
+                <label for="ledger_id">Ledgers</label>
+                <select id="ledger_id" name="ledger_id" class="form-control select2" disabled>
+                    <option value="">Select Ledger</option>
+                </select>
+                <input type="hidden" id="new_ledger_name" name="new_ledger_name" value="">
+            </div>
+
+            <div class="form-group">
+                <label for="sub_ledger_name">Sub-Ledger Name</label>
+                <input type="text" id="sub_ledger_name" name="sub_ledger_name" class="form-control"
+                    placeholder="Enter Sub-Ledger Name">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
 </div>
@@ -77,4 +89,108 @@
 
 @push('js')
 
+<script>
+$(document).ready(function() {
+    // Initialize Select2
+    $('.select2').select2();
+
+    // Load Sub-Accounts when an Account is selected
+    $('#account_id').change(function() {
+        const accountId = $(this).val();
+        $('#sub_account_id').prop('disabled', true).empty().append(
+            '<option value="">Select Sub-Account</option>');
+        if (accountId) {
+            $.ajax({
+                url: "{{ route('get.sub_accounts') }}",
+                type: "GET",
+                data: {
+                    account_id: accountId
+                },
+                success: function(response) {
+                    response.sub_accounts.forEach(sub_account => {
+                        $('#sub_account_id').append(
+                            `<option value="${sub_account.id}">${sub_account.name}</option>`
+                        );
+                    });
+                    $('#sub_account_id').prop('disabled', false);
+                }
+            });
+        }
+    });
+
+    // Enable "Add New Sub-Account" functionality
+    $('#sub_account_id').select2({
+        placeholder: "Search or Add Sub-Account",
+        tags: true,
+        createTag: function(params) {
+            return {
+                id: params.term,
+                text: params.term,
+                isNew: true
+            };
+        },
+        templateResult: function(data) {
+            if (data.isNew) {
+                return `<span class="">Add new: ${data.text}</span>`;
+            }
+            return data.text;
+        },
+        escapeMarkup: function(markup) {
+            return markup;
+        }
+    }).on('select2:select', function(e) {
+        const data = e.params.data;
+        $('#new_sub_account_name').val(data.isNew ? data.text : '');
+    });
+
+    // Load Ledgers when a Sub-Account is selected
+    $('#sub_account_id').change(function() {
+        const subAccountId = $(this).val();
+        $('#ledger_id').prop('disabled', true).empty().append(
+        '<option value="">Select Ledger</option>');
+        if (subAccountId) {
+            $.ajax({
+                url: "{{ route('get.ledgers') }}",
+                type: "GET",
+                data: {
+                    sub_account_id: subAccountId
+                },
+                success: function(response) {
+                    response.ledgers.forEach(ledger => {
+                        $('#ledger_id').append(
+                            `<option value="${ledger.id}">${ledger.name}</option>`
+                        );
+                    });
+                    $('#ledger_id').prop('disabled', false);
+                }
+            });
+        }
+    });
+
+    // Enable "Add New Ledger" functionality
+    $('#ledger_id').select2({
+        placeholder: "Search or Add Ledger",
+        tags: true,
+        createTag: function(params) {
+            return {
+                id: params.term,
+                text: params.term,
+                isNew: true
+            };
+        },
+        templateResult: function(data) {
+            if (data.isNew) {
+                return `<span class="">Add new: ${data.text}</span>`;
+            }
+            return data.text;
+        },
+        escapeMarkup: function(markup) {
+            return markup;
+        }
+    }).on('select2:select', function(e) {
+        const data = e.params.data;
+        $('#new_ledger_name').val(data.isNew ? data.text : '');
+    });
+});
+</script>
 @endpush

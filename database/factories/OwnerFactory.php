@@ -16,12 +16,15 @@ class OwnerFactory extends Factory
                 'gender' => $this->faker->randomElement(['male', 'female']),
                 'civil_status' => $this->faker->randomElement(['single', 'married', 'divorced', 'widowed']),
                 'date_of_birth' => $this->faker->dateTimeBetween('-60 years', '-18 years')->format('Y-m-d'),
-                'nic' => strtoupper($this->faker->regexify('[A-Z0-9]{10}')),
+                'nic' => $this->faker->randomElement([
+                $this->faker->regexify('[0-9]{9}[VX]'), // Old format
+                $this->faker->numerify('############')  // New format
+                ]),
                 'phone_number' => '0' . $this->faker->numerify('#########'),
-                'secondary_phone_number' => $this->faker->optional()->phoneNumber,
+                'secondary_phone_number' => '0' . $this->faker->numerify('#########'),
+                'whatsapp_number' => '0' . $this->faker->numerify('#########'),
                 'email' => $this->faker->unique()->safeEmail,
                 'address_line_1' => $this->faker->streetAddress,
-                'address_line_2' => $this->faker->optional()->secondaryAddress,
                 'created_at' => $this->faker->dateTimeBetween('-12 months', 'now'),
                 'updated_at' => $this->faker->dateTimeBetween('-12 months', 'now'),
         ];

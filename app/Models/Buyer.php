@@ -10,12 +10,14 @@ class Buyer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code',
-        'name',
+        'business_name',
+        'business_registration_number',
+        'full_name',
         'credit_limit',
         'service_out',
         'address_1',
-        'address_2',
-        'phone_no',
+        'phone_number',
+        'secondary_phone_number',
+        'whatsapp_number'
     ];
 }

@@ -22,13 +22,15 @@ class BuyerController extends Controller
     {
         // Validate the form data
         $request->validate([
-            'code' => 'required|string|unique:buyers,code',
-            'name' => 'required|string|max:255',
+            'business_name' => 'nullable|string|max:255',
+            'business_registration_number' => 'nullable|string|max:50',
+            'full_name' => 'required|string|max:255',
             'credit_limit' => 'required|numeric|min:0',
             'service_out' => 'boolean',
             'address_1' => 'required|string|max:255',
-            'address_2' => 'nullable|string|max:255',
-            'phone_no' => 'required|string|max:20',
+            'phone_number' => 'required|string|max:20',
+            'secondary_phone_number' => 'nullable|string|max:20',
+            'whatsapp_number' => 'nullable|string|max:20',
         ]);
 
         // Create the new buyer using mass assignment

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Buyer;
 use App\Models\Membership;
 use App\Models\Owner;
+use App\Models\Saltern;
+use App\Models\Side;
 use App\Models\WeighbridgeEntry;
+use App\Models\Yahai;
 use Illuminate\Http\Request;
 
 class WeighbridgeEntryController extends Controller
@@ -42,29 +45,32 @@ class WeighbridgeEntryController extends Controller
                     // If no specific status is provided, get all entries
                     break;
             }
-
         }
-    
+
         $entries = $entriesQuery->get();
-    
+
         // Return the view with the entries and status counts
         return view('weighbridge_entries.index', compact('entries', 'pendingCount', 'approvedCount', 'rejectedCount', 'cardOutline'));
     }
-    
+
     public function create()
     {
-        $owners = Owner::all(); // Fetch all owners
-        $buyers = Buyer::all(); // Fetch all buyers
-        $memberships = Membership::all(); 
-        return view('weighbridge_entries.create', compact('owners', 'buyers', 'memberships'));
+        $sides  = Side::all();
+        $owners = Owner::all();
+        $buyers = Buyer::all();
+        $memberships = Membership::all();
+        $nextSerialNo = WeighbridgeEntry::max('id') + 1;
+
+        return view('weighbridge_entries.create', compact('owners', 'buyers', 'memberships', 'nextSerialNo', 'sides'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+       $validated=  $request->validate([
             'vehicle_id' => 'required|string',
             'initial_weight' => 'required|numeric',
-            'transaction_date' => 'required|date',
+            'tare_weight' => 'required|numeric',
+            'transaction_date' => 'nullable|date',
             'membership_id' => 'required|exists:memberships,id',
             'buyer_id' => 'required|exists:buyers,id',
         ]);
@@ -72,7 +78,8 @@ class WeighbridgeEntryController extends Controller
         $membership = Membership::findOrFail($request->membership_id);
         $data = $request->all();
         $data['owner_id'] = $membership->owner_id;
-       
+        $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
+
         WeighbridgeEntry::create($data);
 
         return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
@@ -103,4 +110,35 @@ class WeighbridgeEntryController extends Controller
             ->with('success', 'Tare weight updated successfully.');
     }
 
+    public function getYahais(Request $request)
+    {
+        $yahais = Yahai::where('side_id', $request->side_id)->get();
+        return response()->json(['yahais' => $yahais]);
+    }
+
+    public function getSalterns(Request $request)
+    {
+        $salterns = Saltern::where('yahai_id', $request->yahai_id)->get();
+        return response()->json(['salterns' => $salterns]);
+    }
+
+    public function getMembershipDetails($saltern_id)
+    {
+        $membership = Membership::where('saltern_id', $saltern_id)
+            ->with('owner')  // Eager load the owner
+            ->first();
+
+        if ($membership) {
+            return response()->json([
+                'status' => 'success',
+                'membership' => $membership,
+                'owner' => $membership->owner,  // Include the owner details in the response
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No membership found for this saltern'
+        ]);
+    }
 }

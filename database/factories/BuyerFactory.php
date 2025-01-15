@@ -21,13 +21,14 @@ class BuyerFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => strtoupper($this->faker->unique()->bothify('BYR###')), // Random buyer code like 'BYR123'
-            'name' => $this->faker->company(), // Random company name or buyer name
+            'business_name' => $this->faker->company(),
+            'full_name' => $this->faker->company(),
             'credit_limit' => $this->faker->numberBetween(1000, 50000), // Random credit limit between 1000 and 50000
             'service_out' => $this->faker->boolean(), // True/False for service_out
             'address_1' => $this->faker->streetAddress(), // Random street address
-            'address_2' => $this->faker->secondaryAddress(), // Secondary address
-            'phone_no' => '0' . $this->faker->numerify('#########'),
+            'phone_number' => '0' . $this->faker->numerify('#########'),
+            'secondary_phone_number' => '0' . $this->faker->numerify('#########'),
+            'whatsapp_number' => '0' . $this->faker->numerify('#########'),
         ];
     }
 }

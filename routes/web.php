@@ -69,3 +69,17 @@ Route::post('loan-requests', [OwnerLoanController::class, 'store'])->name('loan-
 Route::get('loan-requests/{loan_request}', [OwnerLoanController::class, 'show'])->name('loan-requests.show');  // View a specific loan request
 Route::resource('other_incomes', OtherIncomeController::class);
 Route::resource('expenses', ExpenseController::class);
+
+Route::get('wizard/', [MembershipController::class, 'wizard'])->name('membership.wizard');
+Route::get('/api/salterns/{yahaiId}', [SalternController::class, 'getByYahai'])->name('api.salterns');
+
+Route::get('/get-sub-accounts', [SubLedgerController::class, 'getSubAccounts'])->name('get.sub_accounts');
+Route::get('/get-ledgers', [SubLedgerController::class, 'getLedgers'])->name('get.ledgers');
+Route::post('/sub-ledgers', [SubLedgerController::class, 'storeSubLedger'])->name('sub_ledgers.store');
+
+Route::get('/get-yahais', [WeighbridgeEntryController::class, 'getYahais'])->name('get.yahai');
+
+Route::get('api/salterns', [WeighbridgeEntryController::class, 'getSalterns'])->name('get.saltern');
+Route::get('api/membership/{saltern_id}', [WeighbridgeEntryController::class, 'getMembershipDetails'])->name('get.membership');
+Route::get('get-saltern-details/{saltern_id}', [OwnerLoanController::class, 'getSalternDetails'])->name('get.saltern.details');
+

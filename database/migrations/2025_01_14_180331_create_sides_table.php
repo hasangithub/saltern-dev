@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('yahai', function (Blueprint $table) {
-            $table->enum('side', ['East', 'West'])->after('name'); 
+        Schema::create('sides', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique(); // 'east' or 'west'
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('yahai', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('sides');
     }
 };

@@ -29,25 +29,23 @@
                         <table id="buyersTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Code</th>
-                                    <th>Name</th>
+                                    <th>Business Name</th>
+                                    <th>Contact Name</th>
                                     <th>Credit Limit</th>
                                     <th>Service Out</th>
-                                    <th>Address 1</th>
-                                    <th>Address 2</th>
-                                    <th>Phone No</th>
+                                    <th>Phone Number</th>
+                                    <th>Phone Number 2</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($buyers as $buyer)
                                 <tr>
-                                    <td>{{ $buyer->code }}</td>
-                                    <td>{{ $buyer->name }}</td>
+                                    <td>{{ $buyer->business_name }}</td>
+                                    <td>{{ $buyer->full_name }}</td>
                                     <td>{{ $buyer->credit_limit }}</td>
                                     <td>{{ $buyer->service_out ? 'Yes' : 'No' }}</td>
-                                    <td>{{ $buyer->address_1 }}</td>
-                                    <td>{{ $buyer->address_2 }}</td>
-                                    <td>{{ $buyer->phone_no }}</td>
+                                    <td>{{ $buyer->phone_number }}</td>
+                                    <td>{{ $buyer->secondary_phone_number }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

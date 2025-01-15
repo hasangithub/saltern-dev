@@ -51,6 +51,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="name_with_initial">Name with Initial</label>
+                        <input type="text" name="name_with_initial" id="name_with_initial" class="form-control"
+                            value="{{ old('name_with_initial', $owner->name_with_initial) }}" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="dob">Date of Birth</label>
                         <input type="date" name="date_of_birth" id="dob" class="form-control"
                             value="{{ old('date_of_birth', $owner->date_of_birth) }}" required>
@@ -73,18 +79,6 @@
                             @endforeach
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <label for="civil_status">Civil Status</label>
-                        <select name="civil_status" class="form-control" required>
-                            @foreach(\App\Enums\CivilStatus::cases() as $case)
-                            <option value="{{ $case->value }}"
-                                {{ $owner->civil_status->value === $case->value ? 'selected' : '' }}>
-                                {{ $case->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
                 </div>
 
                 <div class="col-md-6">
@@ -97,10 +91,10 @@
 
                     <!-- Secondary Phone Number -->
                     <div class="form-group">
-                        <label for="secondary_phone_number">Secondary Phone Number</label>
-                        <input type="text" name="secondary_phone_number" id="secondary_phone_number"
+                        <label for="whatsapp_number">Whatsapp Number</label>
+                        <input type="text" name="whatsapp_number" id="whatsapp_number"
                             class="form-control"
-                            value="{{ old('secondary_phone_number', $owner->secondary_phone_number) }}">
+                            value="{{ old('whatsapp_number', $owner->whatsapp_number) }}">
                     </div>
 
                     <!-- Email -->
@@ -113,21 +107,15 @@
                     <!-- Address Line 1 -->
                     <div class="form-group">
                         <label for="address_line_1">Address Line 1</label>
-                        <input type="text" name="address_line_1" id="address_line_1" class="form-control"
-                            value="{{ old('address_line_1', $owner->address_line_1) }}" required>
-                    </div>
-
-                    <!-- Address Line 2 -->
-                    <div class="form-group">
-                        <label for="address_line_2">Address Line 2</label>
-                        <input type="text" name="address_line_2" id="address_line_2" class="form-control"
-                            value="{{ old('address_line_2', $owner->address_line_2) }}">
+                        <textarea type="text" name="address_line_1" id="address_line_1" class="form-control"
+                             required> {{ old('address_line_1', $owner->address_line_1) }}
+                        </textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="profile_picture">Profile Picture</label>
                         <input type="file" class="form-control" name="profile_picture" id="profile_picture"
-                            accept="image/*" required onchange="previewImage(event, 'profilePicturePreview')">
+                            accept="image/*" onchange="previewImage(event, 'profilePicturePreview')">
                         <img id="profilePicturePreview" src="#" alt="Owner Profile Preview"
                             style="display:none; width:200px; margin-top:10px;">
                     </div>

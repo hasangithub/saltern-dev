@@ -12,15 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('buyers', function (Blueprint $table) {
-            $table->id(); // Auto-incrementing primary key
-            $table->string('code')->unique(); // Code (unique identifier)
-            $table->string('name'); // Name
-            $table->decimal('credit_limit', 10, 2); // Credit Limit
-            $table->boolean('service_out')->default(false); // Service Out (boolean, default false)
-            $table->string('address_1'); // Address 1
-            $table->string('address_2')->nullable(); // Address 2 (optional)
-            $table->string('phone_no'); // Phone No
-            $table->timestamps(); // Created at and updated at
+            $table->id(); 
+            $table->string('business_name')->nullable();
+            $table->string('business_registration_number')->nullable();
+            $table->string('full_name'); 
+            $table->decimal('credit_limit', 10, 2); 
+            $table->boolean('service_out')->default(false); 
+            $table->string('address_1'); 
+            $table->string('phone_number'); 
+            $table->string('secondary_phone_number')->nullable(); 
+            $table->string('whatsapp_number')->nullable();
+            $table->timestamps(); 
         });
     }
 

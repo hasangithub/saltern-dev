@@ -29,10 +29,8 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Name</th>
                                 <th>Side</th>
-                                <th>CreatedAt</th>
-                                <th>UpdatedAt</th>
+                                <th>Name</th>
                                 <th>&nbsp;</th>
                             </tr>
                         </thead>
@@ -40,10 +38,8 @@
                             @foreach($yahais as $yahai)
                             <tr>
                                 <td>{{ $yahai->id }}</td>
+                                <td>{{ $yahai->side->name }}</td>
                                 <td>{{ $yahai->name }}</td>
-                                <td>{{ $yahai->side }}</td>
-                                <td>{{ $yahai->created_at }}</td>
-                                <td>{{ $yahai->updated_at }}</td>
                                 <td><a class="btn btn-warning btn-xs" href="{{ route('yahai.edit',$yahai) }}"> <i class="fas fa-edit"></i> Edit</a>      
                             </tr>
                             @endforeach

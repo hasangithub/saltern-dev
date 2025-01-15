@@ -39,14 +39,24 @@
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
+
                                 <div class="form-group">
-                                    <label for="code">Code</label>
-                                    <input type="text" class="form-control" id="code" name="code" placeholder="">
+                                    <label for="business_name">Business Name:</label>
+                                    <input type="text" name="business_name" id="business_name" class="form-control"
+                                        value="{{ old('business_name', $buyer->business_name ?? '') }}">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="name">Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="">
+                                    <label for="business_registration_number">Business Registration Number:</label>
+                                    <input type="text" name="business_registration_number"
+                                        id="business_registration_number" class="form-control"
+                                        value="{{ old('business_registration_number', $buyer->business_registration_number ?? '') }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="full_name">Contact Full Name</label>
+                                    <input type="text" class="form-control" id="full_name" name="full_name"
+                                        placeholder="">
                                 </div>
 
                                 <div class="form-group">
@@ -63,19 +73,31 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="address_1">Address 1</label>
+                                    <label for="address_1">Address</label>
                                     <input type="text" class="form-control" id="address_1" name="address_1" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="address_2">Address 2</label>
-                                    <input type="text" class="form-control" id="address_2" name="address_2">
+                                    <label for="phone_number">Phone Number</label>
+                                    <input type="text" class="form-control" id="phone_number" name="phone_number"
+                                        required>
+                                </div>
+
+                               
+                                <div class="form-group">
+                                    <label for="secondary_phone_number">Secondary Phone Number</label>
+                                    <input type="text" name="secondary_phone_number" id="secondary_phone_number"
+                                        class="form-control"
+                                        value="{{ old('secondary_phone_number') }}">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="phone_no">Phone No</label>
-                                    <input type="text" class="form-control" id="phone_no" name="phone_no" required>
+                                    <label for="whatsapp_number">Whatsapp Number</label>
+                                    <input type="text" name="whatsapp_number" id="whatsapp_number" class="form-control"
+                                        value="{{ old('whatsapp_number') }}" required>
                                 </div>
+
+
                             </div>
 
                         </div>

@@ -9,9 +9,7 @@ use App\Enums\Gender;
 class Representative extends Model
 {
     protected $fillable = [
-        'full_name', 'gender', 'civil_status', 'date_of_birth', 'nic',
-        'phone_number', 'secondary_phone_number', 'email', 'address_line_1',
-        'address_line_2', 'profile_picture', 'membership_id',
+        'name_with_initial', 'nic', 'phone_number', 'membership_id', 'relationship',
     ];
 
     public function membership()

@@ -8,19 +8,19 @@ use App\Models\Owner;
 use App\Models\Representative;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Enums\CivilStatus;
-use App\Enums\Gender;
+use App\Enums\RelationshipType;
 use App\Http\Requests\StoreMembershipRequest;
 use App\Http\Requests\StoreRepresentativeRequest;
 use App\Http\Requests\UpdateMembershipRequest;
-
+use App\Models\Side;
+use App\Models\Yahai;
 
 class MembershipController extends Controller
 {
     public function index()
     {
-        $memberships = Membership::all(); // Retrieve all owners
-        return view('memberships.index', compact('memberships')); // Pass memberships to view
+        $memberships = Membership::all(); 
+        return view('memberships.index', compact('memberships'));
     }
 
     // Show the form to create a new membership
@@ -28,10 +28,21 @@ class MembershipController extends Controller
     {
         $salterns = Saltern::all();
         $owners = Owner::all();
+        $sides = Side::all();
+
         return view('memberships.create', [
-            'genders' => Gender::cases(),
-            'civilStatuses' => CivilStatus::cases(),
-        ], compact('salterns', 'owners'));
+            'genders' => RelationshipType::cases(),
+        ], compact('salterns', 'owners', 'sides'));
+    }
+
+    public function wizard()
+    {
+        $yahais = Yahai::all();
+        $salterns = Saltern::all();
+        $owners = Owner::all();
+        return view('memberships.wizard', [
+            'genders' => RelationshipType::cases(),
+        ], compact('salterns', 'owners', 'yahais'));
     }
 
     // Store a newly created membership in storage
@@ -87,9 +98,6 @@ class MembershipController extends Controller
 
     public function update(UpdateMembershipRequest $request, Membership $membership)
     {   
-        // $validatedData = $request->validated();
-        // $representativeData = $representativeRequest->validated();
-
         $membershipData = $request->validated()['membership'];
         $representativeData = $request->validated()['representative'];
 
@@ -104,17 +112,6 @@ class MembershipController extends Controller
         }
  
         $membership->update($membershipData);
-
-        if ($request->hasFile('representative.profile_picture')) {
-
-            // Delete the old profile picture if it exists
-            if (Storage::disk('public')->exists($membership->representative->profile_picture)) {
-                Storage::disk('public')->delete($membership->representative->profile_picture);
-            }
-    
-            // Store the new profile picture
-            $representativeData['profile_picture'] = $request->file('representative.profile_picture')->store('profile', 'public');
-        }
 
         $membership->representative()->updateOrCreate(
             ['membership_id' => $membership->id], // Match by membership_id
