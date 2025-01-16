@@ -53,9 +53,7 @@
                             <strong>Gender</strong>
                             <p class="text-muted"> {{ $membership->gender }}</p>
                             <hr>
-                            <strong>Civil Status</strong>
-                            <p class="text-muted"> {{ $membership->civil_status }}</p>
-                            <hr>
+                            
                             <strong>Date of Birth</strong>
                             <p class="text-muted"> {{ $membership->date_of_birth }}</p>
                             <hr>

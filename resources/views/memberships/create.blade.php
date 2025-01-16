@@ -75,7 +75,7 @@
                                 <div class="form-group">
                                     <label for="owner_signature">Owner Signature</label>
                                     <input type="file" class="form-control" name="owner_signature" id="owner_signature"
-                                        accept="image/*" required
+                                        accept="image/*" 
                                         onchange="previewImage(event, 'ownerSignaturePreview')">
                                     <img id="ownerSignaturePreview" src="#" alt="Owner Signature Preview"
                                         style="display:none; width:200px; margin-top:10px;">
@@ -121,7 +121,7 @@
                                 <div class="form-group">
                                     <label for="representative_signature">Representative Signature</label>
                                     <input type="file" class="form-control" name="representative_signature"
-                                        id="representative_signature" accept="image/*" required
+                                        id="representative_signature" accept="image/*"
                                         onchange="previewImage(event, 'representativeSignaturePreview')">
                                     <img id="representativeSignaturePreview" src="#"
                                         alt="Representative Signature Preview"
@@ -161,6 +161,7 @@ $(document).ready(function() {
 
         // Reset and disable the Saltern dropdown
         $('#saltern_id').prop('disabled', true).empty().append('<option value="">Select Saltern</option>');
+
         if (sideId) {
             $.ajax({
                 url: "{{ route('get.yahai') }}",
