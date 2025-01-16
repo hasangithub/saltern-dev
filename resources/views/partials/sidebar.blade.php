@@ -36,7 +36,7 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
-                            Waikaal Registartion 
+                            Waikal Registartion 
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -52,7 +52,7 @@
                         <li class="nav-item">
                             <a href="{{ route('saltern.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
-                                <p>Waikaal List</p>
+                                <p>Waikal List</p>
                             </a>
                         </li>
                         <!-- Owners -->

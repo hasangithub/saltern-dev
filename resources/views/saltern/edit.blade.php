@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Edit Saltern')
+@section('content_header_title', 'Edit Waikal')
 @section('content_header_subtitle', 'Welcome')
 
 {{-- Content body: main page content --}}
@@ -11,7 +11,7 @@
 @section('content_body')
 <div class="card card-default">
     <div class="card-header">
-        <h3 class="card-title">Edit Saltern</h3>
+        <h3 class="card-title">Edit Waikal</h3>
     </div>
 
     <div class="card-body">
