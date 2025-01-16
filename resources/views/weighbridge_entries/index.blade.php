@@ -82,7 +82,7 @@
                                     <td>{{ $entry->membership->saltern->yahai->name }}</td>
                                     <td>{{ $entry->membership->saltern->name }}</td>
                                     <td>{{ $entry->owner->full_name ?? 'N/A' }}</td>
-                                    <td>{{ $entry->buyer->name ?? 'N/A' }}</td>
+                                    <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
                                     <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View

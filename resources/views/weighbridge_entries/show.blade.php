@@ -36,7 +36,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <strong>Buyer Name</strong>
-                            <p class="text-muted">{{ $weighbridgeEntry->buyer->name }}</p>
+                            <p class="text-muted">{{ $weighbridgeEntry->buyer->full_name }}</p>
                             <hr>
                             <strong>Date</strong>
                             <p class="text-muted">{{ $weighbridgeEntry->transaction_date }}</p>
@@ -68,7 +68,7 @@
                             <strong>Owner</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->owner->full_name }}</p>
                             <hr>
-                            <strong>Saltern</strong>
+                            <strong>Waikal</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->membership->saltern->name }}</p>
                             <hr>
                             <strong>Yahai</strong>
