@@ -48,9 +48,7 @@
                             <strong>Gender</strong>
                             <p class="text-muted"> {{ $membership->owner->gender }}</p>
                             <hr>
-                            <strong>Civil Status</strong>
-                            <p class="text-muted"> {{ $membership->owner->civil_status }}</p>
-                            <hr>
+                           
                             <strong>Date of Birth</strong>
                             <p class="text-muted"> {{ $membership->owner->date_of_birth }}</p>
                             <hr>
