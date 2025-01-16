@@ -25,7 +25,7 @@
                                 <div class="form-group">
                                     <label for="transaction_date">Transaction Date</label>
                                     <input type="date" name="transaction_date" id="transaction_date"
-                                        class="form-control">
+                                        class="form-control" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group">
                                     <label for="Serial">Serial Number</label>
