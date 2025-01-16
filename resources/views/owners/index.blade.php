@@ -32,7 +32,6 @@
                                     <th>ID</th>
                                     <th>Full Name</th>
                                     <th>Date of Birth</th>
-                                    <th>NIC</th>
                                     <th>Address</th>
                                     <th>Mobile No</th>
                                     <th></th>
@@ -44,7 +43,6 @@
                                     <td>{{ $owner->id }}</td>
                                     <td>{{ $owner->full_name }}</td>
                                     <td>{{ $owner->date_of_birth }}</td>
-                                    <td>{{ $owner->nic }}</td>
                                     <td>{{ $owner->address_line_1 }}</td>
                                     <td>{{ $owner->phone_number }}</td>
                                     <td><a href="{{ route('owners.show', $owner->id) }}"
