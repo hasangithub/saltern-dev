@@ -62,8 +62,8 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Vehicle ID</th>
-                                    <th>Initial Weight(Kg)</th>
-                                    <th>Tare Weight(Kg)</th>
+                                    <th>First Weight(Kg)</th>
+                                    <th>Second Weight(Kg)</th>
                                     <th>Yahai</th>
                                     <th>Saltern</th>
                                     <th>Owner</th>

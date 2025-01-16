@@ -45,10 +45,10 @@
                             <p class="text-muted"> {{ $weighbridgeEntry->vehicle_id }}</p>
                         </div>
                         <div class="col-md-3">
-                            <strong>Initial Weight</strong>
+                            <strong>First Weight</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->formatted_initial_weight  }}</p>
                             <hr>
-                            <strong>Tare Weight</strong>
+                            <strong>Second Weight</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->formatted_tare_weight }}</p>
                             <hr>
                             <strong>Net Weight</strong>
