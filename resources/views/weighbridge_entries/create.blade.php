@@ -83,12 +83,12 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="initial_weight">Initial Weight</label>
+                                    <label for="initial_weight">First Weight</label>
                                     <input type="number" step="0.01" name="initial_weight" id="initial_weight"
                                         class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="initial_weight">Tare Weight</label>
+                                    <label for="initial_weight">Second Weight</label>
                                     <input type="number" step="0.01" name="tare_weight" id="tare_weight"
                                         class="form-control" required>
                                 </div>
