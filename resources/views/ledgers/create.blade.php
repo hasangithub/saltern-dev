@@ -37,7 +37,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        <form action="{{ route('ledgers.store') }}" method="POST">
+        <form action="{{ route('ledgers.store') }}" method="POST" autocomplete="off">
             @csrf
             <div class="form-group">
                 <label for="sub_account_group_id">Sub Account Group</label>
