@@ -58,7 +58,7 @@
 
                                 <div class="form-group">
                                     <label for="owner_id">Owner</label>
-                                    <select class="form-control" name="owner_id" id="owner_id" required>
+                                    <select class="form-control select2" name="owner_id" id="owner_id" required>
                                         <option value="">Select Owner</option>
                                         @foreach($owners as $owner)
                                         <option value="{{ $owner->id }}">{{ $owner->full_name }}</option>
@@ -153,6 +153,7 @@
 @push('js')
 <script>
 $(document).ready(function() {
+    $('.select2').select2();
     $('#side_id').change(function() {
         const sideId = $(this).val();
 

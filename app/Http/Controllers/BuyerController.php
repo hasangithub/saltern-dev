@@ -20,7 +20,10 @@ class BuyerController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the form data
+        $request->merge([
+            'service_out' => filter_var($request->service_out, FILTER_VALIDATE_BOOLEAN),
+        ]);
+        
         $request->validate([
             'business_name' => 'required|string|max:255',
             'business_registration_number' => 'nullable|string|max:50',
