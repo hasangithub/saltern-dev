@@ -10,6 +10,7 @@ class Membership extends Model
         'saltern_id',
         'owner_id',
         'membership_date',
+        'membership_no',
         'owner_signature',
         'representative_signature',
         'representative_authorised_date',

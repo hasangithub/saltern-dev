@@ -67,6 +67,12 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="membership_no">Membership No</label>
+                                    <input type="text" class="form-control" name="membership_no" id="membership_no"
+                                        required>
+                                </div>
+
+                                <div class="form-group">
                                     <label for="membership_date">Membership Date</label>
                                     <input type="date" class="form-control" name="membership_date" id="membership_date"
                                         required>

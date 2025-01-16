@@ -13,7 +13,7 @@
     <div class="card card-default">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Waikal List</h3>
-            <a href="{{ route('saltern.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Saltern</a>
+            <a href="{{ route('saltern.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Waikal</a>
         </div>
 
         <div class="card-body">

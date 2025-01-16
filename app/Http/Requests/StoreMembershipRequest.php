@@ -44,6 +44,7 @@ class StoreMembershipRequest extends FormRequest
             ],
             'owner_id' => 'required|exists:owners,id',
             'membership_date' => 'required|date',
+            'membership_no'=> 'required',
             'is_active' => 'boolean',
             'owner_signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Owner's signature validation
             'representative_signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Representative's signature validation
