@@ -18,9 +18,11 @@
             <div class="card card-primary card-outline">
                 <div class="card-body box-profile">
                     <div class="text-center">
+                    @if ($membership->owner->profile_picture)
                         <img class="profile-user-img img-fluid img-square"
                             src="{{ asset('storage/' . $membership->owner->profile_picture) }}"
                             alt="Owner profile picture">
+                    @endif        
                     </div>
 
                     <h3 class="profile-username text-center">{{ $membership->owner->full_name }}</h3>

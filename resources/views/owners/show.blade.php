@@ -18,8 +18,10 @@
             <div class="card card-primary card-outline">
                 <div class="card-body box-profile">
                     <div class="text-center">
+                        @if ($membership->profile_picture)
                         <img class="profile-user-img img-fluid img-square"
-                            src="{{ asset('storage/' . $membership->profile_picture) }}" alt="User profile picture">
+                        src="{{ asset('storage/' . $membership->profile_picture) }}" alt="User profile picture">
+                        @endif
                     </div>
 
                     <h3 class="profile-username text-center">{{ $membership->full_name }}</h3>
@@ -53,7 +55,7 @@
                             <strong>Gender</strong>
                             <p class="text-muted"> {{ $membership->gender }}</p>
                             <hr>
-                            
+
                             <strong>Date of Birth</strong>
                             <p class="text-muted"> {{ $membership->date_of_birth }}</p>
                             <hr>
