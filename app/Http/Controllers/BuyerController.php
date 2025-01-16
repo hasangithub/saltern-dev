@@ -22,14 +22,14 @@ class BuyerController extends Controller
     {
         // Validate the form data
         $request->validate([
-            'business_name' => 'nullable|string|max:255',
+            'business_name' => 'required|string|max:255',
             'business_registration_number' => 'nullable|string|max:50',
             'full_name' => 'required|string|max:255',
             'credit_limit' => 'required|numeric|min:0',
             'service_out' => 'boolean',
             'address_1' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
-            'secondary_phone_number' => 'nullable|string|max:20',
+            'secondary_phone_number' => 'required|string|max:20',
             'whatsapp_number' => 'nullable|string|max:20',
         ]);
 

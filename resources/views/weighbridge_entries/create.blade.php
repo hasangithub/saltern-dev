@@ -84,17 +84,17 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="initial_weight">First Weight</label>
-                                    <input type="number" step="0.01" name="initial_weight" id="initial_weight"
+                                    <input type="number" step="1" name="initial_weight" id="initial_weight"
                                         class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="initial_weight">Second Weight</label>
-                                    <input type="number" step="0.01" name="tare_weight" id="tare_weight"
+                                    <input type="number" step="1" name="tare_weight" id="tare_weight"
                                         class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="initial_weight">Net Weight</label>
-                                    <input type="number" step="0.01" name="net_weight" id="net_weight"
+                                    <input type="number" step="1" name="net_weight" id="net_weight"
                                         class="form-control" readonly>
                                 </div>
                                 <div class="form-group">
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const serviceCharge = bags * SERVICE_CHARGE_RATE;
             
 
-            netWeightInput.value = netWeight.toFixed(2); // Display net weight
+            netWeightInput.value = netWeight; // Display net weight
             serviceChargeInput.value = serviceCharge.toFixed(2); // Display service charge
             bagsInput.value = bags.toFixed(2);
 

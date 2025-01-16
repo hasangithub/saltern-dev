@@ -43,20 +43,20 @@
                                 <div class="form-group">
                                     <label for="business_name">Business Name:</label>
                                     <input type="text" name="business_name" id="business_name" class="form-control"
-                                        value="{{ old('business_name', $buyer->business_name ?? '') }}">
+                                        value="{{ old('business_name') }}" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="business_registration_number">Business Registration Number:</label>
                                     <input type="text" name="business_registration_number"
                                         id="business_registration_number" class="form-control"
-                                        value="{{ old('business_registration_number', $buyer->business_registration_number ?? '') }}">
+                                        value="{{ old('business_registration_number') }}">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="full_name">Contact Full Name</label>
+                                    <label for="full_name">Buyer Full Name</label>
                                     <input type="text" class="form-control" id="full_name" name="full_name"
-                                        placeholder="">
+                                        placeholder="" required>
                                 </div>
 
                                 <div class="form-group">
@@ -67,7 +67,8 @@
 
                                 <div class="form-group">
                                     <label for="service_out">Service Out</label>
-                                    <input type="checkbox" id="service_out" name="service_out">
+                                    <input type="hidden" name="service_out" value="false">
+                                    <input type="checkbox" id="service_out" name="service_out" value="true">
                                 </div>
                             </div>
 
@@ -88,13 +89,13 @@
                                     <label for="secondary_phone_number">Secondary Phone Number</label>
                                     <input type="text" name="secondary_phone_number" id="secondary_phone_number"
                                         class="form-control"
-                                        value="{{ old('secondary_phone_number') }}">
+                                        value="{{ old('secondary_phone_number') }}" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="whatsapp_number">Whatsapp Number</label>
                                     <input type="text" name="whatsapp_number" id="whatsapp_number" class="form-control"
-                                        value="{{ old('whatsapp_number') }}" required>
+                                        value="{{ old('whatsapp_number') }}">
                                 </div>
 
 
