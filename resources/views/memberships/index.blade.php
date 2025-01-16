@@ -32,7 +32,7 @@
                                     <th>ID</th>
                                     <th>Membership No</th>
                                     <th>Yahai</th>
-                                    <th>Saltern</th>
+                                    <th>Waikal</th>
                                     <th>Side</th>
                                     <th>Owner</th>
                                     <th>Address</th>
