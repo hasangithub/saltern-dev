@@ -44,14 +44,14 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="yahai_id" class="form-label">Select Yahai</label>
-                                    <select id="yahai_id" name="yahai_id" class="form-control" required>
+                                    <select id="yahai_id" name="yahai_id" class="form-control select2" required>
                                         <option value="">-- Select Yahai --</option>
                                     </select>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="saltern_id" class="form-label">Select Saltern</label>
-                                    <select id="saltern_id" name="saltern_id" class="form-control" required>
+                                    <select id="saltern_id" name="saltern_id" class="form-control select2" required>
                                         <option value="">-- Select Saltern --</option>
                                     </select>
                                 </div>
