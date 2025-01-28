@@ -20,7 +20,7 @@ class ProductionController extends Controller
             $query->where('membership_id', $request->saltern_id);
         }
 
-        if ($request->has('start_date') && $request->has('end_date')) {
+        if ($request->has('start_date') && $request->has('end_date') && !is_null($request->start_date) && $request->start_date !== ''  && !is_null($request->end_date) && $request->end_date !== '') {
             $query->whereBetween('created_at', [
                 $request->start_date,
                 $request->end_date,
