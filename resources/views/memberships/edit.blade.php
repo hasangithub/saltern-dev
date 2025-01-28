@@ -113,7 +113,7 @@
                                     <select name="representative[relationship]" class="form-control" required>
                                         @foreach(\App\Enums\RelationshipType::cases() as $case)
                                         <option value="{{ $case->value }}"
-                                            {{ $owner->relationship->value === $case->value ? 'selected' : '' }}>
+                                            {{ $membership->representative->relationship === $case->value ? 'selected' : '' }}>
                                             {{ $case->name }}
                                         </option>
                                         @endforeach
