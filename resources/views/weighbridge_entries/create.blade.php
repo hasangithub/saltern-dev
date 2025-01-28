@@ -58,6 +58,14 @@
                                         <option value="">-- Select Saltern --</option>
                                     </select>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="culture" class="form-label">Select Culture</label>
+                                    <select id="culture" name="culture" class="form-control" required>
+                                        <option value="">-- Select culture --</option>
+                                        <option value="yala">Yala</option>
+                                        <option value="maha">Maha</option>
+                                    </select>
+                                </div>
                                 <div class="form-group">
                                     <label for="owner_full_name">Owner</label>
                                     <input type="text" name="membership_name" id="membership_name" class="form-control"

@@ -16,6 +16,7 @@ use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\OtherIncomeController;
 use App\Http\Controllers\OwnerLoanController;
 use App\Http\Controllers\OwnerLoanRepaymentController;
+use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\SubAccountGroupController;
 use App\Http\Controllers\SubLedgerController;
 use App\Http\Controllers\VoucherController;
@@ -30,6 +31,7 @@ Route::get('/test', function () {
 Route::resource('owners', OwnerController::class);
 Route::resource('buyers', BuyerController::class);
 Route::resource('memberships', MembershipController::class);
+Route::resource('productions', ProductionController::class);
 
 Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
 Route::get('/weighbridge/entries/create', [WeighbridgeEntryController::class, 'create'])->name('weighbridge_entries.create');
@@ -69,6 +71,8 @@ Route::post('loan-requests', [OwnerLoanController::class, 'store'])->name('loan-
 Route::get('loan-requests/{loan_request}', [OwnerLoanController::class, 'show'])->name('loan-requests.show');  // View a specific loan request
 Route::resource('other_incomes', OtherIncomeController::class);
 Route::resource('expenses', ExpenseController::class);
+Route::get('my-loans', [OwnerLoanController::class, 'myLoans'])->name('owner.my-loans.index');
+Route::get('my-loans/{id}', [OwnerLoanController::class, 'showMyLoan'])->name('owner.my-loans.show');
 
 Route::get('wizard/', [MembershipController::class, 'wizard'])->name('membership.wizard');
 Route::get('/api/salterns/{yahaiId}', [SalternController::class, 'getByYahai'])->name('api.salterns');

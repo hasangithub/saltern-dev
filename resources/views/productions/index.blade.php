@@ -2,9 +2,10 @@
 
 {{-- Customize layout sections --}}
 
-@section('subtitle', 'Welcome')
-@section('content_header_title', 'My Loans')
-@section('content_header_subtitle', 'My Loans')
+@section('subtitle', 'Yahai')
+@section('content_header_title', 'Productions')
+@section('content_header_subtitle', 'Welcome')
+@section('plugins.Datatables', true)
 
 {{-- Content body: main page content --}}
 
@@ -14,7 +15,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form method="GET" action="{{ route('owner.my-loans.index') }}">
+                    <form method="GET" action="{{ route('productions.index') }}">
                         <div class="row">
                             <!-- Saltern Dropdown -->
                             <div class="col-md-4">
@@ -29,6 +30,16 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" id="start_date" name="start_date" class="form-control"
+                                    value="{{ request('start_date') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" id="end_date" name="end_date" class="form-control"
+                                    value="{{ request('end_date') }}">
+                            </div>
                             <!-- Submit Button -->
                             <div class="col-md-6 d-flex align-items-end mt-1">
                                 <button type="submit" class="btn btn-primary">Filter</button>
@@ -40,50 +51,39 @@
         </div>
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Loans</h3>
+                <div class="card-header">
+                    <h3 class="card-title">Production Details</h3>
                 </div>
-
                 <div class="card-body">
-                    @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                    @endif
                     <div class="table-responsive">
-                        <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
+                        <table id="weighbridgeTable" class="table table-sm" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Name</th>
-                                    <th>Requested Amount</th>
-                                    <th>Approved Amount</th>
-                                    <th>Outstanding</th>
-                                    <th>Status</th>
-                                    <th></th>
+                                    <th>Buyer</th>
+                                    <th>Culture</th>
+                                    <th>NetWeight</th>
+                                    <th>Bags</th>
+                                    <th>Service Charge (100%)</th>
+                                    <th>Accumulated(30%)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($loans as $loan)
+                                @foreach($productions as $entry)
                                 <tr>
-                                    <td>{{ $loan->created_at }}</td>
-                                    <td>{{ $loan->membership->owner->full_name }}</td>
-                                    <td>{{ $loan->requested_amount }}</td>
-                                    <td>{{ $loan->approved_amount }}</td>
-                                    <td>{{ $loan->approved_amount - $loan->ownerLoanRepayment->sum('amount') }}</td>
-                                    <td>{{ $loan->status }}</td>
-                                    <td><a href="{{ route('owner.my-loans.show', $loan->id) }}"
-                                            class="btn btn-default btn-xs">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
-                                    </td>
+                                    <td>{{ $entry->transaction_date }}</td>
+                                    <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
+                                    <td>{{ $entry->culture ?? 'N/A' }}</td>
+                                    <td>{{ $entry->net_weight }}</td>
+                                    <td>{{ $entry->bags_count }}</td>
+                                    <td>{{ $entry->total_amount }}</td>
+                                    <td>{{ $entry->total_amount * 0.3 }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -102,7 +102,7 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#membershipsTable').DataTable();
+    $('#weighbridgeTable').DataTable();
 });
 </script>
 @endpush

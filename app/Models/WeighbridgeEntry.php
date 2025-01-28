@@ -8,6 +8,7 @@ class WeighbridgeEntry extends Model
 {
     protected $fillable = [
         'vehicle_id',
+        'culture',
         'initial_weight',
         'tare_weight',
         'transaction_date',

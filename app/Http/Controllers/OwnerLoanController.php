@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
+use App\Models\Owner;
 use App\Models\OwnerLoan;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,32 @@ class OwnerLoanController extends Controller
     {
         $ownerLoans = OwnerLoan::all();
         return view('owner_loans_admin.index', compact('ownerLoans'));
+    }
+
+    public function myLoans(Request $request) {
+        // Get the logged-in owner
+      //  $owner = Auth::guard('owner')->user();
+      $salterns = Membership::where('owner_id', 2)->get();
+      $owner = Owner::findOrFail(2);
+
+      
+    
+      if ($request->has('saltern_id') && !is_null($request->saltern_id) && $request->saltern_id !== '') {
+        $loans = OwnerLoan::with('membership')
+        ->whereHas('membership', function ($query) use ($request) {
+            $query->where('membership_id', $request->saltern_id);
+        })
+        ->get();
+      } else {
+        $loans = OwnerLoan::with('membership')
+        ->whereHas('membership', function ($query) use ($owner) {
+            $query->where('owner_id', $owner->id);
+        })
+        ->get();
+      }
+
+        // Return view with loans
+        return view('owner_loans.index', compact('loans', 'salterns'));
     }
 
     public function create()
@@ -38,6 +65,13 @@ class OwnerLoanController extends Controller
         $ownerLoan = OwnerLoan::findOrFail($id);
 
         return view('owner_loans_admin.show', compact('ownerLoan'));
+    }
+
+    public function showMyLoan($id)
+    {
+        $ownerLoan = OwnerLoan::with(['membership', 'ownerLoanRepayment'])->findOrFail($id);
+
+        return view('owner_loans.show', compact('ownerLoan'));
     }
 
     public function approve(Request $request, $id)
