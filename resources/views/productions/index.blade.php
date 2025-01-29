@@ -81,6 +81,17 @@
                                 </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Total</th>
+                                    <th id="sum_column_1">0</th>
+                                    <th id="sum_column_2">0</th>
+                                    <th id="sum_column_3">0</th>
+                                    <th id="sum_column_4">0</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -101,8 +112,57 @@
 
 @push('js')
 <script>
+// $(document).ready(function() {
+//     $('#weighbridgeTable').DataTable();
+// });
+
 $(document).ready(function() {
-    $('#weighbridgeTable').DataTable();
+    // Initialize DataTable
+    var table = $('#weighbridgeTable').DataTable();
+
+    // Function to update sum in footer
+    function updateFooterSum() {
+        var sum_column_1 = 0;
+        var sum_column_2 = 0;
+        var sum_column_3 = 0;
+        var sum_column_4 = 0;
+
+        // Make sure the table is initialized before accessing columns
+        if (table) {
+            // Loop through each row and sum the values for each column
+            table.column(3).data().each(function(value) {
+                sum_column_1 += parseFloat(value) || 0;
+            });
+
+            table.column(4).data().each(function(value) {
+                sum_column_2 += parseFloat(value) || 0;
+            });
+
+            table.column(5).data().each(function(value) {
+                sum_column_3 += parseFloat(value) || 0;
+            });
+
+            table.column(6).data().each(function(value) {
+                sum_column_4 += parseFloat(value) || 0;
+            });
+
+            // Update footer with the summed values
+            $('#sum_column_1').text((sum_column_1/1000).toFixed(2)+ " ton");
+            $('#sum_column_2').text(sum_column_2.toFixed(2));
+            $('#sum_column_3').text(sum_column_3.toFixed(2));
+            $('#sum_column_4').text(sum_column_4.toFixed(2));
+        } else {
+            console.log("DataTable not initialized properly.");
+        }
+    }
+
+    // Trigger the footer sum update when table is drawn
+    table.on('draw', function() {
+        updateFooterSum();
+    });
+
+    // Trigger the draw event once to load the initial sums
+    table.draw();
 });
 </script>
 @endpush
