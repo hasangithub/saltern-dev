@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class OwnerLoan extends Model
 {
@@ -16,5 +17,10 @@ class OwnerLoan extends Model
     public function ownerLoanRepayment()
     {
         return $this->hasMany(OwnerLoanRepayment::class);
+    }
+ 
+    public function getFormattedDateAttribute()
+    {
+        return Carbon::parse($this->created_at)->format('Y-m-d');
     }
 }

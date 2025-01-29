@@ -51,7 +51,8 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
+                        <table id="membershipsTable" class="table table-sm table-bordered table-hover"
+                            style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -66,12 +67,17 @@
                             <tbody>
                                 @foreach($loans as $loan)
                                 <tr>
-                                    <td>{{ $loan->created_at }}</td>
+                                    <td>{{ $loan->formatted_date  }}</td>
                                     <td>{{ $loan->membership->owner->full_name }}</td>
                                     <td>{{ $loan->requested_amount }}</td>
                                     <td>{{ $loan->approved_amount }}</td>
-                                    <td>{{ $loan->approved_amount - $loan->ownerLoanRepayment->sum('amount') }}</td>
-                                    <td>{{ $loan->status }}</td>
+                                    <td>{{ number_format($loan->approved_amount - $loan->ownerLoanRepayment->sum('amount') ?: 0, 2) }}</td>
+                                    <td>@if($loan->status == 'approved')
+                                        <span class="badge bg-success">Approved</span>
+                                        @else
+                                        <span class="badge bg-secondary">{{ ucfirst($loan->status) }}</span>
+                                        @endif
+                                    </td>
                                     <td><a href="{{ route('owner.my-loans.show', $loan->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
