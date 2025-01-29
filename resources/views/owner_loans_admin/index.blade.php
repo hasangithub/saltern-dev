@@ -24,7 +24,7 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
+                        <table id="membershipsTable" class="table table-sm table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -39,11 +39,11 @@
                             <tbody>
                                 @foreach($ownerLoans as $ownerLoan)
                                 <tr>
-                                    <td>{{ $ownerLoan->created_at }}</td>
+                                    <td>{{ $ownerLoan->formatted_date }}</td>
                                     <td>{{ $ownerLoan->membership->owner->full_name }}</td>
                                     <td>{{ $ownerLoan->requested_amount }}</td>
                                     <td>{{ $ownerLoan->approved_amount }}</td>
-                                    <td>{{ $ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount') }}</td>
+                                    <td>{{ number_format($ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount') ?: 0, 2) }}</td>
                                     <td>{{ $ownerLoan->status }}</td>
                                     <td><a href="{{ route('owner-loans.show', $ownerLoan->id) }}"
                                             class="btn btn-default btn-xs">

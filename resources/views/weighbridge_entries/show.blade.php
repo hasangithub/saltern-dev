@@ -73,6 +73,8 @@
                             <hr>
                             <strong>Yahai</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->membership->saltern->yahai->name }}</p>
+                            <strong>Culture</strong>
+                            <p class="text-muted"> {{ $weighbridgeEntry->culture }}</p>
                         </div>
                     </div>
                     @if (empty($weighbridgeEntry->tare_weight))
