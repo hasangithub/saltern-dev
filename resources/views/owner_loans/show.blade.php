@@ -30,6 +30,9 @@
                             <strong>Approved Amount</strong>
                             <p class="text-muted"> {{ $ownerLoan->approved_amount }}</p>
                             <hr>
+                            <strong>Balance</strong>
+                            <p class="text-muted"> {{ $ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount') }}</p>
+                            <hr>
                             <strong>Status</strong><br>
                             <span
                                 class="badge {{ $ownerLoan->status === 'approved' ? 'badge-success' : 'badge-danger' }}">
