@@ -37,7 +37,7 @@
                                     <select class="form-control" name="membership_id" id="membership_id" required>
                                         <option value="">Select Membership</option>
                                         @foreach($memberships as $membership)
-                                        <option value="{{ $membership->id }}">{{ $membership->saltern->name }}</option>
+                                        <option value="{{ $membership->id }}">{{ $membership->saltern->yahai->name." - ".$membership->saltern->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
