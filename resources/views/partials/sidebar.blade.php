@@ -36,7 +36,7 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
-                            Waikal Registartion 
+                            Waikal Registartion
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -109,12 +109,6 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('owner-loans.create') }}" class="nav-link">
-                                <i class="nav-icon fas fa-water"></i>
-                                <p>Request Loan</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="{{ route('owner-loans.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>Owner Loan Management</p>
@@ -155,6 +149,10 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="{{ route('owner-loans.create') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Request Loan</p>
+                            </a>
                             <a href="{{ route('owner.my-loans.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>My Loans</p>
