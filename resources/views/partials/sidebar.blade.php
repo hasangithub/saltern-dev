@@ -52,7 +52,7 @@
                         <li class="nav-item">
                             <a href="{{ route('saltern.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
-                                <p>Waikal List</p>
+                                <p>Waikal No</p>
                             </a>
                         </li>
                         <!-- Owners -->
@@ -75,7 +75,7 @@
                 <li class="nav-item">
                     <a href="{{ route('buyers.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Buyers</p>
+                        <p>Vendors</p>
                     </a>
                 </li>
 
