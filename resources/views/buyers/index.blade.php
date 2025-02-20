@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Buyers')
+@section('content_header_title', 'Vendors')
 @section('content_header_subtitle', 'Welcome')
 
 
