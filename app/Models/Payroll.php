@@ -17,6 +17,9 @@ class Payroll extends Model
         'no_pay_days',
         'basic_salary',
         'net_salary',
+        'epf_employee',
+        'epf_employer',
+        'etf',
     ];
 
     public function user()

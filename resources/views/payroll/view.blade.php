@@ -30,7 +30,9 @@
                             <tr>
                                 <th>Employee</th>
                                 <th>Basic Salary</th>
-                                <th>Deductions</th>
+                                <th>EPF 8%</th>
+                                <th>EPF 12%</th>
+                                <th>ETF 3%</th>
                                 <th>Net Salary</th>
                             </tr>
                         </thead>
@@ -39,10 +41,20 @@
                             <tr>
                                 <td>{{ $pay->user->name }}</td>
                                 <td>{{ number_format($pay->basic_salary, 2) }}</td>
-                                <td>{{ number_format($pay->deductions, 2) }}</td>
+                                <td>{{ number_format($pay->epf_employee, 2) }}</td>
+                                <td>{{ number_format($pay->epf_employer, 2) }}</td>
+                                <td>{{ number_format($pay->etf, 2) }}</td>
                                 <td>{{ number_format($pay->net_salary, 2) }}</td>
                             </tr>
                             @endforeach
+                            <tr style="font-weight: bold; background-color: #f8f9fa;">
+                                <td>Total</td>
+                                <td>{{ number_format($totals['basic_salary'], 2) }}</td>
+                                <td>{{ number_format($totals['epf_employee'], 2) }}</td>
+                                <td>{{ number_format($totals['epf_employer'], 2) }}</td>
+                                <td>{{ number_format($totals['etf'], 2) }}</td>
+                                <td>{{ number_format($totals['net_salary'], 2) }}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

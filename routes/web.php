@@ -46,6 +46,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('staff/complaints/{complaint}', [StaffComplaintController::class, 'show'])->name('staff.complaints.show');
     Route::post('staff/complaints/{complaint}/assign', [StaffComplaintController::class, 'assign'])->name('staff.complaints.assign');
     Route::post('staff/complaints/{complaint}/reply', [StaffComplaintController::class, 'reply'])->name('staff.complaints.reply');
+    Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
+    Route::post('/payroll/generate', [PayrollController::class, 'generateCurrentMonth'])->name('payroll.generate');
+    Route::get('/payroll/view', [PayrollController::class, 'view'])->name('payroll.view');
+
+    Route::get('/attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
+    Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
 });
 
 
@@ -153,9 +159,3 @@ Route::get('/leave/approve/{id}', [LeaveController::class, 'approveLeave'])->nam
 Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
 Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
 
-Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
-Route::post('/payroll/generate', [PayrollController::class, 'generateCurrentMonth'])->name('payroll.generate');
-Route::get('/payroll/view', [PayrollController::class, 'view'])->name('payroll.view');
-
-Route::get('/attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
-Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
