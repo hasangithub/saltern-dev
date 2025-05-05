@@ -32,9 +32,13 @@
                                     <input type="text" name="serial" id="serial" class="form-control"
                                         value="{{$nextSerialNo}}">
                                 </div>
-                                <div class="form-group">
-                                    <label for="turn">Turn Number</label>
-                                    <input type="number" name="turn" id="turn" class="form-control" value="">
+                                <div class="mb-3">
+                                    <label for="culture" class="form-label">Select Culture</label>
+                                    <select id="culture" name="culture" class="form-control" required>
+                                        <option value="">-- Select culture --</option>
+                                        <option value="yala">Yala</option>
+                                        <option value="maha">Maha</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="side_id" class="form-label">Select Side</label>
@@ -53,17 +57,9 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="saltern_id" class="form-label">Select Saltern</label>
+                                    <label for="saltern_id" class="form-label">Select Waikal No</label>
                                     <select id="saltern_id" name="saltern_id" class="form-control" required>
-                                        <option value="">-- Select Saltern --</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="culture" class="form-label">Select Culture</label>
-                                    <select id="culture" name="culture" class="form-control" required>
-                                        <option value="">-- Select culture --</option>
-                                        <option value="yala">Yala</option>
-                                        <option value="maha">Maha</option>
+                                        <option value="">-- Select Waikal No --</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -91,6 +87,10 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label for="turn">Turn Number</label>
+                                    <input type="number" name="turn" id="turn" class="form-control" value="">
+                                </div>
+                                <div class="form-group">
                                     <label for="initial_weight">First Weight</label>
                                     <input type="number" step="1" name="initial_weight" id="initial_weight"
                                         class="form-control" required>
@@ -102,8 +102,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="initial_weight">Net Weight</label>
-                                    <input type="number" step="1" name="net_weight" id="net_weight"
-                                        class="form-control" readonly>
+                                    <input type="number" step="1" name="net_weight" id="net_weight" class="form-control"
+                                        readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="bags">Bags</label>
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const netWeight = tareWeight - initialWeight;
             const bags = netWeight / 50;
             const serviceCharge = bags * SERVICE_CHARGE_RATE;
-            
+
 
             netWeightInput.value = netWeight; // Display net weight
             serviceChargeInput.value = serviceCharge.toFixed(2); // Display service charge

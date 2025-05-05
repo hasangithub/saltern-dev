@@ -9,7 +9,10 @@ use App\Models\Saltern;
 use App\Models\Side;
 use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
+use App\Models\OwnerLoan;
+use App\Models\ownerLoanRepayment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WeighbridgeEntryController extends Controller
 {
@@ -82,6 +85,47 @@ class WeighbridgeEntryController extends Controller
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
         $data['bag_price'] = 50;
         $data['status'] = 'approved';
+
+        $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
+
+        // Calculate number of bags (assuming each bag is 50kg)
+        $bags = $netWeight / 50;
+    
+        // Calculate service charge
+        $serviceCharge = $bags * 50;
+
+        $loans = OwnerLoan::where('membership_id', $request->membership_id)
+        ->whereRaw('(approved_amount - (SELECT COALESCE(SUM(amount), 0) FROM owner_loan_repayments WHERE owner_loan_repayments.owner_loan_id = owner_loans.id)) > 0')
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+        if (!$loans->isEmpty()) {
+            DB::transaction(function () use ($loans, $serviceCharge) {
+                foreach ($loans as $loan) {
+                    if ($serviceCharge <= 0) {
+                        break; // Stop if service charge is fully deducted
+                    }
+        
+                     $outstanding = $loan->approved_amount - $loan->ownerLoanRepayment()->sum('amount');
+
+        
+                    if ($outstanding > 0) {
+                         $deduction = min($outstanding, $serviceCharge);
+        
+                        $repayment = OwnerLoanRepayment::create([
+                            'owner_loan_id' => $loan->id,
+                            'amount' => $deduction,
+                            'repayment_date' => now(),
+                            'payment_method' => 'Cash',
+                            'notes' => 'Loan Deducation Auto Mode',
+                        ]);
+        
+                        // Reduce service charge
+                        $serviceCharge -= $deduction;
+                    }
+                }
+            });
+        }
 
         WeighbridgeEntry::create($data);
 

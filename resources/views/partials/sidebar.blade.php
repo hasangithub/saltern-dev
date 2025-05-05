@@ -133,36 +133,39 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                   <a href="{{ route('staff.complaints.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Complaints</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                   <a href="{{ route('attendance.import') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Attendance Import</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                   <a href="{{ route('payroll.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Payroll</p>
+                    </a>
+                </li>
+
                 <!-- <li class="nav-item">
                     <a href="{{ route('expenses.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-weight"></i>
                         <p>Expense</p>
                     </a>
                 </li> -->
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>
-                            Owner Profile
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('owner-loans.create') }}" class="nav-link">
-                                <i class="nav-icon fas fa-water"></i>
-                                <p>Request Loan</p>
-                            </a>
-                            <a href="{{ route('owner.my-loans.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-water"></i>
-                                <p>My Loans</p>
-                            </a>
-                            <a href="{{ route('productions.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-water"></i>
-                                <p>Productions</p>
-                            </a>
-                        </li>
-                    </ul>
+                <li class="nav-item">
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="nav-link bg-danger text-white">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <p>Logout</p>
+                        </button>
+                    </form>
                 </li>
             </ul>
         </nav>

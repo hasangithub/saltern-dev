@@ -1,4 +1,3 @@
-<!-- resources/views/layouts/app.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- DataTables CSS with Bootstrap 4 integration -->
-     
+
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
 
 
@@ -19,56 +18,52 @@
     <!-- For additional styles -->
 </head>
 
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
-
-        <!-- Navbar -->
-        @include('partials.navbar')
-
-        <!-- Main Sidebar Container -->
-        @if(auth()->guard('owner')->check())
-            @include('partials.sidebar-owners')
-        @elseif(auth()->guard('web')->check())
-            @include('partials.sidebar')
-        @endif
-
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1 class="m-0">@yield('content_header_title', 'Saltern')</h1>
-                        </div><!-- /.col -->
-                    </div><!-- /.row -->
-                </div><!-- /.container-fluid -->
-            </section>
-
-            <!-- Main content -->
-            <section class="content">
-                @yield('content_body')
-                <!-- Main content -->
-            </section>
-            <!-- /.content -->
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="../../index2.html"><b>Admin</b>Login</a>
         </div>
-        <!-- /.content-wrapper -->
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Sign in to start your session</p>
+                @if($errors->any())
+                <div style="color: red">{{ $errors->first() }}</div>
+                @endif
+                <form method="POST" action="{{ url('/login') }}">
+                    @csrf
+                    <div class="input-group mb-3">
+                        <input type="email" name="email" class="form-control" placeholder="Email">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="password" name="password" class="form-control" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
 
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
-            <div class="p-3">
-                <h5>Title</h5>
-                <p>Sidebar content</p>
+                <p class="mb-1">
+                    <a href="forgot-password.html">I forgot my password</a>
+                </p>
             </div>
-        </aside>
-        <!-- /.control-sidebar -->
-
-        <!-- Footer -->
-        @include('partials.footer')
+            <!-- /.login-card-body -->
+        </div>
     </div>
-    <!-- ./wrapper -->
+    <!-- /.login-box -->
 
     <!-- jQuery -->
     <script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
@@ -98,11 +93,11 @@
     if (currentLink.length > 0) { //this filter because some links are not from menu
         currentLink[0].classList.add("active");
         currentLink[0].closest(".nav-treeview").style.display = "block";
-        
+
         if (currentLink[0].closest(".has-treeview"))
             currentLink[0].closest(".has-treeview").classList.add("active");
     }
-</script>
+    </script>
 
 
     @stack('js')
