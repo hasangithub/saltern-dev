@@ -34,7 +34,8 @@ class StoreOwnerRequest extends FormRequest
             'nic' => 'required|string|max:20|unique:owners', 
             'phone_number' => 'required|string|max:15', 
             'whatsapp_number' => 'nullable|string|max:15', 
-            'email' => 'required|email|unique:owners', 
+            'email' => 'required|email|unique:owners',
+            'password' => 'required', 
             'address_line_1' => 'required|string|max:255', 
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
         ];

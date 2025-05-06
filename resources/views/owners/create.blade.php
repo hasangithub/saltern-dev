@@ -88,7 +88,11 @@
                                     <input type="email" name="email" id="email" class="form-control"
                                         value="{{ old('email') }}">
                                 </div>
-
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" name="password" id="password" class="form-control"
+                                        value="{{ old('password') }}">
+                                </div>
                                 <!-- Address Line 1 -->
                                 <div class="form-group">
                                     <label for="address_line_1">Address Line 1</label>

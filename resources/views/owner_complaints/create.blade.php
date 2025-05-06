@@ -32,7 +32,7 @@
                         @csrf
                         <div id="text-complaint">
                             <label for="complaint_text">Complaint Text</label>
-                            <textarea name="complaint_text" id="complaint_text" class="form-control"></textarea>
+                            <textarea name="complaint_text" id="complaint_text" class="form-control" required></textarea>
                         </div>
                         <br>
                         <div id="voice-complaint">

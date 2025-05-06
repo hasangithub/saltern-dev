@@ -17,9 +17,9 @@ class OwnerLoanController extends Controller
 
     public function myLoans(Request $request) {
         // Get the logged-in owner
-      //  $owner = Auth::guard('owner')->user();
-      $salterns = Membership::where('owner_id', 2)->get();
-      $owner = Owner::findOrFail(2);
+      $ownerId =auth('owner')->id(); 
+      $salterns = Membership::where('owner_id', $ownerId)->get();
+      $owner = Owner::findOrFail($ownerId);
 
       
     
@@ -43,7 +43,8 @@ class OwnerLoanController extends Controller
 
     public function create()
     {
-        $memberships = Membership::all();
+        $ownerId = auth('owner')->id(); 
+        $memberships = Membership::where('owner_id', $ownerId)->get();
         return view('owner_loans.create', compact('memberships'));
     }
 

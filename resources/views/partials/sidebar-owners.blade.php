@@ -36,7 +36,7 @@
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>Productions</p>
                             </a>
-                            <a href="{{ route('owner.complaints.create') }}" class="nav-link">
+                            <a href="{{ route('owner.complaints.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>Complaints</p>
                             </a>

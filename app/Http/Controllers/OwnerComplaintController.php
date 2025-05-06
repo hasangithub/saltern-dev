@@ -59,8 +59,12 @@ class OwnerComplaintController extends Controller
      */
     public function index()
     {
-        // Fetch all complaints with their associated owner
-        $complaints = OwnerComplaint::with('owner')->latest()->get();
+        $ownerId = auth('owner')->id(); 
+
+$complaints = OwnerComplaint::with('owner')
+    ->where('owner_id', $ownerId)
+    ->latest()
+    ->get();
         return view('owner_complaints.index', compact('complaints'));
     }
 }

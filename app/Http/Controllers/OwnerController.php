@@ -8,6 +8,7 @@ use App\Enums\CivilStatus;
 use App\Enums\Gender;
 use App\Http\Requests\StoreOwnerRequest;
 use App\Http\Requests\UpdateOwnerRequest;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class OwnerController extends Controller
@@ -28,7 +29,9 @@ class OwnerController extends Controller
 
     public function store(StoreOwnerRequest $request)
     {
-        $owner = Owner::create($request->validated());
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+        $owner = Owner::create($data);
 
         if ($owner) {
             if ($request->hasFile('profile_picture')) {

@@ -16,7 +16,8 @@ class OwnerLoanRequestController extends Controller
 
     public function create()
     {
-        $memberships = Membership::all();
+        $ownerId = auth('owner')->id(); 
+        $memberships = Membership::where('owner_id', $ownerId)->get();
         return view('owner_loans.create', compact('memberships'));
     }
 

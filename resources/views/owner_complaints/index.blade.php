@@ -22,6 +22,8 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Complaints</h3>
+                    <a href="{{ route('owner.complaints.create') }}" class="btn btn-success ml-auto"> <i
+                    class="fas fa-plus"></i> Create Complaints</a>
                 </div>
 
                 <div class="card-body">
@@ -39,6 +41,7 @@
                                         <th>Type</th>
                                         <th>Complaint</th>
                                         <th>Voice File</th>
+                                        <th>Status</th>
                                         <th>Created At</th>
                                     </tr>
                                 </thead>
@@ -59,6 +62,7 @@
                                             N/A
                                             @endif
                                         </td>
+                                        <td>{{ $complaint->status }}</td>
                                         <td>{{ $complaint->created_at }}</td>
                                     </tr>
                                     @endforeach

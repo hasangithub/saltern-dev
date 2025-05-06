@@ -10,11 +10,11 @@ class ProductionController extends Controller
 {
     public function index(Request $request)
     {
-        //$ownerId = auth()->user()->id; // Assuming owner authentication is used
-        $salterns = Membership::where('owner_id', 2)->get();
+        $ownerId =auth('owner')->id(); 
+        $salterns = Membership::where('owner_id', $ownerId)->get();
     
         // Apply filtering if a saltern_id is selected
-        $query = WeighbridgeEntry::with(['owner', 'membership'])->where('owner_id', 2);
+        $query = WeighbridgeEntry::with(['owner', 'membership'])->where('owner_id', $ownerId);
     
         if ($request->filled('saltern_id')) {
             $query->where('membership_id', $request->saltern_id);

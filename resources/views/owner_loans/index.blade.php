@@ -57,6 +57,7 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Name</th>
+                                    <th>Waikal</th>
                                     <th>Requested Amount</th>
                                     <th>Approved Amount</th>
                                     <th>Outstanding</th>
@@ -69,6 +70,7 @@
                                 <tr>
                                     <td>{{ $loan->formatted_date  }}</td>
                                     <td>{{ $loan->membership->owner->full_name }}</td>
+                                    <td>{{ $loan->membership->saltern->yahai->side->name." ".$loan->membership->saltern->yahai->name." - ".$loan->membership->saltern->name }}</td>
                                     <td>{{ $loan->requested_amount }}</td>
                                     <td>{{ $loan->approved_amount }}</td>
                                     <td>{{ number_format($loan->approved_amount - $loan->ownerLoanRepayment->sum('amount') ?: 0, 2) }}</td>

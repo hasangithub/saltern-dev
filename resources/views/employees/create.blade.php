@@ -33,20 +33,27 @@
         </div>
         @endif
         @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
         @endif
         <form action="{{ route('employees.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="user_id">User</label>
-                <select class="form-control" id="user_id" name="user_id" required>
-                    <option value="">Select User</option>
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
-                </select>
+                <label for="person_id" class="form-label">Person ID</label>
+                <input type="text" class="form-control" id="person_id" name="person_id" value="{{ old('person_id') }}" required>
+            </div>
+            <div class="form-group">
+                <label for="full_name">Name</label>
+                <input type="text" name="full_name" id="full_name" class="form-control" value="{{ old('full_name') }}">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" value="{{ old('password') }}">
             </div>
             <div class="form-group">
                 <label for="designation">Designation</label>
