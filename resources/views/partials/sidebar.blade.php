@@ -114,6 +114,12 @@
                                 <p>Owner Loan Management</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.staff-loans.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Staff Loan Management</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item has-treeview">

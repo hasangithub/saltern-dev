@@ -28,20 +28,10 @@
                         </ul>
                     </div>
                     @endif
-                    <form method="POST" action="{{ route('owner-loans.store') }}" autocomplete="off">
+                    <form method="POST" action="{{ route('staff-loans.store') }}" autocomplete="off">
                         @csrf
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="saltern_id">Membership</label>
-                                    <select class="form-control" name="membership_id" id="membership_id" required>
-                                        <option value="">Select Membership</option>
-                                        @foreach($memberships as $membership)
-                                        <option value="{{ $membership->id }}">{{ $membership->saltern->yahai->name." - ".$membership->saltern->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
                                 <div class="mb-3">
                                     <label for="requested_amount" class="form-label">Loan Amount</label>
                                     <input type="number" name="requested_amount" id="requested_amount" class="form-control"

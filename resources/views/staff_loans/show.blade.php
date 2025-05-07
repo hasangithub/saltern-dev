@@ -31,27 +31,12 @@
                             <p class="text-muted"> {{ $ownerLoan->approved_amount }}</p>
                             <hr>
                             <strong>Balance</strong>
-                            <p class="text-muted"> {{ $ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount') }}</p>
+                            <p class="text-muted"> {{ $ownerLoan->approved_amount - $ownerLoan->staffLoanRepayment->sum('amount') }}</p>
                             <hr>
                             <strong>Status</strong><br>
                             <span
                                 class="badge {{ $ownerLoan->status === 'approved' ? 'badge-success' : 'badge-danger' }}">
                                 {{ ucfirst($ownerLoan->status) }}
-                            </span>
-                        </div>
-                        <div class="col-md-4">
-                            <strong>Side</strong>
-                            <p class="text-muted">{{ $ownerLoan->membership->saltern->yahai->side->name }}</p>
-                            <hr>
-                            <strong>Yahai</strong>
-                            <p class="text-muted">{{ $ownerLoan->membership->saltern->yahai->name }}</p>
-                            <hr>
-                            <strong>Waikal</strong>
-                            <p class="text-muted"> {{ $ownerLoan->membership->saltern->name }}</p>
-                            <hr>
-                            <strong></strong><br>
-                            <span>
-                              
                             </span>
                         </div>
                     </div>
@@ -68,7 +53,7 @@
                     <h3 class="card-title">Repayment History</h3>
                 </div>
                 <div class="card-body">
-                    @if ($ownerLoan->ownerLoanRepayment->isEmpty())
+                    @if ($ownerLoan->staffLoanRepayment->isEmpty())
                     <p>No repayments made yet.</p>
                     @else
                     <div class="table-responsive">
@@ -82,7 +67,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($ownerLoan->ownerLoanRepayment as $repayment)
+                                @foreach ($ownerLoan->staffLoanRepayment as $repayment)
                                 <tr>
                                     <td>{{ $repayment->repayment_date }}</td>
                                     <td>{{ number_format($repayment->amount, 2) }}</td>

@@ -23,7 +23,12 @@
     <div class="wrapper">
 
         <!-- Navbar -->
-        @include('partials.navbar')
+        @if(auth()->guard('owner')->check())
+            @include('partials.navbar-owners')
+        @elseif(auth()->guard('web')->check())
+            @include('partials.navbar')
+        @endif
+       
 
         <!-- Main Sidebar Container -->
         @if(auth()->guard('owner')->check())

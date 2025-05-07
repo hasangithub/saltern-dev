@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Staff Loan')
+@section('content_header_title', 'Owner Loan')
 @section('content_header_subtitle', 'Welcome')
 @section('plugins.Datatables', true)
 
@@ -16,7 +16,7 @@
             <!-- Owner Details Card -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Staff Details</h3>
+                    <h3 class="card-title">Owner Details</h3>
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -36,18 +36,20 @@
                     <div class="row">
                         <div class="col-md-4">
                             <strong>Name</strong>
-                            <p class="text-muted">{{ $ownerLoan->user->name }}</p>
+                            <p class="text-muted">{{ $ownerLoan->membership->owner->full_name }}</p>
                             <hr>
                             <strong>Phone Number 1</strong>
-                            <p class="text-muted">{{ $ownerLoan->user->phone_number }}</p>
+                            <p class="text-muted">{{ $ownerLoan->membership->owner->phone_number }}</p>
                             <hr>
+                            <strong>Phone Number 2</strong>
+                            <p class="text-muted"> {{ $ownerLoan->membership->owner->secondary_phone_number }}</p>
                         </div>
                         <div class="col-md-4">
                             <strong>Email</strong>
-                            <p class="text-muted"> {{ $ownerLoan->user->email }}</p>
+                            <p class="text-muted"> {{ $ownerLoan->membership->owner->email }}</p>
                             <hr>
                             <strong>Address 1</strong>
-                            <p class="text-muted"> {{ $ownerLoan->user->address_line_1 }}</p>
+                            <p class="text-muted"> {{ $ownerLoan->membership->owner->address_line_1 }}</p>
                         </div>
                     </div>
                 </div>
@@ -98,7 +100,7 @@
 <div class="modal fade" id="approveLoanModal" tabindex="-1" aria-labelledby="approveLoanModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('admin.staff-loan.approve', $ownerLoan->id) }}" method="POST">
+            <form action="{{ route('owner-loan.approve', $ownerLoan->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-header">

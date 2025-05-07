@@ -133,7 +133,7 @@ Route::post('/sms/send', [SmsController::class, 'sendSms'])->name('sms.send');
 
 use App\Http\Controllers\StaffLoanRequestController;
 
-// Owner Loan Request Routes
+// Staff Loan Request Routes
 Route::prefix('staff-loans')->group(function () {
     // Show all loan requests
     Route::get('/', [StaffLoanRequestController::class, 'index'])->name('staff-loans.index');
@@ -143,9 +143,13 @@ Route::prefix('staff-loans')->group(function () {
 
     // Store a new loan request
     Route::post('/', [StaffLoanRequestController::class, 'store'])->name('staff-loans.store');
+
+    Route::get('my-loans/{id}', [StaffLoanRequestController::class, 'showMyLoan'])->name('staff.my-loans.show');
 });
 
+
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\StaffLoanController;
 
 Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
 Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
@@ -158,4 +162,15 @@ Route::post('/leave/request', [LeaveController::class, 'requestLeave'])->name('l
 Route::get('/leave/approve/{id}', [LeaveController::class, 'approveLeave'])->name('leave.approve');
 Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
 Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
+
+// Owner Loan Request Routes
+Route::prefix('admin/staff-loans')->group(function () {
+    // Show all loan requests
+    Route::get('/', [StaffLoanController::class, 'index'])->name('admin.staff-loans.index');
+
+    // Show the form to create a new loan request
+    Route::get('/{loanId}', [StaffLoanController::class, 'show'])->name('admin.staff-loans.show');
+
+    Route::put('/{loan_request}/approve', [StaffLoanController::class, 'approve'])->name('admin.staff-loan.approve');
+});
 

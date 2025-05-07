@@ -51,7 +51,7 @@
                     </form>
                     @endif
 
-                    @if (!$complaint->reply_text && $complaint->status == 'in_progress')
+                    @if (!$complaint->reply_text && $complaint->status == 'in_progress' && auth()->id() === $complaint->user_assigned)
                     <form method="POST" action="{{ route('staff.complaints.reply', $complaint) }}">
                         @csrf
                         <textarea name="reply_text" class="form-control" required></textarea>

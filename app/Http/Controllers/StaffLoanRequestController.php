@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\User;
 use App\Models\StaffLoan;
 use Illuminate\Http\Request;
@@ -10,26 +11,36 @@ class StaffLoanRequestController extends Controller
 {
     public function index()
     {
-        $ownerLoans = StaffLoan::all();
-        return view('staff_loans.index', compact('ownerLoans'));
+        $userId = auth('web')->id(); 
+       
+        $staffLoans = StaffLoan::where('user_id', $userId)->get();
+        return view('staff_loans.index', compact('staffLoans'));
     }
 
     public function create()
     {
-        $memberships = Membership::all();
-        return view('staff_loans.create', compact('memberships'));
+        return view('staff_loans.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'membership_id' => 'required|exists:memberships,id',
             'requested_amount' => 'required|numeric|min:1',
-            'reason' => 'nullable|string|max:255',
+            'purpose' => 'nullable|string|max:255',
         ]);
+        $userId = auth('web')->id();
 
-        OwnerLoan::create($validated);
+        $validated['user_id'] = $userId;
+
+        StaffLoan::create($validated);
 
         return redirect()->route('staff-loans.create')->with('success', 'Loan request submitted successfully.');
+    }
+
+    public function showMyLoan($id)
+    {
+        $ownerLoan = StaffLoan::with(['staffLoanRepayment'])->findOrFail($id);
+
+        return view('staff_loans.show', compact('ownerLoan'));
     }
 }
