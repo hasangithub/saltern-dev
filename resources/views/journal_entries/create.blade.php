@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Create Journal Entry')
+@section('content_header_title', 'Create Journal Entry1')
 @section('content_header_subtitle', 'Welcome')
 
 {{-- Content body: main page content --}}

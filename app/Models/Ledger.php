@@ -18,4 +18,9 @@ class Ledger extends Model
         return $this->hasMany(SubLedger::class);
     }
 
+    public function journalDetails()
+    {
+        return $this->hasMany(JournalDetail::class);
+    }
+
 }

@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Loans')
+@section('content_header_title', 'Owner Loans')
 @section('content_header_subtitle', 'Owner Loans')
 
 {{-- Content body: main page content --}}
@@ -14,7 +14,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Loans</h3>
+                    <h3 class="card-title">Owner Loans</h3>
                 </div>
 
                 <div class="card-body">

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buyer;
+use App\Models\JournalDetail;
+use App\Models\JournalEntry;
+use App\Models\Ledger;
 use App\Models\Membership;
 use App\Models\Owner;
 use App\Models\Saltern;
@@ -11,6 +14,7 @@ use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 use App\Models\OwnerLoan;
 use App\Models\ownerLoanRepayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -61,10 +65,11 @@ class WeighbridgeEntryController extends Controller
         $sides  = Side::all();
         $owners = Owner::all();
         $buyers = Buyer::all();
+        $ledgers = Ledger::all();
         $memberships = Membership::all();
         $nextSerialNo = WeighbridgeEntry::max('id') + 1;
 
-        return view('weighbridge_entries.create', compact('owners', 'buyers', 'memberships', 'nextSerialNo', 'sides'));
+        return view('weighbridge_entries.create', compact('owners', 'buyers', 'memberships', 'nextSerialNo', 'sides', 'ledgers'));
     }
 
     public function store(Request $request)
@@ -93,7 +98,7 @@ class WeighbridgeEntryController extends Controller
     
         // Calculate service charge
         $serviceCharge = $bags * 50;
-
+        $serviceChargeMain = $bags * 50;
         $loans = OwnerLoan::where('membership_id', $request->membership_id)
         ->whereRaw('(approved_amount - (SELECT COALESCE(SUM(amount), 0) FROM owner_loan_repayments WHERE owner_loan_repayments.owner_loan_id = owner_loans.id)) > 0')
         ->orderBy('created_at', 'asc')
@@ -128,6 +133,38 @@ class WeighbridgeEntryController extends Controller
         }
 
         WeighbridgeEntry::create($data);
+
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+            'description' => 'Service Charge Entry',
+        ]);
+
+        $details = [
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 10,  // e.g. Buyer
+                'debit_amount' => $serviceChargeMain,
+                'credit_amount' => null,
+                'description' => 'Service charge debited from buyer',
+            ],
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 151,  // e.g. ServiceCharge income
+                'debit_amount' => null,
+                'credit_amount' => round($serviceChargeMain * 0.70, 2),
+                'description' => 'Service charge income',
+            ],
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 176,  // e.g. Owner share
+                'debit_amount' => null,
+                'credit_amount' => round($serviceChargeMain * 0.30, 2),
+                'description' => 'Owner share of service charge',
+            ],
+        ];
+
+        // 3. Bulk insert details
+        JournalDetail::insert($details);
 
         return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
     }

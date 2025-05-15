@@ -174,3 +174,13 @@ Route::prefix('admin/staff-loans')->group(function () {
     Route::put('/{loan_request}/approve', [StaffLoanController::class, 'approve'])->name('admin.staff-loan.approve');
 });
 
+use App\Http\Controllers\ReportController;
+
+Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
+
+use App\Http\Controllers\AccountImportController;
+
+Route::get('/import-form', [AccountImportController::class, 'showForm'])->name('accounts.form');
+Route::post('/import-chart', [AccountImportController::class, 'import'])->name('accounts.import');
+
+

@@ -12,5 +12,10 @@ class SubLedger extends Model
     {
         return $this->belongsTo(Ledger::class);
     }
+
+    public function journalDetails()
+{
+    return $this->hasMany(JournalDetail::class);
+}
     
 }
