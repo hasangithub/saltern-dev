@@ -31,7 +31,6 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Ledger</th>
-                                    <th>SubLedger</th>
                                     <th>Debit Amount</th>
                                     <th>Credit Amount</th>
                                     <th>Description</th>
@@ -43,8 +42,7 @@
                                 @foreach($journalDetails as $journalDetail)
                                 <tr>
                                     <td>{{ $journalDetail->id }}</td>
-                                    <td>{{ $journalDetail->subLedger->ledger->name }}</td>
-                                    <td>{{ $journalDetail->subLedger->name }}</td>
+                                    <td>{{ $journalDetail->ledger->name }}</td>
                                     <td>{{ $journalDetail->debit_amount }}</td>
                                     <td>{{ $journalDetail->credit_amount }}</td>
                                     <td>{{ $journalDetail->description }}</td>
