@@ -13,7 +13,9 @@ class JournalEntryController extends Controller
 {
     public function index()
     {
-        $journalDetails = JournalDetail::all();
+        $journalDetails = JournalDetail::whereHas('journalEntry', function ($query) {
+            $query->where('is_reversal', 1);
+        })->get();
         return view('journal_entries.index', compact('journalDetails'));
     }
 
@@ -32,13 +34,25 @@ class JournalEntryController extends Controller
        
     // Validate the request
     $request->validate([
-        //'details' => 'required|array|size:2', // Require exactly 2 details
+        'details' => 'required|array|min:2',
         'details.*.debit' => 'nullable|numeric|min:0|required_without:details.*.credit',
         'details.*.credit' => 'nullable|numeric|min:0|required_without:details.*.debit',
     ], [
         'details.*.debit.required_without' => 'The debit field is required when credit is not filled.',
         'details.*.credit.required_without' => 'The credit field is required when debit is not filled.',
     ]);
+
+    $totalDebit = 0;
+$totalCredit = 0;
+
+foreach ($request->details as $detail) {
+    $totalDebit += floatval($detail['debit'] ?? 0);
+    $totalCredit += floatval($detail['credit'] ?? 0);
+}
+
+if (round($totalDebit, 2) !== round($totalCredit, 2)) {
+    return back()->withErrors(['total_mismatch' => 'Total debit must equal total credit.'])->withInput();
+}
 
     // Start a transaction
     DB::beginTransaction();
@@ -47,6 +61,7 @@ class JournalEntryController extends Controller
         // Create the journal entry
         $journalEntry = JournalEntry::create([
             'journal_date' => date("Y-m-d"),
+            'is_reversal' => 1,
         ]);
 
         // Create journal entry details
@@ -63,6 +78,7 @@ class JournalEntryController extends Controller
             
             JournalDetail::create([
                 'journal_id' => $journalEntry->id,
+                'ledger_id' => $detail['ledger'],
                 'sub_ledger_id' => $detail['subledger'],
                 'debit_amount' => $detail['debit'],
                 'credit_amount' => $detail['credit'],

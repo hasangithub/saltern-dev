@@ -54,7 +54,7 @@
                             </select>
                         </td>
                         <td>
-                            <select name="details[0][subledger]" class="form-control subledger" required>
+                            <select name="details[0][subledger]" class="form-control subledger">
                                 <option value="">Select Subledger</option>
                             </select>
                         </td>
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </select>
             </td>
             <td>
-                <select name="details[${rowIndex}][subledger]" class="form-control subledger" required>
+                <select name="details[${rowIndex}][subledger]" class="form-control subledger">
                     <option value="">Select Subledger</option>
                 </select>
             </td>
@@ -232,13 +232,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Check Subledger
-            if (!subledger.value) {
-                subledger.classList.add('is-invalid');
-                rowValid = false;
-            } else {
-                subledger.classList.remove('is-invalid');
-                subledger.classList.add('is-valid');
-            }
+            // if (!subledger.value) {
+            //     subledger.classList.add('is-invalid');
+            //     rowValid = false;
+            // } else {
+            //     subledger.classList.remove('is-invalid');
+            //     subledger.classList.add('is-valid');
+            // }
 
             // Check Description
             if (!description.value) {

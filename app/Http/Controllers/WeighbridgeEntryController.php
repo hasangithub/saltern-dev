@@ -17,9 +17,18 @@ use App\Models\ownerLoanRepayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\SmsService;
+
 
 class WeighbridgeEntryController extends Controller
 {
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
     public function index(Request $request)
     {
         $status = $request->get('status');
@@ -74,6 +83,11 @@ class WeighbridgeEntryController extends Controller
 
     public function store(Request $request)
     {
+        $message = "entry created successfully for date " . now()->format('d-m-Y');
+        $phone = '94713857269'; // Replace with dynamic phone (admin, accountant, etc.)
+
+        //$this->smsService->sendSms($phone, $message); 
+
        $validated=  $request->validate([
             'vehicle_id' => 'required|string',
             'culture' => 'required|string',
@@ -127,6 +141,33 @@ class WeighbridgeEntryController extends Controller
         
                         // Reduce service charge
                         $serviceCharge -= $deduction;
+
+                        $journal = JournalEntry::create([
+                            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+                            'description' => 'Loan deduction for weighbridge entry',
+                        ]);
+                
+                        $details = [
+                            [
+                                'journal_id' => $journal->id,
+                                'ledger_id' => 10,  
+                                'sub_ledger_id' => 100,
+                                'debit_amount' => $deduction,
+                                'credit_amount' => null,
+                                'description' => '',
+                            ],
+                            [
+                                'journal_id' => $journal->id,
+                                'ledger_id' => 12,  
+                                'sub_ledger_id' => 115,
+                                'debit_amount' => null,
+                                'credit_amount' => $deduction,
+                                'description' => '',
+                            ],
+                        ];
+                
+
+                        
                     }
                 }
             });

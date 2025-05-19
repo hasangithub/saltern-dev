@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class JournalEntry extends Model
 {
-    protected $fillable = ['journal_date', 'description'];
+    protected $fillable = ['journal_date', 'description', 'is_reversal'];
 
     public function details()
     {
