@@ -17,7 +17,7 @@ class StaffLoanController extends Controller
     {
         $ownerLoan = StaffLoan::findOrFail($id);
 
-        return view('owner_loans_admin.show', compact('ownerLoan'));
+        return view('staff_loans_admin.show', compact('ownerLoan'));
     }
 
     public function approve(Request $request, $id)
