@@ -11,7 +11,7 @@ class Voucher extends Model
         'address',
         'description',
         'payment_method_id',
-        'bank_id',
+        'bank_sub_ledger_id',
         'cheque_no',
         'cheque_date',
         'amount',
@@ -26,6 +26,6 @@ class Voucher extends Model
 
     public function bank()
     {
-        return $this->belongsTo(Bank::class);
+        return $this->belongsTo(SubLedger::class, 'bank_sub_ledger_id');
     }
 }

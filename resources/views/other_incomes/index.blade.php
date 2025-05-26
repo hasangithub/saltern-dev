@@ -29,8 +29,9 @@
                         <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Received Date</th>
-                                    <th>Income Category</th>
+                                    <th>Date</th>
+                                    <th>Buyer</th>
+                                    <th>Category</th>
                                     <th>Amount</th>
                                     <th>Name</th>
                                     <th>Description</th>
@@ -40,6 +41,7 @@
                                 @foreach ($otherIncomes as $income)
                                 <tr>
                                     <td>{{ $income->received_date }}</td>
+                                    <td> {{ $income->buyer_id ? $income->buyer->business_name : 'Walkin buyer' }}</td>
                                     <td>{{ $income->incomeCategory->name }}</td>
                                     <td>{{ $income->amount }}</td>
                                     <td>{{ $income->name }}</td>

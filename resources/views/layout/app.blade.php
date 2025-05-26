@@ -17,6 +17,13 @@
 
     @yield('styles')
     <!-- For additional styles -->
+    <style>
+    .form-control {
+        height: calc(1.8125rem + 2px); /* Match Bootstrap form-control-sm height */
+        padding: .25rem .5rem;
+        font-size: .875rem;
+    }
+</style>
 </head>
 
 <body class="hold-transition sidebar-mini">

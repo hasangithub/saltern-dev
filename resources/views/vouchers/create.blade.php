@@ -71,10 +71,10 @@
                         <!-- Bank -->
                         <div class="form-group">
                             <label for="bank">Bank</label>
-                            <select name="bank_id" id="bank" class="form-control">
+                            <select name="bank_sub_ledger_id" id="bank" class="form-control">
                                 <option value=""></option>
                                 @foreach($banks as $bank)
-                                <option value="{{ $bank->id }}">{{ $bank->bank_name }}</option>
+                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -100,7 +100,7 @@
 
                     <div class="form-group">
                         <label for="ledger">Select Ledger:</label>
-                        <select id="ledger" class="form-control" required>
+                        <select name="ledger_id" id="ledger" class="form-control" required>
                             <option value="">-- Select Ledger --</option>
                             @foreach ($ledgers as $ledger)
                             <option value="{{ $ledger->id }}">{{ $ledger->name }}</option>
@@ -110,7 +110,7 @@
 
                     <div class="form-group">
                         <label for="sub_ledger">Select Sub-Ledger:</label>
-                        <select id="sub_ledger" class="form-control" required>
+                        <select name="sub_ledger_id" id="sub_ledger" class="form-control">
                             <option value="">-- Select Sub-Ledger --</option>
                         </select>
                     </div>

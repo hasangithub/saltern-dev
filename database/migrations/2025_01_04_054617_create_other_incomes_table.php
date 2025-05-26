@@ -19,8 +19,6 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
-
-            $table->foreign('income_category_id')->references('id')->on('income_categories')->onDelete('cascade');
         });
     }
 

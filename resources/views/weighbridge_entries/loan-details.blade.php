@@ -4,6 +4,7 @@
             <th>Date of Loan</th>
             <th>Loan Amount</th>
             <th>Outstanding Amount</th>
+            <th>Amount to Pay</th>
         </tr>
     </thead>
     <tbody>
@@ -12,6 +13,7 @@
                 <td>{{ date('Y-m-d', strtotime($loan->created_at)) }}</td>
                 <td>{{ number_format($loan->approved_amount, 2) }}</td>
                 <td>{{ number_format($loan->approved_amount - $loan->ownerLoanRepayment->sum('amount'), 2) }}</td>
+                <td><input type="number" name="repayments[{{ $loan->id }}]" max="{{ number_format($loan->approved_amount - $loan->ownerLoanRepayment->sum('amount'), 2) }}"></td>
             </tr>
         @empty
             <tr>

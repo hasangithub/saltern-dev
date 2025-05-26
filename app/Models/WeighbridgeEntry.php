@@ -19,7 +19,8 @@ class WeighbridgeEntry extends Model
         'bags_count',
         'bag_price',
         'total_amount',
-        'status'
+        'status',
+        'is_service_charge_paid'
     ];
 
     public function owner()

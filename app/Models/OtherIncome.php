@@ -9,13 +9,20 @@ class OtherIncome extends Model
     protected $fillable = [
         'received_date',
         'income_category_id',
+        'buyer_id',
         'amount',
         'name',
         'description',
+        'status',
     ];
 
     public function incomeCategory()
     {
-        return $this->belongsTo(IncomeCategory::class);
+        return $this->belongsTo(Ledger::class);
+    }
+
+    public function buyer()
+    {
+        return $this->belongsTo(Buyer::class);
     }
 }

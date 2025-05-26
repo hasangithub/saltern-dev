@@ -9,6 +9,7 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -36,6 +37,7 @@
                                     <label for="culture" class="form-label">Select Culture</label>
                                     <select id="culture" name="culture" class="form-control" required>
                                         <option value="">-- Select culture --</option>
+                                        <option value="Ag Salt">Ag Salt</option>
                                         <option value="yala">Yala</option>
                                         <option value="maha">Maha</option>
                                     </select>
@@ -127,23 +129,24 @@
                             </div>
                         </div>
 
+                        <div class="col-12">
+                            <div class="card card-default">
+                                <div class="card-header">
+                                    <h3 class="card-title">Loan Details</h3>
+                                </div>
+
+                                <div class="card-body">
+                                    <div id="saltern_details" class="mt-4">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Save
                         </button>
                     </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="card card-default">
-                <div class="card-header">
-                    <h3 class="card-title">Loan Details</h3>
-                </div>
-
-                <div class="card-body">
-                    <div id="saltern_details" class="mt-4">
-
-                    </div>
                 </div>
             </div>
         </div>

@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('banks', function (Blueprint $table) {
-            $table->id();
-            $table->string('bank_name');
-            $table->timestamps();
+        Schema::table('weighbridge_entries', function (Blueprint $table) {
+            $table->boolean('is_service_charge_paid')->default(0)->after('status');
         });
     }
 
@@ -23,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('banks');
+        Schema::table('weighbridge_entries', function (Blueprint $table) {
+            //
+        });
     }
 };

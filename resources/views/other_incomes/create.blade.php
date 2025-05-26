@@ -35,29 +35,26 @@
                     <form action="{{ route('other_incomes.store') }}" method="POST" autocomplete="off">
                         @csrf
                         <div class="form-group">
-                            <label for="received_date">Received Date</label>
-                            <input type="date" name="received_date" id="received_date" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="income_category_id">Income Category</label>
-                            <select name="income_category_id" id="income_category_id" class="form-control" required>
-                                <option value="">Select Category</option>
-                                @foreach ($incomeCategories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            <label for="buyer_id">Buyer</label>
+                            <select name="buyer_id" id="buyer_id" class="form-control" required>
+                                <option value="">Select Buyer</option>
+                                <option value="walkin">Walk-in Buyer</option>
+                                @foreach ($buyers as $buyer)
+                                <option value="{{ $buyer->id }}">{{ $buyer->business_name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="form-group" id="walkin_name_field">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" id="name" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="amount">Amount</label>
                             <input type="number" name="amount" id="amount" class="form-control" step="0.01" required>
                         </div>
                         <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" name="name" id="name" class="form-control">
-                        </div>
-                        <div class="form-group">
                             <label for="ledger">Select Ledger:</label>
-                            <select id="ledger" class="form-control" required>
+                            <select name="ledger_id" id="ledger" class="form-control" required>
                                 <option value="">-- Select Ledger --</option>
                                 @foreach ($ledgers as $ledger)
                                 <option value="{{ $ledger->id }}">{{ $ledger->name }}</option>
@@ -67,7 +64,7 @@
 
                         <div class="form-group">
                             <label for="sub_ledger">Select Sub-Ledger:</label>
-                            <select id="sub_ledger" class="form-control" required>
+                            <select name="sub_ledger_id" id="sub_ledger" class="form-control">
                                 <option value="">-- Select Sub-Ledger --</option>
                             </select>
                         </div>
@@ -123,6 +120,24 @@
                 })
                 .catch(error => console.error('Error fetching sub-ledgers:', error));
         }
+    });
+
+    $(document).ready(function(){
+        function toggleWalkinField() {
+            if($('#buyer_id').val() === 'walkin') {
+                $('#walkin_name_field').show();
+            } else {
+                $('#walkin_name_field').hide();
+            }
+        }
+
+        // Initial check
+        toggleWalkinField();
+
+        // On change
+        $('#buyer_id').change(function(){
+            toggleWalkinField();
+        });
     });
 </script>
 @endpush

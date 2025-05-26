@@ -30,6 +30,9 @@ use App\Http\Controllers\StaffComplaintController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\Auth\OwnerLoginController;
 
+use App\Http\Controllers\AccountImportController;
+use App\Http\Controllers\ReceiptController;
+
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [UserLoginController::class, 'login']);
@@ -178,9 +181,12 @@ use App\Http\Controllers\ReportController;
 
 Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
 
-use App\Http\Controllers\AccountImportController;
+
 
 Route::get('/import-form', [AccountImportController::class, 'showForm'])->name('accounts.form');
 Route::post('/import-chart', [AccountImportController::class, 'import'])->name('accounts.import');
+
+Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
+Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
 
 

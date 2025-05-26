@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->text('description');
             $table->foreignId('payment_method_id')->constrained('payment_methods')->onDelete('cascade');
-            $table->foreignId('bank_id')->nullable()->constrained('banks')->onDelete('cascade');
+            $table->unsignedBigInteger('bank_sub_ledger_id')->nullable();
             $table->string('cheque_no')->nullable();
             $table->date('cheque_date')->nullable();
             $table->decimal('amount', 15, 2);
