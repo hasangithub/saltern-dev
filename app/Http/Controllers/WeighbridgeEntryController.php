@@ -13,7 +13,7 @@ use App\Models\Side;
 use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 use App\Models\OwnerLoan;
-use App\Models\ownerLoanRepayment;
+use App\Models\OwnerLoanRepayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
