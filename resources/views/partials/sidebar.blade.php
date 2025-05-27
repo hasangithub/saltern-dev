@@ -140,31 +140,43 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                   <a href="{{ route('staff.complaints.index') }}" class="nav-link">
+                    <a href="{{ route('staff.complaints.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>
                         <p>Complaints</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                   <a href="{{ route('attendance.import') }}" class="nav-link">
-                        <i class="nav-icon fas fa-water"></i>
-                        <p>Attendance Import</p>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            Payroll
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('attendance.import') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Attendance Import</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('payroll.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Payroll</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
                 <li class="nav-item">
-                   <a href="{{ route('payroll.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-water"></i>
-                        <p>Payroll</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                   <a href="{{ route('trial.balance') }}" class="nav-link">
+                    <a href="{{ route('trial.balance') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>
                         <p>Trial Balance</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                   <a href="{{ route('receipts.index') }}" class="nav-link">
+                    <a href="{{ route('receipts.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>
                         <p>Receipts</p>
                     </a>
