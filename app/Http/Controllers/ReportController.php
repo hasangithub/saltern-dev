@@ -77,7 +77,7 @@ public function indexProduction()
                 })
                 ->when($request->owner_id, function($query) use ($request) {
                     $query->whereHas('membership', function($q) use ($request) {
-                        $q->where('owner_id', $request->owner_id);
+                        $q->where('id', $request->owner_id);
                     });
                 })
                 ->when($request->buyer_id, function($query) use ($request) {
