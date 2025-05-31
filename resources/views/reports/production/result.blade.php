@@ -52,7 +52,7 @@
                             </div>
                         </div>
                         <div class="card-body table-responsive">
-                            <table class="table table-bordered table-striped">
+                            <table class="table table-sm">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
