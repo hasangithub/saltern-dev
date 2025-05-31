@@ -77,18 +77,18 @@
                                         <td>{{ $entry->transaction_date }}</td>
                                         <td>{{ $entry->buyer->business_name ?? '-' }}</td>
                                         <td>{{ $entry->culture}}</td>
-                                        <td>{{ number_format($entry->net_weight, 2) }}</td>
-                                        <td>{{ $entry->bags_count }}</td>
-                                        <td>{{ number_format($entry->net_weight / 1000, 2) }}</td>
+                                        <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
+                                        <td class="text-right">{{ $entry->bags_count }}</td>
+                                        <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th colspan="3">Total</th>
-                                        <th>{{ number_format($totalNetWeight, 2) }}</th>
-                                        <th>{{ $totalBags }}</th>
-                                        <th>{{ number_format($totalNetWeight / 1000, 2) }}</th>
+                                        <th class="text-right">{{ number_format($totalNetWeight, 2) }}</th>
+                                        <th class="text-right">{{ $totalBags }}</th>
+                                        <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
