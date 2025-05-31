@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountGroup;
+use App\Models\Buyer;
 use Illuminate\Http\Request;
 use App\Models\Ledger;
+use App\Models\Membership;
+use App\Models\WeighbridgeEntry;
+use App\Models\Yahai;
 
 class ReportController extends Controller
 {
@@ -47,5 +51,42 @@ class ReportController extends Controller
         'totalCredit' => $totalCredit,
     ]);
 }
+
+public function indexProduction()
+{
+    $yahaies = Yahai::all();
+    $owners = Membership::all();
+    $buyers = Buyer::all();
+
+    return view('reports.production.index', compact('yahaies', 'owners', 'buyers'));
+}
+
+    public function generateProduction(Request $request)
+    {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
+    
+        $entries = collect();
+    
+        if ($request->filled('from_date') && $request->filled('to_date') && $request->filled('yahai_id')) {
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
+                ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
+                ->whereHas('membership.saltern', function($query) use ($request) {
+                    $query->where('yahai_id', $request->yahai_id);
+                })
+                ->when($request->owner_id, function($query) use ($request) {
+                    $query->whereHas('membership', function($q) use ($request) {
+                        $q->where('owner_id', $request->owner_id);
+                    });
+                })
+                ->when($request->buyer_id, function($query) use ($request) {
+                    $query->where('buyer_id', $request->buyer_id);
+                })
+                ->get();
+        }
+
+        return view('reports.production.result', compact('yahaies', 'owners', 'buyers', 'entries'));   
+    }
 
 }

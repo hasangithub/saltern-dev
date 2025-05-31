@@ -169,12 +169,30 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('trial.balance') }}" class="nav-link">
-                        <i class="nav-icon fas fa-water"></i>
-                        <p>Trial Balance</p>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            Reports
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('production.report.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Production Report</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('trial.balance') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Trial Balance</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
                 <li class="nav-item">
                     <a href="{{ route('receipts.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>

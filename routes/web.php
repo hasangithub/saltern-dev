@@ -180,6 +180,9 @@ Route::prefix('admin/staff-loans')->group(function () {
 use App\Http\Controllers\ReportController;
 
 Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
+Route::get('/production-report', [ReportController::class, 'indexProduction'])->name('production.report.index');
+Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
+
 
 
 
