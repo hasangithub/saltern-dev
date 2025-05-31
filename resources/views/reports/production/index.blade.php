@@ -37,11 +37,11 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label>Member (optional)</label>
+                            <label>Member</label>
                             <select name="owner_id" class="form-control" required>
                                 <option value=""></option>
                                 @foreach($owners as $owner)
-                                <option value="{{ $owner->id }}">{{ $owner->owner->full_name }}</option>
+                                <option value="{{ $owner->id }}">{{ @$owner->membership_no." ".$owner->owner->full_name }}</option>
                                 @endforeach
                             </select>
                         </div>
