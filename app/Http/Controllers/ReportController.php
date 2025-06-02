@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AccountGroup;
 use App\Models\Buyer;
+use App\Models\JournalDetail;
 use Illuminate\Http\Request;
 use App\Models\Ledger;
 use App\Models\Membership;
@@ -87,6 +88,56 @@ public function indexProduction()
         }
 
         return view('reports.production.result', compact('yahaies', 'owners', 'buyers', 'entries'));   
+    }
+
+    public function indexLedger(Request $request)
+{
+    $from = $request->input('from');
+    $to = $request->input('to');
+    $ledgerId = $request->input('ledger_id');
+
+    $query = JournalDetail::query();
+
+    if ($from) {
+        $query->whereDate('entry_date', '>=', $from);
+    }
+    if ($to) {
+        $query->whereDate('entry_date', '<=', $to);
+    }
+    if ($ledgerId) {
+        $query->where('ledger_id', $ledgerId);
+    }
+
+    $entries = $query->get();
+
+    // Get list of ledgers for the dropdown
+    $ledgers = \App\Models\Ledger::all();
+
+    return view('reports.ledger.index', compact('entries', 'ledgers', 'from', 'to', 'ledgerId'));
+}
+
+public function generateLedger(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+            'ledger_id' => 'required|exists:ledgers,id',
+        ]);
+
+        $ledgerId = $request->ledger_id;
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+        $journalDetails = JournalDetail::with(['ledger', 'subLedger', 'journalEntry'])
+            ->where('ledger_id', $ledgerId)
+            ->whereHas('journalEntry', function ($q) use ($fromDate, $toDate) {
+                $q->whereBetween('journal_date', [$fromDate, $toDate]);
+            })
+            ->get();
+
+        $ledger = Ledger::find($ledgerId);
+
+        return view('reports.ledger.result', compact('journalDetails', 'ledger', 'fromDate', 'toDate'));
     }
 
 }

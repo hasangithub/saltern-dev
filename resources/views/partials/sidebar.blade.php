@@ -185,6 +185,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('ledger.report.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Ledger Report</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('trial.balance') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>Trial Balance</p>
