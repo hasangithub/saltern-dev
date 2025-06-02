@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use BuyerSeeder;
+use Database\Seeders\BuyerSeeder as SeedersBuyerSeeder;
 use Database\Seeders\SalternSeeder as SeedersSalternSeeder;
 use Database\Seeders\YahaiSeeder as SeedersYahaiSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,7 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(BuyerSeeder::class);
+        $this->call(SeedersBuyerSeeder::class);
         $this->call(OwnerSeeder::class);
         $this->call(AccountGroupsTableSeeder::class);
         $this->call(ExpenseCategorySeeder::class);
