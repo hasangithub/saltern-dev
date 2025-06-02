@@ -32,6 +32,7 @@ use App\Http\Controllers\Auth\OwnerLoginController;
 
 use App\Http\Controllers\AccountImportController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ReportController;
 
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
@@ -55,6 +56,15 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::get('/attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
     Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
+
+
+
+    Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
+    Route::get('/production-report', [ReportController::class, 'indexProduction'])->name('production.report.index');
+    Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
+
+    Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
+    Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
 });
 
 
@@ -176,18 +186,6 @@ Route::prefix('admin/staff-loans')->group(function () {
 
     Route::put('/{loan_request}/approve', [StaffLoanController::class, 'approve'])->name('admin.staff-loan.approve');
 });
-
-use App\Http\Controllers\ReportController;
-
-Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
-Route::get('/production-report', [ReportController::class, 'indexProduction'])->name('production.report.index');
-Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
-
-Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
-Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
-
-
-
 
 
 Route::get('/import-form', [AccountImportController::class, 'showForm'])->name('accounts.form');
