@@ -26,10 +26,10 @@ class StoreRepresentativeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_with_initial' => 'required|string|max:255', // Full name required
-            'relationship' => 'required|in:' . implode(',', array_column(RelationshipType::cases(), 'value')), // Gender enum values
-            'nic' => 'required|string|max:20|unique:representatives', // NIC should be unique
-            'phone_number' => 'required|string|max:15', // Primary phone number, required
+            'name_with_initial' => 'nullable|string|max:255', // Full name required
+            'relationship' => 'nullable|in:' . implode(',', array_column(RelationshipType::cases(), 'value')), // Gender enum values
+            'nic' => 'nullable|string|max:20|unique:representatives', // NIC should be unique
+            'phone_number' => 'nullable|string|max:15', // Primary phone number, required
         ];
     }
 

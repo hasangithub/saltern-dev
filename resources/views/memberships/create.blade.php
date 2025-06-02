@@ -61,7 +61,7 @@
                                     <select class="form-control select2" name="owner_id" id="owner_id" required>
                                         <option value="">Select Owner</option>
                                         @foreach($owners as $owner)
-                                        <option value="{{ $owner->id }}">{{ $owner->full_name }}</option>
+                                        <option value="{{ $owner->id }}">{{ $owner->name_with_initial }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -101,23 +101,23 @@
                                 <div class="form-group">
                                     <label for="full_name">Name with Initial</label>
                                     <input type="text" name="name_with_initial" id="name_with_initial"
-                                        class="form-control" required>
+                                        class="form-control">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="nic">NIC</label>
-                                    <input type="text" name="nic" id="nic" class="form-control" required>
+                                    <input type="text" name="nic" id="nic" class="form-control">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="phone_number">Phone Number</label>
                                     <input type="text" name="phone_number" id="phone_number" class="form-control"
-                                        value="{{ old('phone_number') }}" required>
+                                        value="{{ old('phone_number') }}">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="relationship">Relationship</label>
-                                    <select name="relationship" class="form-control" required>
+                                    <select name="relationship" class="form-control">
                                         <option value=""></option>
                                         @foreach($genders as $gender)
                                         <option value="{{ $gender->value }}">{{ $gender->name }}</option>
