@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('owners', function (Blueprint $table) {
             $table->id(); // Auto-incrementing ID
-            $table->string('full_name'); 
+            $table->string('full_name')->nullable();
             $table->string('name_with_initial')->nullable();     
-            $table->string('gender'); 
+            $table->string('gender')->nullable();
             $table->string('civil_status')->nullable(); 
             $table->string('phone_number')->nullable(); 
             $table->string('secondary_phone_number')->nullable(); 
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('email')->nullable(); 
             $table->text('address_line_1')->nullable(); 
             $table->date('date_of_birth')->nullable(); 
-            $table->string('nic');
+            $table->string('nic')->nullable();
             $table->string('profile_picture')->nullable();
             $table->timestamps(); // Created at and updated at
         });
