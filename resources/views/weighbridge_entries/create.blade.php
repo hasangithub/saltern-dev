@@ -242,7 +242,7 @@ $(document).ready(function() {
                         const owner = response.owner;
                         // Populate the form with membership details
                         $('#membership_id').val(membership.id);
-                        $('#membership_name').val(owner.full_name);
+                        $('#membership_name').val(owner.name_with_initial);
                     } else {
                         alert('No membership found for this saltern');
                     }
