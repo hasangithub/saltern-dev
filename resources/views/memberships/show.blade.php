@@ -111,16 +111,16 @@
                     <div class="row">
                         <div class="col-md-4">
                             <strong>Name with Initial</strong>
-                            <p class="text-muted">{{ $membership->representative->name_with_initial }}</p>
+                            <p class="text-muted">{{ $membership->representative?->name_with_initial }}</p>
                             <hr>
                             <strong>NIC</strong>
-                            <p class="text-muted"> {{ $membership->representative->nic }}</p>
+                            <p class="text-muted"> {{ $membership->representative?->nic }}</p>
                             <hr>
                             <strong>Phone Number 1</strong>
-                            <p class="text-muted">{{ $membership->representative->phone_number }}</p>
+                            <p class="text-muted">{{ $membership->representative?->phone_number }}</p>
                             <hr>
                             <strong>Relationship</strong>
-                            <p class="text-muted"> {{ $membership->representative->relationship }}</p>
+                            <p class="text-muted"> {{ $membership->representative?->relationship }}</p>
                             <hr>
                             <strong>Representative Signature</strong>
                             @if($membership->representative_signature)

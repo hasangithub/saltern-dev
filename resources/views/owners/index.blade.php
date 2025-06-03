@@ -31,7 +31,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Full Name</th>
-                                    <th>NIC</th>
+                                  
                                     <th>Address</th>
                                     <th>Mobile No</th>
                                     <th></th>
@@ -41,8 +41,8 @@
                                 @foreach($owners as $owner)
                                 <tr>
                                     <td>{{ $owner->id }}</td>
-                                    <td>{{ $owner->full_name }}</td>
-                                    <td>{{ $owner->nic }}</td>
+                                    <td>{{ $owner->name_with_initial }}</td>
+                                  
                                     <td>{{ $owner->address_line_1 }}</td>
                                     <td>{{ $owner->phone_number }}</td>
                                     <td><a href="{{ route('owners.show', $owner->id) }}"

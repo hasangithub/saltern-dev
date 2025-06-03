@@ -24,7 +24,7 @@
                         @endif
                     </div>
 
-                    <h3 class="profile-username text-center">{{ $membership->full_name }}</h3>
+                    <h3 class="profile-username text-center">{{ $membership->name_with_initial }}</h3>
 
                     <p class="text-muted text-center">{{ $membership->nic }}</p>
 
@@ -50,7 +50,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <strong>Name</strong>
-                            <p class="text-muted">{{ $membership->full_name }}</p>
+                            <p class="text-muted">{{ $membership->name_with_initial }}</p>
                             <hr>
                             <strong>Gender</strong>
                             <p class="text-muted"> {{ $membership->gender }}</p>

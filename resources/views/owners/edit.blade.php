@@ -73,7 +73,7 @@
                         <select name="gender" id="gender" class="form-control" required>
                             @foreach(\App\Enums\Gender::cases() as $case)
                             <option value="{{ $case->value }}"
-                                {{ $owner->gender->value === $case->value ? 'selected' : '' }}>
+                                {{ $owner->gender?->value === $case->value ? 'selected' : '' }}>
                                 {{ $case->name }}
                             </option>
                             @endforeach
