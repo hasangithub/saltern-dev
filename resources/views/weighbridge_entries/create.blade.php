@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const bagsInput = document.getElementById('bags');
     const descriptionText = document.getElementById('description');
 
-    const SERVICE_CHARGE_RATE = 50; // Example service charge per kg (adjust as needed)
+    const SERVICE_CHARGE_RATE = 100; // Example service charge per kg (adjust as needed)
 
     function calculateValues() {
         const initialWeight = parseFloat(initialWeightInput.value) || 0;

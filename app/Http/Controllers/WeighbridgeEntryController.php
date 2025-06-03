@@ -56,8 +56,6 @@ class WeighbridgeEntryController extends Controller
         $message = "entry created successfully for date " . now()->format('d-m-Y');
         $phone = '94713857269'; 
 
-        //$this->smsService->sendSms($phone, $message); 
-
         $validated =  $request->validate([
             'vehicle_id' => 'required|string',
             'culture' => 'required|string',
@@ -69,10 +67,11 @@ class WeighbridgeEntryController extends Controller
         ]);
 
         $membership = Membership::findOrFail($request->membership_id);
+        $buyer = Buyer::findOrFail($request->buyer_id);
         $data = $request->all();
         $data['owner_id'] = $membership->owner_id;
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
-        $data['bag_price'] = 50;
+        $data['bag_price'] = 100;
         $data['status'] = 'approved';
 
         $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
@@ -81,8 +80,8 @@ class WeighbridgeEntryController extends Controller
         $bags = $netWeight / 50;
 
         // Calculate service charge
-        $serviceCharge = $bags * 50;
-        $serviceChargeMain = $bags * 50;
+        $serviceCharge = $bags * 100;
+        $serviceChargeMain = $bags * 100;
         $loans = OwnerLoan::where('membership_id', $request->membership_id)
             ->whereRaw('(approved_amount - (SELECT COALESCE(SUM(amount), 0) FROM owner_loan_repayments WHERE owner_loan_repayments.owner_loan_id = owner_loans.id)) > 0')
             ->orderBy('created_at', 'asc')
@@ -164,6 +163,17 @@ class WeighbridgeEntryController extends Controller
         // 3. Bulk insert details
         JournalDetail::insert($details);
 
+        $waikal =   $membership->saltern->yahai->name." ".$membership->saltern->name;
+        $smsMessage = "{$membership->owner->name_with_initial}\n"
+        . "{$waikal}\n"
+        . "{$buyer->full_name}\n"
+        . "{$netWeight}kg\n"
+        . "{$bags} bags\n"
+        . "S/C " . round($serviceChargeMain, 2) . "\n"
+        . "30% Reserved in your account " . round($serviceChargeMain * 0.30, 2);
+
+        //$this->smsService->sendSms($phone, $smsMessage); 
+
         return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
     }
 
@@ -188,7 +198,7 @@ class WeighbridgeEntryController extends Controller
         $data = $request->all();
         $data['owner_id'] = $membership->owner_id;
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
-        $data['bag_price'] = 50;
+        $data['bag_price'] = 100;
         $data['status'] = 'approved';
 
         $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
@@ -197,8 +207,8 @@ class WeighbridgeEntryController extends Controller
         $bags = $netWeight / 50;
 
         // Calculate service charge
-        $serviceCharge = $bags * 50;
-        $serviceChargeMain = $bags * 50;
+        $serviceCharge = $bags * 100;
+        $serviceChargeMain = $bags * 100;
         $loans = OwnerLoan::where('membership_id', $request->membership_id)
             ->whereRaw('(approved_amount - (SELECT COALESCE(SUM(amount), 0) FROM owner_loan_repayments WHERE owner_loan_repayments.owner_loan_id = owner_loans.id)) > 0')
             ->orderBy('created_at', 'asc')
@@ -311,7 +321,7 @@ class WeighbridgeEntryController extends Controller
         ]);
 
         $WeighbridgeEntry->tare_weight   = $request->tare_weight;
-        $WeighbridgeEntry->bag_price = 50;
+        $WeighbridgeEntry->bag_price = 100;
         $WeighbridgeEntry->status = 'approved';
         $WeighbridgeEntry->save();
 
