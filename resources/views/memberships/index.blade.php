@@ -48,7 +48,7 @@
                                     <td>{{ $membership->saltern->yahai->name }}</td>
                                     <td>{{ $membership->saltern->name }}</td>
                                     <td>{{ $membership->saltern->yahai->side->name }}</td>
-                                    <td>{{ $membership->owner->name_with_initial }}</td>
+                                    <td>{{ $membership->owner->id.$membership->owner->name_with_initial }}</td>
                                     <td>{{ Str::limit($membership->owner->address_line_1, 10) }}</td>
                                     <td>{{ $membership->owner->phone_number }}</td>
                                     <td><a href="{{ route('memberships.show', $membership->id) }}"
