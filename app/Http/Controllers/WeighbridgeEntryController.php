@@ -164,6 +164,7 @@ class WeighbridgeEntryController extends Controller
         JournalDetail::insert($details);
 
         $waikal =   $membership->saltern->yahai->name." ".$membership->saltern->name;
+        $phone  = $membership->owner->phone_number;
         $smsMessage = "{$membership->owner->name_with_initial}\n"
         . "{$waikal}\n"
         . "{$buyer->full_name}\n"
