@@ -7,5 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Yahai extends Model
 {
     protected $table = 'yahai';
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'side_id'];
+
+    public function side()
+    {
+        return $this->belongsTo(Side::class);
+    }
+
+    public function salterns()
+    {
+        return $this->hasMany(Saltern::class);
+    }
 }

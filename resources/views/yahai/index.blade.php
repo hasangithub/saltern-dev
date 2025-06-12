@@ -14,6 +14,7 @@
     <div class="card card-default">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Yahai List</h3>
+            <a href="{{ route('yahai.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Yahai</a>
         </div>
 
         <div class="card-body">
@@ -24,18 +25,22 @@
                         {{ session('success') }}
                     </div>
                     @endif
-                    <table id="yahaiTable" class="table table-bordered table-hover" style="width:100%">
+                    <table id="yahaiTable" class="table table-sm" style="width:100%">
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Side</th>
                                 <th>Name</th>
+                                <th>&nbsp;</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($yahais as $yahai)
                             <tr>
                                 <td>{{ $yahai->id }}</td>
+                                <td>{{ $yahai->side->name }}</td>
                                 <td>{{ $yahai->name }}</td>
+                                <td><a class="btn btn-warning btn-xs" href="{{ route('yahai.edit',$yahai) }}"> <i class="fas fa-edit"></i> Edit</a>      
                             </tr>
                             @endforeach
                         </tbody>

@@ -13,19 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('yahai', function (Blueprint $table) {
-            $table->id(); // ID field
-            $table->string('name'); // Name field
+            $table->id(); 
+            $table->string('name'); 
+            $table->unsignedBigInteger('side_id');
             $table->timestamps();
         });
-
-        // Predefine Yahai names
-        DB::table('yahai')->insert([
-            ['name' => 'Yahai 1'],
-            ['name' => 'Yahai 2'],
-            ['name' => 'Yahai 3'],
-            ['name' => 'Yahai 4'],
-            // Add more predefined names as needed
-        ]);
     }
 
     /**

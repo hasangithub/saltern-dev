@@ -10,48 +10,66 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Weighbridge Entries</h3>
-            <a href="{{ route('weighbridge_entries.create') }}" class="btn btn-primary float-right">Create Entry</a>
-        </div>
-        <div class="card-body">
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Weighbridge Entries</h3>
+                    <a href="{{ route('weighbridge_entries.create') }}" class="btn btn-success float-right"> <i
+                            class="fas fa-plus"></i> Create
+                        Entry</a>
                 </div>
-            @endif
-            <table id="weighbridgeTable" class="table table-bordered table-hover" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Vehicle ID</th>
-                        <th>Initial Weight</th>
-                        <th>Tare Weight</th>
-                        <th>Transaction Date</th>
-                        <th>Owner</th>
-                        <th>Buyer</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($entries as $entry)
-                    <tr>
-                        <td>{{ $entry->id }}</td>
-                        <td>{{ $entry->vehicle_id }}</td>
-                        <td>{{ $entry->initial_weight }}</td>
-                        <td>{{ $entry->tare_weight }}</td>
-                        <td>{{ $entry->transaction_date }}</td>
-                        <td>{{ $entry->owner->full_name ?? 'N/A' }}</td>
-                        <td>{{ $entry->buyer->name ?? 'N/A' }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                <div class="card-body">
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    <div class="table-responsive">
+                        <table id="weighbridgeTable" class="table table-sm" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Vehicle ID</th>
+                                    <th>First Weight(Kg)</th>
+                                    <th>Second Weight(Kg)</th>
+                                    <th>Yahai</th>
+                                    <th>Saltern</th>
+                                    <th>Owner</th>
+                                    <th>Buyer</th>
+                                    <th>Service Charge</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($entries as $entry)
+                                <tr>
+                                    <td>{{ $entry->transaction_date }}</td>
+                                    <td>{{ $entry->vehicle_id }}</td>
+                                    <td>{{ $entry->initial_weight }}</td>
+                                    <td> {!! $entry->tare_weight ?? '<span class="badge bg-warning">Pending</span>' !!}
+                                    </td>
+                                    <td>{{ $entry->membership->saltern->yahai->name }}</td>
+                                    <td>{{ $entry->membership->saltern->name }}</td>
+                                    <td>{{ $entry->owner->full_name ?? 'N/A' }}</td>
+                                    <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
+                                    <td> {{ $entry->is_service_charge_paid === 1 ? 'Paid' : ($entry->is_service_charge_paid === 0 ? 'Pending' : 'N/A') }}</td>
+                                    <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
+                                            class="btn btn-default btn-xs">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 @stop
 
 {{-- Push extra CSS --}}
@@ -65,8 +83,8 @@
 
 @push('js')
 <script>
-    $(document).ready(function() {
-        $('#weighbridgeTable').DataTable();
-    });
+$(document).ready(function() {
+    $('#weighbridgeTable').DataTable();
+});
 </script>
 @endpush

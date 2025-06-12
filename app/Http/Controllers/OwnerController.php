@@ -4,10 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Owner;
 use Illuminate\Http\Request;
+use App\Enums\CivilStatus;
+use App\Enums\Gender;
+use App\Http\Requests\StoreOwnerRequest;
+use App\Http\Requests\UpdateOwnerRequest;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class OwnerController extends Controller
 {
-        public function index()
+    public function index()
     {
         $owners = Owner::all(); // Retrieve all owners
         return view('owners.index', compact('owners')); // Pass owners to view
@@ -15,30 +21,62 @@ class OwnerController extends Controller
 
     public function create()
     {
-        return view('owners.create'); // Return the create owner form view
+        return view('owners.create', [
+            'genders' => Gender::cases(),
+            'civilStatuses' => CivilStatus::cases(),
+        ]); 
     }
 
-    public function store(Request $request)
+    public function store(StoreOwnerRequest $request)
     {
-        // Validate form inputs
-        $request->validate([
-            'full_name' => 'required|string|max:255',
-            'dob' => 'required|date',
-            'nic' => 'required|string|max:20|unique:owners,nic',
-            'address' => 'required|string|max:255',
-            'mobile_no' => 'required|string|max:15',
-        ]);
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+        $owner = Owner::create($data);
 
-        // Create a new owner record in the database
-        Owner::create([
-            'full_name' => $request->full_name,
-            'dob' => $request->dob,
-            'nic' => $request->nic,
-            'address' => $request->address,
-            'mobile_no' => $request->mobile_no,
-        ]);
-
-        // Redirect back to the owners list with a success message
+        if ($owner) {
+            if ($request->hasFile('profile_picture')) {
+                $ownerProfilePath = $request->file('profile_picture')->store('profile', 'public');
+                $owner->update(['profile_picture' => $ownerProfilePath]);
+            }
+        }
+        
         return redirect()->route('owners.index')->with('success', 'Owner created successfully.');
+    }
+
+    public function show($id)
+    {
+        $membership = Owner::findOrFail($id);
+        
+        return view('owners.show', compact('membership'));
+    }
+
+        /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Owner $owner)
+    {
+        return view('owners.edit', ['owner'=>$owner]);
+    }
+
+    public function update(UpdateOwnerRequest $request, Owner $owner)
+    {
+        // Validate the incoming request using the StoreOwnerRequest
+        $validatedData = $request->validated();
+
+        if ($request->hasFile('profile_picture')) {
+    
+            if (Storage::disk('public')->exists($owner->profile_picture)) {
+                Storage::disk('public')->delete($owner->profile_picture);
+            }
+    
+            // Store the new profile picture
+            $validatedData['profile_picture'] = $request->file('profile_picture')->store('profile', 'public');
+        }
+
+        // Update the owner details
+        $owner->update($validatedData);
+
+        // Redirect back with a success message
+        return redirect()->route('owners.edit', $owner->id)->with('success', 'Owner updated successfully');
     }
 }
