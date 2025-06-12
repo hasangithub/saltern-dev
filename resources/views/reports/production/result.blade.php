@@ -30,7 +30,7 @@
                         @endphp
                         <div class="row g-1">
                             <div class="col-md-4 col-sm-6">
-                                <strong>Owner:</strong> {{ $owner->full_name ?? 'N/A' }}
+                                <strong>Owner:</strong> {{ $owner->name_with_initial ?? 'N/A' }}
                             </div>
                             <div class="col-md-4 col-sm-6">
                                 <strong>Yahai:</strong> {{ $yahai?->name ?? 'N/A' }}
