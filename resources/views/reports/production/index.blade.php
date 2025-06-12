@@ -38,7 +38,7 @@
                         </div>
                         <div class="col-md-2">
                             <label>Member</label>
-                            <select name="owner_id" class="form-control" required>
+                            <select name="owner_id" class="form-control select2" required>
                                 <option value=""></option>
                                 @foreach($owners as $owner)
                                 <option value="{{ $owner->id }}">{{ @$owner->membership_no." ".$owner->owner->name_with_initial }}</option>
@@ -78,6 +78,7 @@
 @push('js')
 <script>
 $(document).ready(function() {
+    $('.select2').select2();
     $('#membershipsTable').DataTable();
 });
 </script>
