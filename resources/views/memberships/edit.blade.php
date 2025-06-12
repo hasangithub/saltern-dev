@@ -36,18 +36,18 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="saltern_id">Saltern</label>
-                                    <select class="form-control" name="membership[saltern_id]" id="saltern_id" required>
+                                    <select class="form-control select2" name="membership[saltern_id]" id="saltern_id" required>
                                         <option value="">Select Saltern</option>
                                         @foreach($salterns as $saltern)
                                         <option {{ $membership->saltern_id == $saltern->id?'selected':'' }}
-                                            value="{{ $saltern->id }}">{{ $saltern->name }}</option>
+                                            value="{{ $saltern->id }}">{{ $saltern->yahai->side->name." ".$saltern->yahai->name." ".$saltern->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="owner_id">Owner</label>
-                                    <select class="form-control" name="membership[owner_id]" id="owner_id" required>
+                                    <select class="form-control select2" name="membership[owner_id]" id="owner_id" required>
                                         <option value="">Select Owner</option>
                                         @foreach($owners as $owner)
                                         <option {{ $membership->owner_id == $owner->id?'selected':'' }}
@@ -89,28 +89,25 @@
                                     <label for="name_with_initial">Name with Initial</label>
                                     <input type="text" name="representative[name_with_initial]" id="name_with_initial"
                                         class="form-control"
-                                        value="{{ old('representative.name_with_initial', $membership->representative?->name_with_initial) }}"
-                                        required>
+                                        value="{{ old('representative.name_with_initial', $membership->representative?->name_with_initial) }}">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="nic">NIC</label>
                                     <input type="text" name="representative[nic]" id="nic" class="form-control"
-                                        value="{{ old('representative.nic', $membership->representative?->nic) }}"
-                                        required>
+                                        value="{{ old('representative.nic', $membership->representative?->nic) }}">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="phone_number">Phone Number</label>
                                     <input type="text" name="representative[phone_number]" id="phone_number"
                                         class="form-control"
-                                        value="{{ old('representative.phone_number', $membership->representative?->phone_number) }}"
-                                        required>
+                                        value="{{ old('representative.phone_number', $membership->representative?->phone_number) }}">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="relationship">Relationship</label>
-                                    <select name="representative[relationship]" class="form-control" required>
+                                    <select name="representative[relationship]" class="form-control">
                                         <option></option>
                                         @foreach(\App\Enums\RelationshipType::cases() as $case)
                                         <option value="{{ $case->value }}"
@@ -155,6 +152,10 @@
 
 @push('js')
 <script>
+$(document).ready(function() {
+  $('.select2').select2();
+});
+
 function previewImage(event, previewElementId) {
     const reader = new FileReader();
     reader.onload = function() {

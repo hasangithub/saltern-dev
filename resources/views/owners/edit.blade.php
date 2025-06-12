@@ -47,7 +47,7 @@
                     <div class="form-group">
                         <label for="full_name">Full Name</label>
                         <input type="text" name="full_name" id="full_name" class="form-control"
-                            value="{{ old('full_name', $owner->full_name) }}" required>
+                            value="{{ old('full_name', $owner->full_name) }}">
                     </div>
 
                     <div class="form-group">
@@ -59,18 +59,19 @@
                     <div class="form-group">
                         <label for="dob">Date of Birth</label>
                         <input type="date" name="date_of_birth" id="dob" class="form-control"
-                            value="{{ old('date_of_birth', $owner->date_of_birth) }}" required>
+                            value="{{ old('date_of_birth', $owner->date_of_birth) }}">
                     </div>
 
                     <div class="form-group">
                         <label for="nic">NIC</label>
                         <input type="text" name="nic" id="nic" class="form-control"
-                            value="{{ old('nic', $owner->nic) }}" required>
+                            value="{{ old('nic', $owner->nic) }}">
                     </div>
 
                     <div class="form-group">
                         <label for="gender">Gender</label>
-                        <select name="gender" id="gender" class="form-control" required>
+                        <select name="gender" id="gender" class="form-control">
+                            <option></option>
                             @foreach(\App\Enums\Gender::cases() as $case)
                             <option value="{{ $case->value }}"
                                 {{ $owner->gender?->value === $case->value ? 'selected' : '' }}>

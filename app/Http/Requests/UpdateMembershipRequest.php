@@ -45,13 +45,13 @@ class UpdateMembershipRequest extends FormRequest
                 },
             ],
             'membership.owner_id' => 'required|exists:owners,id',
-            'membership.membership_date' => 'required|date',
+            'membership.membership_date' => 'nullable|date',
             'membership.is_active' => 'boolean',
             'membership.owner_signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Owner's signature validation
             'membership.representative_signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Representative's signature validation
-            'representative.name_with_initial' => 'required|string|max:255', // Full name required
-            'representative.relationship' => 'required|in:' . implode(',', array_column(RelationshipType::cases(), 'value')), // Gender enum values
-            'representative.phone_number' => 'required|string|max:15', // Primary phone number, required
+            'representative.name_with_initial' => 'nullable|string|max:255', // Full name required
+            'representative.relationship' => 'nullable|in:' . implode(',', array_column(RelationshipType::cases(), 'value')), // Gender enum values
+            'representative.phone_number' => 'nullable|string|max:15', // Primary phone number, required
         ];
     }
 

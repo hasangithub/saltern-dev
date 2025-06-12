@@ -26,15 +26,15 @@ class UpdateOwnerRequest extends FormRequest
         $ownerId = $this->route('owner') ? $this->route('owner')->id : null;
 
         return [
-            'full_name' => 'required|string|max:255', 
+            'full_name' => 'nullable|string|max:255', 
             'name_with_initial' => 'required|string|max:255',
-            'gender' => 'required|in:' . implode(',', array_column(Gender::cases(), 'value')), // Gender enum values
+            'gender' => 'nullable|in:' . implode(',', array_column(Gender::cases(), 'value')), // Gender enum values
            // 'civil_status' => 'required|in:' . implode(',', array_column(CivilStatus::cases(), 'value')), // Civil status enum values
-            'date_of_birth' => 'required|date', 
-            'nic' => ['required', 'regex:/^(\d{9}[VXvx]|\d{12})$/', 'string', 'max:12', 'unique:owners,nic,' . $ownerId], // NIC should be unique except for the current owner
-            'phone_number' => 'required|string|max:10|regex:/^0\d{9}$/', 
+            'date_of_birth' => 'nullable|date', 
+            'nic' => ['nullable', 'regex:/^(\d{9}[VXvx]|\d{12})$/', 'string', 'max:12', 'unique:owners,nic,' . $ownerId], // NIC should be unique except for the current owner
+            'phone_number' => 'required|string|regex:/^94\d{9}$/', 
             'whatsapp_number' => 'nullable|string|max:12|regex:/^0\d{9}$/', 
-            'email' => ['required', 'email', 'unique:owners,email,' . $ownerId], // Email should be unique except for the current owner
+            'email' => ['nullable', 'email', 'unique:owners,email,' . $ownerId], // Email should be unique except for the current owner
             'address_line_1' => 'required|string|max:255', 
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
         ];

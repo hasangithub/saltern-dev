@@ -46,6 +46,19 @@ Route::post('/owner/logout', [OwnerLoginController::class, 'logout'])->name('own
 
 Route::middleware(['auth:web'])->group(function () {
     Route::resource('owners', OwnerController::class);
+    Route::resource('memberships', MembershipController::class);
+    Route::resource('buyers', BuyerController::class);
+    Route::resource('yahai', YahaiController::class);
+    Route::resource('saltern',SalternController::class);
+
+    Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
+    Route::get('/weighbridge/entries/create', [WeighbridgeEntryController::class, 'create'])->name('weighbridge_entries.create');
+    Route::post('/weighbridge/entries', [WeighbridgeEntryController::class, 'store'])->name('weighbridge_entries.store');
+    Route::get('/weighbridge/entries/{entry_id}', [WeighbridgeEntryController::class, 'show'])->name('weighbridge_entries.show');
+    Route::put('weighbridge/entries/{entry_id}/tare', [WeighbridgeEntryController::class, 'addTare'])->name('weighbridge_entries.tare');
+
+
+
     Route::get('staff/complaints', [StaffComplaintController::class, 'index'])->name('staff.complaints.index');
     Route::get('staff/complaints/{complaint}', [StaffComplaintController::class, 'show'])->name('staff.complaints.show');
     Route::post('staff/complaints/{complaint}/assign', [StaffComplaintController::class, 'assign'])->name('staff.complaints.assign');
@@ -65,6 +78,14 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
+
+    Route::resource('sub-account-groups',SubAccountGroupController::class);
+Route::resource('ledgers',LedgerController::class);
+Route::resource('sub-ledgers',SubLedgerController::class);
+Route::resource('accounts', AccountGroupController::class);
+Route::resource('journal-entries', JournalEntryController::class);
+Route::resource('vouchers', VoucherController::class);
+Route::put('vouchers/{voucher_id}/approve', [VoucherController::class, 'approve'])->name('voucher.approve');
 });
 
 
@@ -81,25 +102,6 @@ Route::middleware(['auth:owner'])->group(function () {
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/', [DashboardController::class, 'index'])->name('home');
 
-Route::resource('buyers', BuyerController::class);
-Route::resource('memberships', MembershipController::class);
-
-
-Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
-Route::get('/weighbridge/entries/create', [WeighbridgeEntryController::class, 'create'])->name('weighbridge_entries.create');
-Route::post('/weighbridge/entries', [WeighbridgeEntryController::class, 'store'])->name('weighbridge_entries.store');
-Route::get('/weighbridge/entries/{entry_id}', [WeighbridgeEntryController::class, 'show'])->name('weighbridge_entries.show');
-Route::put('weighbridge/entries/{entry_id}/tare', [WeighbridgeEntryController::class, 'addTare'])->name('weighbridge_entries.tare');
-
-Route::resource('yahai', YahaiController::class);
-Route::resource('saltern',SalternController::class);
-Route::resource('sub-account-groups',SubAccountGroupController::class);
-Route::resource('ledgers',LedgerController::class);
-Route::resource('sub-ledgers',SubLedgerController::class);
-Route::resource('accounts', AccountGroupController::class);
-Route::resource('journal-entries', JournalEntryController::class);
-Route::resource('vouchers', VoucherController::class);
-Route::put('vouchers/{voucher_id}/approve', [VoucherController::class, 'approve'])->name('voucher.approve');
 Route::resource('owner-loans', OwnerLoanController::class);
 
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
