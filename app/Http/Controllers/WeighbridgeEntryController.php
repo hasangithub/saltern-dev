@@ -89,7 +89,7 @@ class WeighbridgeEntryController extends Controller
 
         $repayments = $request->input('repayments'); // Array: loan_id => amount
 
-        foreach ($repayments as $loanId => $amount) {
+        foreach ($repayments  ?? [] as $loanId => $amount) {
             if (!empty($amount) && $amount > 0) {
                 OwnerLoanRepayment::create([
                     'owner_loan_id' => $loanId,
