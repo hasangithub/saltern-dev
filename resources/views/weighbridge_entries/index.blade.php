@@ -52,7 +52,7 @@
                                     </td>
                                     <td>{{ $entry->membership->saltern->yahai->name }}</td>
                                     <td>{{ $entry->membership->saltern->name }}</td>
-                                    <td>{{ $entry->owner->full_name ?? 'N/A' }}</td>
+                                    <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
                                     <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
                                     <td> {{ $entry->is_service_charge_paid === 1 ? 'Paid' : ($entry->is_service_charge_paid === 0 ? 'Pending' : 'N/A') }}</td>
                                     <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
