@@ -66,7 +66,7 @@
                         </div>
                         <div class="col-md-3">
                             <strong>Owner</strong>
-                            <p class="text-muted"> {{ $weighbridgeEntry->owner->full_name }}</p>
+                            <p class="text-muted"> {{ $weighbridgeEntry->owner->name_with_initial }}</p>
                             <hr>
                             <strong>Waikal</strong>
                             <p class="text-muted"> {{ $weighbridgeEntry->membership->saltern->name }}</p>
