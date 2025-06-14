@@ -22,6 +22,7 @@ class WeighbridgeEntry extends Model
         'bags_count',
         'bag_price',
         'total_amount',
+        'owner_share_percentage',
         'status',
         'is_service_charge_paid',
         'created_by',
@@ -67,6 +68,7 @@ class WeighbridgeEntry extends Model
 
             $entry->created_by = auth('web')->id();
             $entry->updated_by = auth('web')->id();
+            $entry->owner_share_percentage = 30;
         });        
     }
 
