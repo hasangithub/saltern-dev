@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WeighbridgeEntry extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'vehicle_id',
         'culture',
@@ -20,7 +23,9 @@ class WeighbridgeEntry extends Model
         'bag_price',
         'total_amount',
         'status',
-        'is_service_charge_paid'
+        'is_service_charge_paid',
+        'created_by',
+        'updated_by',
     ];
 
     public function owner()
@@ -59,6 +64,9 @@ class WeighbridgeEntry extends Model
                 $entry->bags_count = bcdiv($entry->net_weight, 50, 2); // Divide net_weight by 50, keep 2 decimal places
                 $entry->total_amount = bcmul($entry->bags_count, $entry->bag_price, 2);
             }
+
+            $entry->created_by = auth('web')->id();
+            $entry->updated_by = auth('web')->id();
         });        
     }
 

@@ -54,11 +54,21 @@
                                     <td>{{ $entry->membership->saltern->name }}</td>
                                     <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
                                     <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
-                                    <td> {{ $entry->is_service_charge_paid === 1 ? 'Paid' : ($entry->is_service_charge_paid === 0 ? 'Pending' : 'N/A') }}</td>
+                                    <td> {{ $entry->is_service_charge_paid === 1 ? 'Paid' : ($entry->is_service_charge_paid === 0 ? 'Pending' : 'N/A') }}
+                                    </td>
                                     <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
+                                        <form action="{{ route('weighbridge-entries.delete', $entry->id) }}"
+                                            method="POST" style="display:inline;"
+                                            onsubmit="return confirm('Are you sure you want to delete this entry?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @endforeach

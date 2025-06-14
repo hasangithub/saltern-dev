@@ -87,6 +87,9 @@ class WeighbridgeEntryController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
+        $entry = WeighbridgeEntry::create($data);
+        $weighbridgeEntryId = $entry->id;
+
         $repayments = $request->input('repayments'); // Array: loan_id => amount
 
         foreach ($repayments  ?? [] as $loanId => $amount) {
@@ -94,6 +97,7 @@ class WeighbridgeEntryController extends Controller
                 OwnerLoanRepayment::create([
                     'owner_loan_id' => $loanId,
                     'buyer_id' => $validated['buyer_id'],
+                    'weighbridge_entry_id' => $weighbridgeEntryId,
                     'amount' => $amount,
                     'repayment_date' => now(),
                     'payment_method' => 'Cash',
@@ -129,7 +133,7 @@ class WeighbridgeEntryController extends Controller
             }
         }
 
-        WeighbridgeEntry::create($data);
+       
 
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
@@ -361,4 +365,18 @@ class WeighbridgeEntryController extends Controller
             'message' => 'No membership found for this saltern'
         ]);
     }
+
+    public function destroy($id)
+        {
+            $entry = WeighbridgeEntry::findOrFail($id);
+
+            // Soft delete related loan repayments, if any
+            OwnerLoanRepayment::where('weighbridge_entry_id', $entry->id)->delete();
+
+            // Soft delete the weighbridge entry
+            $entry->delete();
+
+            return redirect()->route('weighbridge_entries.index')
+                            ->with('success', 'Weighbridge entry and related loan repayment deleted.');
+        }
 }

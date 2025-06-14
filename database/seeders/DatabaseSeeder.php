@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(SeedersBuyerSeeder::class);
-        $this->call(OwnerSeeder::class);
+       // $this->call(OwnerSeeder::class);
         $this->call(AccountGroupsTableSeeder::class);
         $this->call(ExpenseCategorySeeder::class);
         $this->call(IncomeCategoriesSeeder::class);
