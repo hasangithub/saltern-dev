@@ -41,7 +41,7 @@
                             <select name="owner_id" class="form-control select2" required>
                                 <option value=""></option>
                                 @foreach($owners as $owner)
-                                <option value="{{ $owner->id }}">{{ @$owner->membership_no." ".$owner->owner->name_with_initial }}</option>
+                                <option value="{{ $owner->id }}">{{ @$owner->saltern->name." ".$owner->owner->name_with_initial }}</option>
                                 @endforeach
                             </select>
                         </div>
