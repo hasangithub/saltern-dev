@@ -108,7 +108,7 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $entry->transaction_date }}</td>
-                                            <td>{{ $entry->buyer->business_name ?? '-' }}</td>
+                                            <td>{{ $entry->buyer->full_name ?? '-' }}</td>
                                             <td>{{ $entry->culture}}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
                                             <td class="text-right">{{ $entry->bags_count }}</td>
