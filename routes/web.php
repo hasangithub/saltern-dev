@@ -140,6 +140,7 @@ Route::post('/sub-ledgers', [SubLedgerController::class, 'storeSubLedger'])->nam
 Route::get('/get-yahais', [WeighbridgeEntryController::class, 'getYahais'])->name('get.yahai');
 
 Route::get('api/salterns', [WeighbridgeEntryController::class, 'getSalterns'])->name('get.saltern');
+Route::get('api/reports/salterns', [ReportController::class, 'getSalterns'])->name('get.reports.saltern');
 Route::get('api/membership/{saltern_id}', [WeighbridgeEntryController::class, 'getMembershipDetails'])->name('get.membership');
 Route::get('get-saltern-details/{saltern_id}', [OwnerLoanController::class, 'getSalternDetails'])->name('get.saltern.details');
 

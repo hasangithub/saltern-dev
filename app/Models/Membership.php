@@ -18,7 +18,7 @@ class Membership extends Model
     ];
 
     public function owner(){
-        return $this->belongsTo(Owner::class);
+        return $this->belongsTo(Owner::class, 'owner_id');
     }
 
     public function saltern(){

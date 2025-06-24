@@ -57,6 +57,9 @@
                             @endphp
                             <div class="row g-1">
                                 <div class="col-md-4 col-sm-6">
+                                    <strong>Buyer Name:</strong> {{ $firstEntry->buyer->full_name }}
+                                </div>
+                                <div class="col-md-4 col-sm-6">
                                     <strong>From:</strong> {{ request('from_date') }}
                                 </div>
                                 <div class="col-md-4 col-sm-6">
@@ -71,12 +74,10 @@
                                     <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Buyer Name</th>
                                             <th>Culture</th>
                                             <th class="text-right">Net Weight (kg)</th>
                                             <th class="text-right">Bags</th>
                                             <th class="text-right">Tons</th>
-                                            <th class="text-right">Service Charge 30%</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -84,35 +85,31 @@
                                         $totalNetWeight = 0;
                                         $totalBags = 0;
                                         $totalAmount = 0;
-                                        $totalServiceCharge30 = 0;
+                                      
                                         @endphp
                                         @foreach($entries as $entry)
                                         @php
                                         $totalNetWeight += $entry->net_weight;
                                         $totalBags += $entry->bags_count;
                                         $totalAmount += $entry->total_amount;
-                                        $serviceCharge30 = round($entry->total_amount * ($entry->owner_share_percentage/100), 2);
-                                        $totalServiceCharge30 += $serviceCharge30;
+                                       
                                         @endphp
                                         <tr>
                                             <td>{{ $entry->transaction_date }}</td>
-                                            <td>{{ $entry->buyer->full_name ?? '-' }}</td>
                                             <td>{{ $entry->culture}}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
                                             <td class="text-right">{{ $entry->bags_count }}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}
                                             </td>
-                                            <td class="text-right">{{ number_format($serviceCharge30, 2) }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th colspan="3">Total</th>
+                                            <th colspan="2">Total</th>
                                             <th class="text-right">{{ number_format($totalNetWeight, 2) }}</th>
                                             <th class="text-right">{{ $totalBags }}</th>
                                             <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
-                                            <th class="text-right">{{ number_format($totalServiceCharge30, 2) }}</th>
                                         </tr>
                                     </tfoot>
                                 </table>

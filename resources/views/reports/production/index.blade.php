@@ -29,7 +29,7 @@
                         </div>
                         <div class="col-md-2">
                             <label>Yahai</label>
-                            <select name="yahai_id" class="form-control" required>
+                            <select name="yahai_id" id="yahai_id" class="form-control" required>
                                 <option value=""></option>
                                 @foreach($yahaies as $yahai)
                                 <option value="{{ $yahai->id }}">{{ $yahai->name }}</option>
@@ -38,11 +38,8 @@
                         </div>
                         <div class="col-md-2">
                             <label>Member</label>
-                            <select name="owner_id" class="form-control select2" required>
+                            <select name="saltern_id" id="saltern_id" class="form-control select2" required>
                                 <option value=""></option>
-                                @foreach($owners as $owner)
-                                <option value="{{ $owner->id }}">{{ @$owner->saltern->name." ".$owner->owner->name_with_initial }}</option>
-                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -81,7 +78,7 @@
                         </div>
                         <div class="col-md-2">
                             <label>Buyer </label>
-                            <select name="buyer_id" class="form-control">
+                            <select name="buyer_id" class="form-control" required>
                                 <option value="">All</option>
                                 @foreach($buyers as $buyer)
                                 <option value="{{ $buyer->id }}">{{ $buyer->business_name }}</option>
@@ -115,6 +112,32 @@
 $(document).ready(function() {
     $('.select2').select2();
     $('#membershipsTable').DataTable();
+
+    $('#yahai_id').change(function() {
+        const yahaiId = $(this).val();
+        $('#saltern_id').prop('disabled', true).empty().append(
+            '<option value="">Select Saltern</option>');
+        if (yahaiId) {
+            $.ajax({
+                url: "{{ route('get.reports.saltern') }}",
+                type: "GET",
+                data: {
+                    yahai_id: yahaiId
+                },
+                success: function(response) {
+                    response.salterns.forEach(saltern => {
+                        $('#saltern_id').append(
+                            `<option value="${saltern.id}">${saltern.name + " " + saltern.active_membership.owner.name_with_initial}</option>`
+                        );
+                    });
+                    $('#saltern_id').prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching salterns :', error);
+                }
+            });
+        }
+    });
 });
 </script>
 @endpush

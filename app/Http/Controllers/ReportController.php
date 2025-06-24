@@ -8,6 +8,7 @@ use App\Models\JournalDetail;
 use Illuminate\Http\Request;
 use App\Models\Ledger;
 use App\Models\Membership;
+use App\Models\Saltern;
 use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 
@@ -76,9 +77,9 @@ public function indexProduction()
                 ->whereHas('membership.saltern', function($query) use ($request) {
                     $query->where('yahai_id', $request->yahai_id);
                 })
-                ->when($request->owner_id, function($query) use ($request) {
+                ->when($request->saltern_id, function($query) use ($request) {
                     $query->whereHas('membership', function($q) use ($request) {
-                        $q->where('id', $request->owner_id);
+                        $q->where('id', $request->saltern_id);
                     });
                 })
                 ->when($request->buyer_id, function($query) use ($request) {
@@ -160,4 +161,13 @@ public function generateLedger(Request $request)
         return view('reports.production.buyer-result', compact('yahaies', 'owners', 'buyers', 'entries'));   
     }
 
+    public function getSalterns(Request $request)
+    {
+        $salterns = Saltern::with('activeMembership.owner')
+        ->where('yahai_id', $request->yahai_id)
+        ->whereHas('activeMembership') // ensures only those with active membership are included
+        ->get();
+
+            return response()->json(['salterns' => $salterns]);
+    }
 }
