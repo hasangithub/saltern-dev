@@ -38,7 +38,7 @@
                         </div>
                         <div class="col-md-2">
                             <label>Member</label>
-                            <select name="saltern_id" id="saltern_id" class="form-control select2" required>
+                            <select name="membership_id" id="membership_id" class="form-control select2" required>
                                 <option value=""></option>
                             </select>
                         </div>
@@ -115,7 +115,7 @@ $(document).ready(function() {
 
     $('#yahai_id').change(function() {
         const yahaiId = $(this).val();
-        $('#saltern_id').prop('disabled', true).empty().append(
+        $('#membership_id').prop('disabled', true).empty().append(
             '<option value="">Select Saltern</option>');
         if (yahaiId) {
             $.ajax({
@@ -126,11 +126,11 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     response.salterns.forEach(saltern => {
-                        $('#saltern_id').append(
-                            `<option value="${saltern.id}">${saltern.name + " " + saltern.active_membership.owner.name_with_initial}</option>`
+                        $('#membership_id').append(
+                            `<option value="${saltern.active_membership.id}">${saltern.name + " " + saltern.active_membership.owner.name_with_initial}</option>`
                         );
                     });
-                    $('#saltern_id').prop('disabled', false);
+                    $('#membership_id').prop('disabled', false);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching salterns :', error);

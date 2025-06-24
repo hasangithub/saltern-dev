@@ -77,9 +77,9 @@ public function indexProduction()
                 ->whereHas('membership.saltern', function($query) use ($request) {
                     $query->where('yahai_id', $request->yahai_id);
                 })
-                ->when($request->saltern_id, function($query) use ($request) {
+                ->when($request->membership_id, function($query) use ($request) {
                     $query->whereHas('membership', function($q) use ($request) {
-                        $q->where('id', $request->saltern_id);
+                        $q->where('id', $request->membership_id);
                     });
                 })
                 ->when($request->buyer_id, function($query) use ($request) {
