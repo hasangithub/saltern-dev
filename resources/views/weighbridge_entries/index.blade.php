@@ -34,9 +34,10 @@
                                     <th>Vehicle ID</th>
                                     <th>Net Weight(Kg)</th>
                                     <th>Yahai</th>
-                                    <th>Saltern</th>
+                                    <th>Waikal</th>
                                     <th>Owner</th>
                                     <th>Buyer</th>
+                                    <th>Amount</th>
                                     <th>Service Charge</th>
                                     <th></th>
                                 </tr>
