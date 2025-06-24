@@ -33,7 +33,7 @@
                                     <th>Date</th>
                                     <th>Turn</th>
                                     <th>Vehicle ID</th>
-                                    <th>Net Weight(Kg)</th>
+                                    <th>Weight</th>
                                     <th>Yahai</th>
                                     <th>Waikal</th>
                                     <th>bags</th>
