@@ -32,13 +32,13 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Turn</th>
+                                    <th>Buyer</th>
                                     <th>Vehicle ID</th>
-                                    <th>Weight</th>
+                                    <th>Owner</th>
                                     <th>Yahai</th>
                                     <th>Waikal</th>
+                                    <th>Weight</th>
                                     <th>bags</th>
-                                    <th>Owner</th>
-                                    <th>Buyer</th>
                                     <th>Amount</th>
                                     <th>Bill</th>
                                     <th></th>
@@ -49,13 +49,16 @@
                                 <tr>
                                     <td>{{ $entry->transaction_date }}</td>
                                     <td>{{ $entry->turn_no  }}</td>
+                                    <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
                                     <td>{{ $entry->vehicle_id }}</td>
-                                    <td>{{ $entry->net_weight }}</td>
+                                    <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
+                                   
                                     <td>{{ $entry->membership->saltern->yahai->name }}</td>
                                     <td>{{ $entry->membership->saltern->name }}</td>
+                                    <td>{{ $entry->net_weight }}</td>
                                     <td>{{ $entry->bags_count ?? 'N/A' }}</td>
-                                    <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
-                                    <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
+                                   
+                                  
                                     <td>{{ $entry->total_amount ?? 'N/A' }}</td>
                                     <td> N/A </td>
                                     <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
