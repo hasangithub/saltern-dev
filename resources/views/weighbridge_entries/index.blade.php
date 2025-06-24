@@ -32,8 +32,7 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Vehicle ID</th>
-                                    <th>1st Weight(Kg)</th>
-                                    <th>2nd Weight(Kg)</th>
+                                    <th>Net Weight(Kg)</th>
                                     <th>Yahai</th>
                                     <th>Saltern</th>
                                     <th>Owner</th>
@@ -47,9 +46,7 @@
                                 <tr>
                                     <td>{{ $entry->transaction_date }}</td>
                                     <td>{{ $entry->vehicle_id }}</td>
-                                    <td>{{ $entry->initial_weight }}</td>
-                                    <td> {!! $entry->tare_weight ?? '<span class="badge bg-warning">Pending</span>' !!}
-                                    </td>
+                                    <td>{{ $entry->net_weight }}</td>
                                     <td>{{ $entry->membership->saltern->yahai->name }}</td>
                                     <td>{{ $entry->membership->saltern->name }}</td>
                                     <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
