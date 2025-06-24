@@ -31,14 +31,16 @@
                             <thead>
                                 <tr>
                                     <th>Date</th>
+                                    <th>Turn</th>
                                     <th>Vehicle ID</th>
                                     <th>Net Weight(Kg)</th>
                                     <th>Yahai</th>
                                     <th>Waikal</th>
+                                    <th>bags</th>
                                     <th>Owner</th>
                                     <th>Buyer</th>
                                     <th>Amount</th>
-                                    <th>Service Charge</th>
+                                    <th>Bill</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -46,14 +48,16 @@
                                 @foreach($entries as $entry)
                                 <tr>
                                     <td>{{ $entry->transaction_date }}</td>
+                                    <td>{{ $entry->turn_no  }}</td>
                                     <td>{{ $entry->vehicle_id }}</td>
                                     <td>{{ $entry->net_weight }}</td>
                                     <td>{{ $entry->membership->saltern->yahai->name }}</td>
                                     <td>{{ $entry->membership->saltern->name }}</td>
+                                    <td>{{ $entry->bags_count ?? 'N/A' }}</td>
                                     <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
                                     <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
-                                    <td> {{ $entry->is_service_charge_paid === 1 ? 'Paid' : ($entry->is_service_charge_paid === 0 ? 'Pending' : 'N/A') }}
-                                    </td>
+                                    <td>{{ $entry->total_amount ?? 'N/A' }}</td>
+                                    <td> N/A </td>
                                     <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View

@@ -32,12 +32,27 @@ class WeighbridgeEntryController extends Controller
 
     public function index(Request $request)
     {
-        $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership'])
-        ->orderBy('created_at', 'desc') // Latest first
+       $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership'])
+        ->orderBy('transaction_date')
+        ->orderBy('created_at')
         ->get();
 
-        // Return the view with the entries and status counts
-        return view('weighbridge_entries.index', compact('entries'));
+    $grouped = $entries->groupBy(function ($item) {
+        if ($item->transaction_date) {
+            return Carbon::parse($item->transaction_date)->toDateString();
+        }
+        return 'unknown';
+    });
+
+    $numbered = collect();
+    foreach ($grouped as $day => $entriesForDay) {
+        foreach ($entriesForDay->values() as $index => $entry) {
+            $entry->turn_no = $index + 1;
+            $numbered->push($entry);
+        }
+    }
+
+    return view('weighbridge_entries.index', ['entries' => $numbered]);
     }
 
     public function create()
