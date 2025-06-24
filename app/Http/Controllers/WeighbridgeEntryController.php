@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SettingsHelper;
 use App\Models\Buyer;
 use App\Models\JournalDetail;
 use App\Models\JournalEntry;
@@ -18,7 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\SmsService;
-
+use Illuminate\Support\Facades\Log;
 
 class WeighbridgeEntryController extends Controller
 {
@@ -69,19 +70,20 @@ class WeighbridgeEntryController extends Controller
         $membership = Membership::findOrFail($request->membership_id);
         $buyer = Buyer::findOrFail($request->buyer_id);
         $data = $request->all();
+        $bagPrice = SettingsHelper::get('bag_price', 100); // default 100 if not set
+        $bagPerWeight = SettingsHelper::get('bag_per_weight', 50);
         $data['owner_id'] = $membership->owner_id;
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
-        $data['bag_price'] = 100;
+        $data['bag_price'] = $bagPrice;
         $data['status'] = 'approved';
 
         $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
 
         // Calculate number of bags (assuming each bag is 50kg)
-        $bags = $netWeight / 50;
+        $bags = $netWeight / $bagPerWeight;
 
         // Calculate service charge
-        $serviceCharge = $bags * 100;
-        $serviceChargeMain = $bags * 100;
+        $serviceChargeMain = $bags * $bagPrice;
         $loans = OwnerLoan::where('membership_id', $request->membership_id)
             ->whereRaw('(approved_amount - (SELECT COALESCE(SUM(amount), 0) FROM owner_loan_repayments WHERE owner_loan_repayments.owner_loan_id = owner_loans.id)) > 0')
             ->orderBy('created_at', 'asc')
@@ -349,10 +351,14 @@ class WeighbridgeEntryController extends Controller
     public function getMembershipDetails($saltern_id)
     {
         $membership = Membership::where('saltern_id', $saltern_id)
+            ->where('is_active', 1)
             ->with('owner')  // Eager load the owner
             ->first();
 
+        Log::info("Selected saltern_id: " . $saltern_id);
+
         if ($membership) {
+            Log::info("Selected saltern_id: " . $saltern_id . " Owner" . $membership->owner->name_with_initial);
             return response()->json([
                 'status' => 'success',
                 'membership' => $membership,

@@ -100,11 +100,14 @@ class OwnerLoanController extends Controller
         $loans = [];
 
         $membership = Membership::where('saltern_id', $saltern_id)
+            ->where('is_active', 1)
             ->with('owner')  // Eager load the owner
             ->first();
         
-        $loans = OwnerLoan::where('membership_id', $membership->id)->get();
-
+            if ($membership) {
+                $loans = OwnerLoan::where('membership_id', $membership->id)->get();
+            }
+        
         $html = view('weighbridge_entries.loan-details', [
             'saltern' => $saltern,
             'membership' => '',

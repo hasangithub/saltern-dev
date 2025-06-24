@@ -21,103 +21,120 @@
                 <div class="card-body">
                     <form action="{{ route('weighbridge_entries.store') }}" method="POST" autocomplete="off">
                         @csrf
+                        <div class="form-group row">
+                            <label for="transaction_date" class="col-sm-2 col-form-label">Transaction Date</label>
+                            <div class="col-sm-10">
+                                <input type="date" name="transaction_date" id="transaction_date" class="form-control"
+                                    value="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="Serial" class="col-sm-2 col-form-label">Serial Number</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="serial" id="serial" class="form-control"
+                                    value="{{$nextSerialNo}}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="culture" class="col-sm-2 col-form-label">Select Culture</label>
+                            <div class="col-sm-10">
+                                <select id="culture" name="culture" class="form-control" required>
+                                    <option value="">-- Select culture --</option>
+                                    <option value="Ag Salt">Ag Salt</option>
+                                    <option value="yala">Yala</option>
+                                    <option value="maha">Maha</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="side_id" class="col-sm-2 col-form-label">Select Side</label>
+                            <div class="col-sm-10">
+                                <select id="side_id" name="side_id" class="form-control" required>
+                                    <option value="">-- Select Side --</option>
+                                    @foreach ($sides as $side)
+                                    <option value="{{ $side->id }}">{{ ucfirst($side->name) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="yahai_id" class="col-sm-2 col-form-label">Select Yahai</label>
+                            <div class="col-sm-10">
+                                <select id="yahai_id" name="yahai_id" class="form-control" required>
+                                    <option value="">-- Select Yahai --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="saltern_id" class="col-sm-2 col-form-label">Select Waikal No</label>
+                            <div class="col-sm-10">
+                                <select id="saltern_id" name="saltern_id" class="form-control" required>
+                                    <option value="">-- Select Waikal No --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="owner_full_name" class="col-sm-2 col-form-label">Owner</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="membership_name" id="membership_name" class="form-control"
+                                    required readonly>
+                                <input type="hidden" name="membership_id" id="membership_id" class="form-control"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="buyer_id" class="col-sm-2 col-form-label">Buyer</label>
+                            <div class="col-sm-10">
+                                <select name="buyer_id" id="buyer_id" class="form-control" required>
+                                    <option value="">Select Buyer</option>
+                                    @foreach($buyers as $buyer)
+                                    <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="vehicle_id" class="col-sm-2 col-form-label">Vehicle ID</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="vehicle_id" id="vehicle_id" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="initial_weight" class="col-sm-2 col-form-label">First Weight</label>
+                            <div class="col-sm-10">
+                                <input type="number" step="1" name="initial_weight" id="initial_weight"
+                                    class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="initial_weight" class="col-sm-2 col-form-label">Second Weight</label>
+                            <div class="col-sm-10">
+                                <input type="number" step="1" name="tare_weight" id="tare_weight" class="form-control"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="initial_weight" class="col-sm-2 col-form-label">Net Weight</label>
+                            <div class="col-sm-10">
+                                <input type="number" step="1" name="net_weight" id="net_weight" class="form-control"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="bags" class="col-sm-2 col-form-label">Bags</label>
+                            <div class="col-sm-10">
+                                <input type="number" step="0.01" name="bags" id="bags" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="service_charge" class="col-sm-2 col-form-label">Service Charge</label>
+                            <div class="col-sm-10">
+                                <input type="number" step="0.01" name="service_charge" id="service_charge"
+                                    class="form-control" readonly>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="transaction_date">Transaction Date</label>
-                                    <input type="date" name="transaction_date" id="transaction_date"
-                                        class="form-control" value="{{ date('Y-m-d') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="Serial">Serial Number</label>
-                                    <input type="text" name="serial" id="serial" class="form-control"
-                                        value="{{$nextSerialNo}}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="culture" class="form-label">Select Culture</label>
-                                    <select id="culture" name="culture" class="form-control" required>
-                                        <option value="">-- Select culture --</option>
-                                        <option value="Ag Salt">Ag Salt</option>
-                                        <option value="yala">Yala</option>
-                                        <option value="maha">Maha</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="side_id" class="form-label">Select Side</label>
-                                    <select id="side_id" name="side_id" class="form-control" required>
-                                        <option value="">-- Select Side --</option>
-                                        @foreach ($sides as $side)
-                                        <option value="{{ $side->id }}">{{ ucfirst($side->name) }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="yahai_id" class="form-label">Select Yahai</label>
-                                    <select id="yahai_id" name="yahai_id" class="form-control" required>
-                                        <option value="">-- Select Yahai --</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="saltern_id" class="form-label">Select Waikal No</label>
-                                    <select id="saltern_id" name="saltern_id" class="form-control" required>
-                                        <option value="">-- Select Waikal No --</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="owner_full_name">Owner</label>
-                                    <input type="text" name="membership_name" id="membership_name" class="form-control"
-                                        required readonly>
-                                    <input type="hidden" name="membership_id" id="membership_id" class="form-control"
-                                        required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="buyer_id">Buyer</label>
-                                    <select name="buyer_id" id="buyer_id" class="form-control" required>
-                                        <option value="">Select Buyer</option>
-                                        @foreach($buyers as $buyer)
-                                        <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="vehicle_id">Vehicle ID</label>
-                                    <input type="text" name="vehicle_id" id="vehicle_id" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="turn">Turn Number</label>
-                                    <input type="number" name="turn" id="turn" class="form-control" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label for="initial_weight">First Weight</label>
-                                    <input type="number" step="1" name="initial_weight" id="initial_weight"
-                                        class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="initial_weight">Second Weight</label>
-                                    <input type="number" step="1" name="tare_weight" id="tare_weight"
-                                        class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="initial_weight">Net Weight</label>
-                                    <input type="number" step="1" name="net_weight" id="net_weight" class="form-control"
-                                        readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="bags">Bags</label>
-                                    <input type="number" step="0.01" name="bags" id="bags" class="form-control"
-                                        readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="service_charge">Service Charge</label>
-                                    <input type="number" step="0.01" name="service_charge" id="service_charge"
-                                        class="form-control" readonly>
-                                </div>
-
                                 <div class="card mt-3">
                                     <div class="card-body bg-light">
                                         <h5 class="card-title text-primary">Transaction Details</h5>
@@ -166,6 +183,20 @@
 @push('js')
 <script>
 $(document).ready(function() {
+    const $form = $('form');
+    const $submitBtn = $form.find('button[type="submit"]');
+
+    // Re-enable submit button on page load in case it was disabled before
+    if ($submitBtn.prop('disabled')) {
+        $submitBtn.prop('disabled', false);
+        $submitBtn.text('Save'); // Reset to your default button text
+    }
+
+    $form.on('submit', function() {
+        $submitBtn.prop('disabled', true);
+        $submitBtn.text('Submitting...');
+    });
+
     $('#side_id').change(function() {
         const sideId = $(this).val();
 

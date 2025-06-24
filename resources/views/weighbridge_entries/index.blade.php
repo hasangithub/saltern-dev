@@ -27,13 +27,13 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="weighbridgeTable" class="table table-sm" style="width:100%">
+                        <table id="weighbridgeTable" class="table table-sm nowrap" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Date</th>
                                     <th>Vehicle ID</th>
-                                    <th>First Weight(Kg)</th>
-                                    <th>Second Weight(Kg)</th>
+                                    <th>1st Weight(Kg)</th>
+                                    <th>2nd Weight(Kg)</th>
                                     <th>Yahai</th>
                                     <th>Saltern</th>
                                     <th>Owner</th>
@@ -94,7 +94,7 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#weighbridgeTable').DataTable();
+    $('#weighbridgeTable').DataTable({ order: [[0, 'desc']],   pageLength: 50 });
 });
 </script>
 @endpush
