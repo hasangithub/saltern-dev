@@ -39,7 +39,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="culture" class="col-sm-3 col-form-label">Select Culture</label>
+                                    <label for="culture" class="col-sm-3 col-form-label">Culture</label>
                                     <div class="col-sm-9">
                                         <select id="culture" name="culture" class="form-control" required>
                                             <option value="">-- Select culture --</option>
@@ -50,7 +50,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="side_id" class="col-sm-3 col-form-label">Select Side</label>
+                                    <label for="side_id" class="col-sm-3 col-form-label">Side</label>
                                     <div class="col-sm-9">
                                         <select id="side_id" name="side_id" class="form-control" required>
                                             <option value="">-- Select Side --</option>
@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="yahai_id" class="col-sm-3 col-form-label">Select Yahai</label>
+                                    <label for="yahai_id" class="col-sm-3 col-form-label">Yahai</label>
                                     <div class="col-sm-9">
                                         <select id="yahai_id" name="yahai_id" class="form-control" required>
                                             <option value="">-- Select Yahai --</option>
@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="saltern_id" class="col-sm-3 col-form-label">Select Waikal No</label>
+                                    <label for="saltern_id" class="col-sm-3 col-form-label">Waikal No</label>
                                     <div class="col-sm-9">
                                         <select id="saltern_id" name="saltern_id" class="form-control" required>
                                             <option value="">-- Select Waikal No --</option>
@@ -104,14 +104,14 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="initial_weight" class="col-sm-3 col-form-label">First Weight</label>
+                                    <label for="initial_weight" class="col-sm-3 col-form-label">1st Weight</label>
                                     <div class="col-sm-9">
                                         <input type="number" step="1" name="initial_weight" id="initial_weight"
                                             class="form-control" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="initial_weight" class="col-sm-3 col-form-label">Second Weight</label>
+                                    <label for="initial_weight" class="col-sm-3 col-form-label">2nd Weight</label>
                                     <div class="col-sm-9">
                                         <input type="number" step="1" name="tare_weight" id="tare_weight"
                                             class="form-control" required>
