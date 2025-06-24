@@ -24,15 +24,14 @@
                             <form action="{{ route('weighbridge_entries.store') }}" method="POST" autocomplete="off">
                                 @csrf
                                 <div class="form-group row">
-                                    <label for="transaction_date" class="col-sm-3 col-form-label">Transaction
-                                        Date</label>
+                                    <label for="transaction_date" class="col-sm-3 col-form-label">Date</label>
                                     <div class="col-sm-9">
                                         <input type="date" name="transaction_date" id="transaction_date"
                                             class="form-control" value="{{ date('Y-m-d') }}">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="Serial" class="col-sm-3 col-form-label">Serial Number</label>
+                                    <label for="Serial" class="col-sm-3 col-form-label">Order No</label>
                                     <div class="col-sm-9">
                                         <input type="text" name="serial" id="serial" class="form-control"
                                             value="{{$nextSerialNo}}">
