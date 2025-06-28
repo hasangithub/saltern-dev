@@ -8,6 +8,7 @@ use App\Enums\CivilStatus;
 use App\Enums\Gender;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\OwnerResetPasswordNotification;
 
 class Owner extends Authenticatable
 {
@@ -21,6 +22,11 @@ class Owner extends Authenticatable
         'full_name', 'name_with_initial', 'gender', 'civil_status', 'date_of_birth', 'nic',
         'phone_number', 'whatsapp_number', 'email', 'password', 'address_line_1', 'profile_picture',
     ];
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new OwnerResetPasswordNotification($token));
+    }
 
     protected $hidden = ['password', 'remember_token'];
 

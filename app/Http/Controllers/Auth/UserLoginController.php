@@ -20,6 +20,12 @@ class UserLoginController extends Controller
             'password' => 'required'
         ]);
 
+        if (auth()->guard('owner')->check()) {
+            auth()->guard('owner')->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+        }
+
         if (Auth::guard('web')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
             return redirect()->intended('/admin/dashboard');
         }

@@ -13,11 +13,11 @@
         <li class="nav-item">
             <a class="nav-link" href="#">
                 @if(auth('web')->check())
-                {{ auth('web')->user()->name }}
+                    {{ auth('web')->user()->name }}
                 @elseif(auth('owner')->check())
-                {{ auth('owner')->user()->full_name }}
+                    {{ auth('owner')->user()->full_name }}
                 @elseif(auth('buyer')->check())
-                {{ auth('buyer')->user()->name }}
+                    {{ auth('buyer')->user()->name }}
                 @else
                 Guest
                 @endif

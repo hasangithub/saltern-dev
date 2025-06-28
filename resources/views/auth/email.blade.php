@@ -26,7 +26,7 @@
         <!-- /.login-logo -->
         <div class="card">
             <div class="card-body login-card-body">
-                <p class="login-box-msg">Sign in to start your session</p>
+                <p class="login-box-msg"></p>
                 @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">
@@ -36,12 +36,17 @@
                     </ul>
                 </div>
                 @endif
+                @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+                @endif
                 <h2>Forgot Password ({{ ucfirst($type) }})</h2>
 
                 <form method="POST" action="{{ route('password.email') }}">
                     @csrf
                     <input type="hidden" name="type" value="{{ $type }}">
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
                     <button type="submit">Send Reset Link</button>
                 </form>
 
