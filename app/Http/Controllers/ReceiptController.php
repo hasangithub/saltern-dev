@@ -54,6 +54,27 @@ public function create(Request $request)
 
 public function store(Request $request)
 {   
+    $request->validate([
+        'buyer_id' => 'required|exists:buyers,id',
+        'service_entry_ids' => 'array',
+        'repayment_ids' => 'array',
+        'otherincome_ids' => 'array',
+    ]);
+    
+    // ✅ Custom manual check after Laravel validation
+    if (
+        empty($request->input('service_entry_ids')) &&
+        empty($request->input('repayment_ids')) &&
+        empty($request->input('otherincome_ids'))
+    ) {
+        return back()
+            ->withInput()
+            ->withErrors([
+                'service_entry_ids' => 'You must select at least one payment item (service entry, repayment, or other income).'
+            ]);
+    }
+
+
     $buyerId = $request->input('buyer_id');
     $serviceEntryIds = $request->input('service_entry_ids', []);
     $repaymentIds = $request->input('repayment_ids', []);
