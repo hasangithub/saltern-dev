@@ -20,6 +20,12 @@ class OwnerLoginController extends Controller
             'password' => 'required'
         ]);
 
+        if (auth()->guard('web')->check()) {
+            auth()->guard('web')->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+        }
+
         if (Auth::guard('owner')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
             return redirect()->intended('/productions');
         }

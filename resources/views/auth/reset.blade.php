@@ -21,44 +21,31 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="../../index2.html"><b>Owner</b>Login</a>
+            <a href="../../index2.html"><b>Admin</b>Login</a>
         </div>
         <!-- /.login-logo -->
         <div class="card">
             <div class="card-body login-card-body">
-                <p class="login-box-msg">Sign in to start your session</p>
+                <p class="login-box-msg"></p>
                 @if($errors->any())
                 <div style="color: red">{{ $errors->first() }}</div>
                 @endif
-                <form method="POST" action="{{ url('/owner/login') }}">
-                    @csrf
-                    <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                </form>
+                @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+                @endif
+                <h2>Reset Password ({{ ucfirst($type) }})</h2>
 
-                <p class="mb-1">
-                    <a href="{{ route('password.request', ['type' => 'owner']) }}">I forgot my password</a>
-                </p>
+                <form method="POST" action="{{ route('password.update') }}">
+                    @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
+                    <input type="hidden" name="type" value="{{ $type }}">
+                    <input type="email" name="email" value="{{ old('email', $email) }}" required>
+                    <input type="password" name="password" placeholder="New Password" required>
+                    <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
+                    <button type="submit">Reset Password</button>
+                </form>
             </div>
             <!-- /.login-card-body -->
         </div>

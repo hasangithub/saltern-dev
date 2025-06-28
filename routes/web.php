@@ -205,4 +205,14 @@ Route::prefix('admin/staff-loans')->group(function () {
 Route::get('/import-form', [AccountImportController::class, 'showForm'])->name('accounts.form');
 Route::post('/import-chart', [AccountImportController::class, 'import'])->name('accounts.import');
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
+Route::get('/password/request/{type}', [ForgotPasswordController::class, 'showRequestForm'])->name('password.request');
+Route::post('/password/email', [ForgotPasswordController::class, 'sendLink'])->name('password.email');
+
+Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
 

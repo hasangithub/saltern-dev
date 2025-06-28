@@ -21,44 +21,35 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="../../index2.html"><b>Owner</b>Login</a>
+            <a href=""><b>Forgot Password</a>
         </div>
         <!-- /.login-logo -->
         <div class="card">
             <div class="card-body login-card-body">
-                <p class="login-box-msg">Sign in to start your session</p>
-                @if($errors->any())
-                <div style="color: red">{{ $errors->first() }}</div>
+                <p class="login-box-msg"></p>
+                @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @endif
-                <form method="POST" action="{{ url('/owner/login') }}">
+                @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+                @endif
+                <h2>Forgot Password ({{ ucfirst($type) }})</h2>
+
+                <form method="POST" action="{{ route('password.email') }}">
                     @csrf
-                    <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                        </div>
-                        <!-- /.col -->
-                    </div>
+                    <input type="hidden" name="type" value="{{ $type }}">
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                    <button type="submit">Send Reset Link</button>
                 </form>
 
-                <p class="mb-1">
-                    <a href="{{ route('password.request', ['type' => 'owner']) }}">I forgot my password</a>
-                </p>
             </div>
             <!-- /.login-card-body -->
         </div>
