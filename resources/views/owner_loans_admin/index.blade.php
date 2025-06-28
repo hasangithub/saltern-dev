@@ -15,6 +15,8 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Owner Loans</h3>
+                    <a href="{{ route('admin.owner_loans.create') }}" class="btn btn-success float-right"> <i
+                            class="fas fa-plus"></i> Create Owner Loans </a>
                 </div>
 
                 <div class="card-body">
@@ -40,7 +42,7 @@
                                 @foreach($ownerLoans as $ownerLoan)
                                 <tr>
                                     <td>{{ $ownerLoan->formatted_date }}</td>
-                                    <td>{{ $ownerLoan->membership->owner->full_name }}</td>
+                                    <td>{{ $ownerLoan->membership->owner->name_with_initial }}</td>
                                     <td>{{ $ownerLoan->requested_amount }}</td>
                                     <td>{{ $ownerLoan->approved_amount }}</td>
                                     <td>{{ number_format($ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount') ?: 0, 2) }}</td>
@@ -49,10 +51,10 @@
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        <a href="{{ route('loan-repayments.create-for-loan', $ownerLoan->id) }}"
+                                        <!-- <a href="{{ route('loan-repayments.create-for-loan', $ownerLoan->id) }}"
                                             class="btn btn-primary btn-xs">
                                             + Repayment
-                                        </a>
+                                        </a> -->
                                     </td>
                                 </tr>
                                 @endforeach

@@ -10,23 +10,33 @@ use App\Models\OtherIncome;
 use App\Models\WeighbridgeEntry;
 use App\Models\OwnerLoan;
 use App\Models\OwnerLoanRepayment;
+use App\Models\Receipt;
+use App\Models\ReceiptDetail;
 use Carbon\Carbon;
 
 class ReceiptController extends Controller
 {
 
-public function index(Request $request)
+    public function index()
+    {
+        $receipts = Receipt::with(['buyer', 'createdBy', 'details'])->latest()->paginate(20);
+        return view('receipts.index', compact('receipts'));
+    }
+
+public function create(Request $request)
 {
     $buyers = Buyer::all();
     $pendingServiceCharges = collect();
     $pendingLoanRepayments = collect();
     $pendingOtherIncomes = collect();
     $buyerName = '';
+    $buyerId = '';
 
     if ($request->filled('buyer_id')) {
         $buyer = Buyer::find($request->buyer_id);
         if ($buyer) {
-            $buyerName = $buyer->business_name;
+            $buyerName = $buyer->full_name;
+            $buyerId = $buyer->id;
             
             // Get pending weighbridge service charges
             $pendingServiceCharges = WeighbridgeEntry::where('buyer_id', $buyer->id)->where('is_service_charge_paid', 0)
@@ -39,7 +49,7 @@ public function index(Request $request)
         }
     }
 
-    return view('receipts.index', compact('buyers', 'pendingServiceCharges', 'pendingLoanRepayments', 'pendingOtherIncomes', 'buyerName'));
+    return view('receipts.create', compact('buyers', 'pendingServiceCharges', 'pendingLoanRepayments', 'pendingOtherIncomes', 'buyerName', 'buyerId'));
 }
 
 public function store(Request $request)
@@ -48,6 +58,26 @@ public function store(Request $request)
     $serviceEntryIds = $request->input('service_entry_ids', []);
     $repaymentIds = $request->input('repayment_ids', []);
     $otherIncomeIds = $request->input('otherincome_ids', []);
+
+    $totalAmount = 0;
+
+    // 1. Calculate total amount first
+    foreach ($serviceEntryIds as $id) {
+        $totalAmount += WeighbridgeEntry::find($id)?->total_amount ?? 0;
+    }
+    foreach ($repaymentIds as $id) {
+        $totalAmount += OwnerLoanRepayment::find($id)?->amount ?? 0;
+    }
+    foreach ($otherIncomeIds as $id) {
+        $totalAmount += OtherIncome::find($id)?->amount ?? 0;
+    }
+
+    $receipt = Receipt::create([
+        'buyer_id'     => $buyerId,
+        'receipt_date' => now(),
+        'total_amount' => $totalAmount,
+        'created_by'   => auth('web')->id(),
+    ]);
 
     // Update service entries status
     if (!empty($serviceEntryIds)) {
@@ -79,6 +109,13 @@ public function store(Request $request)
             ];
     
             JournalDetail::insert($details);
+
+            ReceiptDetail::create([
+                'receipt_id' => $receipt->id,
+                'entry_type' => 'weighbridge',
+                'entry_id'   => $serviceEntryId,
+                'amount'     => $serviceCharge,
+            ]);
         }
         WeighbridgeEntry::whereIn('id', $serviceEntryIds)
             ->update(['is_service_charge_paid' => 1]); // Assuming 1 means paid
@@ -119,6 +156,13 @@ public function store(Request $request)
     
             JournalDetail::insert($details);
 
+            ReceiptDetail::create([
+                'receipt_id' => $receipt->id,
+                'entry_type' => 'loan',
+                'entry_id'   => $repaymentId,
+                'amount'     => $repaymentAmount,
+            ]);
+
         }
     }
 
@@ -155,6 +199,13 @@ public function store(Request $request)
             ];
     
             JournalDetail::insert($details);
+
+            ReceiptDetail::create([
+                'receipt_id' => $receipt->id,
+                'entry_type' => 'other_income',
+                'entry_id'   => $otherIncomeId,
+                'amount'     => $otherIncomeAmount,
+            ]);
 
         }
     }

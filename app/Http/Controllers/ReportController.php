@@ -163,9 +163,9 @@ public function generateLedger(Request $request)
 
     public function getSalterns(Request $request)
     {
-        $salterns = Saltern::with('activeMembership.owner')
+        $salterns = Saltern::with('memberships.owner')
         ->where('yahai_id', $request->yahai_id)
-        ->whereHas('activeMembership') // ensures only those with active membership are included
+        ->whereHas('memberships') // ensures only those with active membership are included
         ->get();
 
             return response()->json(['salterns' => $salterns]);

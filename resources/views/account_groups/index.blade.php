@@ -53,22 +53,22 @@
                         <ul class="treeview">
                             @foreach($accounts as $key => $account)
                             <li class="treeview-item">
-                                <i class="fas fa-folder"></i> {{ $account->name }}
+                                <i class="fas fa-folder"></i> {{ $account->id ." ". $account->name }}
                                 @if($account->subAccountGroups->isNotEmpty())
                                 @foreach($account->subAccountGroups as $subKey => $subAccount)
                                 <ul class="nested">
                                     <li class="treeview-item">
-                                        <i class="fas fa-folder"></i> {{ $subAccount->name }}
+                                        <i class="fas fa-folder"></i> {{ $subAccount->id . " " .$subAccount->name }}
                                         @if($subAccount->ledgers->isNotEmpty())
                                         @foreach($subAccount->ledgers as $ledgerKey => $ledger)
                                         <ul class="nested">
                                             <li class="treeview-item">
-                                                <i class="fas fa-folder"></i> {{ $ledger->name }}
+                                                <i class="fas fa-folder"></i> {{ $ledger->id . " " .$ledger->name }}
                                                 @if($ledger->subLedgers->isNotEmpty())
                                                 @foreach($ledger->subLedgers as $subLedgerKey => $subLedger)
                                                 <ul class="nested">
                                                     <li class="treeview-item"><i class="fas fa-file"></i>
-                                                        {{$subLedger->name}}</li>
+                                                        {{$subLedger->id . " " .$subLedger->name}}</li>
                                                 </ul>
                                                 @endforeach
                                                 @endif

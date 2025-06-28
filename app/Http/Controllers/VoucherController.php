@@ -6,6 +6,7 @@ use App\Models\Bank;
 use App\Models\JournalDetail;
 use App\Models\JournalEntry;
 use App\Models\Ledger;
+use App\Models\OwnerLoan;
 use App\Models\PaymentMethod;
 use App\Models\SubLedger;
 use App\Models\Voucher;
@@ -55,7 +56,9 @@ class VoucherController extends Controller
         $paymentMethods = PaymentMethod::all();
         $banks = SubLedger::where('ledger_id', 11)->get();
         $ledgers = Ledger::all();
-        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers'));
+        $ownerLoans = OwnerLoan::with('membership')->where('status', 'approved')->whereNull('voucher_id')->where('is_migrated', false)->get();
+
+        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers', 'ownerLoans'));
     }
 
     public function store(Request $request)
@@ -70,10 +73,21 @@ class VoucherController extends Controller
             'cheque_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
             'note' => 'nullable|string',
-            'status' => 'nullable'
+            'status' => 'nullable',
+            'owner_loan_id' => 'nullable|exists:owner_loans,id',
+            'ledger_id' => 'required_without:owner_loan_id',
+            'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
         ]);
 
-        Voucher::create($validated);
+        $voucher = Voucher::create($validated);
+
+        if ($request->filled('owner_loan_id')) {
+            $ownerLoan = OwnerLoan::findOrFail($request->owner_loan_id);
+        
+            $ownerLoan->update([
+                'voucher_id' => $voucher->id,
+            ]);
+        }
 
         
         $journal = JournalEntry::create([
@@ -81,24 +95,49 @@ class VoucherController extends Controller
             'description' => 'Voucher',
         ]);
 
-        $details = [
-            [
-                'journal_id' => $journal->id,
-                'ledger_id' => $request->input('ledger_id'),
-                'sub_ledger_id' => null,
-                'debit_amount' => $validated['amount'],
-                'credit_amount' => null,
-                'description' => '',
-            ],
-            [
-                'journal_id' => $journal->id,
-                'ledger_id' => 11,
-                'sub_ledger_id' => $validated['bank_sub_ledger_id'],
-                'debit_amount' => null,
-                'credit_amount' => $validated['amount'],
-                'description' => '',
-            ],
-        ];
+        if ($request->filled('owner_loan_id')) {
+
+            $details = [
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 12,
+                    'sub_ledger_id' => 115,
+                    'debit_amount' => $validated['amount'],
+                    'credit_amount' => null,
+                    'description' => '',
+                ],
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 11,
+                    'sub_ledger_id' => $validated['bank_sub_ledger_id'],
+                    'debit_amount' => null,
+                    'credit_amount' => $validated['amount'],
+                    'description' => '',
+                ],
+            ];
+    
+
+        } else {
+            $details = [
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => $request->input('ledger_id'),
+                    'sub_ledger_id' => null,
+                    'debit_amount' => $validated['amount'],
+                    'credit_amount' => null,
+                    'description' => '',
+                ],
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 11,
+                    'sub_ledger_id' => $validated['bank_sub_ledger_id'],
+                    'debit_amount' => null,
+                    'credit_amount' => $validated['amount'],
+                    'description' => '',
+                ],
+            ];
+    
+        }
 
         JournalDetail::insert($details);
 

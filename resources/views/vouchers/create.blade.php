@@ -54,6 +54,16 @@
                             required>{{ old('description') }}</textarea>
                     </div>
 
+                    <div class="form-group">
+                        <label for="owner_loan_id">Owner Loan</label>
+                        <select name="owner_loan_id" id="owner_loan_id" class="form-control">
+                            <option value=""></option>
+                            @foreach($ownerLoans as $ownerLoan)
+                            <option value="{{ $ownerLoan->id }}">{{ $ownerLoan->membership->saltern->yahai->name ." ".$ownerLoan->membership->saltern->name ." ". $ownerLoan->membership->owner->name_with_initial ." - ". $ownerLoan->approved_amount }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <!-- Payment Method -->
                     <div class="form-group">
                         <label for="payment_method">Payment Method</label>
@@ -100,7 +110,7 @@
 
                     <div class="form-group">
                         <label for="ledger">Select Ledger:</label>
-                        <select name="ledger_id" id="ledger" class="form-control" required>
+                        <select name="ledger_id" id="ledger" class="form-control">
                             <option value="">-- Select Ledger --</option>
                             @foreach ($ledgers as $ledger)
                             <option value="{{ $ledger->id }}">{{ $ledger->name }}</option>

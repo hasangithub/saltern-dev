@@ -69,7 +69,7 @@
                                 @foreach($loans as $loan)
                                 <tr>
                                     <td>{{ $loan->formatted_date  }}</td>
-                                    <td>{{ $loan->membership->owner->full_name }}</td>
+                                    <td>{{ $loan->membership->owner->name_with_initial }}</td>
                                     <td>{{ $loan->membership->saltern->yahai->side->name." ".$loan->membership->saltern->yahai->name." - ".$loan->membership->saltern->name }}</td>
                                     <td>{{ $loan->requested_amount }}</td>
                                     <td>{{ $loan->approved_amount }}</td>

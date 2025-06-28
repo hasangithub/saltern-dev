@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Weighbridge Entry')
+@section('content_header_title', 'Create Owner Loan')
 @section('content_header_subtitle', 'Welcome')
 
 {{-- Content body: main page content --}}
@@ -15,39 +15,29 @@
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">Create new entry</h3>
+                    <h3 class="card-title">Create new Loan for owner</h3>
                 </div>
 
                 <div class="card-body">
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <div class="row">
                         <div class="col-md-6">
-                            <form action="{{ route('weighbridge_entries.store') }}" method="POST" autocomplete="off">
+                            <form action="{{ route('admin.owner_loans.store') }}" method="POST" autocomplete="off">
                                 @csrf
-                                <div class="form-group row">
-                                    <label for="transaction_date" class="col-sm-3 col-form-label">Date</label>
-                                    <div class="col-sm-9">
-                                        <input type="date" name="transaction_date" id="transaction_date"
-                                            class="form-control" value="{{ date('Y-m-d') }}">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="Serial" class="col-sm-3 col-form-label">Order No</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="serial" id="serial" class="form-control"
-                                            value="{{$nextSerialNo}}">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="culture" class="col-sm-3 col-form-label">Culture</label>
-                                    <div class="col-sm-9">
-                                        <select id="culture" name="culture" class="form-control" required>
-                                            <option value="">-- Select culture --</option>
-                                            <option value="Ag Salt">Ag Salt</option>
-                                            <option value="yala">Yala</option>
-                                            <option value="maha">Maha</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            
                                 <div class="form-group row">
                                     <label for="side_id" class="col-sm-3 col-form-label">Side</label>
                                     <div class="col-sm-9">
@@ -84,39 +74,32 @@
                                             class="form-control" required>
                                     </div>
                                 </div>
+
                                 <div class="form-group row">
-                                    <label for="buyer_id" class="col-sm-3 col-form-label">Buyer</label>
+                                    <label for="loan_type" class="col-sm-3 col-form-label">Loan Type</label>
                                     <div class="col-sm-9">
-                                        <select name="buyer_id" id="buyer_id" class="form-control" required>
-                                            <option value="">Select Buyer</option>
-                                            @foreach($buyers as $buyer)
-                                            <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
-                                            @endforeach
+                                        <select id="loan_type" name="loan_type" class="form-control" required>
+                                            <option value="">-- Select Type --</option>
+                                            <option value="old">Old</option>
+                                            <option value="new">New</option>
                                         </select>
                                     </div>
                                 </div>
+
                                 <div class="form-group row">
-                                    <label for="vehicle_id" class="col-sm-3 col-form-label">Vehicle ID</label>
+                                    <label for="loan_amount" class="col-sm-3 col-form-label">Loan Amount</label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="vehicle_id" id="vehicle_id" class="form-control"
-                                            required>
+                                    <input type="number" name="loan_amount" class="form-control" required>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="initial_weight" class="col-sm-3 col-form-label">1st Weight</label>
-                                    <div class="col-sm-9">
-                                        <input type="number" step="1" name="initial_weight" id="initial_weight"
-                                            class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="initial_weight" class="col-sm-3 col-form-label">2nd Weight</label>
-                                    <div class="col-sm-9">
-                                        <input type="number" step="1" name="tare_weight" id="tare_weight"
-                                            class="form-control" required>
-                                    </div>
+                                   
                                 </div>
 
+                                <div class="mb-3">
+                                    <label for="reason" class="form-label">Reason (Optional)</label>
+                                    <textarea name="purpose" id="purpose"
+                                        class="form-control">{{ old('reason') }}</textarea>
+                                </div>
+                        
                                 <div class="col-12">
                                     <div class="card card-default">
                                         <div class="card-header">
@@ -135,41 +118,6 @@
                                     <i class="fas fa-save"></i> Save
                                 </button>
                             </form>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label for="initial_weight" class="col-sm-3 col-form-label">Net Weight</label>
-                                <div class="col-sm-9">
-                                    <input type="number" step="1" name="net_weight" id="net_weight" class="form-control"
-                                        readonly>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="bags" class="col-sm-3 col-form-label">Bags</label>
-                                <div class="col-sm-9">
-                                    <input type="number" step="0.01" name="bags" id="bags" class="form-control"
-                                        readonly>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="service_charge" class="col-sm-3 col-form-label">Service Charge</label>
-                                <div class="col-sm-9">
-                                    <input type="number" step="0.01" name="service_charge" id="service_charge"
-                                        class="form-control" readonly>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card mt-3">
-                                        <div class="card-body bg-light">
-                                            <h5 class="card-title text-primary">Transaction Details</h5>
-                                            <p id="description" class="card-text text-muted">
-                                                The details of the transaction will be displayed here.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -208,8 +156,6 @@ $(document).ready(function() {
     $('#side_id').change(function() {
         const sideId = $(this).val();
 
-        clearMembershipDetails();
-
         // Reset and disable the Yahai dropdown
         $('#yahai_id').prop('disabled', true).empty().append('<option value="">Select Yahai</option>');
 
@@ -243,7 +189,7 @@ $(document).ready(function() {
         const yahaiId = $(this).val();
         $('#saltern_id').prop('disabled', true).empty().append(
             '<option value="">Select Saltern</option>');
-        clearMembershipDetails();
+        
         if (yahaiId) {
             $.ajax({
                 url: "{{ route('get.saltern') }}",
@@ -269,8 +215,6 @@ $(document).ready(function() {
     $('#saltern_id').change(function() {
         const salternId = $(this).val(); // Get selected saltern ID
 
-        clearMembershipDetails();
-
         if (salternId) {
             $.ajax({
                 url: "{{ route('get.membership', '') }}/" + salternId,
@@ -292,7 +236,7 @@ $(document).ready(function() {
             });
 
             $.ajax({
-                url: "{{ route('get.saltern.details', '') }}/" + salternId,
+                url: "{{ route('get.loan.details', '') }}/" + salternId,
                 type: "GET",
                 success: function(loans) {
                     $('#saltern_details').html(loans);
@@ -304,60 +248,7 @@ $(document).ready(function() {
             });
         }
     });
-
-    function clearMembershipDetails() {
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-    }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    const initialWeightInput = document.getElementById('initial_weight');
-    const tareWeightInput = document.getElementById('tare_weight');
-    const netWeightInput = document.getElementById('net_weight');
-    const serviceChargeInput = document.getElementById('service_charge');
-    const bagsInput = document.getElementById('bags');
-    const descriptionText = document.getElementById('description');
-
-    const SERVICE_CHARGE_RATE = 100; // Example service charge per kg (adjust as needed)
-
-    function calculateValues() {
-        const initialWeight = parseFloat(initialWeightInput.value) || 0;
-        const tareWeight = parseFloat(tareWeightInput.value) || 0;
-
-        if (initialWeight > 0 && tareWeight > 0 && tareWeight >= initialWeight) {
-            const netWeight = tareWeight - initialWeight;
-            const bags = netWeight / 50;
-            const serviceCharge = bags * SERVICE_CHARGE_RATE;
-
-
-            netWeightInput.value = netWeight; // Display net weight
-            serviceChargeInput.value = serviceCharge.toFixed(2); // Display service charge
-            bagsInput.value = bags.toFixed(2);
-
-            const debitAmount = serviceCharge * 0.30;
-            const creditAmount = serviceCharge * 0.70;
-
-            // Update the description field
-            descriptionText.innerHTML = `<br>
-                Owner's Account: Debit <strong> 30% </strong> of Service Charge = <strong>LKR ${debitAmount.toFixed(2)} </strong><br>
-                Service Charge Account: Credit <strong> 70% </strong> of Service Charge = <strong> LKR ${creditAmount.toFixed(2)} </strong>
-            `.trim();
-
-        } else {
-            netWeightInput.value = ''; // Clear fields if invalid input
-            serviceChargeInput.value = '';
-            bagsInput.value = '';
-            descriptionText.innerHTML = '';
-        }
-    }
-
-    // Add event listeners to update values dynamically
-    initialWeightInput.addEventListener('input', calculateValues);
-    tareWeightInput.addEventListener('input', calculateValues);
-});
 </script>
 @endpush

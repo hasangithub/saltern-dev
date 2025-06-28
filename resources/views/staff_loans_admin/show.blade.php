@@ -93,7 +93,7 @@
 <div class="modal fade" id="approveLoanModal" tabindex="-1" aria-labelledby="approveLoanModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('owner-loan.approve', $ownerLoan->id) }}" method="POST">
+            <form action="{{ route('admin.staff-loan.approve', $ownerLoan->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-header">
