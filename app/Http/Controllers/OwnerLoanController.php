@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Membership;
 use App\Models\Owner;
 use App\Models\OwnerLoan;
+use App\Models\Side;
 use Illuminate\Http\Request;
 
 class OwnerLoanController extends Controller
 {
     public function index()
     {
-        $ownerLoans = OwnerLoan::all();
+        $ownerLoans = OwnerLoan::with('membership')->get();
         return view('owner_loans_admin.index', compact('ownerLoans'));
     }
 
@@ -46,6 +47,12 @@ class OwnerLoanController extends Controller
         $ownerId = auth('owner')->id(); 
         $memberships = Membership::where('owner_id', $ownerId)->get();
         return view('owner_loans.create', compact('memberships'));
+    }
+
+    public function adminCreateOwnerLoan()
+    {
+        $sides  = Side::all();
+        return view('owner_loans_admin.create', compact('sides'));
     }
 
     public function store(Request $request)
@@ -86,6 +93,7 @@ class OwnerLoanController extends Controller
 
         $loan->approved_amount   = $request->approved_amount;
         $loan->approval_comments = $request->approval_comments;
+        $loan->approved_by       =  auth('web')->id();
         $loan->approval_date     = date("Y-m-d H:i:s");
         $loan->status = 'approved'; // Update status to approved
         $loan->save();
@@ -100,11 +108,23 @@ class OwnerLoanController extends Controller
         $loans = [];
 
         $membership = Membership::where('saltern_id', $saltern_id)
+            ->where('is_active', 1)
             ->with('owner')  // Eager load the owner
             ->first();
         
-        $loans = OwnerLoan::where('membership_id', $membership->id)->get();
-
+            if ($membership) {
+                $loans = OwnerLoan::where('membership_id', $membership->id)
+                    ->where('status', 'approved')
+                    ->where(function ($query) {
+                        $query->whereNotNull('voucher_id')
+                            ->orWhere(function ($sub) {
+                                $sub->whereNull('voucher_id')
+                                    ->where('is_migrated', true);
+                            });
+                    })
+                    ->get();
+            }
+        
         $html = view('weighbridge_entries.loan-details', [
             'saltern' => $saltern,
             'membership' => '',
@@ -112,5 +132,57 @@ class OwnerLoanController extends Controller
         ])->render();
     
         return response()->json($html);
+    }
+
+    public function getLoanDetails($saltern_id)
+    {
+        $saltern = [];
+        $loans = [];
+
+        $membership = Membership::where('saltern_id', $saltern_id)
+            ->where('is_active', 1)
+            ->with('owner')  // Eager load the owner
+            ->first();
+        
+            if ($membership) {
+                $loans = OwnerLoan::where('membership_id', $membership->id)
+                    ->where('status', 'approved')
+                    ->where(function ($query) {
+                        $query->whereNotNull('voucher_id')
+                            ->orWhere(function ($sub) {
+                                $sub->whereNull('voucher_id')
+                                    ->where('is_migrated', true);
+                            });
+                    })
+                    ->get();
+            }
+        
+        $html = view('owner_loans_admin.loan-details', [
+            'saltern' => $saltern,
+            'membership' => '',
+            'loans' => $loans,
+        ])->render();
+    
+        return response()->json($html);
+    }
+
+    public function adminStoreOwnerLoan(Request $request){
+        $validated = $request->validate([
+            'membership_id' => 'required|exists:memberships,id',
+            'loan_amount' => 'required|numeric|min:1',
+            'loan_type' => 'required|in:old,new',
+        ]);
+
+        OwnerLoan::create([
+            'membership_id' => $validated['membership_id'],
+            'requested_amount'  => $validated['loan_amount'],
+            'approved_amount'  => $validated['loan_type']  === 'old' ? $validated['loan_amount'] : null,
+            'purpose'       => $validated['purpose'] ?? null,
+            'status'        => $validated['loan_type'] === 'old' ? 'approved' : 'pending',
+            'is_migrated'   => $validated['loan_type'] === 'old',
+            'created_by'    => auth('web')->id(),
+        ]);
+
+        return redirect()->route('admin.owner_loans.create')->with('success', 'Owner Loan request submitted successfully.');
     }
 }

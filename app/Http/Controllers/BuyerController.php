@@ -42,4 +42,42 @@ class BuyerController extends Controller
         // Redirect to the buyers list with a success message
         return redirect()->route('buyers.index')->with('success', 'Buyer created successfully.');
     }
+
+    public function edit($id)
+    {
+        $buyer = Buyer::findOrFail($id);
+        return view('buyers.edit', compact('buyer'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'business_name' => 'required|string|max:255',
+            'business_registration_number' => 'nullable|string|max:255',
+            'full_name' => 'required|string|max:255',
+            'credit_limit' => 'required|numeric|min:0',
+            'address_1' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:25',
+            'secondary_phone_number' => 'required|string|max:25',
+            'whatsapp_number' => 'nullable|string|max:25',
+            //'service_out' => 'nullable|boolean',
+        ]);
+
+        $buyer = Buyer::findOrFail($id);
+
+        $buyer->update([
+            'business_name' => $request->business_name,
+            'business_registration_number' => $request->business_registration_number,
+            'full_name' => $request->full_name,
+            'credit_limit' => $request->credit_limit,
+            'address_1' => $request->address_1,
+            'phone_number' => $request->phone_number,
+            'secondary_phone_number' => $request->secondary_phone_number,
+            'whatsapp_number' => $request->whatsapp_number,
+           // 'service_out' => $request->boolean('service_out', false),
+        ]);
+
+        return redirect()->route('buyers.index')
+                         ->with('success', 'Vendor updated successfully.');
+    }
 }

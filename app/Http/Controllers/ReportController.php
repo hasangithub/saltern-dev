@@ -8,6 +8,7 @@ use App\Models\JournalDetail;
 use Illuminate\Http\Request;
 use App\Models\Ledger;
 use App\Models\Membership;
+use App\Models\Saltern;
 use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 
@@ -76,9 +77,9 @@ public function indexProduction()
                 ->whereHas('membership.saltern', function($query) use ($request) {
                     $query->where('yahai_id', $request->yahai_id);
                 })
-                ->when($request->owner_id, function($query) use ($request) {
+                ->when($request->membership_id, function($query) use ($request) {
                     $query->whereHas('membership', function($q) use ($request) {
-                        $q->where('id', $request->owner_id);
+                        $q->where('id', $request->membership_id);
                     });
                 })
                 ->when($request->buyer_id, function($query) use ($request) {
@@ -140,4 +141,33 @@ public function generateLedger(Request $request)
         return view('reports.ledger.result', compact('journalDetails', 'ledger', 'fromDate', 'toDate'));
     }
 
+    public function generateBuyerProduction(Request $request)
+    {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
+    
+        $entries = collect();
+    
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
+                ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
+                ->when($request->buyer_id, function($query) use ($request) {
+                    $query->where('buyer_id', $request->buyer_id);
+                })
+                ->get();
+        }
+        
+        return view('reports.production.buyer-result', compact('yahaies', 'owners', 'buyers', 'entries'));   
+    }
+
+    public function getSalterns(Request $request)
+    {
+        $salterns = Saltern::with('memberships.owner')
+        ->where('yahai_id', $request->yahai_id)
+        ->whereHas('memberships') // ensures only those with active membership are included
+        ->get();
+
+            return response()->json(['salterns' => $salterns]);
+    }
 }

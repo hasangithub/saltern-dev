@@ -56,6 +56,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/weighbridge/entries', [WeighbridgeEntryController::class, 'store'])->name('weighbridge_entries.store');
     Route::get('/weighbridge/entries/{entry_id}', [WeighbridgeEntryController::class, 'show'])->name('weighbridge_entries.show');
     Route::put('weighbridge/entries/{entry_id}/tare', [WeighbridgeEntryController::class, 'addTare'])->name('weighbridge_entries.tare');
+    Route::delete('/weighbridge-entries/{id}/delete', [WeighbridgeEntryController::class, 'destroy'])->name('weighbridge-entries.delete');
 
 
 
@@ -75,17 +76,26 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
     Route::get('/production-report', [ReportController::class, 'indexProduction'])->name('production.report.index');
     Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
+    Route::get('/production-report/buyerGenerate', [ReportController::class, 'generateBuyerProduction'])->name('production.report.buyerGenerate');
 
     Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
 
     Route::resource('sub-account-groups',SubAccountGroupController::class);
-Route::resource('ledgers',LedgerController::class);
-Route::resource('sub-ledgers',SubLedgerController::class);
-Route::resource('accounts', AccountGroupController::class);
-Route::resource('journal-entries', JournalEntryController::class);
-Route::resource('vouchers', VoucherController::class);
-Route::put('vouchers/{voucher_id}/approve', [VoucherController::class, 'approve'])->name('voucher.approve');
+    Route::resource('ledgers',LedgerController::class);
+    Route::resource('sub-ledgers',SubLedgerController::class);
+    Route::resource('accounts', AccountGroupController::class);
+    Route::resource('journal-entries', JournalEntryController::class);
+    Route::resource('vouchers', VoucherController::class);
+    Route::put('vouchers/{voucher_id}/approve', [VoucherController::class, 'approve'])->name('voucher.approve');
+
+        // Form display
+    Route::get('/admin/owner-loans/create', [OwnerLoanController::class, 'adminCreateOwnerLoan'])->name('admin.owner_loans.create');
+    Route::post('/admin/owner-loans', [OwnerLoanController::class, 'adminStoreOwnerLoan'])->name('admin.owner_loans.store');
+
+    Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
+    Route::get('/receipts/create', [ReceiptController::class, 'create'])->name('receipts.create');
+    Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
 });
 
 
@@ -138,8 +148,10 @@ Route::post('/sub-ledgers', [SubLedgerController::class, 'storeSubLedger'])->nam
 Route::get('/get-yahais', [WeighbridgeEntryController::class, 'getYahais'])->name('get.yahai');
 
 Route::get('api/salterns', [WeighbridgeEntryController::class, 'getSalterns'])->name('get.saltern');
+Route::get('api/reports/salterns', [ReportController::class, 'getSalterns'])->name('get.reports.saltern');
 Route::get('api/membership/{saltern_id}', [WeighbridgeEntryController::class, 'getMembershipDetails'])->name('get.membership');
 Route::get('get-saltern-details/{saltern_id}', [OwnerLoanController::class, 'getSalternDetails'])->name('get.saltern.details');
+Route::get('get-loan-details/{saltern_id}', [OwnerLoanController::class, 'getLoanDetails'])->name('get.loan.details');
 
 Route::get('/sms/settings', [SmsController::class, 'showSettings'])->name('sms.settings');
 Route::post('/sms/settings', [SmsController::class, 'updateSettings'])->name('sms.settings.update');
@@ -192,8 +204,5 @@ Route::prefix('admin/staff-loans')->group(function () {
 
 Route::get('/import-form', [AccountImportController::class, 'showForm'])->name('accounts.form');
 Route::post('/import-chart', [AccountImportController::class, 'import'])->name('accounts.import');
-
-Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
-Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
 
 

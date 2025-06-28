@@ -4,7 +4,7 @@
 
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Reports')
-@section('content_header_subtitle', 'Production Report')
+@section('content_header_subtitle', 'Production Buyer Report')
 
 {{-- Content body: main page content --}}
 
@@ -37,7 +37,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Production Report</h3>
+                    <h3 class="card-title">Production Buyer Report</h3>
                     <button onclick="window.print()" class="btn btn-primary btn-sm">
                         <i class="fas fa-print"></i> Print Report
                     </button>
@@ -57,16 +57,7 @@
                             @endphp
                             <div class="row g-1">
                                 <div class="col-md-4 col-sm-6">
-                                    <strong>Owner:</strong> {{ $owner->name_with_initial ?? 'N/A' }}
-                                </div>
-                                <div class="col-md-4 col-sm-6">
-                                    <strong>Yahai:</strong> {{ $yahai?->name ?? 'N/A' }}
-                                </div>
-                                <div class="col-md-4 col-sm-6">
-                                    <strong>Saltern:</strong> {{ $saltern?->name ?? 'N/A' }}
-                                </div>
-                                <div class="col-md-4 col-sm-6">
-                                    <strong>Membership No:</strong> {{ $firstMembership?->membership_no ?? 'N/A' }}
+                                    <strong>Buyer Name:</strong> {{ $firstEntry->buyer->full_name }}
                                 </div>
                                 <div class="col-md-4 col-sm-6">
                                     <strong>From:</strong> {{ request('from_date') }}
@@ -83,12 +74,10 @@
                                     <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Buyer Name</th>
                                             <th>Culture</th>
                                             <th class="text-right">Net Weight (kg)</th>
                                             <th class="text-right">Bags</th>
                                             <th class="text-right">Tons</th>
-                                            <th class="text-right">Service Charge 30%</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -96,35 +85,31 @@
                                         $totalNetWeight = 0;
                                         $totalBags = 0;
                                         $totalAmount = 0;
-                                        $totalServiceCharge30 = 0;
+                                      
                                         @endphp
                                         @foreach($entries as $entry)
                                         @php
                                         $totalNetWeight += $entry->net_weight;
                                         $totalBags += $entry->bags_count;
                                         $totalAmount += $entry->total_amount;
-                                        $serviceCharge30 = round($entry->total_amount * ($entry->owner_share_percentage/100), 2);
-                                        $totalServiceCharge30 += $serviceCharge30;
+                                       
                                         @endphp
                                         <tr>
                                             <td>{{ $entry->transaction_date }}</td>
-                                            <td>{{ $entry->buyer->full_name ?? '-' }}</td>
                                             <td>{{ $entry->culture}}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
                                             <td class="text-right">{{ $entry->bags_count }}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}
                                             </td>
-                                            <td class="text-right">{{ number_format($serviceCharge30, 2) }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th colspan="3">Total</th>
+                                            <th colspan="2">Total</th>
                                             <th class="text-right">{{ number_format($totalNetWeight, 2) }}</th>
                                             <th class="text-right">{{ $totalBags }}</th>
                                             <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
-                                            <th class="text-right">{{ number_format($totalServiceCharge30, 2) }}</th>
                                         </tr>
                                     </tfoot>
                                 </table>

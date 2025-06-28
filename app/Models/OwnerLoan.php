@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class OwnerLoan extends Model
 {
-    protected $fillable = ['membership_id', 'requested_amount', 'purpose', 'approved_amount', 'approval_comments' , 'approval_date', 'status'];
+    protected $fillable = ['membership_id', 'requested_amount', 'purpose', 'approved_amount', 'approval_comments' , 'approved_by' , 'approval_date', 'status', 'voucher_id', 'is_migrated', 'created_by'];
 
     public function membership()
     {

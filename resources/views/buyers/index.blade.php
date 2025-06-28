@@ -35,6 +35,7 @@
                                     <th>Service Out</th>
                                     <th>Phone Number</th>
                                     <th>Phone Number 2</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,6 +47,12 @@
                                     <td>{{ $buyer->service_out ? 'Yes' : 'No' }}</td>
                                     <td>{{ $buyer->phone_number }}</td>
                                     <td>{{ $buyer->secondary_phone_number }}</td>
+                                    <td>
+                                    <a href="{{ route('buyers.edit', $buyer->id) }}"
+                                            class="btn btn-warning btn-xs">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

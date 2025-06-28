@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SettingsHelper;
 use App\Models\Buyer;
 use App\Models\JournalDetail;
 use App\Models\JournalEntry;
@@ -18,7 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\SmsService;
-
+use Illuminate\Support\Facades\Log;
 
 class WeighbridgeEntryController extends Controller
 {
@@ -31,12 +32,27 @@ class WeighbridgeEntryController extends Controller
 
     public function index(Request $request)
     {
-        $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership'])
-        ->orderBy('created_at', 'desc') // Latest first
+       $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership'])
+        ->orderBy('transaction_date')
+        ->orderBy('created_at')
         ->get();
 
-        // Return the view with the entries and status counts
-        return view('weighbridge_entries.index', compact('entries'));
+    $grouped = $entries->groupBy(function ($item) {
+        if ($item->transaction_date) {
+            return Carbon::parse($item->transaction_date)->toDateString();
+        }
+        return 'unknown';
+    });
+
+    $numbered = collect();
+    foreach ($grouped as $day => $entriesForDay) {
+        foreach ($entriesForDay->values() as $index => $entry) {
+            $entry->turn_no = $index + 1;
+            $numbered->push($entry);
+        }
+    }
+
+    return view('weighbridge_entries.index', ['entries' => $numbered]);
     }
 
     public function create()
@@ -69,31 +85,36 @@ class WeighbridgeEntryController extends Controller
         $membership = Membership::findOrFail($request->membership_id);
         $buyer = Buyer::findOrFail($request->buyer_id);
         $data = $request->all();
+        $bagPrice = SettingsHelper::get('bag_price', 100); // default 100 if not set
+        $bagPerWeight = SettingsHelper::get('bag_per_weight', 50);
         $data['owner_id'] = $membership->owner_id;
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
-        $data['bag_price'] = 100;
+        $data['bag_price'] = $bagPrice;
         $data['status'] = 'approved';
 
         $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
 
         // Calculate number of bags (assuming each bag is 50kg)
-        $bags = $netWeight / 50;
+        $bags = $netWeight / $bagPerWeight;
 
         // Calculate service charge
-        $serviceCharge = $bags * 100;
-        $serviceChargeMain = $bags * 100;
+        $serviceChargeMain = $bags * $bagPrice;
         $loans = OwnerLoan::where('membership_id', $request->membership_id)
             ->whereRaw('(approved_amount - (SELECT COALESCE(SUM(amount), 0) FROM owner_loan_repayments WHERE owner_loan_repayments.owner_loan_id = owner_loans.id)) > 0')
             ->orderBy('created_at', 'asc')
             ->get();
 
+        $entry = WeighbridgeEntry::create($data);
+        $weighbridgeEntryId = $entry->id;
+
         $repayments = $request->input('repayments'); // Array: loan_id => amount
 
-        foreach ($repayments as $loanId => $amount) {
+        foreach ($repayments  ?? [] as $loanId => $amount) {
             if (!empty($amount) && $amount > 0) {
                 OwnerLoanRepayment::create([
                     'owner_loan_id' => $loanId,
                     'buyer_id' => $validated['buyer_id'],
+                    'weighbridge_entry_id' => $weighbridgeEntryId,
                     'amount' => $amount,
                     'repayment_date' => now(),
                     'payment_method' => 'Cash',
@@ -129,7 +150,7 @@ class WeighbridgeEntryController extends Controller
             }
         }
 
-        WeighbridgeEntry::create($data);
+       
 
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
@@ -345,10 +366,14 @@ class WeighbridgeEntryController extends Controller
     public function getMembershipDetails($saltern_id)
     {
         $membership = Membership::where('saltern_id', $saltern_id)
+            ->where('is_active', 1)
             ->with('owner')  // Eager load the owner
             ->first();
 
+        Log::info("Selected saltern_id: " . $saltern_id);
+
         if ($membership) {
+            Log::info("Selected saltern_id: " . $saltern_id . " Owner" . $membership->owner->name_with_initial);
             return response()->json([
                 'status' => 'success',
                 'membership' => $membership,
@@ -361,4 +386,18 @@ class WeighbridgeEntryController extends Controller
             'message' => 'No membership found for this saltern'
         ]);
     }
+
+    public function destroy($id)
+        {
+            $entry = WeighbridgeEntry::findOrFail($id);
+
+            // Soft delete related loan repayments, if any
+            OwnerLoanRepayment::where('weighbridge_entry_id', $entry->id)->delete();
+
+            // Soft delete the weighbridge entry
+            $entry->delete();
+
+            return redirect()->route('weighbridge_entries.index')
+                            ->with('success', 'Weighbridge entry and related loan repayment deleted.');
+        }
 }

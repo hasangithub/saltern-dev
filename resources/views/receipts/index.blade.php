@@ -4,84 +4,69 @@
 
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Receipts')
-@section('content_header_subtitle', 'Receipts')
+@section('content_header_subtitle', 'Welcome')
 
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container-fluid">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Buyer</h3>
-        </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Receipts</h3>
+                    <a href="{{ route('receipts.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i>
+                        Create Receipts</a>
+                </div>
 
-        @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-        @endif
+                <div class="card-body">
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Buyer</th>
+                                    <th>Total Amount</th>
+                                    <th>Created By</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($receipts as $receipt)
+                                <tr>
+                                    <td>{{ $receipt->id }}</td>
+                                    <td>{{ $receipt->receipt_date }}</td>
+                                    <td>{{ $receipt->buyer?->full_name ?? '-' }}</td>
+                                    <td>{{ number_format($receipt->total_amount, 2) }}</td>
+                                    <td>{{ $receipt->createdBy?->name ?? '-' }}</td>
+                                    <td>
+                                        <ul class="mb-0">
+                                            @foreach ($receipt->details as $detail)
+                                            <li>
+                                                {{ ucfirst($detail->entry_type) }} #{{ $detail->entry_id }} - Rs.
+                                                {{ number_format($detail->amount, 2) }}
+                                            </li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="6">No receipts found.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <div class="card-body">
-            <form method="GET" action="{{ route('receipts.index') }}">
-                <label>Select Buyer:</label>
-                <select name="buyer_id" class="form-control" onchange="this.form.submit()">
-                    <option value="">-- Select Buyer --</option>
-                    @foreach($buyers as $buyer)
-                    <option value="{{ $buyer->id }}" {{ request('buyer_id') == $buyer->id ? 'selected' : '' }}>
-                        {{ $buyer->business_name }}
-                    </option>
-                    @endforeach
-                </select>
-            </form>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Pendings</h3>
-            <strong>Total Selected Amount: <span id="totalAmount">0.00</span></strong>
-        </div>
-
-        <div class="card-body">
-            @if(request('buyer_id'))
-            <form method="POST" action="{{ route('receipts.store') }}">
-                @csrf
-
-                @if($pendingServiceCharges->count())
-                <h5>Pending Service Charges</h5>
-                @foreach($pendingServiceCharges as $entry)
-                <input type="checkbox" name="service_entry_ids[]" class="payment-checkbox" value="{{ $entry->id }}"
-                    data-amount="{{ $entry->total_amount }}">
-                Entry #{{ $entry->id }} -
-                Amount: {{ $entry->total_amount }}<br>
-                @endforeach
-                @endif
-
-                @if($pendingLoanRepayments->count())
-                <h5>Pending Loan Repayments</h5>
-                @foreach($pendingLoanRepayments as $repayment)
-                <input type="checkbox" name="repayment_ids[]" class="payment-checkbox" value="{{ $repayment->id }}"
-                    data-amount="{{ $repayment->amount }}">
-                Repayment #{{ $repayment->id }}
-                - Amount: {{ $repayment->amount }}<br>
-                @endforeach
-                @endif
-
-                @if($pendingOtherIncomes->count())
-                <h5>Pending Other Incomes</h5>
-                @foreach($pendingOtherIncomes as $pendingOtherIncome)
-                <input type="checkbox" name="otherincome_ids[]" class="payment-checkbox"
-                    value="{{ $pendingOtherIncome->id }}" data-amount="{{ $pendingOtherIncome->amount }}">
-                OtherIncome #{{ $pendingOtherIncome->id }}
-                - Amount: {{ $pendingOtherIncome->amount }}<br>
-                @endforeach
-                @endif
-
-                @if($pendingServiceCharges->count() || $pendingLoanRepayments->count() || $pendingOtherIncomes->count())
-                <button type="submit" class="btn btn-success">Settle Selected</button>
-                @endif
-            </form>
-            @endif
+            </div>
         </div>
     </div>
 </div>
@@ -99,25 +84,7 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    function calculateTotal() {
-        let total = 0;
-        $('.payment-checkbox:checked').each(function() {
-            let amount = parseFloat($(this).data('amount'));
-            if (!isNaN(amount)) {
-                total += amount;
-            }
-        });
-        $('#totalAmount').text(total.toFixed(2));
-    }
-
-
-    // Calculate on page load
-    calculateTotal();
-
-    // Recalculate on checkbox change
-    $('.payment-checkbox').change(function() {
-        calculateTotal();
-    });
+    $('#ownersTable').DataTable();
 });
 </script>
 @endpush

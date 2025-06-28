@@ -11,4 +11,14 @@ class Saltern extends Model
     public function yahai(){
         return $this->belongsTo(Yahai::class);
     }
+
+    public function memberships()
+    {
+        return $this->hasMany(Membership::class);
+    }
+
+    public function activeMembership()
+    {
+        return $this->hasOne(Membership::class)->where('is_active', '1');
+    }
 }
