@@ -29,25 +29,21 @@
                         <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Journal ID</th>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th></th>
+                                    <th>Detail ID</th>
+                                    <th>Ledger</th>
+                                    <th>Sub Ledger</th>
+                                    <th>Debit</th>
+                                    <th>Credit</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($journalEntries as $journalEntry)
+                            @foreach ($journalDetails->details as $journalDetail)
                                 <tr>
-                                    <td>{{ $journalEntry->id }}</td>
-                                    <td>{{ $journalEntry->journal_date }}</td>
-                                    <td>{{ $journalEntry->description }}</td>
-                                    <td>
-                                       <a href="{{ route('journal-entries.show', $journalEntry->id) }}"
-                                            class="btn btn-default btn-xs">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
-                                       
-                                    </td>
+                                    <td>{{ $journalDetail->id }}</td>
+                                    <td>{{ $journalDetail->ledger->name }}</td>
+                                    <td>{{ $journalDetail->subLedger->name }}</td>
+                                    <td>{{ $journalDetail->debit_amount }}</td>
+                                    <td>{{ $journalDetail->credit_amount }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

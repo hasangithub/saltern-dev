@@ -142,10 +142,9 @@ public function indexProduction()
 
     $entries = $query->get();
 
-    // Get list of ledgers for the dropdown
-    $ledgers = \App\Models\Ledger::all();
+    $subAccountGroups = \App\Models\SubAccountGroup::all();
 
-    return view('reports.ledger.index', compact('entries', 'ledgers', 'from', 'to', 'ledgerId'));
+    return view('reports.ledger.index', compact('entries', 'subAccountGroups', 'from', 'to', 'ledgerId'));
 }
 
 public function generateLedger(Request $request)
@@ -200,5 +199,11 @@ public function generateLedger(Request $request)
         ->get();
 
             return response()->json(['salterns' => $salterns]);
+    }
+
+    public function getLedgers(Request $request)
+    {
+        $ledgers = Ledger::where('sub_account_group_id', $request->sub_account_id)->get();
+        return response()->json(['ledgers' => $ledgers]);
     }
 }
