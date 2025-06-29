@@ -41,7 +41,7 @@
                                 @foreach ($otherIncomes as $income)
                                 <tr>
                                     <td>{{ $income->received_date }}</td>
-                                    <td> {{ $income->buyer_id ? $income->buyer->business_name : 'Walkin buyer' }}</td>
+                                    <td> {{ $income->buyer_id ? $income->buyer->full_name : 'Walkin buyer' }}</td>
                                     <td>{{ $income->incomeCategory->name }}</td>
                                     <td>{{ $income->amount }}</td>
                                     <td>{{ $income->name }}</td>

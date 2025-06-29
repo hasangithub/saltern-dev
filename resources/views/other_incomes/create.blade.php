@@ -40,7 +40,7 @@
                                 <option value="">Select Buyer</option>
                                 <option value="walkin">Walk-in Buyer</option>
                                 @foreach ($buyers as $buyer)
-                                <option value="{{ $buyer->id }}">{{ $buyer->business_name }}</option>
+                                <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
                                 @endforeach
                             </select>
                         </div>
