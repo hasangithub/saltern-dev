@@ -19,13 +19,14 @@
                 <form action="{{ route('ledger.report.generate') }}" method="GET">
                     <div class="card-body">
                         <div class="row">
-                        @php
+                            @php
                             $fromDate = now()->startOfMonth()->format('Y-m-d');
                             $toDate = now()->format('Y-m-d');
-                        @endphp
+                            @endphp
                             <div class="col-md-3">
                                 <label>From Date</label>
-                                <input type="date" name="from_date" class="form-control" required value="{{ $fromDate }}">
+                                <input type="date" name="from_date" class="form-control" required
+                                    value="{{ $fromDate }}">
                             </div>
                             <div class="col-md-3">
                                 <label>To Date</label>
@@ -43,6 +44,12 @@
                             <div class="col-md-2">
                                 <label>Ledgers</label>
                                 <select name="ledger_id" id="ledger_id" class="form-control select2" required>
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label>Sub Ledgers</label>
+                                <select name="sub_ledger_id" id="sub_ledger_id" class="form-control select2">
                                     <option value=""></option>
                                 </select>
                             </div>
@@ -89,6 +96,34 @@ $(document).ready(function() {
                         );
                     });
                     $('#ledger_id').prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching salterns :', error);
+                }
+            });
+        }
+    });
+
+    
+    $('#ledger_id').change(function() {
+        const ledger_id = $(this).val();
+        $('#sub_ledger_id').prop('disabled', true).empty().append(
+            '<option value="">Select Sub Ledger</option>');
+       
+        if (ledger_id) {
+            $.ajax({
+                url: "{{ route('get.reports.subledgers') }}",
+                type: "GET",
+                data: {
+                    ledger_id: ledger_id
+                },
+                success: function(response) {
+                    response.subLedgers.forEach(subLedger => {
+                        $('#sub_ledger_id').append(
+                            `<option value="${subLedger.id}">${subLedger.name}</option>`
+                        );
+                    });
+                    $('#sub_ledger_id').prop('disabled', false);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching salterns :', error);

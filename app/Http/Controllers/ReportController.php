@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Ledger;
 use App\Models\Membership;
 use App\Models\Saltern;
+use App\Models\SubLedger;
 use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 
@@ -148,28 +149,59 @@ public function indexProduction()
 }
 
 public function generateLedger(Request $request)
-    {
-        $request->validate([
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
-            'ledger_id' => 'required|exists:ledgers,id',
-        ]);
+{
+    $request->validate([
+        'from_date' => 'required|date',
+        'to_date' => 'required|date',
+        'ledger_id' => 'required|exists:ledgers,id',
+        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+    ]);
 
-        $ledgerId = $request->ledger_id;
-        $fromDate = $request->from_date;
-        $toDate = $request->to_date;
+    $ledgerId = $request->ledger_id;
+    $subLedgerId = $request->sub_ledger_id;
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
 
-        $journalDetails = JournalDetail::with(['ledger', 'subLedger', 'journalEntry'])
+    $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
+    $subLedger = $subLedgerId ? SubLedger::findOrFail($subLedgerId) : null;
+
+    if ($subLedgerId) {
+        // Return individual entries for the selected sub-ledger
+        $journalDetails = JournalDetail::with('journalEntry')
             ->where('ledger_id', $ledgerId)
-            ->whereHas('journalEntry', function ($q) use ($fromDate, $toDate) {
-                $q->whereBetween('journal_date', [$fromDate, $toDate]);
-            })
+            ->where('sub_ledger_id', $subLedgerId)
+            ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
             ->get();
 
-        $ledger = Ledger::find($ledgerId);
+        return view('reports.ledger.result', compact('journalDetails', 'ledger', 'subLedger', 'fromDate', 'toDate'));
+    } else {
+        // Grouped summary for each sub-ledger under the ledger
+        $subLedgerSummaries = [];
 
-        return view('reports.ledger.result', compact('journalDetails', 'ledger', 'fromDate', 'toDate'));
+        foreach ($ledger->subLedgers as $sl) {
+            $details = JournalDetail::with('journalEntry')
+                ->where('ledger_id', $ledgerId)
+                ->where('sub_ledger_id', $sl->id)
+                ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
+                ->get();
+
+            $debit = $details->sum('debit_amount');
+            $credit = $details->sum('credit_amount');
+
+            if ($debit != 0 || $credit != 0) {
+                $subLedgerSummaries[] = [
+                    'sub_ledger' => $sl,
+                    'debit' => $debit,
+                    'credit' => $credit,
+                ];
+            }
+        }
+
+        return view('reports.ledger.summary', compact('subLedgerSummaries', 'ledger', 'fromDate', 'toDate'));
     }
+}
+
+
 
     public function generateBuyerProduction(Request $request)
     {
@@ -205,5 +237,11 @@ public function generateLedger(Request $request)
     {
         $ledgers = Ledger::where('sub_account_group_id', $request->sub_account_id)->get();
         return response()->json(['ledgers' => $ledgers]);
+    }
+
+    public function getSubLedgers(Request $request)
+    {
+        $subLedgers = SubLedger::where('ledger_id', $request->ledger_id)->get();
+        return response()->json(['subLedgers' => $subLedgers]);
     }
 }
