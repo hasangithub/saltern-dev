@@ -85,7 +85,7 @@
                                 <select name="buyer_id" class="form-control" required>
                                     <option value="">All</option>
                                     @foreach($buyers as $buyer)
-                                    <option value="{{ $buyer->id }}">{{ $buyer->business_name }}</option>
+                                    <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
