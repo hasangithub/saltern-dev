@@ -41,7 +41,7 @@
                                 <tr>
                                     <td>{{ $journalDetail->id }}</td>
                                     <td>{{ $journalDetail->ledger->name }}</td>
-                                    <td>{{ $journalDetail->subLedger->name }}</td>
+                                    <td>{{ optional($journalDetail->subLedger)->name }}</td>
                                     <td>{{ $journalDetail->debit_amount }}</td>
                                     <td>{{ $journalDetail->credit_amount }}</td>
                                 </tr>
