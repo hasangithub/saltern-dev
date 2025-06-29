@@ -35,8 +35,8 @@ class ReportController extends Controller
                     $adjustedDebit = 0;
                     $adjustedCredit = 0;
     
-                    switch (strtolower($group->account_type)) {
-                        case 'asset':
+                    switch (strtolower($group->name)) {
+                        case 'assets':
                             if ($balance > 0) {
                                 $adjustedDebit = $balance;
                             } else {
@@ -46,7 +46,7 @@ class ReportController extends Controller
     
                         case 'liability':
                         case 'income':
-                        case 'expense':
+                        case 'expenses':
                             if ($balance < 0) {
                                 $adjustedCredit = abs($balance);
                             } else {
