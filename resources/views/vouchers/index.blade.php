@@ -69,7 +69,7 @@
                             <tbody>
                                 @foreach($memberships as $membership)
                                 <tr>
-                                    <td>{{ $membership->created_at }}</td>
+                                    <td>{{ $membership->created_at->format('Y-m-d') }}</td>
                                     <td>{{ $membership->name }}</td>
                                     <td>{{ $membership->amount }}</td>
                                     <td>{{ $membership->description }}</td>
