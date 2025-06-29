@@ -161,6 +161,7 @@ class WeighbridgeEntryController extends Controller
             [
                 'journal_id' => $journal->id,
                 'ledger_id' => 10,  // e.g. Buyer
+                'sub_ledger_id' => 101,
                 'debit_amount' => $serviceChargeMain,
                 'credit_amount' => null,
                 'description' => 'Service charge debited from buyer',
