@@ -60,6 +60,7 @@ if (round($totalDebit, 2) !== round($totalCredit, 2)) {
         $journalEntry = JournalEntry::create([
             'journal_date' => date("Y-m-d"),
             'is_reversal' => 1,
+            'description' => $request->details[0]['description'] ?? null
         ]);
 
         // Create journal entry details
@@ -80,6 +81,7 @@ if (round($totalDebit, 2) !== round($totalCredit, 2)) {
                 'sub_ledger_id' => $detail['subledger'],
                 'debit_amount' => $detail['debit'],
                 'credit_amount' => $detail['credit'],
+                'description'   => $detail['description']
             ]);
         }
 
