@@ -267,4 +267,13 @@ public function store(Request $request)
     return redirect()->route('receipts.index')->with('success', 'Payment processed successfully.');
 }
 
+public function show($id)
+{
+    $receiptDetails = Receipt::with([
+        'details'
+    ])->findOrFail($id);
+
+    return view('receipts.show', compact('receiptDetails'));
+}
+
 }

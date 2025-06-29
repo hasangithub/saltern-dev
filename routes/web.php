@@ -96,6 +96,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
     Route::get('/receipts/create', [ReceiptController::class, 'create'])->name('receipts.create');
     Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
+    Route::get('/receipts/{receipt}', [ReceiptController::class, 'show'])->name('receipts.show');
 });
 
 
