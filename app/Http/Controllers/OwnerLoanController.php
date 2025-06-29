@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JournalDetail;
+use App\Models\JournalEntry;
 use App\Models\Membership;
 use App\Models\Owner;
 use App\Models\OwnerLoan;
 use App\Models\Side;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OwnerLoanController extends Controller
@@ -182,6 +185,27 @@ class OwnerLoanController extends Controller
             'is_migrated'   => $validated['loan_type'] === 'old',
             'created_by'    => auth('web')->id(),
         ]);
+
+        if ($validated['loan_type']  === 'old') {
+            $journal = JournalEntry::create([
+                'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+                'description' => 'Owner Loan',
+            ]);
+    
+            $details = [
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 10,  
+                    'debit_amount' => $validated['loan_amount'],
+                    'credit_amount' => null,
+                    'description' => 'Owner Loan',
+                ],
+            ];
+    
+            // 3. Bulk insert details
+            JournalDetail::insert($details);
+    
+        }
 
         return redirect()->route('admin.owner_loans.create')->with('success', 'Owner Loan request submitted successfully.');
     }
