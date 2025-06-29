@@ -104,7 +104,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => 115,
                     'debit_amount' => $validated['amount'],
                     'credit_amount' => null,
-                    'description' => '',
+                    'description' => 'Loan Disbursed to Owner#'. $ownerLoan->membership->owner_id,
                 ],
                 [
                     'journal_id' => $journal->id,
