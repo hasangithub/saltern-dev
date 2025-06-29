@@ -15,44 +15,75 @@ use App\Models\Yahai;
 class ReportController extends Controller
 {
     public function trialBalance()
-{
-    $accountGroups = AccountGroup::with([
-        'subAccountGroups.ledgers.subLedgers.journalDetails'
-    ])->get();
-
-    $trialData = [];
-
-    foreach ($accountGroups as $group) {
-        foreach ($group->subAccountGroups as $subGroup) {
-            foreach ($subGroup->ledgers as $ledger) {
-                $debit = 0;
-                $credit = 0;
-
-                     $debit += $ledger->journalDetails->sum('debit_amount');
-                     $credit += $ledger->journalDetails->sum('credit_amount');
-
-                if ($debit != 0 || $credit != 0) {
-                    $trialData[] = [
-                        'group' => $group->name,
-                        'sub_group' => $subGroup->name,
-                        'ledger' => $ledger->name,
-                        'debit' => $debit,
-                        'credit' => $credit,
-                    ];
+    {
+        $accountGroups = AccountGroup::with([
+            'subAccountGroups.ledgers.journalDetails'
+        ])->get();
+    
+        $trialData = [];
+    
+        foreach ($accountGroups as $group) {
+            foreach ($group->subAccountGroups as $subGroup) {
+                foreach ($subGroup->ledgers as $ledger) {
+    
+                    $debit = $ledger->journalDetails->sum('debit_amount');
+                    $credit = $ledger->journalDetails->sum('credit_amount');
+    
+                    $balance = $debit - $credit;
+    
+                    // Initialize both to zero
+                    $adjustedDebit = 0;
+                    $adjustedCredit = 0;
+    
+                    switch (strtolower($group->account_type)) {
+                        case 'asset':
+                            if ($balance > 0) {
+                                $adjustedDebit = $balance;
+                            } else {
+                                $adjustedCredit = abs($balance);
+                            }
+                            break;
+    
+                        case 'liability':
+                        case 'income':
+                        case 'expense':
+                            if ($balance < 0) {
+                                $adjustedCredit = abs($balance);
+                            } else {
+                                $adjustedDebit = $balance;
+                            }
+                            break;
+    
+                        default:
+                            // Fallback to standard logic
+                            $adjustedDebit = $debit;
+                            $adjustedCredit = $credit;
+                            break;
+                    }
+    
+                    if ($adjustedDebit != 0 || $adjustedCredit != 0) {
+                        $trialData[] = [
+                            'group' => $group->name,
+                            'sub_group' => $subGroup->name,
+                            'ledger' => $ledger->name,
+                            'debit' => $adjustedDebit,
+                            'credit' => $adjustedCredit,
+                        ];
+                    }
                 }
             }
         }
+    
+        $totalDebit = collect($trialData)->sum('debit');
+        $totalCredit = collect($trialData)->sum('credit');
+    
+        return view('reports.trial_balance', [
+            'trialData' => $trialData,
+            'totalDebit' => $totalDebit,
+            'totalCredit' => $totalCredit,
+        ]);
     }
-
-    $totalDebit = collect($trialData)->sum('debit');
-    $totalCredit = collect($trialData)->sum('credit');
-
-    return view('reports.trial_balance', [
-        'trialData' => $trialData,
-        'totalDebit' => $totalDebit,
-        'totalCredit' => $totalCredit,
-    ]);
-}
+    
 
 public function indexProduction()
 {
