@@ -189,7 +189,7 @@ class OwnerLoanController extends Controller
         if ($validated['loan_type']  === 'old') {
             $journal = JournalEntry::create([
                 'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-                'description' => 'Owner Loan',
+                'description' => 'Owner Loan from old system',
             ]);
     
             $details = [
