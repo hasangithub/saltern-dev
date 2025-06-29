@@ -196,6 +196,7 @@ class OwnerLoanController extends Controller
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 10,  
+                    'sub_ledger_id' => 100,
                     'debit_amount' => $validated['loan_amount'],
                     'credit_amount' => null,
                     'description' => 'Owner Loan',
