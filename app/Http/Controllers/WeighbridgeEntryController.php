@@ -213,16 +213,16 @@ class WeighbridgeEntryController extends Controller
         . "{$buyer->full_name}\n"
         . "{$netWeight}kg\n"
         . "{$bags} bags\n"
-        . "S/C " . round($serviceChargeMain, 2) . "\n";
+        . "Service Charge " . round($serviceChargeMain, 2) . "\n";
     
         $buyerSms = $smsCommon;
-        $ownerSms = $smsCommon . "\n30% Reserved in your account " . round($serviceChargeMain * 0.30, 2);
+        $ownerSms = $smsCommon . "\n30% Reserved " . round($serviceChargeMain * 0.30, 2);
 
         if ($totalPaidNow > 0) {
-            $ownerSms .= "\nPaid Now: Rs. " . number_format($totalPaidNow, 2)
+            $ownerSms .= "\nLoan Paid : Rs. " . number_format($totalPaidNow, 2)
             . "\nOutstanding Balance: Rs. " . number_format($totalOutstanding, 2);
 
-            $buyerSms .= "\nPaid Now: Rs. " . number_format($totalPaidNow, 2);
+            $buyerSms .= "\nLoan Paid: Rs. " . number_format($totalPaidNow, 2);
         }
 
             $this->smsService->sendSms($ownerPhone, $ownerSms);
