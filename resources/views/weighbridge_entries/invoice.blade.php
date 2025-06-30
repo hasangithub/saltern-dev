@@ -125,9 +125,13 @@
     </div>
 
     <script>
-    window.onafterprint = function() {
-        window.location.href = "{{ route('weighbridge_entries.create') }}";
-    };
+        window.onafterprint = function () {
+            window.location.href = "{{ route('weighbridge_entries.create') }}";
+        };
+
+        setTimeout(function() {
+            window.location.href = "{{ route('weighbridge_entries.create') }}";
+        }, 8000); // fallback in case print dialog is closed
     </script>
 </body>
 

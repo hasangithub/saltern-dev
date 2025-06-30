@@ -52,16 +52,21 @@
                                     <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
                                     <td>{{ $entry->vehicle_id }}</td>
                                     <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
-                                   
+
                                     <td>{{ $entry->membership->saltern->yahai->name }}</td>
                                     <td>{{ $entry->membership->saltern->name }}</td>
                                     <td>{{ $entry->net_weight }}</td>
                                     <td>{{ $entry->bags_count ?? 'N/A' }}</td>
-                                   
-                                  
+
+
                                     <td>{{ $entry->total_amount ?? 'N/A' }}</td>
                                     <td> N/A </td>
-                                    <td><a href="{{ route('weighbridge_entries.show', $entry->id) }}"
+                                    <td>
+                                        <a href="{{ route('weighbridge_entries.invoice', $entry->id) }}" target="_blank"
+                                            class="btn btn-primary btn-sm">
+                                            Print
+                                        </a>
+                                        <a href="{{ route('weighbridge_entries.show', $entry->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
@@ -99,7 +104,12 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#weighbridgeTable').DataTable({ order: [[0, 'desc']],   pageLength: 50 });
+    $('#weighbridgeTable').DataTable({
+        order: [
+            [0, 'desc']
+        ],
+        pageLength: 50
+    });
 });
 </script>
 @endpush

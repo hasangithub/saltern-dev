@@ -58,6 +58,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::put('weighbridge/entries/{entry_id}/tare', [WeighbridgeEntryController::class, 'addTare'])->name('weighbridge_entries.tare');
     Route::delete('/weighbridge-entries/{id}/delete', [WeighbridgeEntryController::class, 'destroy'])->name('weighbridge-entries.delete');
     Route::get('/weighbridge-entries/{entry}/invoice', [WeighbridgeEntryController::class, 'invoice'])->name('weighbridge_entries.invoice');
+    
 
 
 
