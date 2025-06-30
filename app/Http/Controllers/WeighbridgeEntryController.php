@@ -216,7 +216,7 @@ class WeighbridgeEntryController extends Controller
         . "Service Charge Rs. " . number_format(round($serviceChargeMain, 2), 2) . "\n";
     
         $buyerSms = $smsCommon;
-        $ownerSms = $smsCommon . "\n30% Reserved " . number_format(round($serviceChargeMain * 0.30, 2),2);
+        $ownerSms = $smsCommon . "\n30% Reserved Rs. " . number_format(round($serviceChargeMain * 0.30, 2),2);
 
         if ($totalPaidNow > 0) {
             $ownerSms .= "\nLoan Paid : Rs. " . number_format($totalPaidNow, 2)
