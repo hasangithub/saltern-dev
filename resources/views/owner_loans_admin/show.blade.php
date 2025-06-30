@@ -44,6 +44,34 @@
                             @endif
                         </div>
                     </div>
+                    <h5 class="mt-4">Repayments</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Repayment Date</th>
+                <th>Amount</th>
+                <th>Buyer</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($ownerLoan->ownerLoanRepayment as $repayment)
+                <tr>
+                    <td>{{ $repayment->repayment_date }}</td>
+                    <td>{{ number_format($repayment->amount, 2) }}</td>
+                    <td>{{ $repayment->buyer->full_name ?? '-' }}</td>
+                    <td>{{ ucfirst($repayment->status) }}</td>
+                    <td>{{ $repayment->notes }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5">No repayments yet.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
                 </div>
             </div>
             <!-- /.card -->

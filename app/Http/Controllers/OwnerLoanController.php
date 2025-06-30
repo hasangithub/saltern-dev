@@ -71,10 +71,9 @@ class OwnerLoanController extends Controller
         return redirect()->route('owner-loans.create')->with('success', 'Loan request submitted successfully.');
     }
 
-    public function show($id)
+    public function show(OwnerLoan $ownerLoan)
     {
-        $ownerLoan = OwnerLoan::findOrFail($id);
-
+        $ownerLoan->load(['ownerLoanRepayment']); // load buyer relationship if needed
         return view('owner_loans_admin.show', compact('ownerLoan'));
     }
 

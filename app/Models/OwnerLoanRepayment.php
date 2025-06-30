@@ -19,4 +19,9 @@ class OwnerLoanRepayment extends Model
         'notes',           // Additional notes
         'status',
     ];
+
+    public function buyer()
+    {
+        return $this->belongsTo(Buyer::class);
+    }
 }
