@@ -3,8 +3,8 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Journals')
-@section('content_header_subtitle', 'Journals')
+@section('content_header_title', 'Receipt Details')
+@section('content_header_subtitle', 'Receipt Details')
 
 {{-- Content body: main page content --}}
 
@@ -14,9 +14,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Journals</h3>
-                    <a href="{{ route('journal-entries.create') }}" class="btn btn-success ml-auto"> <i
-                            class="fas fa-plus"></i> Create Entry</a>
+                    <h3 class="card-title">Details</h3>
                 </div>
 
                 <div class="card-body">
@@ -29,25 +27,17 @@
                         <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Journal ID</th>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th></th>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($journalEntries as $journalEntry)
+                            @foreach ($receiptDetails->details as $receiptDetail)
                                 <tr>
-                                    <td>{{ $journalEntry->id }}</td>
-                                    <td>{{ $journalEntry->journal_date }}</td>
-                                    <td>{{ $journalEntry->description }}</td>
-                                    <td>
-                                       <a href="{{ route('journal-entries.show', $journalEntry->id) }}"
-                                            class="btn btn-default btn-xs">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
-                                       
-                                    </td>
+                                    <td>{{ $receiptDetail->id }}</td>
+                                    <td>{{ $receiptDetail->entry_type }}</td>
+                                    <td>{{ $receiptDetail->amount }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

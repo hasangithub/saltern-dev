@@ -55,6 +55,48 @@
             <form method="POST" action="{{ route('receipts.store') }}">
                 @csrf
                 <input type="hidden" name="buyer_id" value="{{ $buyerId }}">
+                <div class="form-group row">
+                    <label for="payment_method" class="col-sm-3 col-form-label">Payment Method</label>
+                    <div class="col-sm-9">
+                        <select id="payment_method" name="payment_method_id" class="form-control" required>
+                            <option value="">-- Select Payment Method --</option>
+                            @foreach($paymentMethods as $method)
+                            <option value="{{ $method->id }}">{{ $method->payment_method_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div id="bankDetails" class="row" style="display: none;">
+                    <!-- Bank -->
+                    <div class="form-group row">
+                        <label for="bank" class="col-sm-3 col-form-label">Bank</label>
+                        <div class="col-sm-9">
+                            <select name="bank_sub_ledger_id" id="bank" class="form-control">
+                                <option value=""></option>
+                                @foreach($banks as $bank)
+                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Cheque Number -->
+                    <div class="form-group row">
+                        <label for="cheque_no" class="col-sm-3 col-form-label">Cheque Number</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="cheque_no" id="cheque_no" class="form-control"
+                                value="{{ old('cheque_no') }}">
+                        </div>
+                    </div>
+                    <!-- Cheque Date -->
+                    <div class="form-group row">
+                        <label for="cheque_date" class="col-sm-3 col-form-label">Cheque Date</label>
+                        <div class="col-sm-9">
+                            <input type="date" name="cheque_date" id="cheque_date" class="form-control"
+                                value="{{ old('cheque_date') }}">
+                        </div>
+                    </div>
+                </div>
                 @if($pendingServiceCharges->count())
                 <h5>Pending Service Charges</h5>
                 @foreach($pendingServiceCharges as $entry)
@@ -107,6 +149,45 @@
 @push('js')
 <script>
 $(document).ready(function() {
+    const paymentType = document.getElementById('payment_method');
+    const bankDetails = document.getElementById('bankDetails');
+
+    // Reset on page load
+    window.addEventListener('DOMContentLoaded', function() {
+        paymentType.selectedIndex = 0; // Reset payment method
+        bankDetails.style.display = 'none'; // Hide bank details
+
+        // Clear and remove required from bank fields
+        document.getElementById('cheque_no').value = '';
+        document.getElementById('cheque_date').value = '';
+        document.getElementById('bank').selectedIndex = 0;
+
+        document.getElementById('cheque_no').removeAttribute('required');
+        document.getElementById('cheque_date').removeAttribute('required');
+        document.getElementById('bank').removeAttribute('required');
+    });
+
+    // Listen for changes
+    paymentType.addEventListener('change', function() {
+        if (paymentType.value === '1') {
+            bankDetails.style.display = 'block';
+            document.getElementById('cheque_no').setAttribute('required', 'true');
+            document.getElementById('cheque_date').setAttribute('required', 'true');
+            document.getElementById('bank').setAttribute('required', 'true');
+        } else {
+            bankDetails.style.display = 'none';
+            document.getElementById('cheque_no').removeAttribute('required');
+            document.getElementById('cheque_date').removeAttribute('required');
+            document.getElementById('bank').removeAttribute('required');
+
+            // Optional: clear values
+            document.getElementById('cheque_no').value = '';
+            document.getElementById('cheque_date').value = '';
+            document.getElementById('bank').selectedIndex = 0;
+        }
+    });
+
+
     function calculateTotal() {
         let total = 0;
         $('.payment-checkbox:checked').each(function() {

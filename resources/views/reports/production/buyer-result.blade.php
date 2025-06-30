@@ -74,6 +74,7 @@
                                     <thead>
                                         <tr>
                                             <th>Date</th>
+                                            <th>Owner</th>
                                             <th>Culture</th>
                                             <th class="text-right">Net Weight (kg)</th>
                                             <th class="text-right">Bags</th>
@@ -96,6 +97,7 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $entry->transaction_date }}</td>
+                                            <td>{{ $entry->owner->name_with_initial }}</td>
                                             <td>{{ $entry->culture}}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
                                             <td class="text-right">{{ $entry->bags_count }}</td>
@@ -106,7 +108,7 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th colspan="2">Total</th>
+                                            <th colspan="3">Total</th>
                                             <th class="text-right">{{ number_format($totalNetWeight, 2) }}</th>
                                             <th class="text-right">{{ $totalBags }}</th>
                                             <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>

@@ -13,10 +13,8 @@ class JournalEntryController extends Controller
 {
     public function index()
     {
-        $journalDetails = JournalDetail::whereHas('journalEntry', function ($query) {
-            $query->where('is_reversal', 1);
-        })->get();
-        return view('journal_entries.index', compact('journalDetails'));
+        $journalEntries = JournalEntry::where('is_reversal', 1)->latest()->get();
+        return view('journal_entries.index', compact('journalEntries'));
     }
 
     public function create()
@@ -62,6 +60,7 @@ if (round($totalDebit, 2) !== round($totalCredit, 2)) {
         $journalEntry = JournalEntry::create([
             'journal_date' => date("Y-m-d"),
             'is_reversal' => 1,
+            'description' => $request->details[0]['description'] ?? null
         ]);
 
         // Create journal entry details
@@ -82,6 +81,7 @@ if (round($totalDebit, 2) !== round($totalCredit, 2)) {
                 'sub_ledger_id' => $detail['subledger'],
                 'debit_amount' => $detail['debit'],
                 'credit_amount' => $detail['credit'],
+                'description'   => $detail['description']
             ]);
         }
 
@@ -95,6 +95,12 @@ if (round($totalDebit, 2) !== round($totalCredit, 2)) {
             DB::rollBack();
             return response()->json(['message' => 'Error saving transaction: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function show($id)
+    {
+        $journalDetails = JournalEntry::with('details')->findOrFail($id);
+        return view('journal_entries.show', compact('journalDetails'));
     }
 
 }

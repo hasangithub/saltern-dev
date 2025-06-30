@@ -9,19 +9,33 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($loans as $loan)
-            <tr>
-                <td>{{ date('Y-m-d', strtotime($loan->created_at)) }}</td>
-                <td>{{ number_format($loan->approved_amount, 2) }}</td>
-                <td>{{ number_format($loan->approved_amount - $loan->ownerLoanRepayment->sum('amount'), 2) }}</td>
-                <td><input type="number" name="repayments[{{ $loan->id }}]"
-                        max="{{ number_format($loan->approved_amount - $loan->ownerLoanRepayment->sum('amount'), 2) }}">
-                </td>
-            </tr>
+            @php
+                $filteredLoans = $loans->filter(function ($loan) {
+                    $outstanding = $loan->approved_amount - $loan->ownerLoanRepayment->sum('amount');
+                    return $outstanding > 0;
+                });
+            @endphp
+
+            @forelse ($filteredLoans as $loan)
+                @php
+                    $outstanding = $loan->approved_amount - $loan->ownerLoanRepayment->sum('amount');
+                @endphp
+                <tr>
+                    <td>{{ $loan->created_at->format('Y-m-d') }}</td>
+                    <td>{{ number_format($loan->approved_amount, 2) }}</td>
+                    <td>{{ number_format($outstanding, 2) }}</td>
+                    <td>
+                        <input type="number"
+                            name="repayments[{{ $loan->id }}]"
+                            max="{{ $outstanding }}"
+                            step="0.01"
+                            class="form-control">
+                    </td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="3" class="text-center">No loans available for this saltern.</td>
-            </tr>
+                <tr>
+                    <td colspan="4" class="text-center">No outstanding loans for this saltern.</td>
+                </tr>
             @endforelse
         </tbody>
     </table>

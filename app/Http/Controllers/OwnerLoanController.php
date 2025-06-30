@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JournalDetail;
+use App\Models\JournalEntry;
 use App\Models\Membership;
 use App\Models\Owner;
 use App\Models\OwnerLoan;
 use App\Models\Side;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OwnerLoanController extends Controller
@@ -68,10 +71,9 @@ class OwnerLoanController extends Controller
         return redirect()->route('owner-loans.create')->with('success', 'Loan request submitted successfully.');
     }
 
-    public function show($id)
+    public function show(OwnerLoan $ownerLoan)
     {
-        $ownerLoan = OwnerLoan::findOrFail($id);
-
+        $ownerLoan->load(['ownerLoanRepayment']); // load buyer relationship if needed
         return view('owner_loans_admin.show', compact('ownerLoan'));
     }
 
@@ -182,6 +184,28 @@ class OwnerLoanController extends Controller
             'is_migrated'   => $validated['loan_type'] === 'old',
             'created_by'    => auth('web')->id(),
         ]);
+
+        if ($validated['loan_type']  === 'old') {
+            $journal = JournalEntry::create([
+                'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+                'description' => 'Owner Loan from old system',
+            ]);
+    
+            $details = [
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 10,  
+                    'sub_ledger_id' => 100,
+                    'debit_amount' => $validated['loan_amount'],
+                    'credit_amount' => null,
+                    'description' => 'Owner Loan',
+                ],
+            ];
+    
+            // 3. Bulk insert details
+            JournalDetail::insert($details);
+    
+        }
 
         return redirect()->route('admin.owner_loans.create')->with('success', 'Owner Loan request submitted successfully.');
     }

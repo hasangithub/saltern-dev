@@ -34,7 +34,7 @@
                                     <th>Buyer</th>
                                     <th>Total Amount</th>
                                     <th>Created By</th>
-                                    <th>Details</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,14 +46,7 @@
                                     <td>{{ number_format($receipt->total_amount, 2) }}</td>
                                     <td>{{ $receipt->createdBy?->name ?? '-' }}</td>
                                     <td>
-                                        <ul class="mb-0">
-                                            @foreach ($receipt->details as $detail)
-                                            <li>
-                                                {{ ucfirst($detail->entry_type) }} #{{ $detail->entry_id }} - Rs.
-                                                {{ number_format($detail->amount, 2) }}
-                                            </li>
-                                            @endforeach
-                                        </ul>
+                                    <a href="{{ route('receipts.show', $receipt->id) }}" class="btn btn-sm btn-info">View</a>
                                     </td>
                                 </tr>
                                 @empty

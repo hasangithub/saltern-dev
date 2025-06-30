@@ -109,8 +109,13 @@ class WeighbridgeEntryController extends Controller
 
         $repayments = $request->input('repayments'); // Array: loan_id => amount
 
+        $totalPaidNow = 0;
+
         foreach ($repayments  ?? [] as $loanId => $amount) {
             if (!empty($amount) && $amount > 0) {
+
+                $totalPaidNow += $amount;
+
                 OwnerLoanRepayment::create([
                     'owner_loan_id' => $loanId,
                     'buyer_id' => $validated['buyer_id'],
@@ -161,6 +166,7 @@ class WeighbridgeEntryController extends Controller
             [
                 'journal_id' => $journal->id,
                 'ledger_id' => 10,  // e.g. Buyer
+                'sub_ledger_id' => 101,
                 'debit_amount' => $serviceChargeMain,
                 'credit_amount' => null,
                 'description' => 'Service charge debited from buyer',
@@ -168,6 +174,7 @@ class WeighbridgeEntryController extends Controller
             [
                 'journal_id' => $journal->id,
                 'ledger_id' => 151,  // e.g. ServiceCharge income
+                'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => round($serviceChargeMain * 0.70, 2),
                 'description' => 'Service charge income',
@@ -175,6 +182,7 @@ class WeighbridgeEntryController extends Controller
             [
                 'journal_id' => $journal->id,
                 'ledger_id' => 176,  // e.g. Owner share
+                'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => round($serviceChargeMain * 0.30, 2),
                 'description' => 'Owner share of service charge',
@@ -184,19 +192,48 @@ class WeighbridgeEntryController extends Controller
         // 3. Bulk insert details
         JournalDetail::insert($details);
 
+        $allLoans = OwnerLoan::where('membership_id', $request->membership_id)->get();
+        $totalOutstanding = 0;
+
+        foreach ($allLoans as $loan) {
+            $paid = $loan->ownerLoanRepayment->sum('amount');
+            $balance = $loan->approved_amount - $paid;
+            if ($balance > 0) {
+                $totalOutstanding += $balance;
+            }
+        }
+
         $waikal =   $membership->saltern->yahai->name." ".$membership->saltern->name;
-        $phone  = $membership->owner->phone_number;
-        $smsMessage = "{$membership->owner->name_with_initial}\n"
+       
+        $ownerPhone = $membership->owner->phone_number;
+        $buyerPhone = $buyer->phone_number;
+   
+        $smsCommon  = "{$membership->owner->name_with_initial}\n"
         . "{$waikal}\n"
         . "{$buyer->full_name}\n"
         . "{$netWeight}kg\n"
         . "{$bags} bags\n"
-        . "S/C " . round($serviceChargeMain, 2) . "\n"
-        . "30% Reserved in your account " . round($serviceChargeMain * 0.30, 2);
+        . "Service Charge Rs. " . number_format(round($serviceChargeMain, 2), 2) . "\n";
+    
+        $buyerSms = $smsCommon;
+        $ownerSms = $smsCommon . "\n30% Reserved Rs. " . number_format(round($serviceChargeMain * 0.30, 2),2);
 
-        //$this->smsService->sendSms($phone, $smsMessage); 
+        if ($totalPaidNow > 0) {
+            $ownerSms .= "\nLoan Paid : Rs. " . number_format($totalPaidNow, 2)
+            . "\nOutstanding Balance: Rs. " . number_format($totalOutstanding, 2);
 
-        return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
+            $buyerSms .= "\nLoan Paid: Rs. " . number_format($totalPaidNow, 2);
+        }
+
+            $this->smsService->sendSms($ownerPhone, $ownerSms);
+        if (!empty($buyer->phone_number)) {
+           $this->smsService->sendSms($buyerPhone, $buyerSms);
+        }
+
+       // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
+       return redirect()
+       ->route('weighbridge_entries.invoice', ['entry' => $entry->id])
+       ->with('success', 'Entry created successfully. Printing invoice...');
     }
 
     public function storeLoanAuto(Request $request)
@@ -399,5 +436,10 @@ class WeighbridgeEntryController extends Controller
 
             return redirect()->route('weighbridge_entries.index')
                             ->with('success', 'Weighbridge entry and related loan repayment deleted.');
+        }
+
+        public function invoice(WeighbridgeEntry $entry)
+        {
+            return view('weighbridge_entries.invoice', compact('entry'));
         }
 }

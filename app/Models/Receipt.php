@@ -8,6 +8,10 @@ class Receipt extends Model
 {
     protected $fillable = [
         'buyer_id',
+        'payment_method_id',
+        'bank_sub_ledger_id',
+        'cheque_no',
+        'cheque_date',
         'receipt_date',
         'total_amount',
         'created_by',

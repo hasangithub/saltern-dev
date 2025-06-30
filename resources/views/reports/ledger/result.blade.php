@@ -14,7 +14,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h3>Ledger Report - {{ $ledger->name }}</h3>
+                    <h3>Ledger Report - {{ $ledger->name }} → Sub-Ledger: {{ $subLedger->name }}</h3>
                     <p>From {{ $fromDate }} to {{ $toDate }}</p>
                 </div>
                 <div class="card-body">

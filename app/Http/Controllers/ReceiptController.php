@@ -10,8 +10,10 @@ use App\Models\OtherIncome;
 use App\Models\WeighbridgeEntry;
 use App\Models\OwnerLoan;
 use App\Models\OwnerLoanRepayment;
+use App\Models\PaymentMethod;
 use App\Models\Receipt;
 use App\Models\ReceiptDetail;
+use App\Models\SubLedger;
 use Carbon\Carbon;
 
 class ReceiptController extends Controller
@@ -26,6 +28,8 @@ class ReceiptController extends Controller
 public function create(Request $request)
 {
     $buyers = Buyer::all();
+    $paymentMethods = PaymentMethod::all();
+    $banks = SubLedger::where('ledger_id', 11)->get();
     $pendingServiceCharges = collect();
     $pendingLoanRepayments = collect();
     $pendingOtherIncomes = collect();
@@ -49,16 +53,19 @@ public function create(Request $request)
         }
     }
 
-    return view('receipts.create', compact('buyers', 'pendingServiceCharges', 'pendingLoanRepayments', 'pendingOtherIncomes', 'buyerName', 'buyerId'));
+    return view('receipts.create', compact('buyers', 'pendingServiceCharges', 'pendingLoanRepayments', 'pendingOtherIncomes', 'buyerName', 'buyerId', 'paymentMethods', 'banks'));
 }
 
 public function store(Request $request)
 {   
-    $request->validate([
+    $validated = $request->validate([
         'buyer_id' => 'required|exists:buyers,id',
         'service_entry_ids' => 'array',
         'repayment_ids' => 'array',
         'otherincome_ids' => 'array',
+        'payment_method_id' => 'required|in:1,2',
+        'cheque_no' => 'nullable|string|max:50',
+        'cheque_date' => 'nullable',
     ]);
     
     // ✅ Custom manual check after Laravel validation
@@ -79,6 +86,7 @@ public function store(Request $request)
     $serviceEntryIds = $request->input('service_entry_ids', []);
     $repaymentIds = $request->input('repayment_ids', []);
     $otherIncomeIds = $request->input('otherincome_ids', []);
+    $paymentMethod = $request->input('payment_method_id');
 
     $totalAmount = 0;
 
@@ -95,6 +103,10 @@ public function store(Request $request)
 
     $receipt = Receipt::create([
         'buyer_id'     => $buyerId,
+        'payment_method_id' => $validated['payment_method_id'],
+        'bank_sub_ledger_id' => $validated['bank_sub_ledger_id'] ?? null,
+        'cheque_no' => $validated['cheque_no'] ?? null,
+        'cheque_date' => $validated['cheque_date'] ?? null,
         'receipt_date' => now(),
         'total_amount' => $totalAmount,
         'created_by'   => auth('web')->id(),
@@ -114,7 +126,7 @@ public function store(Request $request)
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 11,
-                    'sub_ledger_id' => null,
+                    'sub_ledger_id' => $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
                     'debit_amount' => $serviceCharge,
                     'credit_amount' => null,
                     'description' => '',
@@ -122,7 +134,7 @@ public function store(Request $request)
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 10,
-                    'sub_ledger_id' => null,
+                    'sub_ledger_id' => 101,
                     'debit_amount' => null,
                     'credit_amount' => $serviceCharge,
                     'description' => '',
@@ -160,7 +172,7 @@ public function store(Request $request)
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 11,
-                    'sub_ledger_id' => null,
+                    'sub_ledger_id' =>  $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
                     'debit_amount' => $repaymentAmount,
                     'credit_amount' => null,
                     'description' => '',
@@ -168,7 +180,7 @@ public function store(Request $request)
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 10,
-                    'sub_ledger_id' => null,
+                    'sub_ledger_id' => 100,
                     'debit_amount' => null,
                     'credit_amount' => $repaymentAmount,
                     'description' => '',
@@ -194,6 +206,27 @@ public function store(Request $request)
         foreach($otherIncomeIds as $otherIncomeId) {
 
             $otherIncomeAmount = OtherIncome::find($otherIncomeId)?->amount;
+            $categoryId = OtherIncome::find($otherIncomeId)?->income_category_id;
+
+            // Categories: 162, 163, 165 → ledger_id = 10, else ledger_id = 27
+            switch ($categoryId) {
+                case 162:
+                    $ledgerId = 10;
+                    $subLedgerId = 97;
+                    break;
+                case 163:
+                    $ledgerId = 10;
+                    $subLedgerId = 98;
+                    break;
+                case 165:
+                    $ledgerId = 10;
+                    $subLedgerId = 99;
+                    break;
+                default:
+                    $ledgerId = 27;
+                    $subLedgerId = null;
+                    break;
+            }
 
             $journal = JournalEntry::create([
                 'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
@@ -204,15 +237,15 @@ public function store(Request $request)
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 11,
-                    'sub_ledger_id' => null,
+                    'sub_ledger_id' => $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
                     'debit_amount' => $otherIncomeAmount,
                     'credit_amount' => null,
                     'description' => '',
                 ],
                 [
                     'journal_id' => $journal->id,
-                    'ledger_id' => 10,
-                    'sub_ledger_id' => null,
+                    'ledger_id' => $ledgerId,
+                    'sub_ledger_id' => $subLedgerId,
                     'debit_amount' => null,
                     'credit_amount' => $otherIncomeAmount,
                     'description' => '',
@@ -234,5 +267,13 @@ public function store(Request $request)
     return redirect()->route('receipts.index')->with('success', 'Payment processed successfully.');
 }
 
+public function show($id)
+{
+    $receiptDetails = Receipt::with([
+        'details'
+    ])->findOrFail($id);
+
+    return view('receipts.show', compact('receiptDetails'));
+}
 
 }

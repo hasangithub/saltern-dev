@@ -57,6 +57,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/weighbridge/entries/{entry_id}', [WeighbridgeEntryController::class, 'show'])->name('weighbridge_entries.show');
     Route::put('weighbridge/entries/{entry_id}/tare', [WeighbridgeEntryController::class, 'addTare'])->name('weighbridge_entries.tare');
     Route::delete('/weighbridge-entries/{id}/delete', [WeighbridgeEntryController::class, 'destroy'])->name('weighbridge-entries.delete');
+    Route::get('/weighbridge-entries/{entry}/invoice', [WeighbridgeEntryController::class, 'invoice'])->name('weighbridge_entries.invoice');
+    
 
 
 
@@ -96,6 +98,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
     Route::get('/receipts/create', [ReceiptController::class, 'create'])->name('receipts.create');
     Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
+    Route::get('/receipts/{receipt}', [ReceiptController::class, 'show'])->name('receipts.show');
 });
 
 
@@ -149,6 +152,8 @@ Route::get('/get-yahais', [WeighbridgeEntryController::class, 'getYahais'])->nam
 
 Route::get('api/salterns', [WeighbridgeEntryController::class, 'getSalterns'])->name('get.saltern');
 Route::get('api/reports/salterns', [ReportController::class, 'getSalterns'])->name('get.reports.saltern');
+Route::get('api/reports/get-ledgers', [ReportController::class, 'getLedgers'])->name('get.reports.ledgers');
+Route::get('api/reports/get-sub-ledgers', [ReportController::class, 'getSubLedgers'])->name('get.reports.subledgers');
 Route::get('api/membership/{saltern_id}', [WeighbridgeEntryController::class, 'getMembershipDetails'])->name('get.membership');
 Route::get('get-saltern-details/{saltern_id}', [OwnerLoanController::class, 'getSalternDetails'])->name('get.saltern.details');
 Route::get('get-loan-details/{saltern_id}', [OwnerLoanController::class, 'getLoanDetails'])->name('get.loan.details');
