@@ -20,22 +20,30 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
-                        <strong>Date</strong>
+                        <div class="col-md-3">
+                            <strong>Date</strong>
                             <p class="text-muted">{{ $ownerLoan->formatted_date }}</p>
-                            <hr>
+                        </div>
+                        <div class="col-md-3">
                             <strong>Requested Amount</strong>
-                            <p class="text-muted">{{ $ownerLoan->requested_amount }}</p>
-                            <hr>
+                            <p class="text-muted">{{ number_format($ownerLoan->requested_amount, 2) }}</p>
+                        </div>
+                        <div class="col-md-3">
                             <strong>Approved Amount</strong>
-                            <p class="text-muted"> {{ $ownerLoan->approved_amount }}</p>
-                            <hr>
+                            <p class="text-muted">{{ number_format($ownerLoan->approved_amount, 2) }}</p>
+                        </div>
+                        <div class="col-md-3">
                             <strong>Status</strong><br>
-                            <span class="badge {{ $ownerLoan->status === 'approved' ? 'badge-success' : 'badge-danger' }}">
+                            <span
+                                class="badge {{ $ownerLoan->status === 'approved' ? 'badge-success' : 'badge-danger' }}">
                                 {{ ucfirst($ownerLoan->status) }}
                             </span>
-                           
-                            <hr>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-4">
                             @if ($ownerLoan->status === 'pending')
                             <button type="button" class="btn btn-warning" data-toggle="modal"
                                 data-target="#approveLoanModal">
@@ -45,32 +53,32 @@
                         </div>
                     </div>
                     <h5 class="mt-4">Repayments</h5>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Repayment Date</th>
-                <th>Amount</th>
-                <th>Buyer</th>
-                <th>Status</th>
-                <th>Notes</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($ownerLoan->ownerLoanRepayment as $repayment)
-                <tr>
-                    <td>{{ $repayment->repayment_date }}</td>
-                    <td>{{ number_format($repayment->amount, 2) }}</td>
-                    <td>{{ $repayment->buyer->full_name ?? '-' }}</td>
-                    <td>{{ ucfirst($repayment->status) }}</td>
-                    <td>{{ $repayment->notes }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5">No repayments yet.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Repayment Date</th>
+                                <th>Amount</th>
+                                <th>Buyer</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($ownerLoan->ownerLoanRepayment as $repayment)
+                            <tr>
+                                <td>{{ $repayment->repayment_date }}</td>
+                                <td>{{ number_format($repayment->amount, 2) }}</td>
+                                <td>{{ $repayment->buyer->full_name ?? '-' }}</td>
+                                <td>{{ ucfirst($repayment->status) }}</td>
+                                <td>{{ $repayment->notes }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5">No repayments yet.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
 
                 </div>
             </div>
