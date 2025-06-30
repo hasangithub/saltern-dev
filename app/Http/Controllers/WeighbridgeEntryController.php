@@ -223,8 +223,7 @@ class WeighbridgeEntryController extends Controller
             $ownerSms .= "\nPaid Now: Rs. " . number_format($totalPaidNow, 2)
             . "\nOutstanding Balance: Rs. " . number_format($totalOutstanding, 2);
 
-            $buyerSms .= "\nPaid Now: Rs. " . number_format($totalPaidNow, 2)
-            . "\nOutstanding Balance: Rs. " . number_format($totalOutstanding, 2);
+            $buyerSms .= "\nPaid Now: Rs. " . number_format($totalPaidNow, 2);
         }
 
        // $this->smsService->sendSms($ownerPhone, $ownerSms);
