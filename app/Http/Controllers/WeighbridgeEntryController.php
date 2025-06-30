@@ -169,6 +169,7 @@ class WeighbridgeEntryController extends Controller
             [
                 'journal_id' => $journal->id,
                 'ledger_id' => 151,  // e.g. ServiceCharge income
+                'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => round($serviceChargeMain * 0.70, 2),
                 'description' => 'Service charge income',
@@ -176,6 +177,7 @@ class WeighbridgeEntryController extends Controller
             [
                 'journal_id' => $journal->id,
                 'ledger_id' => 176,  // e.g. Owner share
+                'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => round($serviceChargeMain * 0.30, 2),
                 'description' => 'Owner share of service charge',
@@ -197,7 +199,10 @@ class WeighbridgeEntryController extends Controller
 
         //$this->smsService->sendSms($phone, $smsMessage); 
 
-        return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
+       // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
+       return redirect()
+       ->route('weighbridge_entries.invoice', ['entry' => $entry->id])
+       ->with('success', 'Entry created successfully. Printing invoice...');
     }
 
     public function storeLoanAuto(Request $request)
@@ -400,5 +405,10 @@ class WeighbridgeEntryController extends Controller
 
             return redirect()->route('weighbridge_entries.index')
                             ->with('success', 'Weighbridge entry and related loan repayment deleted.');
+        }
+
+        public function invoice(WeighbridgeEntry $entry)
+        {
+            return view('weighbridge_entries.invoice', compact('entry'));
         }
 }
