@@ -204,11 +204,10 @@ class WeighbridgeEntryController extends Controller
         }
 
         $waikal =   $membership->saltern->yahai->name." ".$membership->saltern->name;
-        $phone  = $membership->owner->phone_number;
+       
         $ownerPhone = $membership->owner->phone_number;
         $buyerPhone = $buyer->phone_number;
-        $ownerPhone  = '94713857269'; 
-        $buyerPhone = '94713857269'; 
+   
         $smsCommon  = "{$membership->owner->name_with_initial}\n"
         . "{$waikal}\n"
         . "{$buyer->full_name}\n"
@@ -226,9 +225,9 @@ class WeighbridgeEntryController extends Controller
             $buyerSms .= "\nPaid Now: Rs. " . number_format($totalPaidNow, 2);
         }
 
-       // $this->smsService->sendSms($ownerPhone, $ownerSms);
+            $this->smsService->sendSms($ownerPhone, $ownerSms);
         if (!empty($buyer->phone_number)) {
-        //    $this->smsService->sendSms($buyerPhone, $buyerSms);
+           $this->smsService->sendSms($buyerPhone, $buyerSms);
         }
 
        // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
