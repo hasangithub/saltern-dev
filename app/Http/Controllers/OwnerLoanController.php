@@ -175,7 +175,7 @@ class OwnerLoanController extends Controller
             'loan_type' => 'required|in:old,new',
         ]);
 
-        OwnerLoan::create([
+        $ownerLoan = OwnerLoan::create([
             'membership_id' => $validated['membership_id'],
             'requested_amount'  => $validated['loan_amount'],
             'approved_amount'  => $validated['loan_type']  === 'old' ? $validated['loan_amount'] : null,
@@ -188,7 +188,7 @@ class OwnerLoanController extends Controller
         if ($validated['loan_type']  === 'old') {
             $journal = JournalEntry::create([
                 'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-                'description' => 'Owner Loan from old system',
+                'description' => 'Owner Loan from old system MembershipId#'.$validated['membership_id']. ' LoanId#'. $ownerLoan->id,
             ]);
     
             $details = [
@@ -198,7 +198,7 @@ class OwnerLoanController extends Controller
                     'sub_ledger_id' => 115,
                     'debit_amount' => $validated['loan_amount'],
                     'credit_amount' => null,
-                    'description' => 'Owner Loan',
+                    'description' => 'Owner Loan MembershipId#'.$validated['membership_id']. ' LoanId#'. $ownerLoan->id,
                 ],
             ];
     
