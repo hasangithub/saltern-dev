@@ -207,8 +207,10 @@ class WeighbridgeEntryController extends Controller
        
         $ownerPhone = $membership->owner->phone_number;
         $buyerPhone = $buyer->phone_number;
-   
-        $smsCommon  = "{$membership->owner->name_with_initial}\n"
+        $todayDate = date('Y-m-d');
+
+        $smsCommon = "{$todayDate}\n"
+        . "{$membership->owner->name_with_initial}\n"
         . "{$waikal}\n"
         . "{$buyer->full_name}\n"
         . "{$netWeight}kg\n"
