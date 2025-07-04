@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Buyer;
+use App\Models\JournalDetail;
+use App\Models\JournalEntry;
 use App\Models\OwnerLoan;
 use App\Models\OwnerLoanRepayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OwnerLoanRepaymentController extends Controller
@@ -13,8 +17,9 @@ class OwnerLoanRepaymentController extends Controller
         $ownerLoan = OwnerLoan::with(['membership', 'ownerLoanRepayment'])->findOrFail($loanId);
         $outstandingBalance = $ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount');
         $outstandingBalance = number_format($outstandingBalance, 2);
+        $buyers = Buyer::all();
 
-        return view('owner_loan_repayments.create', compact('ownerLoan', 'outstandingBalance'));
+        return view('owner_loan_repayments.create', compact('ownerLoan', 'outstandingBalance', 'buyers'));
     }
 
     public function storeForCash(Request $request)
@@ -22,14 +27,14 @@ class OwnerLoanRepaymentController extends Controller
         // Validate the incoming data
         $validated = $request->validate([
             'owner_loan_id' => 'required|exists:owner_loans,id',
+            'buyer_id' => 'required|exists:buyers,id',
             'amount' => 'required|numeric|min:0.01',
-            'repayment_date' => 'required|date',
-            'payment_method' => 'required|string|in:Cash,Bank Transfer',
+            'repayment_date' => 'nullable|date',
             'notes' => 'nullable|string',
         ]);
 
         // Retrieve the loan request
-        $loan = OwnerLoan::findOrFail($validated['owner_loan_id']);
+        $loan = OwnerLoan::with('membership')->findOrFail($validated['owner_loan_id']);
 
         // Calculate the outstanding balance
         $outstandingBalance = $loan->approved_amount - $loan->ownerLoanRepayment->sum('amount');
@@ -39,20 +44,43 @@ class OwnerLoanRepaymentController extends Controller
             return back()->withErrors(['amount' => 'Repayment amount exceeds the outstanding balance.']);
         }
 
-        // Create the repayment record
-        $repayment = OwnerLoanRepayment::create([
+        OwnerLoanRepayment::create([
             'owner_loan_id' => $validated['owner_loan_id'],
+            'buyer_id' => $validated['buyer_id'],
             'amount' => $validated['amount'],
-            'repayment_date' => $validated['repayment_date'],
-            'payment_method' => $validated['payment_method'],
+            'repayment_date' => $validated['repayment_date'] ?? date("Y-m-d"),
+            'payment_method' => 'Cash',
             'notes' => $validated['notes'],
+            'status' => 'pending',
         ]);
 
-        // Optionally update loan status if fully paid
-        if ($outstandingBalance - $validated['amount'] == 0) {
-            $loan->status = 'Paid';
-            $loan->save();
-        }
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+            'description' => 'Loan deducted by Buyer#'.$validated['buyer_id']. "from MembershipId#".$loan->membership_id,
+        ]);
+
+        $details = [
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 10,
+                'sub_ledger_id' => 100,
+                'debit_amount' => $validated['amount'],
+                'credit_amount' => null,
+                'description' => '',
+            ],
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 12,
+                'sub_ledger_id' => 115,
+                'debit_amount' => null,
+                'credit_amount' => $validated['amount'],
+                'description' => '',
+            ],
+        ];
+
+        JournalDetail::insert($details);
+
+        
 
         // Return a response to show success
         return redirect()->route('loan-repayments.create-for-loan', $loan->id)

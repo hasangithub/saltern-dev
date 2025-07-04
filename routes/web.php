@@ -87,6 +87,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('ledgers',LedgerController::class);
     Route::resource('sub-ledgers',SubLedgerController::class);
     Route::resource('accounts', AccountGroupController::class);
+    Route::post('/account-tree/update', [AccountGroupController::class, 'update'])->name('account-tree.update');
     Route::resource('journal-entries', JournalEntryController::class);
     Route::resource('vouchers', VoucherController::class);
     Route::put('vouchers/{voucher_id}/approve', [VoucherController::class, 'approve'])->name('voucher.approve');
