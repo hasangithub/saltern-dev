@@ -157,28 +157,30 @@ $(document).ready(function() {
             $input.replaceWith($newSpan);
 
             if (newText !== originalText) {
-                // AJAX request to update
-                $.ajax({
-                    url: '{{ route("account-tree.update") }}',
-                    type: 'POST',
-                    data: {
-                        id: id,
-                        type: type,
-                        name: newText,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(res) {
-                        console.log('Updated successfully');
-                    },
-                    error: function() {
-                        alert('Update failed');
-                    }
-                });
+                if (confirm('Are you sure you want to change the name?')) {
+                    // AJAX request to update
+                    $.ajax({
+                        url: '{{ route("account-tree.update") }}',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            type: type,
+                            name: newText,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            console.log('Updated successfully');
+                        },
+                        error: function() {
+                            alert('Update failed');
+                        }
+                    });
+                } else {
+                    $span.text(originalText); // revert if cancelled
+                }
             }
         });
     });
-
-
 });
 </script>
 @endpush
