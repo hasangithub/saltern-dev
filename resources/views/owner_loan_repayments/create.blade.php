@@ -34,35 +34,24 @@
                     </div>
                     @endif
                     <div class="row">
-                        <div class="col-md-4">
-                            <strong>Name</strong>
-                            <p class="text-muted">{{ $ownerLoan->membership->owner->full_name }}</p>
-                            <hr>
-                            <strong>Phone Number 1</strong>
-                            <p class="text-muted">{{ $ownerLoan->membership->owner->phone_number }}</p>
-                            <hr>
-                            <strong>Phone Number 2</strong>
-                            <p class="text-muted"> {{ $ownerLoan->membership->owner->secondary_phone_number }}</p>
+                        <div class="col-md-3">
+                            <strong>Date</strong>
+                            <p class="text-muted">{{ $ownerLoan->formatted_date }}</p>
                         </div>
-                        <div class="col-md-4">
-                            <strong>Email</strong>
-                            <p class="text-muted"> {{ $ownerLoan->membership->owner->email }}</p>
-                            <hr>
-                            <strong>Address 1</strong>
-                            <p class="text-muted"> {{ $ownerLoan->membership->owner->address_line_1 }}</p>
-                            <hr>
-                            <strong>Address 2</strong>
-                            <p class="text-muted"> {{ $ownerLoan->membership->owner->address_line_2 }}</p>
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <strong>Requested Amount</strong>
-                            <p class="text-muted"> {{ $ownerLoan->requested_amount }}</p>
-                            <hr>
+                            <p class="text-muted">{{ number_format($ownerLoan->requested_amount, 2) }}</p>
+                        </div>
+                        <div class="col-md-3">
                             <strong>Approved Amount</strong>
-                            <p class="text-muted"> {{ $ownerLoan->approved_amount }}</p>
-                            <hr>
-                            <strong>Outstanding Balance</strong>
-                            <p class="text-muted"> {{ $outstandingBalance  }}</p>
+                            <p class="text-muted">{{ number_format($ownerLoan->approved_amount, 2) }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Status</strong><br>
+                            <span
+                                class="badge {{ $ownerLoan->status === 'approved' ? 'badge-success' : 'badge-danger' }}">
+                                {{ ucfirst($ownerLoan->status) }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -85,8 +74,9 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Amount</th>
-                                    <th>Payment Method</th>
+                                    <th>Buyer</th>
                                     <th>Notes</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,8 +84,9 @@
                                 <tr>
                                     <td>{{ $repayment->repayment_date }}</td>
                                     <td>{{ number_format($repayment->amount, 2) }}</td>
-                                    <td>{{ $repayment->payment_method }}</td>
+                                    <td>{{ $repayment->buyer->full_name }}</td>
                                     <td>{{ $repayment->notes }}</td>
+                                    <td>{{ $repayment->status }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -128,20 +119,22 @@
                 <div class="modal-body">
                     <input type="hidden" name="owner_loan_id" value="{{ $ownerLoan->id }}">
                     <div class="form-group mb-3">
+                        <label for="buyer_id">Buyer</label>
+                        <select name="buyer_id" id="buyer_id" class="form-control" required>
+                            <option value="">Select Buyer</option>
+                            @foreach($buyers as $buyer)
+                            <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
                         <label for="repayment_amount">Amount</label>
                         <input type="number" name="amount" id="repayment_amount" class="form-control" step="0.01"
                             required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="repayment_date">Repayment Date</label>
-                        <input type="date" name="repayment_date" id="repayment_date" class="form-control" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="payment_method">Payment Method</label>
-                        <select name="payment_method" id="payment_method" class="form-control" required>
-                            <option value="Cash">Cash</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                        </select>
+                        <input type="date" name="repayment_date" id="repayment_date" class="form-control" value="{{ date('Y-m-d') }}" required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="notes">Notes</label>
