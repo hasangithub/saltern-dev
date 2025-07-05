@@ -24,4 +24,9 @@ class OwnerLoanRepayment extends Model
     {
         return $this->belongsTo(Buyer::class);
     }
+
+    public function ownerLoan()
+    {
+        return $this->belongsTo(OwnerLoan::class, 'owner_loan_id');
+    }
 }

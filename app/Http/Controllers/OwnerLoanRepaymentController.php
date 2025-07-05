@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 
 class OwnerLoanRepaymentController extends Controller
 {
+    public function index()
+    {
+        $repayments = OwnerLoanRepayment::with(['ownerLoan', 'buyer']) // optional relationships
+        ->orderBy('created_at', 'desc')
+        ->get();
+        return view('owner_loan_repayments.index', compact('repayments'));
+    }
+
     public function createForLoan($loanId)
     {
         $ownerLoan = OwnerLoan::with(['membership', 'ownerLoanRepayment'])->findOrFail($loanId);

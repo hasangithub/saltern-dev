@@ -15,6 +15,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Owner Loans</h3>
+                    <a href="{{ route('owner-loan-repayments.index') }}" class="btn btn-primary float-right"> </i> Owner Loans Repayments</a>
                     <a href="{{ route('admin.owner_loans.create') }}" class="btn btn-success float-right"> <i
                             class="fas fa-plus"></i> Create Owner Loans </a>
                 </div>
