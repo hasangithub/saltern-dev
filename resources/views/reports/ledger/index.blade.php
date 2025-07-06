@@ -92,7 +92,7 @@ $(document).ready(function() {
                 success: function(response) {
                     response.ledgers.forEach(ledger => {
                         $('#ledger_id').append(
-                            `<option value="${ledger.id}">${ledger.name}</option>`
+                            `<option value="${ledger.id}">${ledger.id}${ledger.name}</option>`
                         );
                     });
                     $('#ledger_id').prop('disabled', false);
