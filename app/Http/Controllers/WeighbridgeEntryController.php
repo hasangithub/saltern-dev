@@ -129,7 +129,7 @@ class WeighbridgeEntryController extends Controller
 
                 $journal = JournalEntry::create([
                     'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-                    'description' => 'Loan deduction for weighbridge entry',
+                    'description' => 'Loan deduction for weighbridge entry#'.$weighbridgeEntryId." LoanId#".$loanId,
                 ]);
 
                 $details = [
@@ -159,7 +159,7 @@ class WeighbridgeEntryController extends Controller
 
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-            'description' => 'Service Charge Entry',
+            'description' => 'Service Charge Entry - MembershipId#'.$membership->id." weighbridgeEntryId#".$weighbridgeEntryId,
         ]);
 
         $details = [
@@ -169,7 +169,7 @@ class WeighbridgeEntryController extends Controller
                 'sub_ledger_id' => 101,
                 'debit_amount' => $serviceChargeMain,
                 'credit_amount' => null,
-                'description' => 'Service charge debited from buyer',
+                'description' => 'Service charge debited from buyer#'.$buyer->id,
             ],
             [
                 'journal_id' => $journal->id,
@@ -177,7 +177,7 @@ class WeighbridgeEntryController extends Controller
                 'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => round($serviceChargeMain * 0.70, 2),
-                'description' => 'Service charge income',
+                'description' => 'Service charge income weighbridgeEntryId#'.$weighbridgeEntryId,
             ],
             [
                 'journal_id' => $journal->id,
@@ -185,7 +185,7 @@ class WeighbridgeEntryController extends Controller
                 'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => round($serviceChargeMain * 0.30, 2),
-                'description' => 'Owner share of service charge',
+                'description' => 'Owner share of service charge - MembershipId#'.$membership->id." weighbridgeEntryId#".$weighbridgeEntryId,
             ],
         ];
 
@@ -237,133 +237,6 @@ class WeighbridgeEntryController extends Controller
        ->route('weighbridge_entries.invoice', ['entry' => $entry->id])
        ->with('success', 'Entry created successfully. Printing invoice...');
     }
-
-    public function storeLoanAuto(Request $request)
-    {
-        $message = "entry created successfully for date " . now()->format('d-m-Y');
-        $phone = '94713857269'; // Replace with dynamic phone (admin, accountant, etc.)
-
-        //$this->smsService->sendSms($phone, $message); 
-
-        $validated =  $request->validate([
-            'vehicle_id' => 'required|string',
-            'culture' => 'required|string',
-            'initial_weight' => 'required|numeric',
-            'tare_weight' => 'required|numeric|min:0|gte:initial_weight',
-            'transaction_date' => 'nullable|date',
-            'membership_id' => 'required|exists:memberships,id',
-            'buyer_id' => 'required|exists:buyers,id',
-        ]);
-
-        $membership = Membership::findOrFail($request->membership_id);
-        $data = $request->all();
-        $data['owner_id'] = $membership->owner_id;
-        $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
-        $data['bag_price'] = 100;
-        $data['status'] = 'approved';
-
-        $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
-
-        // Calculate number of bags (assuming each bag is 50kg)
-        $bags = $netWeight / 50;
-
-        // Calculate service charge
-        $serviceCharge = $bags * 100;
-        $serviceChargeMain = $bags * 100;
-        $loans = OwnerLoan::where('membership_id', $request->membership_id)
-            ->whereRaw('(approved_amount - (SELECT COALESCE(SUM(amount), 0) FROM owner_loan_repayments WHERE owner_loan_repayments.owner_loan_id = owner_loans.id)) > 0')
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        if (!$loans->isEmpty()) {
-            DB::transaction(function () use ($loans, $serviceCharge) {
-                foreach ($loans as $loan) {
-                    if ($serviceCharge <= 0) {
-                        break; // Stop if service charge is fully deducted
-                    }
-
-                    $outstanding = $loan->approved_amount - $loan->ownerLoanRepayment()->sum('amount');
-
-
-                    if ($outstanding > 0) {
-                        $deduction = min($outstanding, $serviceCharge);
-
-                        $repayment = OwnerLoanRepayment::create([
-                            'owner_loan_id' => $loan->id,
-                            'amount' => $deduction,
-                            'repayment_date' => now(),
-                            'payment_method' => 'Cash',
-                            'notes' => 'Loan Deducation Auto Mode',
-                        ]);
-
-                        // Reduce service charge
-                        $serviceCharge -= $deduction;
-
-                        $journal = JournalEntry::create([
-                            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-                            'description' => 'Loan deduction for weighbridge entry',
-                        ]);
-
-                        $details = [
-                            [
-                                'journal_id' => $journal->id,
-                                'ledger_id' => 10,
-                                'sub_ledger_id' => 100,
-                                'debit_amount' => $deduction,
-                                'credit_amount' => null,
-                                'description' => '',
-                            ],
-                            [
-                                'journal_id' => $journal->id,
-                                'ledger_id' => 12,
-                                'sub_ledger_id' => 115,
-                                'debit_amount' => null,
-                                'credit_amount' => $deduction,
-                                'description' => '',
-                            ],
-                        ];
-                    }
-                }
-            });
-        }
-
-        WeighbridgeEntry::create($data);
-
-        $journal = JournalEntry::create([
-            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-            'description' => 'Service Charge Entry',
-        ]);
-
-        $details = [
-            [
-                'journal_id' => $journal->id,
-                'ledger_id' => 10,  // e.g. Buyer
-                'debit_amount' => $serviceChargeMain,
-                'credit_amount' => null,
-                'description' => 'Service charge debited from buyer',
-            ],
-            [
-                'journal_id' => $journal->id,
-                'ledger_id' => 151,  // e.g. ServiceCharge income
-                'debit_amount' => null,
-                'credit_amount' => round($serviceChargeMain * 0.70, 2),
-                'description' => 'Service charge income',
-            ],
-            [
-                'journal_id' => $journal->id,
-                'ledger_id' => 176,  // e.g. Owner share
-                'debit_amount' => null,
-                'credit_amount' => round($serviceChargeMain * 0.30, 2),
-                'description' => 'Owner share of service charge',
-            ],
-        ];
-
-        // 3. Bulk insert details
-        JournalDetail::insert($details);
-
-        return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
-    }
-
 
     public function show($id)
     {
