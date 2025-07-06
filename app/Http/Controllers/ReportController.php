@@ -153,7 +153,7 @@ public function generateLedger(Request $request)
     $request->validate([
         'from_date' => 'required|date',
         'to_date' => 'required|date',
-        'ledger_id' => 'required|exists:ledgers,id',
+        'ledger_id' => 'nullable|exists:ledgers,id',
         'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
     ]);
 
@@ -162,44 +162,68 @@ public function generateLedger(Request $request)
     $fromDate = $request->from_date;
     $toDate = $request->to_date;
 
-    $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
-    $subLedger = $subLedgerId ? SubLedger::findOrFail($subLedgerId) : null;
-
+    // If sub-ledger is selected, show its detail (Case 2)
     if ($subLedgerId) {
-        // Return individual entries for the selected sub-ledger
+        $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
+        $ledger = $subLedger->ledger;
+
         $journalDetails = JournalDetail::with('journalEntry')
-            ->where('ledger_id', $ledgerId)
+            ->where('ledger_id', $ledger->id)
             ->where('sub_ledger_id', $subLedgerId)
             ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
             ->get();
 
         return view('reports.ledger.result', compact('journalDetails', 'ledger', 'subLedger', 'fromDate', 'toDate'));
-    } else {
-        // Grouped summary for each sub-ledger under the ledger
-        $subLedgerSummaries = [];
+    }
 
-        foreach ($ledger->subLedgers as $sl) {
-            $details = JournalDetail::with('journalEntry')
+    // If only ledger is selected
+    if ($ledgerId) {
+        $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
+        $hasSubLedgers = $ledger->subLedgers->isNotEmpty();
+
+        // Case 1: Ledger with subledgers — show summary per subledger
+        if ($hasSubLedgers) {
+            $subLedgerSummaries = [];
+
+            foreach ($ledger->subLedgers as $sl) {
+                $details = JournalDetail::with('journalEntry')
+                    ->where('ledger_id', $ledgerId)
+                    ->where('sub_ledger_id', $sl->id)
+                    ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
+                    ->get();
+
+                $debit = $details->sum('debit_amount');
+                $credit = $details->sum('credit_amount');
+
+                if ($debit != 0 || $credit != 0) {
+                    $subLedgerSummaries[] = [
+                        'sub_ledger' => $sl,
+                        'debit' => $debit,
+                        'credit' => $credit,
+                    ];
+                }
+            }
+
+            return view('reports.ledger.summary', compact('subLedgerSummaries', 'ledger', 'fromDate', 'toDate'));
+
+        } else {
+            // Case 3: Ledger has NO subledgers — show summary for that ledger only
+            $journalDetails = JournalDetail::with('journalEntry')
                 ->where('ledger_id', $ledgerId)
-                ->where('sub_ledger_id', $sl->id)
+                ->whereNull('sub_ledger_id')
                 ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
                 ->get();
 
-            $debit = $details->sum('debit_amount');
-            $credit = $details->sum('credit_amount');
-
-            if ($debit != 0 || $credit != 0) {
-                $subLedgerSummaries[] = [
-                    'sub_ledger' => $sl,
-                    'debit' => $debit,
-                    'credit' => $credit,
-                ];
-            }
+                return view('reports.ledger.summary', compact('journalDetails', 'ledger', 'fromDate', 'toDate'));
         }
 
-        return view('reports.ledger.summary', compact('subLedgerSummaries', 'ledger', 'fromDate', 'toDate'));
+      
     }
+
+    // If nothing selected, return error or redirect back
+    return back()->withErrors('Please select a ledger or subledger.');
 }
+
 
 
 

@@ -18,6 +18,7 @@
                     <p>From {{ $fromDate }} to {{ $toDate }}</p>
                 </div>
                 <div class="card-body">
+                    @if(isset($subLedgerSummaries))
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -36,7 +37,46 @@
                             @endforeach
                         </tbody>
                     </table>
-
+                    @else
+                    {{-- Ledger has no subledgers --}}
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                            $totalDebit = 0;
+                            $totalCredit = 0;
+                            @endphp
+                            @forelse($journalDetails as $entry)
+                            <tr>
+                                <td>{{ $entry->journalEntry->journal_date }}</td>
+                                <td>{{ $entry->description }}</td>
+                                <td class="text-end">{{ number_format($entry->debit_amount, 2) }}</td>
+                                <td class="text-end">{{ number_format($entry->credit_amount, 2) }}</td>
+                            </tr>
+                            @php
+                            $totalDebit += $entry->debit_amount;
+                            $totalCredit += $entry->credit_amount;
+                            @endphp
+                            @empty
+                            <tr>
+                                <td colspan="4">No transactions found.</td>
+                            </tr>
+                            @endforelse
+                            <tr>
+                                <th colspan="2" class="text-end">Total</th>
+                                <th class="text-end">{{ number_format($totalDebit, 2) }}</th>
+                                <th class="text-end">{{ number_format($totalCredit, 2) }}</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    @endif
                 </div>
             </div>
         </div>
