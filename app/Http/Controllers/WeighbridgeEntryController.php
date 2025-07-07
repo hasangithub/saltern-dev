@@ -208,6 +208,7 @@ class WeighbridgeEntryController extends Controller
         $ownerPhone = $membership->owner->phone_number;
         $buyerPhone = $buyer->phone_number;
         $todayDate = date('Y-m-d');
+        $vehicleNumber = $validated['vehicle_id'];
 
         $smsCommon = "{$todayDate}\n"
         . "{$membership->owner->name_with_initial}\n"
@@ -216,8 +217,16 @@ class WeighbridgeEntryController extends Controller
         . "{$netWeight}kg\n"
         . "{$bags} bags\n"
         . "Service Charge Rs. " . number_format(round($serviceChargeMain, 2), 2) . "\n";
-    
-        $buyerSms = $smsCommon;
+
+        $buyerSms = "{$todayDate}\n"
+        . "{$vehicleNumber}\n"
+        . "{$membership->owner->name_with_initial}\n"
+        . "{$waikal}\n"
+        . "{$buyer->full_name}\n"
+        . "{$netWeight}kg\n"
+        . "{$bags} bags\n"
+        . "Service Charge Rs. " . number_format(round($serviceChargeMain, 2), 2) . "\n";
+        
         $ownerSms = $smsCommon . "\n30% Reserved Rs. " . number_format(round($serviceChargeMain * 0.30, 2),2);
 
         if ($totalPaidNow > 0) {
