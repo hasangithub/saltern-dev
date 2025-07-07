@@ -35,4 +35,12 @@ class LedgerController extends Controller
 
         return redirect()->route('ledgers.create')->with('success', 'Ledger '. $request->name .' created successfully');
     }
+
+    public function getBySubAccount($subAccountId)
+    {
+        return Ledger::where('sub_account_group_id', $subAccountId)
+            ->select('id', 'name')
+            ->get();
+    }
+
 }

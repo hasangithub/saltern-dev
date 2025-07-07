@@ -35,6 +35,7 @@
             <table class="table table-bordered table-sm" id="transactionTable">
                 <thead>
                     <tr>
+                        <th>SubAccount</th>
                         <th>Ledger</th>
                         <th>Subledger</th>
                         <th>Description</th>
@@ -46,11 +47,16 @@
                 <tbody id="formRows">
                     <tr>
                         <td>
+                            <select name="details[0][subAccount]" class="form-control subAccount" required>
+                                <option value="">Select SubAccount</option>
+                                @foreach($subAccounts as $subAccount)
+                                <option value="{{ $subAccount->id }}">{{ $subAccount->name }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
                             <select name="details[0][ledger]" class="form-control ledger" required>
                                 <option value="">Select Ledger</option>
-                                @foreach($ledgers as $ledger)
-                                <option value="{{ $ledger->id }}">{{ $ledger->name }}</option>
-                                @endforeach
                             </select>
                         </td>
                         <td>
@@ -77,7 +83,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" class="text-right"><strong>Total</strong></td>
+                        <td colspan="4" class="text-right"><strong>Total</strong></td>
                         <td id="totalDebit" class="text-right">0.00</td>
                         <td id="totalCredit" class="text-right">0.00</td>
                     </tr>
@@ -110,11 +116,22 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#transactionTable select').forEach(function (select) {
+        select.value = ''; // Reset selection
+    });
     let rowIndex = 1;
 
     // Add new row
     document.getElementById('addRow').addEventListener('click', function() {
         let row = `<tr>
+            <td>
+                <select name="details[${rowIndex}][subAccount]" class="form-control subAccount" required>
+                    <option value="">Select subAccount</option>
+                    @foreach($subAccounts as $subAccount)
+                    <option value="{{ $subAccount->id }}">{{ $subAccount->name }}</option>
+                    @endforeach
+                </select>
+            </td>
            <td>
                 <select name="details[${rowIndex}][ledger]" class="form-control ledger" required>
                     <option value="">Select Ledger</option>
@@ -147,31 +164,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle ledger change and populate subledger dropdown
     document.addEventListener('change', function(event) {
-        if (event.target.classList.contains('ledger')) {
-            let ledgerId = event.target.value;
-            let subledgerDropdown = event.target.closest('tr').querySelector('.subledger');
+    const row = event.target.closest('tr');
 
-            // Clear previous subledger options
-            subledgerDropdown.innerHTML = '<option value="">Select Subledger</option>';
+    // 1. When subAccount changes → fetch ledgers
+    if (event.target.classList.contains('subAccount')) {
+        const subAccountId = event.target.value;
+        const ledgerDropdown = row.querySelector('.ledger');
+        const subledgerDropdown = row.querySelector('.subledger');
 
-            if (ledgerId) {
-                const fetchSubledgersUrl = "{{ route('api.subledgers', ':ledgerId') }}";
-                const url = fetchSubledgersUrl.replace(':ledgerId', ledgerId);
-                // Fetch subledgers via an API
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.forEach(subledger => {
-                            let option = document.createElement('option');
-                            option.value = subledger.id;
-                            option.textContent = subledger.name;
-                            subledgerDropdown.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching subledgers:', error));
-            }
+        // Clear ledger & subledger dropdowns
+        ledgerDropdown.innerHTML = '<option value="">Select Ledger</option>';
+        subledgerDropdown.innerHTML = '<option value="">Select Subledger</option>';
+
+        if (subAccountId) {
+            const ledgerUrl = "{{ route('api.ledgers.bySubAccount', ':subAccountId') }}"
+    .replace(':subAccountId', subAccountId) + '?_=' + new Date().getTime();
+
+            fetch(ledgerUrl)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(ledger => {
+                        const option = document.createElement('option');
+                        option.value = ledger.id;
+                        option.textContent = ledger.name;
+                        ledgerDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching ledgers:', error);
+                });
         }
-    });
+    }
+
+    // 2. When ledger changes → fetch subledgers
+    if (event.target.classList.contains('ledger')) {
+        const ledgerId = event.target.value;
+        const subledgerDropdown = row.querySelector('.subledger');
+
+        subledgerDropdown.innerHTML = '<option value="">Select Subledger</option>';
+
+        if (ledgerId) {
+            const subledgerUrl = "{{ route('api.subledgers', ':ledgerId') }}"
+    .replace(':ledgerId', ledgerId) + '?_=' + new Date().getTime();
+            fetch(subledgerUrl)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(subledger => {
+                        const option = document.createElement('option');
+                        option.value = subledger.id;
+                        option.textContent = subledger.name;
+                        subledgerDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching subledgers:', error);
+                });
+        }
+    }
+});
+
 
     // Delete row
     document.addEventListener('click', function(event) {
@@ -213,6 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Loop through each row to ensure all fields are filled and either Debit or Credit is filled
         rows.forEach(function(row) {
+            const subAccount = row.querySelector('[name*="subAccount"]');
             const ledger = row.querySelector('[name*="ledger"]');
             const subledger = row.querySelector('[name*="subledger"]');
             const description = row.querySelector('[name*="description"]');
@@ -231,14 +283,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 ledger.classList.add('is-valid');
             }
 
-            // Check Subledger
-            // if (!subledger.value) {
-            //     subledger.classList.add('is-invalid');
-            //     rowValid = false;
-            // } else {
-            //     subledger.classList.remove('is-invalid');
-            //     subledger.classList.add('is-valid');
-            // }
+           // Check subAccount
+            if (!subAccount.value) {
+                subAccount.classList.add('is-invalid');
+                rowValid = false;
+            } else {
+                subAccount.classList.remove('is-invalid');
+                subAccount.classList.add('is-valid');
+            }
 
             // Check Description
             if (!description.value) {
@@ -317,7 +369,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     confirmButtonText: 'OK',
                                 });
                                 throw new Error(
-                                'Validation error'); // Prevent further processing
+                                    'Validation error'
+                                ); // Prevent further processing
                             });
                         } else if (!response.ok) {
                             // Handle non-validation errors
