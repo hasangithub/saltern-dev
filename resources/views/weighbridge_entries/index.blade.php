@@ -27,7 +27,7 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="weighbridgeTable" class="table table-sm nowrap" style="width:100%">
+                        <table id="weighbridgeTable" class="table table-sm nowrap table-hover" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Date</th>

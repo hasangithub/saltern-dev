@@ -132,6 +132,8 @@ Route::get('test1/',function() {
 });
 
 Route::get('/api/subledgers/{ledgerId}', [SubledgerController::class, 'getSubledgers'])->name('api.subledgers');
+Route::get('/api/subaccount-ledgers/{subAccountId}', [LedgerController::class, 'getBySubAccount'])->name('api.ledgers.bySubAccount');
+
 
 Route::get('loan-requests', [OwnerLoanController::class, 'index'])->name('loan-requests.index');  // List owner's loan requests
 Route::get('loan-requests/create', [OwnerLoanController::class, 'create'])->name('loan-requests.create');  // Request a new loan

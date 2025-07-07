@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JournalDetail;
 use App\Models\JournalEntry;
 use App\Models\Ledger;
+use App\Models\SubAccountGroup;
 use Illuminate\Http\Request;
 use App\Models\SubLedger;
 use Illuminate\Support\Facades\DB;
@@ -21,9 +22,9 @@ class JournalEntryController extends Controller
     {
         // $subLedgers = SubLedger::all();
         // return view('journal_entries.create', compact('subLedgers'));
-
+        $subAccounts = SubAccountGroup::all();
         $ledgers = Ledger::all();
-        return view('journal_entries.test1', compact('ledgers'));
+        return view('journal_entries.test1', compact('ledgers', 'subAccounts'));
     }
 
     public function store(Request $request)
