@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class JournalEntry extends Model
 {
-    protected $fillable = ['journal_date', 'description', 'is_reversal'];
+    use SoftDeletes;
+
+    protected $dates = ['deleted_at'];
+    protected $fillable = ['journal_date', 'description', 'is_reversal', 'deleted_by'];
 
     public function details()
     {

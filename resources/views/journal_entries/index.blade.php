@@ -42,11 +42,19 @@
                                     <td>{{ $journalEntry->journal_date }}</td>
                                     <td>{{ $journalEntry->description }}</td>
                                     <td>
-                                       <a href="{{ route('journal-entries.show', $journalEntry->id) }}"
+                                        <a href="{{ route('journal-entries.show', $journalEntry->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                       
+                                        <form action="{{ route('journal-entries.destroy', $journalEntry->id) }}"
+                                            method="POST" style="display:inline;"
+                                            onsubmit="return confirm('Are you sure you want to delete this entry?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -75,5 +83,6 @@
 $(document).ready(function() {
     $('#membershipsTable').DataTable();
 });
+
 </script>
 @endpush

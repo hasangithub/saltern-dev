@@ -104,4 +104,22 @@ if (round($totalDebit, 2) !== round($totalCredit, 2)) {
         return view('journal_entries.show', compact('journalDetails'));
     }
 
+    public function destroy($id)
+    {
+            $journal = JournalEntry::with('details')->findOrFail($id);
+            $userId = auth('web')->id();
+
+            // Update and soft delete details
+            $journal->details()->update(['deleted_by' => $userId]);
+            $journal->details->each->delete();
+
+            // Update and soft delete journal
+            $journal->deleted_by = $userId;
+            $journal->save();
+            $journal->delete();
+
+            return redirect()->route('journal-entries.index')->with('success', 'Journal entry deleted successfully.');
+    }
+
+
 }
