@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class JournalDetail extends Model
 {
-    protected $fillable = ['journal_id', 'ledger_id','sub_ledger_id', 'debit_amount', 'credit_amount', 'description'];
+    use SoftDeletes;
+
+    protected $fillable = ['journal_id', 'ledger_id','sub_ledger_id', 'debit_amount', 'credit_amount', 'description', 'deleted_by'];
 
     public function journalEntry()
     {
