@@ -32,6 +32,8 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Name</th>
+                                    <th>Yahai</th>
+                                    <th>Waikal</th>
                                     <th>Requested Amount</th>
                                     <th>Approved Amount</th>
                                     <th>Outstanding</th>
@@ -44,6 +46,8 @@
                                 <tr>
                                     <td>{{ $ownerLoan->formatted_date }}</td>
                                     <td>{{ $ownerLoan->membership->owner->name_with_initial }}</td>
+                                    <td>{{ $ownerLoan->membership->saltern->yahai->name }}</td>
+                                    <td>{{ $ownerLoan->membership->saltern->name }}</td>
                                     <td>{{ $ownerLoan->requested_amount }}</td>
                                     <td>{{ $ownerLoan->approved_amount }}</td>
                                     <td>{{ number_format($ownerLoan->approved_amount - $ownerLoan->ownerLoanRepayment->sum('amount') ?: 0, 2) }}</td>

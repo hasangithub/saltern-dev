@@ -31,6 +31,8 @@
                                     <th>Date</th>
                                     <th>Loan ID</th>
                                     <th>Owner</th>
+                                    <th>Yahai</th>
+                                    <th>Waikal</th>
                                     <th>Buyer</th>
                                     <th>Repayment Amount</th>
                                     <th>Status</th>
@@ -42,6 +44,8 @@
                                     <td>{{ $repayment->repayment_date  }}</td>
                                     <td>{{ $repayment->owner_loan_id  }}</td>
                                     <td>{{ $repayment->ownerLoan->membership->owner->name_with_initial  }}</td>
+                                    <td>{{ $repayment->ownerLoan->membership->saltern->yahai->name  }}</td>
+                                    <td>{{ $repayment->ownerLoan->membership->saltern->name  }}</td>
                                     <td>{{ $repayment->buyer->full_name  }}</td>   
                                     <td>{{ $repayment->amount  }}</td>
                                     <td>{{ $repayment->status  }}</td>    
