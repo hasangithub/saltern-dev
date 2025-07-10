@@ -36,6 +36,10 @@
         <td>{{ $loan->membership->saltern->name }}</td>
     </tr>
     <tr>
+        <th>Loan Id</th>
+        <td>{{ $loan->id }}</td>
+    </tr>
+    <tr>
         <th>Requested Amount</th>
         <td>Rs. {{ number_format($loan->requested_amount, 2) }}</td>
     </tr>
