@@ -70,6 +70,7 @@
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
+                                        <a href="{{ route('weighbridge_entries.edit', $entry->id) }}" class="btn btn-sm btn-warning">Edit</a>
                                         <form action="{{ route('weighbridge-entries.delete', $entry->id) }}"
                                             method="POST" style="display:inline;"
                                             onsubmit="return confirm('Are you sure you want to delete this entry?');">

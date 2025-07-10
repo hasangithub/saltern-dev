@@ -326,4 +326,30 @@ class WeighbridgeEntryController extends Controller
         {
             return view('weighbridge_entries.invoice', compact('entry'));
         }
+
+        public function edit($id)
+        {
+            $entry = WeighbridgeEntry::with(['owner', 'buyer'])->findOrFail($id);
+            $owners = Owner::all();
+            $buyers = Buyer::all();
+
+            return view('weighbridge_entries.edit', compact('entry', 'owners', 'buyers'));
+        }
+
+        public function update(Request $request, $id)
+        {
+            $request->validate([
+                'vehicle_id' => 'required|string|max:100',
+                'buyer_id' => 'required|exists:buyers,id',
+            ]);
+
+            $entry = WeighbridgeEntry::findOrFail($id);
+            $entry->update($request->only([
+                'vehicle_id',
+                'buyer_id'
+            ]));
+
+            return redirect()->route('weighbridge_entries.index')->with('success', 'Entry updated successfully.');
+        }
+
 }
