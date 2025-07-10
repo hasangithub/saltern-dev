@@ -16,77 +16,85 @@ use App\Models\Yahai;
 class ReportController extends Controller
 {
     public function trialBalance()
-{
-    $accountGroups = AccountGroup::with([
-        'subAccountGroups.ledgers' => function ($query) {
-            $query->with([
-                'journalDetails', // direct ledger entries
-                'subLedgers.journalDetails'
-            ]);
-        }
-    ])->get();
-
-    $trialData = [];
-
-    foreach ($accountGroups as $group) {
-        foreach ($group->subAccountGroups as $subGroup) {
-            foreach ($subGroup->ledgers as $ledger) {
-                $ledgerOwnDebit = $ledger->journalDetails->sum('debit_amount');
-                $ledgerOwnCredit = $ledger->journalDetails->sum('credit_amount');
-
-                $subledgerRows = [];
-                $subledgerTotalDebit = 0;
-                $subledgerTotalCredit = 0;
-
-                foreach ($ledger->subLedgers as $sub) {
-                    $sd = $sub->journalDetails->sum('debit_amount');
-                    $sc = $sub->journalDetails->sum('credit_amount');
-                    $subBalance = $sd - $sc;
-
-                    [$debit, $credit] = $this->adjustBalance($group->name, $subBalance);
-
-                    if ($debit != 0 || $credit != 0) {
-                        $subledgerRows[] = [
+    {
+        $accountGroups = AccountGroup::with([
+            'subAccountGroups.ledgers' => function ($q) {
+                $q->with([
+                    'journalDetails', // only direct (no subledger_id)
+                    'subLedgers.journalDetails'
+                ]);
+            }
+        ])->get();
+    
+        $trialData = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
+    
+        foreach ($accountGroups as $group) {
+            foreach ($group->subAccountGroups as $subGroup) {
+                foreach ($subGroup->ledgers as $ledger) {
+    
+                    // 1. Ledger own entries (excluding subledger)
+                    $ledgerDebit = $ledger->journalDetails->sum('debit_amount');
+                    $ledgerCredit = $ledger->journalDetails->sum('credit_amount');
+    
+                    // 2. Subledgers entries
+                    $subRows = [];
+                    $subDebitTotal = 0;
+                    $subCreditTotal = 0;
+    
+                    foreach ($ledger->subLedgers as $sub) {
+                        $sd = $sub->journalDetails->sum('debit_amount');
+                        $sc = $sub->journalDetails->sum('credit_amount');
+                        $subBalance = $sd - $sc;
+                        [$subDebit, $subCredit] = $this->adjustBalance($group->name, $subBalance);
+    
+                        if ($subDebit != 0 || $subCredit != 0) {
+                            $subRows[] = [
+                                'group' => $group->name,
+                                'sub_group' => $subGroup->name,
+                                'ledger' => '↳ ' . $sub->name,
+                                'debit' => $subDebit,
+                                'credit' => $subCredit,
+                                'is_sub' => true,
+                            ];
+                        }
+    
+                        $subDebitTotal += $sd;
+                        $subCreditTotal += $sc;
+                    }
+    
+                    // 3. Ledger total including subledgers
+                    $totalLedgerDebit = $ledgerDebit + $subDebitTotal;
+                    $totalLedgerCredit = $ledgerCredit + $subCreditTotal;
+                    $balance = $totalLedgerDebit - $totalLedgerCredit;
+                    [$adjDebit, $adjCredit] = $this->adjustBalance($group->name, $balance);
+    
+                    if ($adjDebit != 0 || $adjCredit != 0) {
+                        $trialData[] = [
                             'group' => $group->name,
                             'sub_group' => $subGroup->name,
-                            'ledger' => '↳ ' . $sub->name,
-                            'debit' => $debit,
-                            'credit' => $credit,
-                            'is_sub' => true,
+                            'ledger' => $ledger->name,
+                            'debit' => $adjDebit,
+                            'credit' => $adjCredit,
+                            'is_sub' => false,
                         ];
+    
+                        $totalDebit += $adjDebit;
+                        $totalCredit += $adjCredit;
                     }
-
-                    $subledgerTotalDebit += $sd;
-                    $subledgerTotalCredit += $sc;
-                }
-
-                $balance = ($ledgerOwnDebit ) - ($ledgerOwnCredit);
-                [$debit, $credit] = $this->adjustBalance($group->name, $balance);
-
-                if ($debit != 0 || $credit != 0) {
-                    $trialData[] = [
-                        'group' => $group->name,
-                        'sub_group' => $subGroup->name,
-                        'ledger' => $ledger->name,
-                        'debit' => $debit,
-                        'credit' => $credit,
-                        'is_sub' => false,
-                    ];
-                }
-
-                foreach ($subledgerRows as $row) {
-                    $trialData[] = $row;
+    
+                    // 4. Append subledger rows
+                    foreach ($subRows as $row) {
+                        $trialData[] = $row;
+                    }
                 }
             }
         }
+    
+        return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
     }
-
-    $totalDebit = collect($trialData)->where('is_sub', false)->sum('debit');
-    $totalCredit = collect($trialData)->where('is_sub', false)->sum('credit');
-
-    return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
-}
-
+    
     
     
 

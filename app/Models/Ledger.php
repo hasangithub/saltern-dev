@@ -20,7 +20,7 @@ class Ledger extends Model
 
     public function journalDetails()
     {
-        return $this->hasMany(JournalDetail::class);
+        return $this->hasMany(JournalDetail::class)->whereNull('sub_ledger_id'); // direct only
     }
 
 }
