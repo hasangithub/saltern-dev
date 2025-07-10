@@ -97,6 +97,8 @@ Route::middleware(['auth:web'])->group(function () {
         // Form display
     Route::get('/admin/owner-loans/create', [OwnerLoanController::class, 'adminCreateOwnerLoan'])->name('admin.owner_loans.create');
     Route::post('/admin/owner-loans', [OwnerLoanController::class, 'adminStoreOwnerLoan'])->name('admin.owner_loans.store');
+    Route::get('/admin/owner-loans/{id}/print', [OwnerLoanController::class, 'printApprovalForm'])->name('admin.owner-loans.print');
+
 
     Route::get('/receipts', [ReceiptController::class, 'index'])->name('receipts.index');
     Route::get('/receipts/create', [ReceiptController::class, 'create'])->name('receipts.create');
