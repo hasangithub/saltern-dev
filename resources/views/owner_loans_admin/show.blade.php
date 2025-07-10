@@ -17,6 +17,14 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Loan Details</h3>
+                    @if($ownerLoan->status === 'pending')
+                    <div class="d-flex justify-content-end mb-3">
+                        <a href="{{ route('admin.owner-loans.print', $ownerLoan->id) }}" target="_blank"
+                            class="btn btn-outline-primary">
+                            🖨️ Print Approval Form
+                        </a>
+                    </div>
+                    @endif
                 </div>
                 <div class="card-body">
                     <div class="row">

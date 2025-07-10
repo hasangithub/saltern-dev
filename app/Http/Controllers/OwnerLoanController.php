@@ -209,4 +209,11 @@ class OwnerLoanController extends Controller
 
         return redirect()->route('admin.owner_loans.create')->with('success', 'Owner Loan request submitted successfully.');
     }
+
+    public function printApprovalForm($id)
+    {
+        $loan = OwnerLoan::with(['membership'])->findOrFail($id);
+
+        return view('owner_loans_admin.print_approval_form', compact('loan'));
+    }
 }
