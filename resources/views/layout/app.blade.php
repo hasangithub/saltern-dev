@@ -29,6 +29,25 @@
         font-size: 13px;
         /* smaller font */
     }
+
+    table .btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.60rem;
+        /* smaller font */
+        line-height: 1;
+        height: auto;
+        min-width: unset;
+    }
+
+    .table th,
+    .table td {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        /* optionally reduce font size too */
+        font-size: 11px;
+        /* reduce line height to compact rows */
+        line-height: 1.1;
+    }
     </style>
 </head>
 
