@@ -29,13 +29,8 @@ class OtherIncomeController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->input('buyer_id') === 'walkin') {
-            $request->merge(['buyer_id' => null]);
-        }
-
         $validated = $request->validate([
-            'buyer_id' => 'nullable|exists:buyers,id|required_without:name',
-            'name' => 'nullable|string|max:255|required_without:buyer_id',
+            'buyer_id' => 'required|exists:buyers,id',
             'amount' => 'required|numeric|min:0',
             'description' => 'nullable|string',
         ]);
@@ -43,22 +38,38 @@ class OtherIncomeController extends Controller
         $validated['received_date'] = date("Y-m-d"); 
         $validated['income_category_id'] = $request->input('ledger_id'); 
       
-        if (!$request->input('buyer_id')) {
-            $validated['name'] = $validated['name'];
-        }
+        $otherIncome = OtherIncome::create($validated);
 
-        OtherIncome::create($validated);
+        // Categories: 162, 163, 165 → ledger_id = 10, else ledger_id = 27
+        switch ($request->input('ledger_id')) {
+            case 162:
+                $ledgerId = 10;
+                $subLedgerId = 97;
+                break;
+            case 163:
+                $ledgerId = 10;
+                $subLedgerId = 98;
+                break;
+            case 165:
+                $ledgerId = 10;
+                $subLedgerId = 99;
+                break;
+            default:
+                $ledgerId = 10;
+                $subLedgerId = null;
+                break;
+        }
 
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-            'description' => 'Other Income',
+            'description' => 'Other Income#'.$otherIncome->id,
         ]);
 
         $details = [
             [
                 'journal_id' => $journal->id,
-                'ledger_id' => 10,
-                'sub_ledger_id' => 100,
+                'ledger_id' => $ledgerId,
+                'sub_ledger_id' => $subLedgerId,
                 'debit_amount' => $validated['amount'],
                 'credit_amount' => null,
                 'description' => '',

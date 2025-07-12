@@ -38,15 +38,10 @@
                             <label for="buyer_id">Buyer</label>
                             <select name="buyer_id" id="buyer_id" class="form-control" required>
                                 <option value="">Select Buyer</option>
-                                <option value="walkin">Walk-in Buyer</option>
                                 @foreach ($buyers as $buyer)
                                 <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
                                 @endforeach
                             </select>
-                        </div>
-                        <div class="form-group" id="walkin_name_field">
-                            <label for="name">Name</label>
-                            <input type="text" name="name" id="name" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="amount">Amount</label>
@@ -123,21 +118,7 @@
     });
 
     $(document).ready(function(){
-        function toggleWalkinField() {
-            if($('#buyer_id').val() === 'walkin') {
-                $('#walkin_name_field').show();
-            } else {
-                $('#walkin_name_field').hide();
-            }
-        }
-
-        // Initial check
-        toggleWalkinField();
-
-        // On change
-        $('#buyer_id').change(function(){
-            toggleWalkinField();
-        });
+       
     });
 </script>
 @endpush
