@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- DataTables CSS with Bootstrap 4 integration -->
-     
+
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
 
 
@@ -19,11 +19,17 @@
     <!-- For additional styles -->
     <style>
     .form-control {
-        height: calc(1.8125rem + 2px); /* Match Bootstrap form-control-sm height */
+        height: calc(1.8125rem + 2px);
+        /* Match Bootstrap form-control-sm height */
         padding: .25rem .5rem;
         font-size: .875rem;
     }
-</style>
+
+    .table {
+        font-size: 13px;
+        /* smaller font */
+    }
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -31,17 +37,17 @@
 
         <!-- Navbar -->
         @if(auth()->guard('owner')->check())
-            @include('partials.navbar-owners')
+        @include('partials.navbar-owners')
         @elseif(auth()->guard('web')->check())
-            @include('partials.navbar')
+        @include('partials.navbar')
         @endif
-       
+
 
         <!-- Main Sidebar Container -->
         @if(auth()->guard('owner')->check())
-            @include('partials.sidebar-owners')
+        @include('partials.sidebar-owners')
         @elseif(auth()->guard('web')->check())
-            @include('partials.sidebar')
+        @include('partials.sidebar')
         @endif
 
         <!-- Content Wrapper. Contains page content -->
@@ -110,11 +116,11 @@
     if (currentLink.length > 0) { //this filter because some links are not from menu
         currentLink[0].classList.add("active");
         currentLink[0].closest(".nav-treeview").style.display = "block";
-        
+
         if (currentLink[0].closest(".has-treeview"))
             currentLink[0].closest(".has-treeview").classList.add("active");
     }
-</script>
+    </script>
 
 
     @stack('js')
