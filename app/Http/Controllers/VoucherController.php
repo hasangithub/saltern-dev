@@ -8,6 +8,7 @@ use App\Models\JournalEntry;
 use App\Models\Ledger;
 use App\Models\OwnerLoan;
 use App\Models\PaymentMethod;
+use App\Models\SubAccountGroup;
 use App\Models\SubLedger;
 use App\Models\Voucher;
 use Carbon\Carbon;
@@ -56,9 +57,10 @@ class VoucherController extends Controller
         $paymentMethods = PaymentMethod::all();
         $banks = SubLedger::where('ledger_id', 11)->get();
         $ledgers = Ledger::all();
+        $subAccounts = SubAccountGroup::all();
         $ownerLoans = OwnerLoan::with('membership')->where('status', 'approved')->whereNull('voucher_id')->where('is_migrated', false)->get();
 
-        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers', 'ownerLoans'));
+        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers', 'ownerLoans', 'subAccounts'));
     }
 
     public function store(Request $request)

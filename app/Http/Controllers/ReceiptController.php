@@ -113,35 +113,18 @@ public function store(Request $request)
     ]);
 
     // Update service entries status
+    $totalServiceCharge = 0;
     if (!empty($serviceEntryIds)) {
-        foreach($serviceEntryIds as $serviceEntryId) {
-            $journal = JournalEntry::create([
-                'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-                'description' => 'Receipt Service Charge',
-            ]);
-    
-            $serviceCharge = WeighbridgeEntry::find($serviceEntryId)?->total_amount;
 
-            $details = [
-                [
-                    'journal_id' => $journal->id,
-                    'ledger_id' => 11,
-                    'sub_ledger_id' => $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
-                    'debit_amount' => $serviceCharge,
-                    'credit_amount' => null,
-                    'description' => '',
-                ],
-                [
-                    'journal_id' => $journal->id,
-                    'ledger_id' => 10,
-                    'sub_ledger_id' => 101,
-                    'debit_amount' => null,
-                    'credit_amount' => $serviceCharge,
-                    'description' => '',
-                ],
-            ];
-    
-            JournalDetail::insert($details);
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+            'description' => 'Receipt Service Charge Receipt#'.$receipt->id,
+        ]);
+
+        foreach($serviceEntryIds as $serviceEntryId) {
+        
+            $serviceCharge = WeighbridgeEntry::find($serviceEntryId)?->total_amount;
+            $totalServiceCharge += $serviceCharge;
 
             ReceiptDetail::create([
                 'receipt_id' => $receipt->id,
@@ -150,45 +133,45 @@ public function store(Request $request)
                 'amount'     => $serviceCharge,
             ]);
         }
+        
         WeighbridgeEntry::whereIn('id', $serviceEntryIds)
-            ->update(['is_service_charge_paid' => 1]); // Assuming 1 means paid
-    }
-
-    // Update repayments status
-    if (!empty($repaymentIds)) {
-        OwnerLoanRepayment::whereIn('id', $repaymentIds)
-            ->update(['status' => 'paid']);
-
-        foreach($repaymentIds as $repaymentId) {
-
-            $repaymentAmount = OwnerLoanRepayment::find($repaymentId)?->amount;
-
-            $journal = JournalEntry::create([
-                'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-                'description' => 'Receipt Loan Repayment',
-            ]);
-
+            ->update(['is_service_charge_paid' => 1]); 
             $details = [
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 11,
-                    'sub_ledger_id' =>  $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
-                    'debit_amount' => $repaymentAmount,
+                    'sub_ledger_id' => $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
+                    'debit_amount' => $totalServiceCharge,
                     'credit_amount' => null,
                     'description' => '',
                 ],
                 [
                     'journal_id' => $journal->id,
                     'ledger_id' => 10,
-                    'sub_ledger_id' => 100,
+                    'sub_ledger_id' => 101,
                     'debit_amount' => null,
-                    'credit_amount' => $repaymentAmount,
+                    'credit_amount' => $totalServiceCharge,
                     'description' => '',
                 ],
             ];
     
             JournalDetail::insert($details);
+    }
 
+    // Update repayments status
+    $totalRepaymentAmount = 0;
+    if (!empty($repaymentIds)) {
+
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+            'description' => 'Receipt Loan Repayment Receipt#'.$receipt->id,
+        ]);
+
+        foreach($repaymentIds as $repaymentId) {
+
+            $repaymentAmount = OwnerLoanRepayment::find($repaymentId)?->amount;
+            $totalRepaymentAmount += $repaymentAmount;
+            
             ReceiptDetail::create([
                 'receipt_id' => $receipt->id,
                 'entry_type' => 'loan',
@@ -197,11 +180,38 @@ public function store(Request $request)
             ]);
 
         }
+
+        $details = [
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 11,
+                'sub_ledger_id' =>  $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
+                'debit_amount' => $totalRepaymentAmount,
+                'credit_amount' => null,
+                'description' => '',
+            ],
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 10,
+                'sub_ledger_id' => 100,
+                'debit_amount' => null,
+                'credit_amount' => $totalRepaymentAmount,
+                'description' => '',
+            ],
+        ];
+
+        JournalDetail::insert($details);
+
+        OwnerLoanRepayment::whereIn('id', $repaymentIds)
+        ->update(['status' => 'paid']);
     }
 
     if (!empty($otherIncomeIds)) {
-        OtherIncome::whereIn('id', $otherIncomeIds)
-            ->update(['status' => 'paid']);
+
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+            'description' => 'Receipt Other Income Receipt#'.$receipt->id,
+        ]);
 
         foreach($otherIncomeIds as $otherIncomeId) {
 
@@ -223,15 +233,10 @@ public function store(Request $request)
                     $subLedgerId = 99;
                     break;
                 default:
-                    $ledgerId = 27;
+                    $ledgerId = 10;
                     $subLedgerId = null;
                     break;
             }
-
-            $journal = JournalEntry::create([
-                'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-                'description' => 'Receipt Other Income',
-            ]);
 
             $details = [
                 [
@@ -262,6 +267,8 @@ public function store(Request $request)
             ]);
 
         }
+
+        OtherIncome::whereIn('id', $otherIncomeIds)->update(['status' => 'paid']);
     }
 
     return redirect()->route('receipts.index')->with('success', 'Payment processed successfully.');

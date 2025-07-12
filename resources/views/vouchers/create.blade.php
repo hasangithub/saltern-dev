@@ -59,7 +59,9 @@
                         <select name="owner_loan_id" id="owner_loan_id" class="form-control">
                             <option value=""></option>
                             @foreach($ownerLoans as $ownerLoan)
-                            <option value="{{ $ownerLoan->id }}">{{ $ownerLoan->membership->saltern->yahai->name ." ".$ownerLoan->membership->saltern->name ." ". $ownerLoan->membership->owner->name_with_initial ." - ". $ownerLoan->approved_amount }}</option>
+                            <option value="{{ $ownerLoan->id }}">
+                                {{ $ownerLoan->membership->saltern->yahai->name ." ".$ownerLoan->membership->saltern->name ." ". $ownerLoan->membership->owner->name_with_initial ." - ". $ownerLoan->approved_amount }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -107,14 +109,20 @@
                         <input type="number" step="0.01" name="amount" id="amount" class="form-control"
                             value="{{ old('amount') }}" required>
                     </div>
+                    <div class="form-group">
+                        <label for="sub_account">Select Sub-Account:</label>
+                        <select name="sub_account" id="sub_account" class="form-control subAccount" required>
+                            <option value="">Select SubAccount</option>
+                            @foreach($subAccounts as $subAccount)
+                            <option value="{{ $subAccount->id }}">{{ $subAccount->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label for="ledger">Select Ledger:</label>
                         <select name="ledger_id" id="ledger" class="form-control">
                             <option value="">-- Select Ledger --</option>
-                            @foreach ($ledgers as $ledger)
-                            <option value="{{ $ledger->id }}">{{ $ledger->name }}</option>
-                            @endforeach
                         </select>
                     </div>
 
@@ -175,10 +183,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('ledger').addEventListener('change', function () {
+    $('#sub_account').change(function() {
+        const subAccountId = $(this).val();
+        $('#ledger').prop('disabled', true).empty().append(
+            '<option value="">Select Ledgers</option>');
+        if (subAccountId) {
+            $.ajax({
+                url: "{{ url('api/subaccount-ledgers') }}/" + subAccountId,
+                type: "GET",
+                success: function(response) {
+                    response.forEach(led => {
+                        $('#ledger').append(
+                            `<option value="${led.id}">${led.id} - ${led.name}</option>`
+                        );
+                    });
+                    $('#ledger').prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching salterns :', error);
+                }
+            });
+        }
+    });
+
+    document.getElementById('ledger').addEventListener('change', function() {
         const ledgerId = this.value;
         const subLedgerSelect = document.getElementById('sub_ledger');
-        
+
         // Clear the sub-ledger dropdown
         subLedgerSelect.innerHTML = '<option value="">-- Select Sub-Ledger --</option>';
 

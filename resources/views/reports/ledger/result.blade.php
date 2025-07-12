@@ -10,55 +10,54 @@
 
 @section('content_body')
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Ledger Report - {{ $ledger->name }} → Sub-Ledger: {{ @$subLedger->name }}</h3>
-                    <p>From {{ $fromDate }} to {{ $toDate }}</p>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th class="text-right">Debit</th>
-                                <th class="text-right">Credit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $totalDebit = 0; $totalCredit = 0; @endphp
-                            @forelse($journalDetails as $detail)
-                            @php
-                            $totalDebit += $detail->debit_amount;
-                            $totalCredit += $detail->credit_amount;
-                            @endphp
-                            <tr>
-                                <td>{{ $detail->journalEntry->journal_date ?? '' }}</td>
-                                <td>{{ $detail->description }}</td>
-                                <td class="text-right">{{ number_format($detail->debit_amount, 2) }}</td>
-                                <td class="text-right">{{ number_format($detail->credit_amount, 2) }}</td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="text-center">No records found</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="2" class="text-right">Total</th>
-                                <th class="text-right">{{ number_format($totalDebit, 2) }}</th>
-                                <th class="text-right">{{ number_format($totalCredit, 2) }}</th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <h4>Subledger Report: {{ $subLedger->name }}</h4>
+        <p>Ledger: {{ $ledger->name }}</p>
+        <p>Period: {{ $fromDate }} to {{ $toDate }}</p>
+
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr class="table-secondary">
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th class="text-end">Debit</th>
+                    <th class="text-end">Credit</th>
+                    <th class="text-end">Running Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $running = $opening['balance']; @endphp
+
+                <tr class="fw-bold bg-light">
+                    <td colspan="4">Opening Balance</td>
+                    <td class="text-end">
+                        {{ number_format(abs($running), 2) }} {{ $running >= 0 ? 'Dr' : 'Cr' }}
+                    </td>
+                </tr>
+
+                @foreach($journalDetails as $jd)
+                @php $running += $jd->debit_amount - $jd->credit_amount; @endphp
+                <tr>
+                    <td>{{ \Carbon\Carbon::parse($jd->journalEntry->journal_date)->format('Y-m-d') }}</td>
+                    <td>{{ $jd->journalEntry->description }}</td>
+                    <td class="text-end">{{ number_format($jd->debit_amount, 2) }}</td>
+                    <td class="text-end">{{ number_format($jd->credit_amount, 2) }}</td>
+                    <td class="text-end">
+                        {{ number_format(abs($running), 2) }} {{ $running >= 0 ? 'Dr' : 'Cr' }}
+                    </td>
+                </tr>
+                @endforeach
+
+                <tr class="table-secondary fw-bold">
+                    <td colspan="2">Total</td>
+                    <td class="text-end">{{ number_format($journalDetails->sum('debit_amount'), 2) }}</td>
+                    <td class="text-end">{{ number_format($journalDetails->sum('credit_amount'), 2) }}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</div>
+    </div>
 @stop
 
 {{-- Push extra CSS --}}

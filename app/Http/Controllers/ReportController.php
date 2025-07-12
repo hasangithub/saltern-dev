@@ -18,71 +18,107 @@ class ReportController extends Controller
     public function trialBalance()
     {
         $accountGroups = AccountGroup::with([
-            'subAccountGroups.ledgers.journalDetails'
+            'subAccountGroups.ledgers' => function ($q) {
+                $q->with([
+                    'journalDetails', // only direct (no subledger_id)
+                    'subLedgers.journalDetails'
+                ]);
+            }
         ])->get();
     
         $trialData = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
     
         foreach ($accountGroups as $group) {
             foreach ($group->subAccountGroups as $subGroup) {
                 foreach ($subGroup->ledgers as $ledger) {
     
-                    $debit = $ledger->journalDetails->sum('debit_amount');
-                    $credit = $ledger->journalDetails->sum('credit_amount');
+                    // 1. Ledger own entries (excluding subledger)
+                    $ledgerDebit = $ledger->journalDetails->sum('debit_amount');
+                    $ledgerCredit = $ledger->journalDetails->sum('credit_amount');
     
-                    $balance = $debit - $credit;
+                    // 2. Subledgers entries
+                    $subRows = [];
+                    $subDebitTotal = 0;
+                    $subCreditTotal = 0;
     
-                    // Initialize both to zero
-                    $adjustedDebit = 0;
-                    $adjustedCredit = 0;
+                    foreach ($ledger->subLedgers as $sub) {
+                        $sd = $sub->journalDetails->sum('debit_amount');
+                        $sc = $sub->journalDetails->sum('credit_amount');
+                        $subBalance = $sd - $sc;
+                        [$subDebit, $subCredit] = $this->adjustBalance($group->name, $subBalance);
     
-                    switch (strtolower($group->name)) {
-                        case 'assets':
-                            if ($balance > 0) {
-                                $adjustedDebit = $balance;
-                            } else {
-                                $adjustedCredit = abs($balance);
-                            }
-                            break;
+                        if ($subDebit != 0 || $subCredit != 0) {
+                            $subRows[] = [
+                                'group' => $group->name,
+                                'sub_group' => $subGroup->name,
+                                'ledger' => '↳ ' . $sub->name,
+                                'debit' => $subDebit,
+                                'credit' => $subCredit,
+                                'is_sub' => true,
+                            ];
+                        }
     
-                        case 'liability':
-                        case 'income':
-                        case 'expenses':
-                            if ($balance < 0) {
-                                $adjustedCredit = abs($balance);
-                            } else {
-                                $adjustedDebit = $balance;
-                            }
-                            break;
-    
-                        default:
-                            // Fallback to standard logic
-                            $adjustedDebit = $debit;
-                            $adjustedCredit = $credit;
-                            break;
+                        $subDebitTotal += $sd;
+                        $subCreditTotal += $sc;
                     }
     
-                    if ($adjustedDebit != 0 || $adjustedCredit != 0) {
+                    // 3. Ledger total including subledgers
+                    $totalLedgerDebit = $ledgerDebit + $subDebitTotal;
+                    $totalLedgerCredit = $ledgerCredit + $subCreditTotal;
+                    $balance = $totalLedgerDebit - $totalLedgerCredit;
+                    [$adjDebit, $adjCredit] = $this->adjustBalance($group->name, $balance);
+    
+                    if ($adjDebit != 0 || $adjCredit != 0) {
                         $trialData[] = [
                             'group' => $group->name,
                             'sub_group' => $subGroup->name,
                             'ledger' => $ledger->name,
-                            'debit' => $adjustedDebit,
-                            'credit' => $adjustedCredit,
+                            'debit' => $adjDebit,
+                            'credit' => $adjCredit,
+                            'is_sub' => false,
                         ];
+    
+                        $totalDebit += $adjDebit;
+                        $totalCredit += $adjCredit;
+                    }
+    
+                    // 4. Append subledger rows
+                    foreach ($subRows as $row) {
+                        $trialData[] = $row;
                     }
                 }
             }
         }
     
-        $totalDebit = collect($trialData)->sum('debit');
-        $totalCredit = collect($trialData)->sum('credit');
+        return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
+    }
     
-        return view('reports.trial_balance', [
-            'trialData' => $trialData,
-            'totalDebit' => $totalDebit,
-            'totalCredit' => $totalCredit,
-        ]);
+    
+    
+
+    
+    private function adjustBalance($groupName, $balance)
+    {
+        $debit = 0;
+        $credit = 0;
+    
+        switch (strtolower($groupName)) {
+            case 'assets':
+                $balance >= 0 ? $debit = $balance : $credit = abs($balance);
+                break;
+            case 'liability':
+            case 'income':
+            case 'expenses':
+                $balance < 0 ? $credit = abs($balance) : $debit = $balance;
+                break;
+            default:
+                $debit = $balance >= 0 ? $balance : 0;
+                $credit = $balance < 0 ? abs($balance) : 0;
+        }
+    
+        return [$debit, $credit];
     }
     
 
@@ -157,74 +193,97 @@ public function generateLedger(Request $request)
         'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
     ]);
 
-    $ledgerId = $request->ledger_id;
-    $subLedgerId = $request->sub_ledger_id;
     $fromDate = $request->from_date;
     $toDate = $request->to_date;
+    $ledgerId = $request->ledger_id;
+    $subLedgerId = $request->sub_ledger_id;
 
-    // If sub-ledger is selected, show its detail (Case 2)
+    // If subledger selected
     if ($subLedgerId) {
         $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
         $ledger = $subLedger->ledger;
 
-        $journalDetails = JournalDetail::with('journalEntry')
-            ->where('ledger_id', $ledger->id)
-            ->where('sub_ledger_id', $subLedgerId)
-            ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
-            ->get();
+        $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
+        $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
 
-        return view('reports.ledger.result', compact('journalDetails', 'ledger', 'subLedger', 'fromDate', 'toDate'));
+        return view('reports.ledger.result', compact('ledger', 'subLedger', 'opening', 'journalDetails', 'fromDate', 'toDate'));
     }
 
-    // If only ledger is selected
+    // If ledger selected
     if ($ledgerId) {
         $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
-        $hasSubLedgers = $ledger->subLedgers->isNotEmpty();
 
-        // Case 1: Ledger with subledgers — show summary per subledger
-        if ($hasSubLedgers) {
+        // Ledger has subledgers — show per subledger details
+        if ($ledger->subLedgers->isNotEmpty()) {
             $subLedgerSummaries = [];
 
-            foreach ($ledger->subLedgers as $sl) {
-                $details = JournalDetail::with('journalEntry')
-                    ->where('ledger_id', $ledgerId)
-                    ->where('sub_ledger_id', $sl->id)
-                    ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
-                    ->get();
+            foreach ($ledger->subLedgers as $sub) {
+                $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
+                $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
 
-                $debit = $details->sum('debit_amount');
-                $credit = $details->sum('credit_amount');
-
-                if ($debit != 0 || $credit != 0) {
+                // Only add subledger if there's some balance or transactions
+                if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
                     $subLedgerSummaries[] = [
-                        'sub_ledger' => $sl,
-                        'debit' => $debit,
-                        'credit' => $credit,
+                        'sub_ledger' => $sub,
+                        'opening' => $opening,
+                        'journalDetails' => $journalDetails,
                     ];
                 }
             }
 
-            return view('reports.ledger.summary', compact('subLedgerSummaries', 'ledger', 'fromDate', 'toDate'));
-
-        } else {
-            // Case 3: Ledger has NO subledgers — show summary for that ledger only
-            $journalDetails = JournalDetail::with('journalEntry')
-                ->where('ledger_id', $ledgerId)
-                ->whereNull('sub_ledger_id')
-                ->whereHas('journalEntry', fn($q) => $q->whereBetween('journal_date', [$fromDate, $toDate]))
-                ->get();
-
-                return view('reports.ledger.summary', compact('journalDetails', 'ledger', 'fromDate', 'toDate'));
+            return view('reports.ledger.subledger_summary', compact('ledger', 'subLedgerSummaries', 'fromDate', 'toDate'));
         }
 
-      
+        // Ledger has no subledgers — show ledger transactions
+        $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
+        $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
+
+        return view('reports.ledger.summary', compact('ledger', 'opening', 'journalDetails', 'fromDate', 'toDate'));
     }
 
-    // If nothing selected, return error or redirect back
     return back()->withErrors('Please select a ledger or subledger.');
 }
 
+private function calculateOpeningBalance($ledgerId, $subLedgerId = null, $beforeDate)
+{
+    $query = JournalDetail::where('ledger_id', $ledgerId)
+        ->whereHas('journalEntry', fn($q) => $q->where('journal_date', '<', $beforeDate));
 
+    if ($subLedgerId) {
+        $query->where('sub_ledger_id', $subLedgerId);
+    } else {
+        $query->whereNull('sub_ledger_id');
+    }
+
+    $debit = $query->sum('debit_amount');
+    $credit = $query->sum('credit_amount');
+    $balance = $debit - $credit;
+
+    return [
+        'debit' => $debit,
+        'credit' => $credit,
+        'balance' => $balance,
+    ];
+}
+
+private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $toDate)
+{
+    $query = JournalDetail::with('journalEntry')
+        ->where('ledger_id', $ledgerId)
+        ->whereHas('journalEntry', fn($q) =>
+            $q->whereBetween('journal_date', [$fromDate, $toDate])
+        );
+
+    if ($subLedgerId) {
+        $query->where('sub_ledger_id', $subLedgerId);
+    } else {
+        $query->whereNull('sub_ledger_id');
+    }
+
+    return $query->get()
+        ->sortBy(fn($d) => optional($d->journalEntry)->journal_date ?? '2100-01-01')
+        ->values(); // Re-index for blade use
+}
 
 
     public function generateBuyerProduction(Request $request)
@@ -262,6 +321,8 @@ public function generateLedger(Request $request)
         $ledgers = Ledger::where('sub_account_group_id', $request->sub_account_id)->get();
         return response()->json(['ledgers' => $ledgers]);
     }
+
+    
 
     public function getSubLedgers(Request $request)
     {
