@@ -81,6 +81,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/production-report', [ReportController::class, 'indexProduction'])->name('production.report.index');
     Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
     Route::get('/production-report/buyerGenerate', [ReportController::class, 'generateBuyerProduction'])->name('production.report.buyerGenerate');
+    Route::get('/reports/loan-trial-balance/detailed', [ReportController::class, 'yahaiWiseLoanTrialBalance'])->name('reports.loan-trial-balance.detailed');
 
     Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
