@@ -9,9 +9,17 @@ use App\Models\OwnerLoan;
 use App\Models\OwnerLoanRepayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\SmsService;
 
 class OwnerLoanRepaymentController extends Controller
 {
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
     public function index()
     {
         $repayments = OwnerLoanRepayment::with(['ownerLoan', 'buyer']) // optional relationships
@@ -87,6 +95,30 @@ class OwnerLoanRepaymentController extends Controller
         ];
 
         JournalDetail::insert($details);
+
+    $membership = $loan->membership;
+    $waikal = $membership->saltern->yahai->name . " " . $membership->saltern->name;
+    $ownerPhone = $membership->owner->phone_number;
+    $todayDate = date('Y-m-d');
+    $totalPaidNow = $validated['amount'];
+    $totalOutstanding = $outstandingBalance - $validated['amount'];
+
+    $smsCommon = "{$todayDate}\n"
+        . "{$membership->owner->name_with_initial}\n"
+        . "{$waikal}";
+
+    if ($totalPaidNow > 0) {
+        $smsCommon .= "\nLoan Paid : Rs. " . number_format($totalPaidNow, 2)
+            . "\nOutstanding Balance: Rs. " . number_format($totalOutstanding, 2);
+    }
+
+    try {
+        if (!empty($ownerPhone)) {
+            $this->smsService->sendSms($ownerPhone, $smsCommon);
+        }
+    } catch (\Exception $e) {
+       
+    }
 
         
 
