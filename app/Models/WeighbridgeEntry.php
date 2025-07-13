@@ -51,6 +51,19 @@ class WeighbridgeEntry extends Model
         return $this->morphMany(Payment::class, 'source');
     }
 
+    public function receipt()
+    {
+        return $this->hasOneThrough(
+            \App\Models\Receipt::class,
+            \App\Models\ReceiptDetail::class,
+            'entry_id',       // FK on ReceiptDetails
+            'id',             // FK on Receipts
+            'id',             // Local key on WeighbridgeEntry
+            'receipt_id'      // Local key on ReceiptDetails
+        )->where('entry_type', 'weighbridge');
+    }
+
+
     protected $casts = [
         'bags_count' => 'decimal:2',
         'total_amount' => 'decimal:2',
