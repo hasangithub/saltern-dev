@@ -8,6 +8,7 @@ use App\Models\JournalDetail;
 use Illuminate\Http\Request;
 use App\Models\Ledger;
 use App\Models\Membership;
+use App\Models\OwnerLoan;
 use App\Models\Saltern;
 use App\Models\SubLedger;
 use App\Models\WeighbridgeEntry;
@@ -329,4 +330,47 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         $subLedgers = SubLedger::where('ledger_id', $request->ledger_id)->get();
         return response()->json(['subLedgers' => $subLedgers]);
     }
+
+    public function yahaiWiseLoanTrialBalance()
+    {
+        $loans = OwnerLoan::with([
+            'membership.owner',
+            'membership.saltern.yahai',
+            'ownerLoanRepayment'
+        ])->get();
+    
+        $grouped = [];
+    
+        foreach ($loans as $loan) {
+            $yahai = $loan->membership->saltern->yahai->name ?? 'Unknown Yahai';
+            $saltern = $loan->membership->saltern->name ?? 'Unknown Saltern';
+            $owner = $loan->membership->owner->name_with_initial ?? 'Unknown Owner';
+    
+            $repaid = $loan->ownerLoanRepayment->sum('amount');
+            $outstanding = $loan->approved_amount - $repaid;
+    
+            if (!isset($grouped[$yahai])) {
+                $grouped[$yahai] = [];
+            }
+    
+            $grouped[$yahai][] = [
+                'saltern' => $saltern,
+                'owner' => $owner,
+                'loan_id' => $loan->id,
+                'approved' => $loan->approved_amount,
+                'repaid' => $repaid,
+                'outstanding' => $outstanding,
+            ];
+        }
+    
+        // Yahai-wise totals
+        $yahaiTotals = [];
+        foreach ($grouped as $yahai => $records) {
+            $yahaiTotals[$yahai] = collect($records)->sum('outstanding');
+        }
+    
+        return view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
+    }
+    
+
 }
