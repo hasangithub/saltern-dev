@@ -21,7 +21,7 @@
                     <table class="table table-bordered table-sm">
                         <thead>
                             <tr>
-                                <th>Account Group</th>
+                               
                                 <th>Sub Group</th>
                                 <th>Ledger / Subledger</th>
                                 <th class="text-right">Debit</th>
@@ -31,7 +31,7 @@
                         <tbody>
                             @foreach ($trialData as $row)
                             <tr>
-                                <td>{{ $row['group'] }}</td>
+                                
                                 <td>{{ $row['sub_group'] }}</td>
                                 <td>{!! $row['is_sub'] ? '<span class="ms-4 text-muted">' . $row['ledger'] . '</span>' :
                                     '<strong>' . $row['ledger'] . '</strong>' !!}</td>
@@ -40,7 +40,7 @@
                             </tr>
                             @endforeach
                             <tr class="font-weight-bold">
-                                <td colspan="3" class="text-end">Total</td>
+                                <td colspan="2" class="text-end">Total</td>
                                 <td  class="text-right">{{ number_format($totalDebit, 2) }}</td>
                                 <td  class="text-right">{{ number_format($totalCredit, 2) }}</td>
                             </tr>
