@@ -26,7 +26,7 @@
     }
 
     .table {
-        font-size: 13px;
+        font-size: 14px;
         /* smaller font */
     }
 
@@ -44,9 +44,9 @@
         padding-top: 0.25rem;
         padding-bottom: 0.25rem;
         /* optionally reduce font size too */
-        font-size: 11px;
+        font-size: 13px;
         /* reduce line height to compact rows */
-        line-height: 1.1;
+        line-height: 1;
     }
     </style>
 </head>

@@ -4,71 +4,106 @@
 <head>
     <title>Weighbridge Invoice</title>
     <style>
+@media print {
+    @page {
+        size: A6 portrait;
+        margin: 4mm;
+    }
+
     body {
-        font-family: "Arial", sans-serif;
-        margin: 50px;
-        font-size: 14px;
+        margin: 0;
+        padding: 0;
     }
 
-    .center {
-        text-align: center;
+    .no-print {
+        display: none !important;
     }
+}
 
-    .header-title {
-        font-size: 18px;
-        font-weight: bold;
-    }
+body {
+    font-family: "Arial", sans-serif;
+    font-size: 9px;
+    line-height: 1.3;
+    margin: 4mm;
+}
 
-    .sub-header {
-        margin-top: -5px;
-        font-size: 13px;
-    }
+.center {
+    text-align: center;
+}
 
-    .section-title {
-        text-decoration: underline;
-        font-weight: bold;
-        margin-top: 30px;
-        margin-bottom: 20px;
-    }
+.header {
+    text-align: center;
+    margin-bottom: 10px;
+}
 
-    .details {
-        margin-bottom: 20px;
-    }
+.header-title {
+    font-size: 11.5px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
 
-    .details table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+.sub-header {
+    font-size: 8.5px;
+    color: #333;
+    margin-top: 2px;
+}
 
-    .details td {
-        padding: 6px 4px;
-        vertical-align: top;
-    }
+.section-divider {
+    border-top: 1px dashed #000;
+    margin: 6px 0;
+}
 
-    .footer {
-        margin-top: 60px;
-    }
+.section-title {
+    font-size: 9.5px;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-top: 4px;
+}
 
-    .signature {
-        float: right;
-        text-align: center;
-        margin-top: 50px;
-    }
 
-    .line {
-        border-top: 1px solid #000;
-        margin-top: 40px;
-        width: 200px;
-    }
-    </style>
+.details {
+    margin-bottom: 10px;
+}
+
+.details table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.details td {
+    padding: 1px 3px;
+    vertical-align: top;
+    font-size: 8.5px;
+}
+
+.footer {
+    margin-top: 16px;
+}
+
+.signature {
+    float: right;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.line {
+    border-top: 1px solid #000;
+    margin-top: 20px;
+    width: 100px;
+}
+</style>
+
 </head>
 
 <body onload="window.print()">
-    <div class="center">
-        <div class="header-title">PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD</div>
-        <div class="sub-header">Reg No: S/6709&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tel/Fax: 032 2265260</div>
-        <div class="section-title">Invoice for Weighment</div>
-    </div>
+<div class="header">
+    <div class="header-title">PUTTALAM SALT PRODUCERS<br>WELFARE SOCIETY LTD</div>
+    <div class="sub-header">Reg No: S/6709&nbsp;&nbsp;|&nbsp;&nbsp;Tel/Fax: 032 2265260</div>
+    <div class="section-divider"></div>
+    <div class="section-title">INVOICE FOR WEIGHMENT</div>
+</div>
 
     <div class="details">
         <table>

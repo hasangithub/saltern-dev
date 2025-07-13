@@ -24,8 +24,8 @@
                                 <th>Account Group</th>
                                 <th>Sub Group</th>
                                 <th>Ledger / Subledger</th>
-                                <th class="text-end">Debit</th>
-                                <th class="text-end">Credit</th>
+                                <th class="text-right">Debit</th>
+                                <th class="text-right">Credit</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -35,14 +35,14 @@
                                 <td>{{ $row['sub_group'] }}</td>
                                 <td>{!! $row['is_sub'] ? '<span class="ms-4 text-muted">' . $row['ledger'] . '</span>' :
                                     '<strong>' . $row['ledger'] . '</strong>' !!}</td>
-                                <td class="text-end">{{ number_format($row['debit'], 2) }}</td>
-                                <td class="text-end">{{ number_format($row['credit'], 2) }}</td>
+                                <td  class="text-right">{{ number_format($row['debit'], 2) }}</td>
+                                <td  class="text-right">{{ number_format($row['credit'], 2) }}</td>
                             </tr>
                             @endforeach
-                            <tr class="fw-bold">
+                            <tr class="font-weight-bold">
                                 <td colspan="3" class="text-end">Total</td>
-                                <td class="text-end">{{ number_format($totalDebit, 2) }}</td>
-                                <td class="text-end">{{ number_format($totalCredit, 2) }}</td>
+                                <td  class="text-right">{{ number_format($totalDebit, 2) }}</td>
+                                <td  class="text-right">{{ number_format($totalCredit, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>
