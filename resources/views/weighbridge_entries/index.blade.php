@@ -48,7 +48,7 @@
                             <tbody>
                                 @foreach($entries as $entry)
                                 <tr>
-                                    <td>{{ $entry->id }}</td> 
+                                    <td>{{ $entry->id }}</td>
                                     <td>{{ $entry->transaction_date }}</td>
                                     <td>{{ $entry->turn_no  }}</td>
                                     <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
@@ -62,7 +62,15 @@
 
 
                                     <td>{{ $entry->total_amount ?? 'N/A' }}</td>
-                                    <td> N/A </td>
+                                    <td> @if($entry->receipt)
+                                        <a href="{{ route('receipts.show', $entry->receipt->id) }}" target="_blank">
+                                            <span class="badge bg-success">Paid (Receipt
+                                                #{{ $entry->receipt->id }})</span>
+                                        </a>
+                                        @else
+                                        <span class="badge bg-warning">Not Paid</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <a href="{{ route('weighbridge_entries.invoice', $entry->id) }}" target="_blank"
                                             class="btn btn-primary btn-sm">
@@ -72,7 +80,8 @@
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        <a href="{{ route('weighbridge_entries.edit', $entry->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                        <a href="{{ route('weighbridge_entries.edit', $entry->id) }}"
+                                            class="btn btn-sm btn-warning">Edit</a>
                                         <form action="{{ route('weighbridge-entries.delete', $entry->id) }}"
                                             method="POST" style="display:inline;"
                                             onsubmit="return confirm('Are you sure you want to delete this entry?');">

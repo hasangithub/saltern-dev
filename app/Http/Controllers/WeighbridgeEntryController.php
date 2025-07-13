@@ -32,7 +32,7 @@ class WeighbridgeEntryController extends Controller
 
     public function index(Request $request)
     {
-       $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership'])
+       $entries = WeighbridgeEntry::with(['owner', 'buyer', 'membership','receipt'])
         ->orderBy('transaction_date')
         ->orderBy('created_at')
         ->get();
