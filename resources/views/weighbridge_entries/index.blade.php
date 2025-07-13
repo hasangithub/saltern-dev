@@ -30,6 +30,7 @@
                         <table id="weighbridgeTable" class="table table-sm nowrap table-hover" style="width:100%">
                             <thead>
                                 <tr>
+                                    <th>Id</th>
                                     <th>Date</th>
                                     <th>Turn</th>
                                     <th>Buyer</th>
@@ -47,6 +48,7 @@
                             <tbody>
                                 @foreach($entries as $entry)
                                 <tr>
+                                    <td>{{ $entry->id }}</td> 
                                     <td>{{ $entry->transaction_date }}</td>
                                     <td>{{ $entry->turn_no  }}</td>
                                     <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
