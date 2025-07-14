@@ -325,7 +325,9 @@ class WeighbridgeEntryController extends Controller
 
         public function invoice(WeighbridgeEntry $entry)
         {
-            $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true])
+            $repayment = OwnerLoanRepayment::where('weighbridge_entry_id', $entry->id)->first();
+
+            $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true,  'repayment' => $repayment])
             ->setPaper('A6', 'portrait')
             ->setOptions([
                 'defaultFont' => 'sans-serif',
