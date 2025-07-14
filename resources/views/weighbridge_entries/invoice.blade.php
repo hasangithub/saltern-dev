@@ -28,7 +28,6 @@
         font-size: 11px;
         line-height: 1.3;
         margin: 0;
-        border: 1px solid red;
     }
 
     .center {
@@ -155,17 +154,21 @@
     <div class="details">
         <p><strong>Service Charge:</strong> <span class="amount-right">Rs.
                 {{ number_format($entry->total_amount, 2) }}</span></p>
-        <p><strong>In Words:</strong> {{ \App\Helpers\NumberToWordHelper::convert($entry->total_amount ?? 0) }} only.
-        </p>
-    </div>
+        @php
+        $loanPaid = $repayment->amount ?? 0;
+        $totalPayable = $entry->total_amount + $loanPaid;
+        @endphp
+        @if($repayment)
 
-    @if($entry->ownerLoanRepayment)
-    <div class="details">
         <p><strong>Loan Paid:</strong> <span class="amount-right">Rs.
-                {{ number_format($entry->ownerLoanRepayment->amount, 2) }}</span></p>
-        <p><strong>Payment Method:</strong> {{ $entry->ownerLoanRepayment->payment_method }}</p>
+                {{ number_format($repayment->amount, 2) }}</span></p>
+        @endif
+
+        <p> {{ \App\Helpers\NumberToWordHelper::convert($totalPayable ?? 0) }} only.
+        </p>
+        <p><span class="amount-right">Rs.
+                {{ number_format($totalPayable, 2) }}</span></p>
     </div>
-    @endif
 
     <div class="footer">
         <div class="signature">
