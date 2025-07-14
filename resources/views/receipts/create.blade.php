@@ -50,7 +50,7 @@
             <strong>Total Selected Amount: <span id="totalAmount">0.00</span></strong>
         </div>
 
-        <div class="card-body">
+        <div class="card-body"  style="overflow-y: auto; max-height: 300px;">
             @if(request('buyer_id'))
             <form method="POST" action="{{ route('receipts.store') }}">
                 @csrf
@@ -102,8 +102,12 @@
                 @foreach($pendingServiceCharges as $entry)
                 <input type="checkbox" name="service_entry_ids[]" class="payment-checkbox" value="{{ $entry->id }}"
                     data-amount="{{ $entry->total_amount }}">
-                Entry #{{ $entry->id }} -
-                Amount: {{ $entry->total_amount }}<br>
+                <strong>Entry #{{ $entry->id }}</strong> |
+                Amount: Rs. {{ number_format($entry->total_amount, 2) }} |
+                {{ $entry->membership->saltern->yahai->name }} - {{ $entry->membership->saltern->name }} |
+                Net Weight: {{ $entry->net_weight }} kg |
+                Owner: {{ $entry->membership->owner->name_with_initial }} |
+                Date: {{ \Carbon\Carbon::parse($entry->transaction_date)->format('Y-m-d') }}<br>
                 @endforeach
                 @endif
 
@@ -112,8 +116,14 @@
                 @foreach($pendingLoanRepayments as $repayment)
                 <input type="checkbox" name="repayment_ids[]" class="payment-checkbox" value="{{ $repayment->id }}"
                     data-amount="{{ $repayment->amount }}">
+                Loan# {{$repayment->owner_loan_id}}
                 Repayment #{{ $repayment->id }}
-                - Amount: {{ $repayment->amount }}<br>
+                - Amount: {{ $repayment->amount }}
+                {{ $repayment->ownerLoan->membership->saltern->yahai->name }} -
+                {{ $repayment->ownerLoan->membership->saltern->name }} |
+                Owner: {{ $repayment->ownerLoan->membership->owner->name_with_initial }} |
+                {{$repayment->repayment_date}}
+                <br>
                 @endforeach
                 @endif
 
@@ -123,7 +133,10 @@
                 <input type="checkbox" name="otherincome_ids[]" class="payment-checkbox"
                     value="{{ $pendingOtherIncome->id }}" data-amount="{{ $pendingOtherIncome->amount }}">
                 OtherIncome #{{ $pendingOtherIncome->id }}
-                - Amount: {{ $pendingOtherIncome->amount }}<br>
+                - Amount: {{ $pendingOtherIncome->amount }}
+                {{$pendingOtherIncome->incomeCategory->name}} |
+                {{$pendingOtherIncome->received_date}}
+                <br>
                 @endforeach
                 @endif
 
