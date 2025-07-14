@@ -202,6 +202,12 @@
                                 <p>Loan Trial Balance</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reports.owner.loan.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Owner Loan</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

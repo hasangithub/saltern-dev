@@ -29,4 +29,9 @@ class Membership extends Model
     {
         return $this->hasOne(Representative::class);
     }
+
+    public function ownerLoans()
+    {
+        return $this->hasMany(OwnerLoan::class);
+    }
 }
