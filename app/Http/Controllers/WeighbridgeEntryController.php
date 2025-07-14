@@ -326,7 +326,14 @@ class WeighbridgeEntryController extends Controller
         public function invoice(WeighbridgeEntry $entry)
         {
             $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true])
-            ->setPaper([0, 0, 298.8, 420.9], 'portrait'); // A6 in points
+            ->setPaper('A6', 'portrait')
+            ->setOptions([
+                'defaultFont' => 'sans-serif',
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'isPhpEnabled' => true,
+                'isFontSubsettingEnabled' => true
+            ]);// A6 in points
             return $pdf->stream("invoice_{$entry->id}.pdf");
 
             //return view('weighbridge_entries.invoice', compact('entry'));

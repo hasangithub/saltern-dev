@@ -13,6 +13,7 @@ use App\Models\Saltern;
 use App\Models\SubLedger;
 use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
+use App\Models\Owner;
 
 class ReportController extends Controller
 {
@@ -131,6 +132,72 @@ public function indexProduction()
 
     return view('reports.production.index', compact('yahaies', 'owners', 'buyers'));
 }
+
+public function indexOwnerLaon()
+{
+  
+    $owners = Owner::all();
+  
+    return view('reports.ownerLoan.index', compact('owners'));
+}
+
+public function ownerLoanReport(Request $request)
+{ 
+    $request->validate([
+        'owner_id' => 'required|exists:owners,id',
+    ]);
+
+    $memberships = Membership::with([
+        'saltern.yahai',
+        'ownerLoans.ownerLoanRepayment' => function($q) {
+            $q->orderBy('repayment_date');
+        }
+    ])->where('owner_id', $request->owner_id)
+    ->get();
+
+    $owner = $memberships->first()?->owner;
+
+
+    $grouped = [];
+
+    foreach ($memberships as $membership) {
+        $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
+
+        foreach ($membership->ownerLoans as $loan) {
+            $balance = $loan->approved_amount;
+            $loanRows = [];
+
+            // Add initial loan row
+            $loanRows[] = [
+                'date' => $loan->created_at->format('Y-m-d'),
+                'description' => 'Loan Issued',
+                'debit' => $loan->approved_amount,
+                'credit' => null,
+                'balance' => $balance,
+            ];
+
+            foreach ($loan->ownerLoanRepayment as $repayment) {
+                $balance -= $repayment->amount;
+
+                $loanRows[] = [
+                    'date' => $repayment->repayment_date,
+                    'description' => 'Loan Repayment',
+                    'debit' => null,
+                    'credit' => $repayment->amount,
+                    'balance' => $balance,
+                ];
+            }
+
+            $grouped[$salternName][] = [
+                'loan_id' => $loan->id,
+                'rows' => $loanRows,
+            ];
+        }
+    }
+
+    return view('reports.ownerLoan.owner_loan_report', compact('memberships', 'grouped', 'owner'));
+}
+
 
     public function generateProduction(Request $request)
     {
