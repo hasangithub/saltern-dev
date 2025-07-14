@@ -27,7 +27,8 @@
                         <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Receipt Detail Id</th>
+                                    <th>Receipt Id</th>
                                     <th>Type</th>
                                     <th>Amount</th>
                                 </tr>
@@ -36,6 +37,7 @@
                             @foreach ($receiptDetails->details as $receiptDetail)
                                 <tr>
                                     <td>{{ $receiptDetail->id }}</td>
+                                    <td>{{ $receiptDetail->receipt_id }}</td>
                                     <td>{{ $receiptDetail->entry_type }}</td>
                                     <td>{{ $receiptDetail->amount }}</td>
                                 </tr>
