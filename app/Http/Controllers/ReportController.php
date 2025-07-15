@@ -47,7 +47,7 @@ class ReportController extends Controller
         $accountGroups = AccountGroup::with([
             'subAccountGroups.ledgers' => function ($q) use ($from, $to) {
                 $q->with([
-                    'journalDetails' => function ($query) use ($from, $to) {
+                    'directJournalDetails' => function ($query) use ($from, $to) {
                         $query->whereHas('journalEntry', function ($q2) use ($from, $to) {
                             $q2->whereBetween('journal_date', [$from, $to]);
                         })->whereNull('sub_ledger_id'); // only direct ledger entries
@@ -70,8 +70,8 @@ class ReportController extends Controller
                 foreach ($subGroup->ledgers as $ledger) {
     
                     // 1. Ledger own entries (excluding subledger)
-                    $ledgerDebit = $ledger->journalDetails->sum('debit_amount');
-                    $ledgerCredit = $ledger->journalDetails->sum('credit_amount');
+                    $ledgerDebit = $ledger->directJournalDetails->sum('debit_amount');
+                    $ledgerCredit = $ledger->directJournalDetails->sum('credit_amount');
     
                     // 2. Subledgers entries
                     $subRows = [];
