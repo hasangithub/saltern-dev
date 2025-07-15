@@ -50,9 +50,9 @@
             <strong>Total Selected Amount: <span id="totalAmount">0.00</span></strong>
         </div>
 
-        <div class="card-body"  style="overflow-y: auto; max-height: 300px;">
+        <div class="card-body" style="overflow-y: auto; max-height: 300px;">
             @if(request('buyer_id'))
-            <form method="POST" action="{{ route('receipts.store') }}">
+            <form method="POST" action="{{ route('receipts.store') }}" id="myForm">
                 @csrf
                 <input type="hidden" name="buyer_id" value="{{ $buyerId }}">
                 <div class="form-group row">
@@ -141,7 +141,7 @@
                 @endif
 
                 @if($pendingServiceCharges->count() || $pendingLoanRepayments->count() || $pendingOtherIncomes->count())
-                <button type="submit" class="btn btn-success">Settle Selected</button>
+                <button type="submit" class="btn btn-success" id="submitBtn">Settle Selected</button>
                 @endif
             </form>
             @endif
@@ -162,6 +162,11 @@
 @push('js')
 <script>
 $(document).ready(function() {
+
+    document.getElementById('myForm').addEventListener('submit', function() {
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').innerText = 'Processing...';
+    });
     const paymentType = document.getElementById('payment_method');
     const bankDetails = document.getElementById('bankDetails');
 

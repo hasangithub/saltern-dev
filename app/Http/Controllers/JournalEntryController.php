@@ -18,6 +18,12 @@ class JournalEntryController extends Controller
         return view('journal_entries.index', compact('journalEntries'));
     }
 
+    public function indexAll()
+    {
+        $journalEntries = JournalEntry::where('is_reversal', 0)->latest()->get();
+        return view('journal_entries.all', compact('journalEntries'));
+    }
+
     public function create()
     {
         // $subLedgers = SubLedger::all();

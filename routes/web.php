@@ -96,6 +96,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('journal-entries', JournalEntryController::class);
     Route::resource('vouchers', VoucherController::class);
     Route::put('vouchers/{voucher_id}/approve', [VoucherController::class, 'approve'])->name('voucher.approve');
+    Route::get('/journal-entries-all/all', [JournalEntryController::class, 'indexAll'])->name('journal.all.index');
 
         // Form display
     Route::get('/admin/owner-loans/create', [OwnerLoanController::class, 'adminCreateOwnerLoan'])->name('admin.owner_loans.create');
