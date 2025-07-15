@@ -34,8 +34,8 @@
                                     <th>Buyer</th>
                                     <th>Category</th>
                                     <th>Amount</th>
-                                    <th>Name</th>
                                     <th>Description</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,8 +46,16 @@
                                     <td> {{ $income->buyer_id ? $income->buyer->full_name : 'Walkin buyer' }}</td>
                                     <td>{{ $income->incomeCategory->name }}</td>
                                     <td>{{ $income->amount }}</td>
-                                    <td>{{ $income->name }}</td>
                                     <td>{{ $income->description }}</td>
+                                    <td> @if($income->receipt)
+                                        <a href="{{ route('receipts.show', $income->receipt->id) }}" target="_blank">
+                                            <span class="badge bg-success">Paid (Receipt
+                                                #{{ $income->receipt->id }})</span>
+                                        </a>
+                                        @else
+                                        <span class="badge bg-warning">Pending</span>
+                                        @endif
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

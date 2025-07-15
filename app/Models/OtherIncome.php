@@ -25,4 +25,16 @@ class OtherIncome extends Model
     {
         return $this->belongsTo(Buyer::class);
     }
+
+    public function receipt()
+    {
+        return $this->hasOneThrough(
+            \App\Models\Receipt::class,
+            \App\Models\ReceiptDetail::class,
+            'entry_id',       // FK on ReceiptDetails
+            'id',             // FK on Receipts
+            'id',             // Local key on WeighbridgeEntry
+            'receipt_id'      // Local key on ReceiptDetails
+        )->where('entry_type', 'other_income');
+    }
 }

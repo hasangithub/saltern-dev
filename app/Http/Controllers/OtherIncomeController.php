@@ -15,7 +15,7 @@ class OtherIncomeController extends Controller
 {
     public function index()
     {
-        $otherIncomes = OtherIncome::with('incomeCategory', 'buyer')->get();
+        $otherIncomes = OtherIncome::with('incomeCategory', 'buyer', 'receipt')->get();
         return view('other_incomes.index', compact('otherIncomes'));
     }
 

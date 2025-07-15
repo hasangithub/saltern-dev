@@ -11,10 +11,6 @@
 @section('content_body')
 <div class="container-fluid">
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Buyer</h3>
-        </div>
-
         @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -29,10 +25,12 @@
             {{ session('success') }}
         </div>
         @endif
-        <div class="card-body">
-            <form method="GET" action="{{ route('receipts.create') }}">
-                <label>Select Buyer:</label>
-                <select name="buyer_id" class="form-control" onchange="this.form.submit()">
+        <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
+            <h5 class="mb-2 mb-md-0">Pendings - {{$buyerName}}</h5>
+
+            <form method="GET" action="{{ route('receipts.create') }}" class="form-inline">
+                <select name="buyer_id" id="buyer_id" class="form-control form-control-sm mr-2"
+                    onchange="this.form.submit()">
                     <option value="">-- Select Buyer --</option>
                     @foreach($buyers as $buyer)
                     <option value="{{ $buyer->id }}" {{ request('buyer_id') == $buyer->id ? 'selected' : '' }}>
@@ -41,16 +39,13 @@
                     @endforeach
                 </select>
             </form>
-        </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Pendings</h3>
-            <strong>Total Selected Amount: <span id="totalAmount">0.00</span></strong>
+            <strong class="text-muted small mt-2 mt-md-0">Total Selected: Rs. <span
+                    id="totalAmount">0.00</span></strong>
         </div>
 
-        <div class="card-body" style="overflow-y: auto; max-height: 300px;">
+
+        <div class="card-body" style="overflow-y: auto; max-height: 500px;">
             @if(request('buyer_id'))
             <form method="POST" action="{{ route('receipts.store') }}" id="myForm">
                 @csrf
@@ -99,45 +94,87 @@
                 </div>
                 @if($pendingServiceCharges->count())
                 <h5>Pending Service Charges</h5>
-                @foreach($pendingServiceCharges as $entry)
-                <input type="checkbox" name="service_entry_ids[]" class="payment-checkbox" value="{{ $entry->id }}"
-                    data-amount="{{ $entry->total_amount }}">
-                <strong>Entry #{{ $entry->id }}</strong> |
-                Amount: Rs. {{ number_format($entry->total_amount, 2) }} |
-                {{ $entry->membership->saltern->yahai->name }} - {{ $entry->membership->saltern->name }} |
-                Net Weight: {{ $entry->net_weight }} kg |
-                Owner: {{ $entry->membership->owner->name_with_initial }} |
-                Date: {{ \Carbon\Carbon::parse($entry->transaction_date)->format('Y-m-d') }}<br>
-                @endforeach
+                <table class="table table-sm nowrap table-hover">
+
+                    @foreach($pendingServiceCharges as $entry)
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="service_entry_ids[]" class="payment-checkbox"
+                                value="{{ $entry->id }}" data-amount="{{ $entry->total_amount }}">
+                            <strong>Entry #{{ $entry->id }}</strong>
+                        </td>
+                        <td class="text-right">
+                            Rs. {{ number_format($entry->total_amount, 2) }}
+                        </td>
+                        <td class="text-right">
+                            {{ \Carbon\Carbon::parse($entry->transaction_date)->format('Y-m-d') }}
+                        </td>
+                        <td>
+                            {{ $entry->membership->owner->name_with_initial }}
+                        </td>
+                        <td>
+                            {{ $entry->membership->saltern->yahai->name }} - {{ $entry->membership->saltern->name }}
+                        </td>
+                        <td class="text-right">
+                            {{ $entry->net_weight }} kg
+                        </td>
+                    </tr>
+                    @endforeach
+
+                </table>
                 @endif
 
                 @if($pendingLoanRepayments->count())
                 <h5>Pending Loan Repayments</h5>
-                @foreach($pendingLoanRepayments as $repayment)
-                <input type="checkbox" name="repayment_ids[]" class="payment-checkbox" value="{{ $repayment->id }}"
-                    data-amount="{{ $repayment->amount }}">
-                Loan# {{$repayment->owner_loan_id}}
-                Repayment #{{ $repayment->id }}
-                - Amount: {{ $repayment->amount }}
-                {{ $repayment->ownerLoan->membership->saltern->yahai->name }} -
-                {{ $repayment->ownerLoan->membership->saltern->name }} |
-                Owner: {{ $repayment->ownerLoan->membership->owner->name_with_initial }} |
-                {{$repayment->repayment_date}}
-                <br>
-                @endforeach
+                <table class="table table-sm nowrap table-hover">
+                    @foreach($pendingLoanRepayments as $repayment)
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="repayment_ids[]" class="payment-checkbox"
+                                value="{{ $repayment->id }}" data-amount="{{ $repayment->amount }}">
+                            <strong>Loan# {{$repayment->owner_loan_id}}
+                                Repayment #{{ $repayment->id }} </strong>
+                        </td>
+                        <td class="text-right">
+                            Rs. {{ $repayment->amount }}
+                        </td>
+                        <td class="text-right">
+                            {{$repayment->repayment_date}}
+                        </td>
+                        <td>
+                            {{ $repayment->ownerLoan->membership->owner->name_with_initial }}
+                        </td>
+                        <td>
+                            {{ $repayment->ownerLoan->membership->saltern->yahai->name }} -
+                            {{ $repayment->ownerLoan->membership->saltern->name }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </table>
                 @endif
 
                 @if($pendingOtherIncomes->count())
                 <h5>Pending Other Incomes</h5>
-                @foreach($pendingOtherIncomes as $pendingOtherIncome)
-                <input type="checkbox" name="otherincome_ids[]" class="payment-checkbox"
-                    value="{{ $pendingOtherIncome->id }}" data-amount="{{ $pendingOtherIncome->amount }}">
-                OtherIncome #{{ $pendingOtherIncome->id }}
-                - Amount: {{ $pendingOtherIncome->amount }}
-                {{$pendingOtherIncome->incomeCategory->name}} |
-                {{$pendingOtherIncome->received_date}}
-                <br>
-                @endforeach
+                <table class="table table-sm nowrap table-hover">
+                    @foreach($pendingOtherIncomes as $pendingOtherIncome)
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="otherincome_ids[]" class="payment-checkbox"
+                                value="{{ $pendingOtherIncome->id }}" data-amount="{{ $pendingOtherIncome->amount }}">
+                            <strong>OtherIncome #{{ $pendingOtherIncome->id }}</strong>
+                        </td>
+                        <td class="text-right">
+                            Rs. {{ $pendingOtherIncome->amount }}
+                        </td>
+                        <td class="text-right">
+                            {{$pendingOtherIncome->received_date}}
+                        </td>
+                        <td>
+                            {{$pendingOtherIncome->incomeCategory->name}}
+                        </td>
+                    </tr>
+                    @endforeach
+                </table>
                 @endif
 
                 @if($pendingServiceCharges->count() || $pendingLoanRepayments->count() || $pendingOtherIncomes->count())
