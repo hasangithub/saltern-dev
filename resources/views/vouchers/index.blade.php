@@ -11,36 +11,8 @@
 @section('content_body')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-3 col-6">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-primary"><i class="far fa-copy"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Approved</span>
-                    <span class="info-box-number">{{ $approvedCount }}</span>
-                    <a href="{{ route('vouchers.index', ['status' => 'approved']) }}" class="small-box-footer">
-                        List <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-                <!-- /.info-box-content -->
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Pending</span>
-                    <span class="info-box-number">{{ $pendingCount }}</span>
-                    <a href="{{ route('vouchers.index', ['status' => 'pending']) }}" class="small-box-footer">
-                        List <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-                <!-- /.info-box-content -->
-            </div>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-12">
-            <div class="card {{ $cardOutline }}">
+            <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">Vouchers</h3>
                     <a href="{{ route('vouchers.create') }}" class="btn btn-success ml-auto"> <i
@@ -57,6 +29,7 @@
                         <table id="membershipsTable" class="table table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
+                                    <th>Voucher Id</th>
                                     <th>Date</th>
                                     <th>Name</th>
                                     <th>Amount</th>
@@ -69,12 +42,13 @@
                             <tbody>
                                 @foreach($memberships as $membership)
                                 <tr>
+                                    <td>{{ $membership->id }}</td>
                                     <td>{{ $membership->created_at->format('Y-m-d') }}</td>
                                     <td>{{ $membership->name }}</td>
                                     <td>{{ $membership->amount }}</td>
                                     <td>{{ $membership->description }}</td>
-                                    <td> @if ($membership->bank)
-                                        {{ $membership->bank->bank_name }}
+                                    <td> @if ($membership->bank_sub_ledger_id)
+                                        {{ $membership->bank->name }} / {{ $membership->cheque_no }} / {{ $membership->cheque_date }}
                                         @else
 
                                         @endif
