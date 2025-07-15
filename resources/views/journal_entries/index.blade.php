@@ -81,7 +81,12 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#membershipsTable').DataTable();
+    $('#membershipsTable').DataTable({
+        order: [
+            [0, 'desc']
+        ],
+        pageLength: 100
+    });
 });
 
 </script>
