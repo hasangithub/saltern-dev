@@ -271,7 +271,7 @@ public function store(Request $request)
         OtherIncome::whereIn('id', $otherIncomeIds)->update(['status' => 'paid']);
     }
 
-    return redirect()->route('receipts.index')->with('success', 'Payment processed successfully.');
+    return redirect()->route('receipts.create')->with('success', 'Payment Receipt created successfully.');
 }
 
 public function show($id)

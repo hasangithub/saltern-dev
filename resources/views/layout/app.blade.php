@@ -77,7 +77,7 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">@yield('content_header_title', 'Saltern')</h1>
+                            <h4 class="m-0">@yield('content_header_title', 'Saltern')</h4>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->
