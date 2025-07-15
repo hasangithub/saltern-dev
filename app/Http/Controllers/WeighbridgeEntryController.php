@@ -244,8 +244,9 @@ class WeighbridgeEntryController extends Controller
 
        // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
        return redirect()
-       ->route('weighbridge_entries.invoice', ['entry' => $entry->id])
-       ->with('success', 'Entry created successfully. Printing invoice...');
+       ->route('weighbridge_entries.create')
+       ->with('success', 'Entry created successfully. Printing invoice...')
+       ->with('print_entry_id', $entry->id);
     }
 
     public function show($id)
@@ -330,7 +331,7 @@ class WeighbridgeEntryController extends Controller
             $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true,  'repayment' => $repayment])
             ->setPaper('A6', 'portrait')
             ->setOptions([
-                'defaultFont' => 'sans-serif',
+                'defaultFont' => 'times',
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,
                 'isPhpEnabled' => true,

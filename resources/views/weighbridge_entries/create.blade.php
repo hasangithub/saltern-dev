@@ -189,6 +189,15 @@
 {{-- Push extra scripts --}}
 
 @push('js')
+@if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
+                window.open("{{ route('weighbridge_entries.invoice', session('print_entry_id')) }}", "_blank");
+            }
+        });
+    </script>
+@endif
 <script>
 $(document).ready(function() {
     const $form = $('form');
