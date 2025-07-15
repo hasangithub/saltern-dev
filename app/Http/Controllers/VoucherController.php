@@ -65,7 +65,7 @@ class VoucherController extends Controller
         
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-            'description' => $validated['description'],
+            'description' => "Voucher#".$voucher->id." ".$validated['description'],
         ]);
 
         if ($request->filled('owner_loan_id')) {
@@ -77,7 +77,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => 115,
                     'debit_amount' => $validated['amount'],
                     'credit_amount' => null,
-                    'description' => 'Loan Disbursed to Owner#'. $ownerLoan->membership->owner_id,
+                    'description' => "Voucher#".$voucher->id." Loan Disbursed to Owner#". $ownerLoan->membership->owner_id,
                 ],
                 [
                     'journal_id' => $journal->id,
@@ -85,7 +85,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
                     'debit_amount' => null,
                     'credit_amount' => $validated['amount'],
-                    'description' => '',
+                    'description' => "Voucher#".$voucher->id,
                 ],
             ];
     
@@ -98,7 +98,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => $request->input('sub_ledger_id'),
                     'debit_amount' => $validated['amount'],
                     'credit_amount' => null,
-                    'description' => $validated['description'],
+                    'description' => "Voucher#".$voucher->id." ".$validated['description'],
                 ],
                 [
                     'journal_id' => $journal->id,
@@ -106,7 +106,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
                     'debit_amount' => null,
                     'credit_amount' => $validated['amount'],
-                    'description' => $validated['description'],
+                    'description' => "Voucher#".$voucher->id." ".$validated['description'],
                 ],
             ];
     

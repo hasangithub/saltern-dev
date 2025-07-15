@@ -24,7 +24,7 @@
     }
 
     body {
-        font-family: "Arial", sans-serif;
+        font-family: "Times New Roman", Times, serif;
         font-size: 11px;
         line-height: 1.3;
         margin: 0;
@@ -76,7 +76,7 @@
     .details td {
         padding: 1px 3px;
         vertical-align: top;
-        font-size: 11.5px;
+        font-size: 12px;
     }
 
     .footer {
@@ -175,19 +175,7 @@
             <div class="line"></div>
             <p>Cashier</p>
         </div>
-    </div>
-
-    @if(!isset($from_pdf))
-    <script>
-    window.onafterprint = function() {
-        window.location.href = "{{ route('weighbridge_entries.create') }}";
-    };
-
-    setTimeout(function() {
-        window.location.href = "{{ route('weighbridge_entries.create') }}";
-    }, 8000);
-    </script>
-    @endif
+    </div> 
 </body>
 
 </html>
