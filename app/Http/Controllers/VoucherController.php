@@ -18,38 +18,9 @@ class VoucherController extends Controller
 {
     public function index(Request $request)
     {
-        $status = $request->get('status');
+        $memberships = Voucher::with(['paymentMethod', 'bank'])->get();
 
-        $pendingCount  = Voucher::where('status', 'pending')->count();
-        $approvedCount = Voucher::where('status', 'approved')->count();
-        $rejectedCount = Voucher::where('status', 'rejected')->count();
-        $cardOutline = "";
-
-        $entriesQuery = Voucher::with(['paymentMethod']);
-        
-        if ($status) {
-
-            $entriesQuery->where('status', $status);
-
-            switch ($status) {
-                case 'pending':
-                    $cardOutline = " card-outline card-warning ";
-                    break;
-                case 'approved':
-                    $cardOutline = " card-outline card-primary ";
-                    break;
-                case 'rejected':
-                    $cardOutline = " card-outline card-danger ";
-                    break;
-                default:
-                    // If no specific status is provided, get all entries
-                    break;
-            }
-        }
-
-        $memberships = $entriesQuery->get();
-
-        return view('vouchers.index', compact('memberships', 'pendingCount', 'approvedCount', 'rejectedCount', 'cardOutline'));
+        return view('vouchers.index', compact('memberships'));
     }
 
     public function create()
