@@ -38,9 +38,10 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title"></h3>
-                    <button onclick="window.print()" class="btn btn-primary btn-sm">
-                        <i class="fas fa-print"></i> Print Report
-                    </button>
+                    <a href="{{ route('loan-trial-balance.print', request()->all()) }}" class="btn btn-primary"
+                        target="_blank">
+                        <i class="fas fa-print"></i> Print Loan Trial Balance
+                    </a>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">

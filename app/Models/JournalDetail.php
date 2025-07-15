@@ -9,6 +9,7 @@ class JournalDetail extends Model
 {
     use SoftDeletes;
 
+    protected $dates = ['deleted_at'];
     protected $fillable = ['journal_id', 'ledger_id','sub_ledger_id', 'debit_amount', 'credit_amount', 'description', 'deleted_by'];
 
     public function journalEntry()

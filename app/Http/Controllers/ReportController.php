@@ -14,16 +14,49 @@ use App\Models\SubLedger;
 use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 use App\Models\Owner;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
-    public function trialBalance()
+    
+    public function indexTrialBalance(Request $request)
     {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
+    
+        return view('reports.trial_balance_index', compact('yahaies', 'owners', 'buyers'));
+    }
+
+    public function trialBalance(Request $request)
+    {  
+        [$trialData, $totalDebit, $totalCredit] = $this->getTrialBalanceData($request);
+        return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
+    }
+
+    private function getTrialBalanceData(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'required|date',
+            'to_date' => 'required|date|after_or_equal:from_date',
+        ]);
+    
+        $from = $request->from_date;
+        $to = $request->to_date;
+    
         $accountGroups = AccountGroup::with([
-            'subAccountGroups.ledgers' => function ($q) {
+            'subAccountGroups.ledgers' => function ($q) use ($from, $to) {
                 $q->with([
-                    'journalDetails', // only direct (no subledger_id)
-                    'subLedgers.journalDetails'
+                    'journalDetails' => function ($query) use ($from, $to) {
+                        $query->whereHas('journalEntry', function ($q2) use ($from, $to) {
+                            $q2->whereBetween('journal_date', [$from, $to]);
+                        })->whereNull('sub_ledger_id'); // only direct ledger entries
+                    },
+                    'subLedgers.journalDetails' => function ($query) use ($from, $to) {
+                        $query->whereHas('journalEntry', function ($q2) use ($from, $to) {
+                            $q2->whereBetween('journal_date', [$from, $to]);
+                        });
+                    }
                 ]);
             }
         ])->get();
@@ -94,7 +127,18 @@ class ReportController extends Controller
             }
         }
     
-        return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
+      //  return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
+      return [$trialData, $totalDebit, $totalCredit];
+    }
+
+    public function printTrialBalance(Request $request)
+    {
+        [$trialData, $totalDebit, $totalCredit] = $this->getTrialBalanceData($request);
+
+        $pdf = Pdf::loadView('reports.trial_balance_print', compact('trialData', 'totalDebit', 'totalCredit'))
+                ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('trial_balance.pdf');
     }
     
     
@@ -398,13 +442,23 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         return response()->json(['subLedgers' => $subLedgers]);
     }
 
-    public function yahaiWiseLoanTrialBalance()
+    public function getYahaiWiseLoanTrialBalanceData(Request $request)
     {
+        $request->validate([
+            'from_date' => 'required|date',
+            'to_date' => 'required|date|after_or_equal:from_date',
+        ]);
+    
+        $from = $request->from_date;
+        $to = $request->to_date;
+
         $loans = OwnerLoan::with([
             'membership.owner',
             'membership.saltern.yahai',
             'ownerLoanRepayment'
-        ])->get();
+        ])->when($from, fn($q) => $q->whereDate('approval_date', '>=', $from))
+        ->when($to, fn($q) => $q->whereDate('approval_date', '<=', $to))
+        ->get();
     
         $grouped = [];
     
@@ -435,9 +489,27 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         foreach ($grouped as $yahai => $records) {
             $yahaiTotals[$yahai] = collect($records)->sum('outstanding');
         }
-    
-        return view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
+        return compact('grouped', 'yahaiTotals');
+       //  view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
     }
+
+    public function yahaiWiseLoanTrialBalance(Request $request)
+    {
+        $data = $this->getYahaiWiseLoanTrialBalanceData($request);
+        return view('reports.loan.loan_trial_balance_detailed', $data);
+    }
+
+    public function yahaiWiseLoanTrialBalancePrint(Request $request)
+{
+    $data = $this->getYahaiWiseLoanTrialBalanceData($request);
+
+    $pdf = Pdf::loadView('reports.loan.loan_trial_balance_print', $data)
+        ->setPaper('A4', 'portrait');
+
+    return $pdf->stream('loan_trial_balance.pdf');
+}
+
+
     
 
 }

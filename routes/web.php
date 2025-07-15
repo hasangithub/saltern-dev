@@ -84,6 +84,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/reports/loan-trial-balance/detailed', [ReportController::class, 'yahaiWiseLoanTrialBalance'])->name('reports.loan-trial-balance.detailed');
     Route::get('/reports/owner-loans', [ReportController::class, 'indexOwnerLaon'])->name('reports.owner.loan.index');
     Route::get('/reports/owner-loans/generate', [ReportController::class, 'ownerLoanReport'])->name('report.owner.loan.generate');
+    Route::get('/trial-balance-report', [ReportController::class, 'indexTrialBalance'])->name('trial.report.index');
 
     Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
@@ -108,6 +109,10 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/receipts/create', [ReceiptController::class, 'create'])->name('receipts.create');
     Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
     Route::get('/receipts/{receipt}', [ReceiptController::class, 'show'])->name('receipts.show');
+
+    Route::get('/reports/trial-balance/print', [ReportController::class, 'printTrialBalance'])->name('trial-balance.print');
+    Route::get('/reports/loan-trial-balance/print', [ReportController::class, 'yahaiWiseLoanTrialBalancePrint'])->name('loan-trial-balance.print');
+
 });
 
 

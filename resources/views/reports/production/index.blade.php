@@ -10,9 +10,9 @@
 
 @section('content_body')
 @php
-                            $fromDate = now()->startOfMonth()->format('Y-m-d');
-                            $toDate = now()->format('Y-m-d');
-                        @endphp
+$fromDate = now()->startOfMonth()->format('Y-m-d');
+$toDate = now()->format('Y-m-d');
+@endphp
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
@@ -25,7 +25,8 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <label>From Date</label>
-                                <input type="date" name="from_date" class="form-control" required value="{{ $fromDate }}">
+                                <input type="date" name="from_date" class="form-control" required
+                                    value="{{ $fromDate }}">
                             </div>
                             <div class="col-md-3">
                                 <label>To Date</label>
@@ -74,7 +75,8 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <label>From Date</label>
-                                <input type="date" name="from_date" class="form-control" required value="{{ $fromDate }}">
+                                <input type="date" name="from_date" class="form-control" required
+                                    value="{{ $fromDate }}">
                             </div>
                             <div class="col-md-3">
                                 <label>To Date</label>
