@@ -48,7 +48,7 @@
     }
 
     .sub-header {
-        font-size: 9px;
+        font-size: 11px;
         color: #333;
         margin-top: 2px;
     }
@@ -59,7 +59,7 @@
     }
 
     .section-title {
-        font-size: 11px;
+        font-size: 12px;
         text-decoration: underline;
         margin-top: 4px;
     }
@@ -76,7 +76,7 @@
     .details td {
         padding: 1px 3px;
         vertical-align: top;
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .footer {
