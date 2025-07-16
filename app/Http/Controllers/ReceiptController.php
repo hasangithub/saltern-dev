@@ -21,7 +21,7 @@ class ReceiptController extends Controller
 
     public function index()
     {
-        $receipts = Receipt::with(['buyer', 'createdBy', 'details'])->latest()->paginate(20);
+        $receipts = Receipt::with(['buyer', 'createdBy', 'details', 'bank'])->latest()->paginate(20);
         return view('receipts.index', compact('receipts'));
     }
 
@@ -66,6 +66,7 @@ public function store(Request $request)
         'payment_method_id' => 'required|in:1,2',
         'cheque_no' => 'nullable|string|max:50',
         'cheque_date' => 'nullable',
+        'bank_sub_ledger_id' => 'nullable'
     ]);
     
     // ✅ Custom manual check after Laravel validation

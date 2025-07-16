@@ -32,4 +32,8 @@ class Receipt extends Model
     {
         return $this->hasMany(ReceiptDetail::class);
     }
+    public function bank()
+    {
+        return $this->belongsTo(SubLedger::class, 'bank_sub_ledger_id');
+    }
 }

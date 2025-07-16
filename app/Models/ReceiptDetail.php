@@ -17,5 +17,4 @@ class ReceiptDetail extends Model
     {
         return $this->belongsTo(Receipt::class);
     }
-
 }
