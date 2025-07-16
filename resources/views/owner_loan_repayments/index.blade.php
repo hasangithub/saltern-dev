@@ -28,6 +28,7 @@
                             style="width:100%">
                             <thead>
                                 <tr>
+                                    <th>Repayment ID</th>
                                     <th>Date</th>
                                     <th>Loan ID</th>
                                     <th>Owner</th>
@@ -42,6 +43,7 @@
                             <tbody>
                                 @foreach($repayments as $repayment)
                                 <tr>
+                                    <td>{{ $repayment->id  }}</td>
                                     <td>{{ $repayment->repayment_date  }}</td>
                                     <td>{{ $repayment->owner_loan_id  }}</td>
                                     <td>{{ $repayment->ownerLoan->membership->owner->name_with_initial  }}</td>
@@ -49,7 +51,15 @@
                                     <td>{{ $repayment->ownerLoan->membership->saltern->name  }}</td>
                                     <td>{{ $repayment->buyer->full_name  }}</td>
                                     <td>{{ $repayment->amount  }}</td>
-                                    <td>{{ $repayment->status  }}</td>
+                                    <td> @if($repayment->receipt)
+                                        <a href="{{ route('receipts.show', $repayment->receipt->id) }}" target="_blank">
+                                            <span class="badge bg-success">Paid (Receipt
+                                                #{{ $repayment->receipt->id }})</span>
+                                        </a>
+                                        @else
+                                        <span class="badge bg-warning">Pending</span>
+                                        @endif
+                                    </td>
                                     <td><a href="{{ route('loan-repayment.print', $repayment->id) }}"
                                             class="btn btn-sm btn-primary" target="_blank">
                                             <i class="fas fa-print"></i> Print
