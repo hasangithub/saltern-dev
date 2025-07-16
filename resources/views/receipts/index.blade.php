@@ -33,6 +33,7 @@
                                     <th>Date</th>
                                     <th>Buyer</th>
                                     <th>Total Amount</th>
+                                    <th>Bank</th>
                                     <th>Created By</th>
                                     <th></th>
                                 </tr>
@@ -44,6 +45,12 @@
                                     <td>{{ $receipt->receipt_date }}</td>
                                     <td>{{ $receipt->buyer?->full_name ?? '-' }}</td>
                                     <td>{{ number_format($receipt->total_amount, 2) }}</td>
+                                    <td> @if ($receipt->bank_sub_ledger_id)
+                                        {{ $receipt->bank->name }} / {{ $receipt->cheque_no }} / {{ $receipt->cheque_date }}
+                                        @else
+
+                                        @endif
+                                    </td>
                                     <td>{{ $receipt->createdBy?->name ?? '-' }}</td>
                                     <td>
                                     <a href="{{ route('receipts.show', $receipt->id) }}" class="btn btn-sm btn-info">View</a>
