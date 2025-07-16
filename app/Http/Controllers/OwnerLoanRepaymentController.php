@@ -10,6 +10,7 @@ use App\Models\OwnerLoanRepayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\SmsService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OwnerLoanRepaymentController extends Controller
 {
@@ -125,5 +126,26 @@ class OwnerLoanRepaymentController extends Controller
         // Return a response to show success
         return redirect()->route('loan-repayments.create-for-loan', $loan->id)
                          ->with('success', 'Repayment recorded successfully!');
+    }
+
+    public function printReceipt(OwnerLoanRepayment $repayment)
+    {
+        $repayment->load([
+            'ownerLoan.membership.owner',
+            'ownerLoan.membership.saltern.yahai',
+        ]);
+
+        $pdf = Pdf::loadView('owner_loan_repayments.print_receipt', [
+            'repayment' => $repayment,
+            'from_pdf' => true
+        ])->setPaper('A6', 'portrait')
+        ->setOptions([
+            'defaultFont' => 'Times-Roman',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'isFontSubsettingEnabled' => true,
+        ]);
+
+        return $pdf->stream("loan_repayment_receipt_{$repayment->id}.pdf");
     }
 }
