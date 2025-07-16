@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Loan Repayment Receipt</title>
+    <title>Other Income Receipt</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         @media print {
@@ -42,7 +42,6 @@
             font-size: 10px;
             font-weight: bold;
             letter-spacing: 0.5px;
-            line-height: 1.3;
             text-transform: uppercase;
         }
 
@@ -60,7 +59,6 @@
         .section-title {
             font-size: 12px;
             text-decoration: underline;
-            margin-top: 4px;
         }
 
         .details {
@@ -106,42 +104,26 @@
         <div class="header-title">PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD</div>
         <div class="sub-header">Reg No: S/6709 &nbsp;&nbsp;|&nbsp;&nbsp; Tel/Fax: 032 2265260</div>
         <div class="section-divider"></div>
-        <div class="section-title">LOAN REPAYMENT</div>
+        <div class="section-title">OTHER INCOME</div>
     </div>
 
     <div class="details">
         <table>
             <tr>
-                <td><strong>Loan Repayment Id:</strong></td>
-                <td>{{ $repayment->id }}</td>
+                <td><strong>OtherIncome Id:</strong></td>
+                <td>{{ $income->id }}</td>
             </tr>
             <tr>
                 <td><strong>Date:</strong></td>
-                <td>{{ \Carbon\Carbon::parse($repayment->repayment_date)->format('Y-m-d') }}</td>
+                <td>{{ \Carbon\Carbon::parse($income->received_date)->format('Y-m-d') }}</td>
             </tr>
             <tr>
-                <td><strong>Buyer:</strong></td>
-                <td>{{ $repayment->buyer->full_name ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Owner:</strong></td>
-                <td>{{ $repayment->ownerLoan->membership->owner->name_with_initial ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Yahai:</strong></td>
-                <td>{{ $repayment->ownerLoan->membership->saltern->yahai->name ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Waikal:</strong></td>
-                <td>{{ $repayment->ownerLoan->membership->saltern->name ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Loan ID:</strong></td>
-                <td>{{ $repayment->ownerLoan->id }}</td>
+                <td><strong>Category:</strong></td>
+                <td>{{ $income->incomeCategory->name }}</td>
             </tr>
             <tr>
                 <td><strong>Amount:</strong></td>
-                <td>Rs. {{ number_format($repayment->amount, 2) }}</td>
+                <td>Rs. {{ number_format($income->amount, 2) }}</td>
             </tr>
         </table>
     </div>

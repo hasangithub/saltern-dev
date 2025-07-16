@@ -36,6 +36,7 @@
                                     <th>Amount</th>
                                     <th>Description</th>
                                     <th>Status</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,6 +56,12 @@
                                         @else
                                         <span class="badge bg-warning">Pending</span>
                                         @endif
+                                    </td>
+                                    <td>
+                                    <a href="{{ route('other-income.print', $income->id) }}" class="btn btn-primary"
+                                        target="_blank">
+                                        <i class="fas fa-print"></i> Print
+                                    </a>
                                     </td>
                                 </tr>
                                 @endforeach
