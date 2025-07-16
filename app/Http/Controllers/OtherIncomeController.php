@@ -10,6 +10,7 @@ use App\Models\Ledger;
 use App\Models\OtherIncome;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OtherIncomeController extends Controller
 {
@@ -87,5 +88,23 @@ class OtherIncomeController extends Controller
         JournalDetail::insert($details);
 
         return redirect()->route('other_incomes.create')->with('success', 'Other Income record created successfully.');
+    }
+
+    public function printOtherIncome(OtherIncome $income)
+    {
+        $pdf = Pdf::loadView('other_incomes.print', [
+            'income' => $income,
+            'from_pdf' => true,
+        ])
+        ->setPaper('A6', 'portrait')
+        ->setOptions([
+            'defaultFont' => 'Times-Roman',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'isPhpEnabled' => true,
+            'isFontSubsettingEnabled' => true
+        ]);
+    
+        return $pdf->stream("other_income_{$income->id}.pdf");
     }
 }
