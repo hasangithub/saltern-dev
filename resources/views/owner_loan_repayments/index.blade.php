@@ -36,6 +36,7 @@
                                     <th>Buyer</th>
                                     <th>Repayment Amount</th>
                                     <th>Status</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,9 +47,13 @@
                                     <td>{{ $repayment->ownerLoan->membership->owner->name_with_initial  }}</td>
                                     <td>{{ $repayment->ownerLoan->membership->saltern->yahai->name  }}</td>
                                     <td>{{ $repayment->ownerLoan->membership->saltern->name  }}</td>
-                                    <td>{{ $repayment->buyer->full_name  }}</td>   
+                                    <td>{{ $repayment->buyer->full_name  }}</td>
                                     <td>{{ $repayment->amount  }}</td>
-                                    <td>{{ $repayment->status  }}</td>    
+                                    <td>{{ $repayment->status  }}</td>
+                                    <td><a href="{{ route('loan-repayment.print', $repayment->id) }}"
+                                            class="btn btn-sm btn-primary" target="_blank">
+                                            <i class="fas fa-print"></i> Print
+                                        </a></td>
                                 </tr>
                                 @endforeach
                             </tbody>
