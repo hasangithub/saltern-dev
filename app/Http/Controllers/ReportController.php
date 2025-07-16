@@ -37,8 +37,8 @@ class ReportController extends Controller
     private function getTrialBalanceData(Request $request)
     {
         $request->validate([
-            'from_date' => 'required|date',
-            'to_date' => 'required|date|after_or_equal:from_date',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
     
         $from = $request->from_date;
@@ -48,13 +48,17 @@ class ReportController extends Controller
             'subAccountGroups.ledgers' => function ($q) use ($from, $to) {
                 $q->with([
                     'directJournalDetails' => function ($query) use ($from, $to) {
-                        $query->whereHas('journalEntry', function ($q2) use ($from, $to) {
-                            $q2->whereBetween('journal_date', [$from, $to]);
-                        })->whereNull('sub_ledger_id'); // only direct ledger entries
+                        $query->when($from && $to, function ($q2) use ($from, $to) {
+                            $q2->whereHas('journalEntry', function ($q3) use ($from, $to) {
+                                $q3->whereBetween('journal_date', [$from, $to]);
+                            });
+                        })->whereNull('sub_ledger_id');
                     },
                     'subLedgers.journalDetails' => function ($query) use ($from, $to) {
-                        $query->whereHas('journalEntry', function ($q2) use ($from, $to) {
-                            $q2->whereBetween('journal_date', [$from, $to]);
+                        $query->when($from && $to, function ($q2) use ($from, $to) {
+                            $q2->whereHas('journalEntry', function ($q3) use ($from, $to) {
+                                $q3->whereBetween('journal_date', [$from, $to]);
+                            });
                         });
                     }
                 ]);
@@ -445,8 +449,8 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
     public function getYahaiWiseLoanTrialBalanceData(Request $request)
     {
         $request->validate([
-            'from_date' => 'required|date',
-            'to_date' => 'required|date|after_or_equal:from_date',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
     
         $from = $request->from_date;
@@ -456,8 +460,13 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
             'membership.owner',
             'membership.saltern.yahai',
             'ownerLoanRepayment'
-        ])->when($from, fn($q) => $q->whereDate('approval_date', '>=', $from))
-        ->when($to, fn($q) => $q->whereDate('approval_date', '<=', $to))
+        ])
+        ->when($from, function ($q) use ($from) {
+            $q->whereDate('approval_date', '>=', $from);
+        })
+        ->when($to, function ($q) use ($to) {
+            $q->whereDate('approval_date', '<=', $to);
+        })
         ->get();
     
         $grouped = [];
