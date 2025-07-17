@@ -133,7 +133,7 @@ Route::middleware(['auth:web'])->group(function () {
         return view('journal_entries.test1');
     });
 
-    Route::get('/', [DashboardController::class, 'index'])->name('home');
+
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
@@ -155,10 +155,13 @@ Route::middleware(['auth:owner'])->group(function () {
 
     Route::get('my-loans', [OwnerLoanController::class, 'myLoans'])->name('owner.my-loans.index');
     Route::get('my-loans/{id}', [OwnerLoanController::class, 'showMyLoan'])->name('owner.my-loans.show');
-    Route::resource('owner-loans', OwnerLoanController::class);
-    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+   
+
 });
 
+Route::resource('owner-loans', OwnerLoanController::class);
+Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
 Route::get('loan-repayments/{loanId}/create', [OwnerLoanRepaymentController::class, 'createForLoan'])->name('loan-repayments.create-for-loan');
 Route::post('loan-repayments', [OwnerLoanRepaymentController::class, 'storeForCash'])->name('loan-repayments.store');
