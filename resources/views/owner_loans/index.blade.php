@@ -18,13 +18,13 @@
                         <div class="row">
                             <!-- Saltern Dropdown -->
                             <div class="col-md-4">
-                                <label for="saltern_id" class="form-label">Filter by Saltern</label>
-                                <select name="saltern_id" id="saltern_id" class="form-control">
+                                <label for="membership_id" class="form-label">Filter by Saltern</label>
+                                <select name="membership_id" id="membership_id" class="form-control">
                                     <option value="">All Salterns</option>
-                                    @foreach ($salterns as $saltern)
-                                    <option value="{{ $saltern->id }}"
-                                        {{ request('saltern_id') == $saltern->id ? 'selected' : '' }}>
-                                        {{ $saltern->saltern->yahai->name. " ". $saltern->saltern->name }}
+                                    @foreach ($memberships as $membership)
+                                    <option value="{{ $membership->id }}"
+                                        {{ request('membership_id') == $membership->id ? 'selected' : '' }}>
+                                        {{ $membership->saltern->yahai->name. " ". $membership->saltern->name }}
                                     </option>
                                     @endforeach
                                 </select>
