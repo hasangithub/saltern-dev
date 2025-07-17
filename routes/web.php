@@ -125,6 +125,9 @@ Route::middleware(['auth:owner'])->group(function () {
     Route::post('/owner/complaints', [OwnerComplaintController::class, 'store'])->name('owner.complaints.store');
     // List all complaints
     Route::get('/owner/complaints', [OwnerComplaintController::class, 'index'])->name('owner.complaints.index');  
+
+    Route::get('my-loans', [OwnerLoanController::class, 'myLoans'])->name('owner.my-loans.index');
+Route::get('my-loans/{id}', [OwnerLoanController::class, 'showMyLoan'])->name('owner.my-loans.show');
 });
 
 
@@ -156,8 +159,7 @@ Route::post('loan-requests', [OwnerLoanController::class, 'store'])->name('loan-
 Route::get('loan-requests/{loan_request}', [OwnerLoanController::class, 'show'])->name('loan-requests.show');  // View a specific loan request
 Route::resource('other_incomes', OtherIncomeController::class);
 Route::resource('expenses', ExpenseController::class);
-Route::get('my-loans', [OwnerLoanController::class, 'myLoans'])->name('owner.my-loans.index');
-Route::get('my-loans/{id}', [OwnerLoanController::class, 'showMyLoan'])->name('owner.my-loans.show');
+
 
 Route::get('wizard/', [MembershipController::class, 'wizard'])->name('membership.wizard');
 Route::get('/api/salterns/{yahaiId}', [SalternController::class, 'getByYahai'])->name('api.salterns');
