@@ -30,7 +30,7 @@ class OwnerLoanController extends Controller
       if ($request->has('saltern_id') && !is_null($request->saltern_id) && $request->saltern_id !== '') {
         $loans = OwnerLoan::with('membership')
         ->whereHas('membership', function ($query) use ($request) {
-            $query->where('membership_id', $request->saltern_id);
+            $query->where('saltern_id', $request->saltern_id);
         })
         ->get();
       } else {

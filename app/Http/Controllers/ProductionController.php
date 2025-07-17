@@ -17,7 +17,9 @@ class ProductionController extends Controller
         $query = WeighbridgeEntry::with(['owner', 'membership'])->where('owner_id', $ownerId);
     
         if ($request->filled('saltern_id')) {
-            $query->where('membership_id', $request->saltern_id);
+            $query->whereHas('membership', function ($q) use ($request) {
+                $q->where('saltern_id', $request->saltern_id);
+            });
         }
 
         if ($request->has('start_date') && $request->has('end_date') && !is_null($request->start_date) && $request->start_date !== ''  && !is_null($request->end_date) && $request->end_date !== '') {
