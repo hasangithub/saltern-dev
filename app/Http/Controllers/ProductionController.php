@@ -11,15 +11,15 @@ class ProductionController extends Controller
     public function index(Request $request)
     {
         $ownerId =auth('owner')->id(); 
-        $salterns = Membership::where('owner_id', $ownerId)->get();
+        $memberships = Membership::where('owner_id', $ownerId)->get();
     
         $query = WeighbridgeEntry::with(['owner', 'membership']);
 
     // When saltern_id is selected
-    if ($request->filled('saltern_id')) {
+    if ($request->filled('membership_id')) {
         $query->whereHas('membership', function ($q) use ($ownerId, $request) {
             $q->where('owner_id', $ownerId)
-              ->where('saltern_id', $request->saltern_id);
+              ->where('id', $request->membership_id);
         });
     } else {
         // When saltern_id is NOT selected, just filter by owner's memberships
@@ -38,6 +38,6 @@ class ProductionController extends Controller
 
     $productions = $query->get();
 
-        return view('productions.index', compact('productions', 'salterns'));
+        return view('productions.index', compact('productions', 'memberships'));
     }
 }
