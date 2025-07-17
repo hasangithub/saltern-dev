@@ -22,15 +22,15 @@ class OwnerLoanController extends Controller
     public function myLoans(Request $request) {
         // Get the logged-in owner
       $ownerId =auth('owner')->id(); 
-      $salterns = Membership::where('owner_id', $ownerId)->get();
+      $memberships = Membership::where('owner_id', $ownerId)->get();
       $owner = Owner::findOrFail($ownerId);
 
       
     
-      if ($request->has('saltern_id') && !is_null($request->saltern_id) && $request->saltern_id !== '') {
+      if ($request->has('membership_id') && !is_null($request->membership_id) && $request->membership_id !== '') {
         $loans = OwnerLoan::with('membership')
         ->whereHas('membership', function ($query) use ($request) {
-            $query->where('saltern_id', $request->saltern_id);
+            $query->where('id', $request->membership_id);
         })
         ->get();
       } else {
@@ -42,7 +42,7 @@ class OwnerLoanController extends Controller
       }
 
         // Return view with loans
-        return view('owner_loans.index', compact('loans', 'salterns'));
+        return view('owner_loans.index', compact('loans', 'memberships'));
     }
 
     public function create()
