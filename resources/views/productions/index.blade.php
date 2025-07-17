@@ -25,7 +25,7 @@
                                     @foreach ($memberships as $membership)
                                     <option value="{{ $membership->id }}"
                                         {{ request('membership_id') == $membership->id ? 'selected' : '' }}>
-                                        {{ $saltern->saltern->yahai->name. " ". $saltern->saltern->name }}
+                                        {{ $membership->saltern->yahai->name. " ". $membership->saltern->name }}
                                     </option>
                                     @endforeach
                                 </select>
