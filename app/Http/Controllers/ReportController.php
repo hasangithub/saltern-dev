@@ -183,16 +183,16 @@ public function indexProduction()
 
 public function indexOwnerLaon()
 {
-  
+    $yahaies = Yahai::all();
     $owners = Owner::all();
   
-    return view('reports.ownerLoan.index', compact('owners'));
+    return view('reports.ownerLoan.index', compact('owners', 'yahaies'));
 }
 
 public function ownerLoanReport(Request $request)
 { 
     $request->validate([
-        'owner_id' => 'required|exists:owners,id',
+        'membership_id' => 'required|exists:memberships,id',
     ]);
 
     $memberships = Membership::with([
@@ -200,7 +200,7 @@ public function ownerLoanReport(Request $request)
         'ownerLoans.ownerLoanRepayment' => function($q) {
             $q->orderBy('repayment_date');
         }
-    ])->where('owner_id', $request->owner_id)
+    ])->where('id', $request->membership_id)
     ->get();
 
     $owner = $memberships->first()?->owner;

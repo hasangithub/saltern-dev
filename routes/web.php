@@ -30,10 +30,15 @@ use App\Http\Controllers\StaffComplaintController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\Auth\OwnerLoginController;
 
+use App\Http\Controllers\StaffLoanRequestController;
 use App\Http\Controllers\AccountImportController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\StaffLoanController;
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [UserLoginController::class, 'login']);
@@ -61,7 +66,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/weighbridge/{id}/edit', [WeighbridgeEntryController::class, 'edit'])->name('weighbridge_entries.edit');
     Route::put('/weighbridge/{id}', [WeighbridgeEntryController::class, 'update'])->name('weighbridge_entries.update');
     
-
+    Route::resource('other_incomes', OtherIncomeController::class);
+    Route::resource('expenses', ExpenseController::class);
 
 
     Route::get('staff/complaints', [StaffComplaintController::class, 'index'])->name('staff.complaints.index');
@@ -115,6 +121,27 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/loan-repayment/{repayment}/print', [OwnerLoanRepaymentController::class, 'printReceipt'])
     ->name('loan-repayment.print');
     Route::get('/other-income/{income}/print', [OtherIncomeController::class, 'printOtherIncome'])->name('other-income.print');
+    Route::get('/sms/settings', [SmsController::class, 'showSettings'])->name('sms.settings');
+    Route::post('/sms/settings', [SmsController::class, 'updateSettings'])->name('sms.settings.update');
+    Route::post('/sms/test', [SmsController::class, 'testSms'])->name('sms.test');
+    Route::post('/sms/send', [SmsController::class, 'sendSms'])->name('sms.send');
+
+    Route::get('test/',function() {
+        return view('journal_entries.test');
+    });
+    Route::get('test1/',function() {
+        return view('journal_entries.test1');
+    });
+
+
+    Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('/leaves', [LeaveController::class, 'index'])->name('leave.index');
+    Route::post('/leave/request', [LeaveController::class, 'requestLeave'])->name('leave.request');
+    Route::get('/leave/approve/{id}', [LeaveController::class, 'approveLeave'])->name('leave.approve');
+    Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
+    Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
 });
 
 
@@ -127,27 +154,18 @@ Route::middleware(['auth:owner'])->group(function () {
     Route::get('/owner/complaints', [OwnerComplaintController::class, 'index'])->name('owner.complaints.index');  
 
     Route::get('my-loans', [OwnerLoanController::class, 'myLoans'])->name('owner.my-loans.index');
-Route::get('my-loans/{id}', [OwnerLoanController::class, 'showMyLoan'])->name('owner.my-loans.show');
+    Route::get('my-loans/{id}', [OwnerLoanController::class, 'showMyLoan'])->name('owner.my-loans.show');
+   
+
 });
 
-
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/', [DashboardController::class, 'index'])->name('home');
-
 Route::resource('owner-loans', OwnerLoanController::class);
-
+Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
 Route::get('loan-repayments/{loanId}/create', [OwnerLoanRepaymentController::class, 'createForLoan'])->name('loan-repayments.create-for-loan');
 Route::post('loan-repayments', [OwnerLoanRepaymentController::class, 'storeForCash'])->name('loan-repayments.store');
 Route::put('owner-loans/{loan_request}/approve', [OwnerLoanController::class, 'approve'])->name('owner-loan.approve');
-
-
-Route::get('test/',function() {
-    return view('journal_entries.test');
-});
-Route::get('test1/',function() {
-    return view('journal_entries.test1');
-});
 
 Route::get('/api/subledgers/{ledgerId}', [SubledgerController::class, 'getSubledgers'])->name('api.subledgers');
 Route::get('/api/subaccount-ledgers/{subAccountId}', [LedgerController::class, 'getBySubAccount'])->name('api.ledgers.bySubAccount');
@@ -157,8 +175,7 @@ Route::get('loan-requests', [OwnerLoanController::class, 'index'])->name('loan-r
 Route::get('loan-requests/create', [OwnerLoanController::class, 'create'])->name('loan-requests.create');  // Request a new loan
 Route::post('loan-requests', [OwnerLoanController::class, 'store'])->name('loan-requests.store');  // Submit loan request
 Route::get('loan-requests/{loan_request}', [OwnerLoanController::class, 'show'])->name('loan-requests.show');  // View a specific loan request
-Route::resource('other_incomes', OtherIncomeController::class);
-Route::resource('expenses', ExpenseController::class);
+
 
 
 Route::get('wizard/', [MembershipController::class, 'wizard'])->name('membership.wizard');
@@ -178,13 +195,6 @@ Route::get('api/membership/{saltern_id}', [WeighbridgeEntryController::class, 'g
 Route::get('get-saltern-details/{saltern_id}', [OwnerLoanController::class, 'getSalternDetails'])->name('get.saltern.details');
 Route::get('get-loan-details/{saltern_id}', [OwnerLoanController::class, 'getLoanDetails'])->name('get.loan.details');
 
-Route::get('/sms/settings', [SmsController::class, 'showSettings'])->name('sms.settings');
-Route::post('/sms/settings', [SmsController::class, 'updateSettings'])->name('sms.settings.update');
-Route::post('/sms/test', [SmsController::class, 'testSms'])->name('sms.test');
-Route::post('/sms/send', [SmsController::class, 'sendSms'])->name('sms.send');
-
-use App\Http\Controllers\StaffLoanRequestController;
-
 // Staff Loan Request Routes
 Route::prefix('staff-loans')->group(function () {
     // Show all loan requests
@@ -200,20 +210,6 @@ Route::prefix('staff-loans')->group(function () {
 });
 
 
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\StaffLoanController;
-
-Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
-Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-// routes/web.php
-
-Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
-
-Route::get('/leaves', [LeaveController::class, 'index'])->name('leave.index');
-Route::post('/leave/request', [LeaveController::class, 'requestLeave'])->name('leave.request');
-Route::get('/leave/approve/{id}', [LeaveController::class, 'approveLeave'])->name('leave.approve');
-Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
-Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
 
 // Owner Loan Request Routes
 Route::prefix('admin/staff-loans')->group(function () {
@@ -229,9 +225,6 @@ Route::prefix('admin/staff-loans')->group(function () {
 
 Route::get('/import-form', [AccountImportController::class, 'showForm'])->name('accounts.form');
 Route::post('/import-chart', [AccountImportController::class, 'import'])->name('accounts.import');
-
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::get('/password/request/{type}', [ForgotPasswordController::class, 'showRequestForm'])->name('password.request');
 Route::post('/password/email', [ForgotPasswordController::class, 'sendLink'])->name('password.email');
