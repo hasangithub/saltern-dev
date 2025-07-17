@@ -24,7 +24,7 @@
                                     <option value="">All Salterns</option>
                                     @foreach ($salterns as $saltern)
                                     <option value="{{ $saltern->id }}"
-                                        {{ request('saltern_id') == $saltern->id ? 'selected' : '' }}>
+                                        {{ request('saltern_id') == $saltern->saltern->id ? 'selected' : '' }}>
                                         {{ $saltern->saltern->yahai->name. " ". $saltern->saltern->name }}
                                     </option>
                                     @endforeach
