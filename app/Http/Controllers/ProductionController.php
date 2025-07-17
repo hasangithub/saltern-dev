@@ -37,7 +37,7 @@ class ProductionController extends Controller
     }
 
     $productions = $query->get();
-dd($request->filled('saltern_id'));
+dd($request->saltern_id);
         return view('productions.index', compact('productions', 'salterns'));
     }
 }
