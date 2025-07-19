@@ -124,6 +124,7 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::get('/reports/trial-balance/print', [ReportController::class, 'printTrialBalance'])->name('trial-balance.print');
     Route::get('/reports/loan-trial-balance/print', [ReportController::class, 'yahaiWiseLoanTrialBalancePrint'])->name('loan-trial-balance.print');
+    Route::get('/reports/owner-loan/print', [ReportController::class, 'yahaiWiseLoanPrint'])->name('owner-loan.print');
     Route::get('/loan-repayment/{repayment}/print', [OwnerLoanRepaymentController::class, 'printReceipt'])
     ->name('loan-repayment.print');
     Route::get('/other-income/{income}/print', [OtherIncomeController::class, 'printOtherIncome'])->name('other-income.print');

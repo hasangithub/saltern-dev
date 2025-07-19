@@ -202,6 +202,80 @@ public function indexOwnerLaon()
     return view('reports.ownerLoan.index', compact('owners', 'yahaies'));
 }
 
+public function yahaiWiseLoanPrint(Request $request)
+{
+    $request->validate([
+        'membership_id' => 'required|exists:memberships,id',
+        'from_date' => 'nullable|date',
+        'to_date' => 'nullable|date',
+    ]);
+
+
+    $memberships = Membership::with([
+        'saltern.yahai',
+        'ownerLoans' => function($query) use ($request) {
+            if ($request->from_date && $request->to_date) {
+                $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+            } elseif ($request->from_date) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            } elseif ($request->to_date) {
+                $query->whereDate('created_at', '<=', $request->to_date);
+            }
+
+            $query->with(['ownerLoanRepayment' => function($q) {
+                $q->orderBy('repayment_date');
+            }]);
+        }
+    ])
+    ->where('id', $request->membership_id)
+    ->get();
+
+    $owner = $memberships->first()?->owner;
+
+
+    $grouped = [];
+
+    foreach ($memberships as $membership) {
+        $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
+
+        foreach ($membership->ownerLoans as $loan) {
+            $balance = $loan->approved_amount;
+            $loanRows = [];
+
+            // Add initial loan row
+            $loanRows[] = [
+                'date' => $loan->created_at->format('Y-m-d'),
+                'description' => 'Loan Issued',
+                'debit' => $loan->approved_amount,
+                'credit' => null,
+                'balance' => $balance,
+            ];
+
+            foreach ($loan->ownerLoanRepayment as $repayment) {
+                $balance -= $repayment->amount;
+
+                $loanRows[] = [
+                    'date' => $repayment->repayment_date,
+                    'description' => 'Loan Repayment',
+                    'debit' => null,
+                    'credit' => $repayment->amount,
+                    'balance' => $balance,
+                ];
+            }
+
+            $grouped[$salternName][] = [
+                'loan_id' => $loan->id,
+                'rows' => $loanRows,
+            ];
+        }
+    }
+
+    $pdf = Pdf::loadView('reports.ownerLoan.print-owner-loan', compact('memberships', 'grouped', 'owner'))
+    ->setPaper('A4', 'portrait');
+
+    return $pdf->stream('owner_loan_report.pdf');
+}
+
 public function ownerLoanReport(Request $request)
 { 
     $request->validate([
