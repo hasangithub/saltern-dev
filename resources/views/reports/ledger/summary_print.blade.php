@@ -1,31 +1,67 @@
-@extends('layout.app')
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Ledger Report</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+        }
 
-{{-- Customize layout sections --}}
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
 
-@section('subtitle', 'Welcome')
-@section('content_header_title', 'Reports')
-@section('content_header_subtitle', 'Production Report')
+        h4, p {
+            margin: 0;
+            padding: 4px 0;
+        }
 
-{{-- Content body: main page content --}}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
 
-@section('content_body')
-<div class="container-fluid">
+        th, td {
+            border: 1px solid #000;
+            padding: 6px;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .fw-bold {
+            font-weight: bold;
+        }
+
+        .bg-light {
+            background-color: #f9f9f9;
+        }
+
+        .table-secondary {
+            background-color: #eee;
+        }
+
+        .mt-2 {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
     <div class="container">
         <h4>Ledger Report: {{ $ledger->name }}</h4>
         <p>Period: {{ $fromDate }} to {{ $toDate }}</p>
-        <form method="POST" action="{{ route('reports.ledger.pdf') }}" target="_blank">
-            @csrf
-            <input type="hidden" name="from_date" value="{{ $fromDate }}">
-            <input type="hidden" name="to_date" value="{{ $toDate }}">
-            <input type="hidden" name="ledger_id" value="{{ $ledger->id }}">
-            @if(isset($subLedger))
-            <input type="hidden" name="sub_ledger_id" value="{{ $subLedger->id }}">
-            @endif
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-print"></i> Print PDF
-            </button>
-        </form>
-        <table class="table table-bordered table-sm">
+
+        <table>
             <thead>
                 <tr class="table-secondary">
                     <th>Date</th>
@@ -68,22 +104,5 @@
             </tbody>
         </table>
     </div>
-</div>
-@stop
-
-{{-- Push extra CSS --}}
-
-@push('css')
-{{-- Add here extra stylesheets --}}
-{{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@endpush
-
-{{-- Push extra scripts --}}
-
-@push('js')
-<script>
-$(document).ready(function() {
-    $('#membershipsTable').DataTable();
-});
-</script>
-@endpush
+</body>
+</html>
