@@ -25,12 +25,12 @@
                             @endphp
                             <div class="col-md-3">
                                 <label>From Date</label>
-                                <input type="date" name="from_date" class="form-control" required
-                                    value="{{ $fromDate }}">
+                                <input type="date" name="from_date" class="form-control" 
+                                    value="">
                             </div>
                             <div class="col-md-3">
                                 <label>To Date</label>
-                                <input type="date" name="to_date" class="form-control" required value="{{ $toDate }}">
+                                <input type="date" name="to_date" class="form-control" value="">
                             </div>
                             <div class="col-md-2">
                                 <label>Yahai</label>
