@@ -206,14 +206,28 @@ public function ownerLoanReport(Request $request)
 { 
     $request->validate([
         'membership_id' => 'required|exists:memberships,id',
+        'from_date' => 'nullable|date',
+        'to_date' => 'nullable|date',
     ]);
+
 
     $memberships = Membership::with([
         'saltern.yahai',
-        'ownerLoans.ownerLoanRepayment' => function($q) {
-            $q->orderBy('repayment_date');
+        'ownerLoans' => function($query) use ($request) {
+            if ($request->from_date && $request->to_date) {
+                $query->whereBetween('approval_date', [$request->from_date, $request->to_date]);
+            } elseif ($request->from_date) {
+                $query->whereDate('approval_date', '>=', $request->from_date);
+            } elseif ($request->to_date) {
+                $query->whereDate('approval_date', '<=', $request->to_date);
+            }
+
+            $query->with(['ownerLoanRepayment' => function($q) {
+                $q->orderBy('repayment_date');
+            }]);
         }
-    ])->where('id', $request->membership_id)
+    ])
+    ->where('id', $request->membership_id)
     ->get();
 
     $owner = $memberships->first()?->owner;
