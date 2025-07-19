@@ -42,8 +42,8 @@
                                     <td>{{ $journalDetail->id }}</td>
                                     <td>{{ $journalDetail->ledger->name }}</td>
                                     <td>{{ optional($journalDetail->subLedger)->name }}</td>
-                                    <td>{{ $journalDetail->debit_amount }}</td>
-                                    <td>{{ $journalDetail->credit_amount }}</td>
+                                    <td class="text-right">Rs. {{ number_format($journalDetail->debit_amount, 2) }}</td>
+                                    <td class="text-right">Rs. {{ number_format($journalDetail->credit_amount, 2) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

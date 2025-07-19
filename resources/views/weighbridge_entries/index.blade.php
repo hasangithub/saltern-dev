@@ -64,11 +64,10 @@
                                     <td>{{ $entry->total_amount ?? 'N/A' }}</td>
                                     <td> @if($entry->receipt)
                                         <a href="{{ route('receipts.show', $entry->receipt->id) }}" target="_blank">
-                                            <span class="badge bg-success">Paid (Receipt
-                                                #{{ $entry->receipt->id }})</span>
+                                            <span class="badge bg-success"> #{{ $entry->receipt->id }}</span>
                                         </a>
                                         @else
-                                        <span class="badge bg-warning">Not Paid</span>
+                                        <span class="badge bg-warning">No</span>
                                         @endif
                                     </td>
                                     <td>
