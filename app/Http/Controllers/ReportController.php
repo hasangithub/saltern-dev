@@ -215,11 +215,11 @@ public function ownerLoanReport(Request $request)
         'saltern.yahai',
         'ownerLoans' => function($query) use ($request) {
             if ($request->from_date && $request->to_date) {
-                $query->whereBetween('approval_date', [$request->from_date, $request->to_date]);
+                $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
             } elseif ($request->from_date) {
-                $query->whereDate('approval_date', '>=', $request->from_date);
+                $query->whereDate('created_at', '>=', $request->from_date);
             } elseif ($request->to_date) {
-                $query->whereDate('approval_date', '<=', $request->to_date);
+                $query->whereDate('created_at', '<=', $request->to_date);
             }
 
             $query->with(['ownerLoanRepayment' => function($q) {
