@@ -525,7 +525,9 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         foreach ($grouped as $yahai => $records) {
             $yahaiTotals[$yahai] = collect($records)->sum('outstanding');
         }
-        return compact('grouped', 'yahaiTotals');
+
+        $grandTotal = array_sum($yahaiTotals);
+        return compact('grouped', 'yahaiTotals', 'grandTotal');
        //  view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
     }
 

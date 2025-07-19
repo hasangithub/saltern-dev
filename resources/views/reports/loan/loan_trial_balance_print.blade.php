@@ -62,7 +62,9 @@
         <div>Date Range: <strong>{{ request('from_date') }}</strong> to <strong>{{ request('to_date') }}</strong></div>
         @endif
     </div>
-
+    <h5 class="mb-0 text-primary">
+                        Grand Total: Rs. {{ number_format($grandTotal, 2) }}
+                    </h5>
     @foreach ($grouped as $yahai => $records)
     <h4 class="mt-4">{{ $yahai }}</h4>
     <table>
