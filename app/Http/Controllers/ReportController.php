@@ -17,6 +17,7 @@ use App\Models\Owner;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\OwnerLoanRepayment;
 use App\Models\OtherIncome;
+use App\Models\Voucher;
 
 class ReportController extends Controller
 {
@@ -33,6 +34,11 @@ class ReportController extends Controller
     public function indexPendingPayments(Request $request)
     {
         return view('reports.pending.index');
+    }
+
+    public function indexVoucher(Request $request)
+    {
+        return view('reports.voucher.index');
     }
 
     public function trialBalance(Request $request)
@@ -572,6 +578,20 @@ public function pendingPaymentsReport()
 }
 
 
-    
+public function voucherReport(Request $request)
+{
+    $query = Voucher::with(['paymentMethod', 'bank']);
+
+    if ($request->filled('from_date') && $request->filled('to_date')) {
+        $query->whereBetween('created_at', [
+            $request->from_date,
+            $request->to_date
+        ]);
+    }
+
+    $vouchers = $query->orderBy('created_at', 'desc')->get();
+
+    return view('reports.voucher.voucher-details', compact('vouchers'));
+}
 
 }

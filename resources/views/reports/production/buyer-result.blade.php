@@ -79,6 +79,7 @@
                                             <th class="text-right">Net Weight (kg)</th>
                                             <th class="text-right">Bags</th>
                                             <th class="text-right">Tons</th>
+                                            <th class="text-right">Service Charges</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -102,6 +103,7 @@
                                             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
                                             <td class="text-right">{{ $entry->bags_count }}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}
+                                            <td class="text-right">{{ number_format($entry->total_amount, 2) }}
                                             </td>
                                         </tr>
                                         @endforeach
@@ -112,6 +114,7 @@
                                             <th class="text-right">{{ number_format($totalNetWeight, 2) }}</th>
                                             <th class="text-right">{{ $totalBags }}</th>
                                             <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
+                                            <th class="text-right">{{ number_format($totalAmount, 2) }}</th>
                                         </tr>
                                     </tfoot>
                                 </table>

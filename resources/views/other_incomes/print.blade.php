@@ -118,6 +118,10 @@
                 <td>{{ \Carbon\Carbon::parse($income->received_date)->format('Y-m-d') }}</td>
             </tr>
             <tr>
+                <td><strong>Buyer:</strong></td>
+                <td>{{ $income->buyer->full_name }}</td>
+            </tr>
+            <tr>
                 <td><strong>Category:</strong></td>
                 <td>{{ $income->incomeCategory->name }}</td>
             </tr>
