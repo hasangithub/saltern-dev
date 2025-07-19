@@ -122,6 +122,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/loan-repayment/{repayment}/print', [OwnerLoanRepaymentController::class, 'printReceipt'])
     ->name('loan-repayment.print');
     Route::get('/other-income/{income}/print', [OtherIncomeController::class, 'printOtherIncome'])->name('other-income.print');
+    Route::get('/receipt/{receipt}/print', [ReceiptController::class, 'printReceipt'])->name('receipt.print');
     Route::get('/sms/settings', [SmsController::class, 'showSettings'])->name('sms.settings');
     Route::post('/sms/settings', [SmsController::class, 'updateSettings'])->name('sms.settings.update');
     Route::post('/sms/test', [SmsController::class, 'testSms'])->name('sms.test');

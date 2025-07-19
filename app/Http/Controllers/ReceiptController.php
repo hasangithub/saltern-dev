@@ -15,6 +15,7 @@ use App\Models\Receipt;
 use App\Models\ReceiptDetail;
 use App\Models\SubLedger;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReceiptController extends Controller
 {
@@ -275,13 +276,32 @@ public function store(Request $request)
     return redirect()->route('receipts.create')->with('success', 'Payment Receipt created successfully.');
 }
 
-public function show($id)
-{
-    $receiptDetails = Receipt::with([
-        'details'
-    ])->findOrFail($id);
+    public function show($id)
+    {
+        $receiptDetails = Receipt::with([
+            'details'
+        ])->findOrFail($id);
 
-    return view('receipts.show', compact('receiptDetails'));
-}
+        return view('receipts.show', compact('receiptDetails'));
+    }
 
+    public function printReceipt(Receipt $receipt)
+    {
+        $receipt->load(['details', 'buyer']);
+
+        $pdf = Pdf::loadView('receipts.print', [
+            'receipt' => $receipt,
+            'from_pdf' => true,
+        ])
+        ->setPaper('A6', 'portrait')
+        ->setOptions([
+            'defaultFont' => 'Times-Roman',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'isPhpEnabled' => true,
+            'isFontSubsettingEnabled' => true
+        ]);
+    
+        return $pdf->stream("receipt{$receipt->id}.pdf");
+    }
 }

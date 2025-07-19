@@ -53,6 +53,10 @@
                                     </td>
                                     <td>{{ $receipt->createdBy?->name ?? '-' }}</td>
                                     <td>
+                                    <a href="{{ route('receipt.print', $receipt->id) }}" class="btn btn-primary"
+                                        target="_blank">
+                                        <i class="fas fa-print"></i> Print
+                                    </a>
                                     <a href="{{ route('receipts.show', $receipt->id) }}" class="btn btn-sm btn-info">View</a>
                                     </td>
                                 </tr>
