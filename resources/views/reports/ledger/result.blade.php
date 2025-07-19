@@ -14,7 +14,18 @@
         <h4>Subledger Report: {{ $subLedger->name }}</h4>
         <p>Ledger: {{ $ledger->name }}</p>
         <p>Period: {{ $fromDate }} to {{ $toDate }}</p>
-
+        <form method="POST" action="{{ route('reports.ledger.pdf') }}" target="_blank">
+            @csrf
+            <input type="hidden" name="from_date" value="{{ $fromDate }}">
+            <input type="hidden" name="to_date" value="{{ $toDate }}">
+            <input type="hidden" name="ledger_id" value="{{ $ledger->id }}">
+            @if(isset($subLedger))
+            <input type="hidden" name="sub_ledger_id" value="{{ $subLedger->id }}">
+            @endif
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-print"></i> Print PDF
+            </button>
+        </form>
         <table class="table table-bordered table-sm">
             <thead>
                 <tr class="table-secondary">

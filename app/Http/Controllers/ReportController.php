@@ -594,4 +594,70 @@ public function voucherReport(Request $request)
     return view('reports.voucher.voucher-details', compact('vouchers'));
 }
 
+public function generateLedgerPdf(Request $request)
+{
+    $request->validate([
+        'from_date' => 'nullable|date',
+        'to_date' => 'nullable|date',
+        'ledger_id' => 'nullable|exists:ledgers,id',
+        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+    ]);
+
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
+    $ledgerId = $request->ledger_id;
+    $subLedgerId = $request->sub_ledger_id;
+
+    if ($subLedgerId) {
+        $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
+        $ledger = $subLedger->ledger;
+
+        $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
+        $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
+
+        $pdf = Pdf::loadView('reports.ledger.result_print', compact('ledger', 'subLedger', 'opening', 'journalDetails', 'fromDate', 'toDate'))
+                  ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('ledger-subledger-report.pdf');
+    }
+
+    if ($ledgerId) {
+        $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
+
+        if ($ledger->subLedgers->isNotEmpty()) {
+            $subLedgerSummaries = [];
+
+            foreach ($ledger->subLedgers as $sub) {
+                $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
+                $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
+
+                if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
+                    $subLedgerSummaries[] = [
+                        'sub_ledger' => $sub,
+                        'opening' => $opening,
+                        'journalDetails' => $journalDetails,
+                    ];
+                }
+            }
+
+            $pdf = Pdf::loadView('reports.ledger.subledger_summary_print', compact('ledger', 'subLedgerSummaries', 'fromDate', 'toDate'))
+                      ->setPaper('a4', 'portrait');
+
+            return $pdf->stream('ledger-subledgers-summary.pdf');
+        }
+
+        $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
+        $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
+
+        $pdf = Pdf::loadView('reports.ledger.summary_print', compact('ledger', 'opening', 'journalDetails', 'fromDate', 'toDate'))
+                  ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('ledger-summary.pdf');
+    }
+
+    return back()->withErrors('Please select a ledger or subledger.');
+}
+
+
+
 }

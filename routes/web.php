@@ -98,6 +98,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/vouchers/report/print', [VoucherController::class, 'printVoucherReport'])->name('vouchers.report.print');
     Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
+    Route::post('/reports/ledger/pdf', [ReportController::class, 'generateLedgerPdf'])->name('reports.ledger.pdf');
+
 
     Route::resource('sub-account-groups',SubAccountGroupController::class);
     Route::resource('ledgers',LedgerController::class);
