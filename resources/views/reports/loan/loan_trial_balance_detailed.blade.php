@@ -45,6 +45,9 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
+                    <h5 class="mb-0 text-primary">
+                        Grand Total: Rs. {{ number_format($grandTotal, 2) }}
+                    </h5>
                     @foreach ($grouped as $yahai => $records)
                     <h5 class="mt-4 fw-bold">{{ $yahai }}</h5>
                     <table class="table table-sm table-bordered">
