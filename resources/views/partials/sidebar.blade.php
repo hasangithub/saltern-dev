@@ -208,6 +208,12 @@
                                 <p>Pending Payments</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reports.voucher.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Voucher</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

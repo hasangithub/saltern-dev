@@ -13,6 +13,7 @@ use App\Models\SubLedger;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class VoucherController extends Controller
 {
@@ -140,4 +141,42 @@ class VoucherController extends Controller
         return redirect()->route('vouchers.show', $voucher->id)
             ->with('success', 'Loan request approved successfully.');
     }
+
+    public function printVoucherReport(Request $request)
+{
+    $request->validate([
+        'from_date' => 'nullable|date',
+        'to_date' => 'nullable|date|after_or_equal:from_date',
+    ]);
+
+    $query = Voucher::with(['paymentMethod', 'bank']);
+
+    if ($request->filled('from_date') && $request->filled('to_date')) {
+        $query->whereBetween('created_at', [
+            $request->from_date,
+            $request->to_date
+        ]);
+    }
+
+    $vouchers = $query->orderBy('created_at', 'desc')->get();
+
+    $totalAmount = $vouchers->sum('amount');
+
+    $pdf = Pdf::loadView('reports.voucher.report', [
+        'vouchers' => $vouchers,
+        'totalAmount' => $totalAmount,
+        'from' => $request->from_date,
+        'to' => $request->to_date,
+    ])
+    ->setPaper('A4', 'portrait')
+    ->setOptions([
+        'defaultFont' => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+    ]);
+
+    return $pdf->stream('voucher-report.pdf');
+}
+
+
 }
