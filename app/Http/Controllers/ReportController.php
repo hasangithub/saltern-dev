@@ -15,6 +15,8 @@ use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 use App\Models\Owner;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\OwnerLoanRepayment;
+use App\Models\OtherIncome;
 
 class ReportController extends Controller
 {
@@ -26,6 +28,11 @@ class ReportController extends Controller
         $buyers = Buyer::all();
     
         return view('reports.trial_balance_index', compact('yahaies', 'owners', 'buyers'));
+    }
+
+    public function indexPendingPayments(Request $request)
+    {
+        return view('reports.pending.index');
     }
 
     public function trialBalance(Request $request)
@@ -516,6 +523,52 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         ->setPaper('A4', 'portrait');
 
     return $pdf->stream('loan_trial_balance.pdf');
+}
+
+public function pendingPaymentsReport()
+{
+    $buyers = Buyer::all();
+    $report = [];
+
+    foreach ($buyers as $buyer) {
+        // Weighbridge Entries (Unpaid service charges)
+        $weighbridgeTotal = WeighbridgeEntry::where('buyer_id', $buyer->id)
+            ->where('is_service_charge_paid', 0)
+            ->sum('total_amount');
+
+        // Owner Loan Repayments (Pending)
+        $loanTotal = OwnerLoanRepayment::where('buyer_id', $buyer->id)
+            ->where('status', 'pending')
+            ->sum('amount');
+
+        // Other Incomes (Pending)
+        $incomeTotal = OtherIncome::where('buyer_id', $buyer->id)
+            ->where('status', 'pending')
+            ->sum('amount');
+
+        $total = $weighbridgeTotal + $loanTotal + $incomeTotal;
+
+        // Only include if any pending amount exists
+        if ($total > 0) {
+            $report[] = [
+                'buyer' => $buyer,
+                'weighbridge' => $weighbridgeTotal,
+                'loan' => $loanTotal,
+                'income' => $incomeTotal,
+                'total' => $total,
+            ];
+        }
+    }
+
+    // For final total
+    $grandTotal = [
+        'weighbridge' => array_sum(array_column($report, 'weighbridge')),
+        'loan' => array_sum(array_column($report, 'loan')),
+        'income' => array_sum(array_column($report, 'income')),
+        'total' => array_sum(array_column($report, 'total')),
+    ];
+
+    return view('reports.pending.pending-payments', compact('report', 'grandTotal'));
 }
 
 
