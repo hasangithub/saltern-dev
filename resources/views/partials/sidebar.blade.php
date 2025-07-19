@@ -202,6 +202,12 @@
                                 <p>Owner Loan</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reports.pending.payments.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Pending Payments</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
