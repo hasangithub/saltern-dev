@@ -126,6 +126,10 @@
                 <td>{{ $income->incomeCategory->name }}</td>
             </tr>
             <tr>
+                <td><strong>Description:</strong></td>
+                <td>{{ $income->description }}</td>
+            </tr>
+            <tr>
                 <td><strong>Amount:</strong></td>
                 <td>Rs. {{ number_format($income->amount, 2) }}</td>
             </tr>
