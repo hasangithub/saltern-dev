@@ -13,6 +13,10 @@
     <div class="row">
         <div class="col-12">
             <p class=""><strong>Owner:</strong> {{ $owner->name_with_initial }}</p>
+            <a href="{{ route('owner-loan.print', request()->all()) }}" class="btn btn-primary"
+                        target="_blank">
+                        <i class="fas fa-print"></i> Print
+                    </a>
         </div>
 
         @foreach ($grouped as $saltern => $loans)
