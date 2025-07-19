@@ -104,12 +104,20 @@
         <div class="header-title">PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD</div>
         <div class="sub-header">Reg No: S/6709 &nbsp;&nbsp;|&nbsp;&nbsp; Tel/Fax: 032 2265260</div>
         <div class="section-divider"></div>
-        <div class="section-title">OTHER INCOME</div>
+        <div class="section-title"></div>
     </div>
 
     <div class="details">
-        <h3>Receipt #{{ $receipt->id }}</h3>
-        <p>Date: {{ $receipt->created_at->format('d-m-Y') }}</p>
+        <table width="100%">
+            <tr>
+                <td align="left">
+                    <p style="margin: 0;">Receipt #{{ $receipt->id }}</p>
+                </td>
+                <td align="right">
+                    <p style="margin: 0;">Date: {{ $receipt->created_at->format('d-m-Y') }}</p>
+                </td>
+            </tr>
+        </table>
         <p><strong>Buyer:</strong> {{ $receipt->buyer->full_name ?? 'N/A' }}</p>
         <table width="100%" border="1" cellspacing="0" cellpadding="4">
             <thead>
@@ -122,7 +130,7 @@
                 @php $total = 0; @endphp
                 @foreach ($receipt->details as $detail)
                 <tr>
-                    <td>{{ ucfirst($detail->entry_type) }}</td>
+                    <td>{{ ucfirst($detail->entry_type) }}#{{$detail->entry_id}}</td>
                     <td align="right">{{ number_format($detail->amount, 2) }}</td>
                 </tr>
                 @php $total += $detail->amount; @endphp
