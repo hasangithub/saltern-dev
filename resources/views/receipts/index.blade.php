@@ -26,7 +26,7 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped table-sm">
+                        <table id="ownersTable" class="table table-bordered table-striped table-sm">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -88,7 +88,12 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#ownersTable').DataTable();
+    $('#ownersTable').DataTable({
+        order: [
+            [0, 'desc']
+        ],
+        pageLength: 50
+    });
 });
 </script>
 @endpush
