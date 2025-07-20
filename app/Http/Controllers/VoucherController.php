@@ -178,5 +178,14 @@ class VoucherController extends Controller
     return $pdf->stream('voucher-report.pdf');
 }
 
+public function printVoucher($id)
+{
+    $voucher = Voucher::findOrFail($id);
+
+    $pdf = Pdf::loadView('vouchers.print', compact('voucher'))->setPaper('a4', 'portrait');
+
+    return $pdf->stream("voucher_{$voucher->id}.pdf");
+}
+
 
 }
