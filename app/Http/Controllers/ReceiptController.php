@@ -22,7 +22,7 @@ class ReceiptController extends Controller
 
     public function index()
     {
-        $receipts = Receipt::with(['buyer', 'createdBy', 'details', 'bank'])->latest()->paginate(20);
+        $receipts = Receipt::with(['buyer', 'createdBy', 'details', 'bank'])->get();
         return view('receipts.index', compact('receipts'));
     }
 
