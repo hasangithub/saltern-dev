@@ -12,6 +12,8 @@ class Voucher extends Model
         'description',
         'payment_method_id',
         'bank_sub_ledger_id',
+        'ledger_id',
+        'sub_ledger_id',
         'cheque_no',
         'cheque_date',
         'amount',
