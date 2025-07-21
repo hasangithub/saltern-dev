@@ -63,6 +63,11 @@ class WeighbridgeEntry extends Model
         )->where('entry_type', 'weighbridge');
     }
 
+    public function loanRepayments()
+    {
+        return $this->hasMany(OwnerLoanRepayment::class, 'weighbridge_entry_id');
+    }
+
 
     protected $casts = [
         'bags_count' => 'decimal:2',
