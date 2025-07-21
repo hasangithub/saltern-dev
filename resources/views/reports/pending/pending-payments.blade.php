@@ -26,20 +26,20 @@
                     @foreach($report as $row)
                     <tr>
                         <td>{{ $row['buyer']->full_name ?? $row['buyer']->name }}</td>
-                        <td class="text-right">Rs. {{ number_format($row['weighbridge'], 2) }}</td>
-                        <td class="text-right">Rs. {{ number_format($row['loan'], 2) }}</td>
-                        <td class="text-right">Rs. {{ number_format($row['income'], 2) }}</td>
-                        <td class="text-right fw-bold">Rs. {{ number_format($row['total'], 2) }}</td>
+                        <td class="text-right"> {{ number_format($row['weighbridge'], 2) }}</td>
+                        <td class="text-right"> {{ number_format($row['loan'], 2) }}</td>
+                        <td class="text-right"> {{ number_format($row['income'], 2) }}</td>
+                        <td class="text-right fw-bold"> {{ number_format($row['total'], 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot class="table-info">
                     <tr>
                         <th>Total</th>
-                        <th class="text-right">Rs. {{ number_format($grandTotal['weighbridge'], 2) }}</th>
-                        <th class="text-right">Rs. {{ number_format($grandTotal['loan'], 2) }}</th>
-                        <th class="text-right">Rs. {{ number_format($grandTotal['income'], 2) }}</th>
-                        <th class="text-right fw-bold">Rs. {{ number_format($grandTotal['total'], 2) }}</th>
+                        <th class="text-right"> {{ number_format($grandTotal['weighbridge'], 2) }}</th>
+                        <th class="text-right"> {{ number_format($grandTotal['loan'], 2) }}</th>
+                        <th class="text-right"> {{ number_format($grandTotal['income'], 2) }}</th>
+                        <th class="text-right fw-bold"> {{ number_format($grandTotal['total'], 2) }}</th>
                     </tr>
                 </tfoot>
             </table>
