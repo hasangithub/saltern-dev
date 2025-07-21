@@ -42,6 +42,7 @@
                                     <th>bags</th>
                                     <th>Amount</th>
                                     <th>Bill</th>
+                                    <th>Loan</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -69,6 +70,12 @@
                                         @else
                                         <span class="badge bg-warning">No</span>
                                         @endif
+                                    </td>
+                                    <td>
+                                    @php
+                                        $loanPaid = $entry->loanRepayments->sum('amount');
+                                    @endphp
+                                    {{ number_format($loanPaid, 2) }}
                                     </td>
                                     <td>
                                         <a href="{{ route('weighbridge_entries.invoice', $entry->id) }}" target="_blank"
