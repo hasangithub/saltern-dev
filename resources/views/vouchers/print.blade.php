@@ -118,7 +118,7 @@
             </tr>
             <tr>
                 <td class="label">Description:</td>
-                <td colspan="5">{{ $voucher->description }}</td>
+                <td colspan="5" style="padding-bottom:20px">{{ $voucher->description }}</td>
             </tr>
         </table>
 
@@ -147,13 +147,13 @@
                 <td style="width: 50%; vertical-align: top;">
                     <table style="width: 100%; border: 0px solid #000;">
                         <tr>
-                            <td style="border: 0px solid #000; padding: 10px;">Prepared By ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Prepared By ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 10px;">Checked By ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Checked By ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 10px;">Certified By ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Certified By ...............................................................</td>
                         </tr>
                     </table>
                 </td>
@@ -162,13 +162,13 @@
                 <td style="width: 50%; vertical-align: top;">
                     <table style="width: 100%; border: 0px solid #000;">
                         <tr>
-                            <td style="border: 0px solid #000; padding: 10px;">President ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">President ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 10px;">Secretary ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Secretary ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 10px;">Treasurer ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Treasurer ...............................................................</td>
                         </tr>
                     </table>
                 </td>
