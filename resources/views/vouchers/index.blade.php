@@ -48,13 +48,19 @@
                                     <td>{{ $membership->amount }}</td>
                                     <td>{{ $membership->description }}</td>
                                     <td> @if ($membership->bank_sub_ledger_id)
-                                        {{ $membership->bank->name }} / {{ $membership->cheque_no }} / {{ $membership->cheque_date }}
+                                        {{ $membership->bank->name }} / {{ $membership->cheque_no }} /
+                                        {{ $membership->cheque_date }}
                                         @else
 
                                         @endif
                                     </td>
                                     <td>{{ $membership->status }}</td>
-                                    <td><a href="{{ route('vouchers.show', $membership->id) }}"
+                                    <td>
+                                        <a href="{{ route('vouchers.print', $membership->id) }}"
+                                            class="btn btn-sm btn-primary" target="_blank">
+                                            <i class="fa fa-print"></i> Print
+                                        </a>
+                                        <a href="{{ route('vouchers.show', $membership->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>

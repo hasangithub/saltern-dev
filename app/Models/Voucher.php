@@ -30,4 +30,9 @@ class Voucher extends Model
     {
         return $this->belongsTo(SubLedger::class, 'bank_sub_ledger_id');
     }
+
+    public function ledger()
+    {
+        return $this->belongsTo(Ledger::class);
+    }
 }
