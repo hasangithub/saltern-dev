@@ -24,7 +24,7 @@
             @php $total = 0; @endphp
             @foreach ($receipt->details as $detail)
             <tr>
-                <td>{{ ucfirst($detail->entry_type) }}#{{$detail->entry_id}}</td>
+                <td>{{ ucfirst($detail->entry_type) }}#{{$detail->entry_id}} {{$detail->owner->name_with_initial}}</td>
                 <td align="right">{{ number_format($detail->amount, 2) }}</td>
             </tr>
             @php $total += $detail->amount; @endphp
