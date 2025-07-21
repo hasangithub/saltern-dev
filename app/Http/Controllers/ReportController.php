@@ -44,7 +44,9 @@ class ReportController extends Controller
     public function trialBalance(Request $request)
     {  
         [$trialData, $totalDebit, $totalCredit] = $this->getTrialBalanceData($request);
-        return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit', 'fromDate', 'toDate'));
     }
 
     private function getTrialBalanceData(Request $request)
@@ -151,8 +153,9 @@ class ReportController extends Controller
     public function printTrialBalance(Request $request)
     {
         [$trialData, $totalDebit, $totalCredit] = $this->getTrialBalanceData($request);
-
-        $pdf = Pdf::loadView('reports.trial_balance_print', compact('trialData', 'totalDebit', 'totalCredit'))
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        $pdf = Pdf::loadView('reports.trial_balance_print', compact('trialData', 'totalDebit', 'totalCredit','fromDate', 'toDate'))
                 ->setPaper('A4', 'portrait');
 
         return $pdf->stream('trial_balance.pdf');
@@ -209,6 +212,9 @@ public function yahaiWiseLoanPrint(Request $request)
         'from_date' => 'nullable|date',
         'to_date' => 'nullable|date',
     ]);
+
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
 
 
     $memberships = Membership::with([
@@ -270,7 +276,7 @@ public function yahaiWiseLoanPrint(Request $request)
         }
     }
 
-    $pdf = Pdf::loadView('reports.ownerLoan.print-owner-loan', compact('memberships', 'grouped', 'owner'))
+    $pdf = Pdf::loadView('reports.ownerLoan.print-owner-loan', compact('memberships', 'grouped', 'owner', 'fromDate', 'toDate'))
     ->setPaper('A4', 'portrait');
 
     return $pdf->stream('owner_loan_report.pdf');
@@ -554,19 +560,19 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
             'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
     
-        $from = $request->from_date;
-        $to = $request->to_date;
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
 
         $loans = OwnerLoan::with([
             'membership.owner',
             'membership.saltern.yahai',
             'ownerLoanRepayment'
         ])
-        ->when($from, function ($q) use ($from) {
-            $q->whereDate('approval_date', '>=', $from);
+        ->when($fromDate, function ($q) use ($fromDate) {
+            $q->whereDate('approval_date', '>=', $fromDate);
         })
-        ->when($to, function ($q) use ($to) {
-            $q->whereDate('approval_date', '<=', $to);
+        ->when($toDate, function ($q) use ($toDate) {
+            $q->whereDate('approval_date', '<=', $toDate);
         })
         ->get();
     
@@ -601,7 +607,7 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         }
 
         $grandTotal = array_sum($yahaiTotals);
-        return compact('grouped', 'yahaiTotals', 'grandTotal');
+        return compact('grouped', 'yahaiTotals', 'grandTotal', 'fromDate', 'toDate');
        //  view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
     }
 
@@ -671,6 +677,8 @@ public function pendingPaymentsReport()
 public function voucherReport(Request $request)
 {
     $query = Voucher::with(['paymentMethod', 'bank']);
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
 
     if ($request->filled('from_date') && $request->filled('to_date')) {
         $query->whereBetween('created_at', [
@@ -681,7 +689,7 @@ public function voucherReport(Request $request)
 
     $vouchers = $query->orderBy('created_at', 'desc')->get();
 
-    return view('reports.voucher.voucher-details', compact('vouchers'));
+    return view('reports.voucher.voucher-details', compact('vouchers', 'fromDate', 'toDate'));
 }
 
 public function generateLedgerPdf(Request $request)

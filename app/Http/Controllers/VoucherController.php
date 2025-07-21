@@ -149,6 +149,9 @@ class VoucherController extends Controller
         'to_date' => 'nullable|date|after_or_equal:from_date',
     ]);
 
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
+
     $query = Voucher::with(['paymentMethod', 'bank']);
 
     if ($request->filled('from_date') && $request->filled('to_date')) {
@@ -165,8 +168,8 @@ class VoucherController extends Controller
     $pdf = Pdf::loadView('reports.voucher.report', [
         'vouchers' => $vouchers,
         'totalAmount' => $totalAmount,
-        'from' => $request->from_date,
-        'to' => $request->to_date,
+        'fromDate' => $request->from_date,
+        'toDate' => $request->to_date,
     ])
     ->setPaper('A4', 'portrait')
     ->setOptions([
