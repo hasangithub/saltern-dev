@@ -1,48 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Ledger Report with Subledgers</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            font-size: 12px;
-        }
-        .container {
-            width: 100%;
-            margin: 0 auto;
-        }
-        h4, h5 {
-            margin: 0;
-            padding: 5px 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        table, th, td {
-            border: 1px solid #000;
-        }
-        th, td {
-            padding: 4px;
-            text-align: left;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .bg-light {
-            background-color: #f0f0f0;
-        }
-        .fw-bold {
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h4>Ledger Report with Subledgers: {{ $ledger->name }}</h4>
-    <p>Period: {{ $fromDate }} to {{ $toDate }}</p>
+@extends('layout.report_a4')
+@section('section-title',  $ledger->name. ' Ledger')
+@section('content')
 
     @foreach($subLedgerSummaries as $summary)
         @php
@@ -92,6 +50,4 @@
             </tbody>
         </table>
     @endforeach
-</div>
-</body>
-</html>
+@endsection
