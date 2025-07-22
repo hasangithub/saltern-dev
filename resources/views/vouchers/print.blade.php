@@ -88,7 +88,7 @@
                 Saltern Yard, Mannar Road, Puttalam
             </p>
             <p style="margin: 2px 0; font-size: 14px;">
-                Tel: 032-2265260 / 076-7665260  Fax: 032-2266260
+                Tel: 032-2265260 / Email: pspwsl@gmail.com
             </p>
             <hr>
             <h3 style="margin-top: 15px; text-decoration: underline; font-size: 16px;">
