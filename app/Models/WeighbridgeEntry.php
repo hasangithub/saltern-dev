@@ -91,6 +91,8 @@ class WeighbridgeEntry extends Model
             $entry->created_by = auth('web')->id();
             $entry->updated_by = auth('web')->id();
             $entry->owner_share_percentage = $ownerSharePercentage;
+
+            $entry->turn_no = static::whereDate('transaction_date', $entry->transaction_date)->max('turn_no') + 1 ?? 1;
         });        
     }
 

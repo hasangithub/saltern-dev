@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\WeighbridgeEntryController;
+use App\Http\Controllers\WeighbridgeTestController;
 use App\Http\Controllers\YahaiController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\SalternController;
@@ -55,6 +56,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('buyers', BuyerController::class);
     Route::resource('yahai', YahaiController::class);
     Route::resource('saltern',SalternController::class);
+    Route::get('/weighbridge-test', [WeighbridgeTestController::class, 'index'])->name('weighbridge.test');
+    Route::get('/weighbridge-test/data', [WeighbridgeTestController::class, 'data'])->name('weighbridge.test.data');
 
     Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
     Route::get('/weighbridge/entries/create', [WeighbridgeEntryController::class, 'create'])->name('weighbridge_entries.create');
