@@ -27,7 +27,7 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="weighbridgeTable" class="table table-sm nowrap table-hover" style="width:100%">
+                        <table id="weighbridge-table" class="table table-sm nowrap table-hover" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Id</th>
@@ -39,70 +39,13 @@
                                     <th>Yahai</th>
                                     <th>Waikal</th>
                                     <th>Weight</th>
-                                    <th>bags</th>
+                                    <th>Bags</th>
                                     <th>Amount</th>
                                     <th>Bill</th>
                                     <th>Loan</th>
-                                    <th></th>
+                                    <th></th> {{-- For Action buttons --}}
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach($entries as $entry)
-                                <tr>
-                                    <td>{{ $entry->id }}</td>
-                                    <td>{{ $entry->transaction_date }}</td>
-                                    <td>{{ $entry->turn_no  }}</td>
-                                    <td>{{ $entry->buyer->full_name ?? 'N/A' }}</td>
-                                    <td>{{ $entry->vehicle_id }}</td>
-                                    <td>{{ $entry->owner->name_with_initial ?? 'N/A' }}</td>
-
-                                    <td>{{ $entry->membership->saltern->yahai->name }}</td>
-                                    <td>{{ $entry->membership->saltern->name }}</td>
-                                    <td>{{ $entry->net_weight }}</td>
-                                    <td>{{ $entry->bags_count ?? 'N/A' }}</td>
-
-
-                                    <td>{{ $entry->total_amount ?? 'N/A' }}</td>
-                                    <td> @if($entry->receipt)
-                                        <a href="{{ route('receipts.show', $entry->receipt->id) }}" target="_blank">
-                                            <span class="badge bg-success"> #{{ $entry->receipt->id }}</span>
-                                        </a>
-                                        @else
-                                        <span class="badge bg-warning">No</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @php
-                                        $loanPaid = $entry->loanRepayments->sum('amount');
-                                        @endphp
-                                        {{ number_format($loanPaid, 2) }}
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('weighbridge_entries.invoice', $entry->id) }}" target="_blank"
-                                            class="btn btn-primary btn-sm">
-                                            Print
-                                        </a>
-                                        <a href="{{ route('weighbridge_entries.show', $entry->id) }}"
-                                            class="btn btn-default btn-xs">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
-                                        <a href="{{ route('weighbridge_entries.edit', $entry->id) }}"
-                                            class="btn btn-sm btn-warning">Edit</a>
-                                        @role('admin')
-                                        <form action="{{ route('weighbridge-entries.delete', $entry->id) }}"
-                                            method="POST" style="display:inline;"
-                                            onsubmit="return confirm('Are you sure you want to delete this entry?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="fas fa-trash-alt"></i> Delete
-                                            </button>
-                                        </form>
-                                        @endrole
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -124,11 +67,58 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#weighbridgeTable').DataTable({
-        order: [
-            [0, 'desc']
-        ],
-        pageLength: 50
+    $('#weighbridge-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ordering: false, // disables column sorting
+        searching: false, // disables search filter
+        pageLength: 50,
+        ajax: '{{ route("weighbridge_entries.data") }}',
+        columns: [{
+                data: 'id'
+            },
+            {
+                data: 'transaction_date'
+            },
+            {
+                data: 'turn_no'
+            },
+            {
+                data: 'buyer_name'
+            },
+            {
+                data: 'vehicle_id'
+            },
+            {
+                data: 'owner_name'
+            },
+            {
+                data: 'yahai_name'
+            },
+            {
+                data: 'waikal'
+            },
+            {
+                data: 'net_weight'
+            },
+            {
+                data: 'bags'
+            },
+            {
+                data: 'amount'
+            },
+            {
+                data: 'receipt'
+            },
+            {
+                data: 'loan'
+            },
+            {
+                data: 'action',
+                orderable: false,
+                searchable: false
+            }
+        ]
     });
 });
 </script>
