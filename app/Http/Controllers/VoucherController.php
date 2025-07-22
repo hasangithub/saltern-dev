@@ -131,7 +131,7 @@ class VoucherController extends Controller
 
         // Validate and save the approved amount
         $request->validate([
-            'note' => 'required|string|min:1',
+            'note' => 'nullable|string|min:1',
         ]);
 
         $voucher->note   = $request->note;
@@ -139,7 +139,7 @@ class VoucherController extends Controller
         $voucher->save();
 
         return redirect()->route('vouchers.show', $voucher->id)
-            ->with('success', 'Loan request approved successfully.');
+            ->with('success', 'Voucher approved successfully.');
     }
 
     public function printVoucherReport(Request $request)
