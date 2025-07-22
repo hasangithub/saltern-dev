@@ -46,6 +46,7 @@
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
+                                        @role('admin')
                                         <form action="{{ route('journal-entries.destroy', $journalEntry->id) }}"
                                             method="POST" style="display:inline;"
                                             onsubmit="return confirm('Are you sure you want to delete this entry?');">
@@ -55,6 +56,7 @@
                                                 <i class="fas fa-trash-alt"></i> Delete
                                             </button>
                                         </form>
+                                        @endrole
                                     </td>
                                 </tr>
                                 @endforeach
