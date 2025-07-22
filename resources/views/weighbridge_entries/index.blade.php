@@ -72,10 +72,10 @@
                                         @endif
                                     </td>
                                     <td>
-                                    @php
+                                        @php
                                         $loanPaid = $entry->loanRepayments->sum('amount');
-                                    @endphp
-                                    {{ number_format($loanPaid, 2) }}
+                                        @endphp
+                                        {{ number_format($loanPaid, 2) }}
                                     </td>
                                     <td>
                                         <a href="{{ route('weighbridge_entries.invoice', $entry->id) }}" target="_blank"
@@ -88,6 +88,7 @@
                                         </a>
                                         <a href="{{ route('weighbridge_entries.edit', $entry->id) }}"
                                             class="btn btn-sm btn-warning">Edit</a>
+                                        @role('admin')
                                         <form action="{{ route('weighbridge-entries.delete', $entry->id) }}"
                                             method="POST" style="display:inline;"
                                             onsubmit="return confirm('Are you sure you want to delete this entry?');">
@@ -97,6 +98,7 @@
                                                 <i class="fas fa-trash-alt"></i> Delete
                                             </button>
                                         </form>
+                                        @endrole
                                     </td>
                                 </tr>
                                 @endforeach
