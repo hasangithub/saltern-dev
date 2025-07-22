@@ -6,7 +6,7 @@
     <title>Payment Voucher</title>
     <style>
     body {
-        font-family: "Times New Roman",sans-serif;
+        font-family: "Times New Roman", sans-serif;
         font-size: 12.5px;
         margin: 0;
         padding: 1px;
@@ -120,26 +120,31 @@
                 <td class="label">Description:</td>
                 <td colspan="5" style="padding-bottom:20px">{{ $voucher->description }}</td>
             </tr>
-        </table>
-
-        <table class="details">
-            <tr>
-                @if($voucher->payment_method_id === 1)
-                <td class="label">Cheque No:</td>
-                <td>{{ $voucher->cheque_no }}</td>
-                <td class="label">Bank:</td>
-                <td>{{ $voucher->bank->name }}</td>
-                <td class="label">Cheque Date:</td>
-                <td colspan="5">
-                    {{ $voucher->cheque_date ? \Carbon\Carbon::parse($voucher->cheque_date)->format('d-m-Y') : '-' }}
-                </td>
-                @endif
-            </tr>
             <tr>
                 <td class="label">Amount:</td>
                 <td>Rs. {{ number_format($voucher->amount, 2) }}</td>
             </tr>
         </table>
+
+        <table width="100%" cellpadding="6" cellspacing="0"
+            style="margin-top: 10px; border-collapse: collapse; font-size: 14px; border: 1px solid #333;">
+            @if($voucher->payment_method_id === 1)
+            <tr>
+                <td style="border: 1px solid #333; font-weight: bold; width: 15%;">Cheque No</td>
+                <td style="border: 1px solid #333; width: 18%;">{{ $voucher->cheque_no }}</td>
+
+                <td style="border: 1px solid #333; font-weight: bold; width: 15%;">Bank</td>
+                <td style="border: 1px solid #333; width: 18%;">{{ $voucher->bank->name }}</td>
+
+                <td style="border: 1px solid #333; font-weight: bold; width: 15%;">Cheque Date</td>
+                <td style="border: 1px solid #333; width: 19%;">
+                    {{ $voucher->cheque_date ? \Carbon\Carbon::parse($voucher->cheque_date)->format('d-m-Y') : '-' }}
+                </td>
+            </tr>
+            @endif
+           
+        </table>
+       
         Passed for payment
         <table style="width: 100%; margin-top: 30px; font-size: 12px; border-collapse: collapse;">
             <tr>
@@ -147,13 +152,16 @@
                 <td style="width: 50%; vertical-align: top;">
                     <table style="width: 100%; border: 0px solid #000;">
                         <tr>
-                            <td style="border: 0px solid #000; padding: 5px;">Prepared By ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Prepared By
+                                ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 5px;">Checked By ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Checked By
+                                ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 5px;">Certified By ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Certified By
+                                ...............................................................</td>
                         </tr>
                     </table>
                 </td>
@@ -162,13 +170,16 @@
                 <td style="width: 50%; vertical-align: top;">
                     <table style="width: 100%; border: 0px solid #000;">
                         <tr>
-                            <td style="border: 0px solid #000; padding: 5px;">President ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">President
+                                ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 5px;">Secretary ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Secretary
+                                ...............................................................</td>
                         </tr>
                         <tr>
-                            <td style="border: 0px solid #000; padding: 5px;">Treasurer ...............................................................</td>
+                            <td style="border: 0px solid #000; padding: 5px;">Treasurer
+                                ...............................................................</td>
                         </tr>
                     </table>
                 </td>
