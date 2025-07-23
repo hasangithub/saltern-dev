@@ -46,8 +46,23 @@ class WeighbridgeEntryController extends Controller
         return DataTables::eloquent($entries)
             ->addColumn('turn_no', fn($entry) => optional($entry)->turn_no)
             ->addColumn('buyer_name', fn($entry) => optional($entry->buyer)->full_name)
+            ->filterColumn('buyer_name', function ($query, $keyword) {
+                $query->whereHas('buyer', function ($q) use ($keyword) {
+                    $q->where('full_name', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('owner_name', fn($entry) => optional($entry->membership->owner)->name_with_initial)
+            ->filterColumn('owner_name', function ($query, $keyword) {
+                $query->whereHas('membership.owner', function ($q) use ($keyword) {
+                    $q->where('name_with_initial', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('yahai_name', fn($entry) => optional($entry->membership->saltern->yahai)->name)
+            ->filterColumn('yahai_name', function ($query, $keyword) {
+                $query->whereHas('membership.saltern.yahai', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('waikal', fn($entry)     => optional($entry->membership->saltern)->name)
             ->addColumn('net_weight', fn($entry) => $entry->net_weight)
             ->addColumn('bags', fn($entry) => $entry->bags_count)
