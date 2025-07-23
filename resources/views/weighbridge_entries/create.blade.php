@@ -10,18 +10,36 @@
 
 @section('content_body')
 
+<style>
+
+/* Make focused inputs more visible */
+.form-control:focus {
+    border-color: #ff6600 !important;    /* Bright orange border */
+    box-shadow: 0 0 5px 2px rgba(255, 102, 0, 0.5) !important; /* Glowing outline */
+    outline: none !important;
+}
+
+/* Optional: style selects and textareas too */
+select.form-control:focus,
+textarea.form-control:focus {
+    border-color: #ff6600 !important;
+    box-shadow: 0 0 5px 2px rgba(255, 102, 0, 0.5) !important;
+    outline: none !important;
+}
+</style>
+
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">Create new entry</h3>
+                    <h3 class="card-title">Create new entry#  {{$nextSerialNo}}</h3>
                 </div>
-
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <form action="{{ route('weighbridge_entries.store') }}" method="POST" autocomplete="off">
+                            <form id="weighbridge_form" action="{{ route('weighbridge_entries.store') }}" method="POST" autocomplete="off">
                                 @csrf
                                 <div class="form-group row">
                                     <label for="transaction_date" class="col-sm-3 col-form-label">Date</label>
@@ -31,16 +49,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="Serial" class="col-sm-3 col-form-label">Order No</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="serial" id="serial" class="form-control"
-                                            value="{{$nextSerialNo}}">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
                                     <label for="culture" class="col-sm-3 col-form-label">Culture</label>
                                     <div class="col-sm-9">
-                                        <select id="culture" name="culture" class="form-control" required>
+                                        <select id="culture" name="culture" class="form-control" required tabindex="1">
                                             <option value="">-- Select culture --</option>
                                             <option value="Ag Salt">Ag Salt</option>
                                             <option value="yala">Yala</option>
@@ -51,7 +62,7 @@
                                 <div class="form-group row">
                                     <label for="side_id" class="col-sm-3 col-form-label">Side</label>
                                     <div class="col-sm-9">
-                                        <select id="side_id" name="side_id" class="form-control" required>
+                                        <select id="side_id" name="side_id" class="form-control" required tabindex="2">
                                             <option value="">-- Select Side --</option>
                                             @foreach ($sides as $side)
                                             <option value="{{ $side->id }}">{{ ucfirst($side->name) }}</option>
@@ -62,7 +73,7 @@
                                 <div class="form-group row">
                                     <label for="yahai_id" class="col-sm-3 col-form-label">Yahai</label>
                                     <div class="col-sm-9">
-                                        <select id="yahai_id" name="yahai_id" class="form-control" required>
+                                        <select id="yahai_id" name="yahai_id" class="form-control" required tabindex="3">
                                             <option value="">-- Select Yahai --</option>
                                         </select>
                                     </div>
@@ -70,7 +81,7 @@
                                 <div class="form-group row">
                                     <label for="saltern_id" class="col-sm-3 col-form-label">Waikal No</label>
                                     <div class="col-sm-9">
-                                        <select id="saltern_id" name="saltern_id" class="form-control" required>
+                                        <select id="saltern_id" name="saltern_id" class="form-control" required tabindex="4">
                                             <option value="">-- Select Waikal No --</option>
                                         </select>
                                     </div>
@@ -87,7 +98,7 @@
                                 <div class="form-group row">
                                     <label for="buyer_id" class="col-sm-3 col-form-label">Buyer</label>
                                     <div class="col-sm-9">
-                                        <select name="buyer_id" id="buyer_id" class="form-control" required>
+                                        <select name="buyer_id" id="buyer_id" class="form-control" required tabindex="5">
                                             <option value="">Select Buyer</option>
                                             @foreach($buyers as $buyer)
                                             <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
@@ -99,21 +110,21 @@
                                     <label for="vehicle_id" class="col-sm-3 col-form-label">Vehicle ID</label>
                                     <div class="col-sm-9">
                                         <input type="text" name="vehicle_id" id="vehicle_id" class="form-control"
-                                            required>
+                                            required tabindex="6">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="initial_weight" class="col-sm-3 col-form-label">1st Weight</label>
                                     <div class="col-sm-9">
                                         <input type="number" step="1" name="initial_weight" id="initial_weight"
-                                            class="form-control" required>
+                                            class="form-control" required tabindex="7">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="initial_weight" class="col-sm-3 col-form-label">2nd Weight</label>
                                     <div class="col-sm-9">
                                         <input type="number" step="1" name="tare_weight" id="tare_weight"
-                                            class="form-control" required>
+                                            class="form-control" required tabindex="8">
                                     </div>
                                 </div>
 
@@ -199,6 +210,32 @@
     </script>
 @endif
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#weighbridge_form"); // Change as needed
+
+    form.addEventListener("keydown", function (e) {
+        if (e.key === "Tab") {
+            const focusable = Array.from(form.querySelectorAll("input, select, textarea, button"))
+                .filter(el =>
+                    !el.disabled &&
+                    el.type !== "hidden" &&
+                    el.offsetParent !== null && // visible
+                    !el.readOnly // skip readonly
+                );
+
+            const index = focusable.indexOf(document.activeElement);
+            if (index === -1) return; // if not in list
+
+            e.preventDefault();
+
+            const nextIndex = e.shiftKey
+                ? (index - 1 + focusable.length) % focusable.length
+                : (index + 1) % focusable.length;
+
+            focusable[nextIndex].focus();
+        }
+    });
+});
 $(document).ready(function() {
     const $form = $('form');
     const $submitBtn = $form.find('button[type="submit"]');

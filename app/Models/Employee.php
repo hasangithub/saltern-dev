@@ -17,4 +17,21 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public static function designations()
+    {
+        return [
+            'Manager',
+            'Accountant',
+            'Cashier',
+            'Clerk',
+            'HR Officer',
+            'Field Officer',
+            'Supervisor',
+            'Storekeeper',
+            'Technician',
+            'Driver',
+        ];
+    }
+
 }

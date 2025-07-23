@@ -26,6 +26,18 @@
                 <i class="fa fa-print"></i> Print PDF
             </button>
         </form>
+        <form method="GET" action="{{ route('ledger.report.export') }}" target="_blank">
+            @csrf
+            <input type="hidden" name="from_date" value="{{ $fromDate }}">
+            <input type="hidden" name="to_date" value="{{ $toDate }}">
+            <input type="hidden" name="ledger_id" value="{{ $ledger->id }}">
+            @if(isset($subLedger))
+            <input type="hidden" name="sub_ledger_id" value="{{ $subLedger->id }}">
+            @endif
+            <button type="submit" class="btn btn-success">
+                <i class="fa fa-print"></i> Export
+            </button>
+        </form>
         <table class="table table-bordered table-sm">
             <thead>
                 <tr class="table-secondary">

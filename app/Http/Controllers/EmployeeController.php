@@ -6,14 +6,65 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
     public function index()
     {
-        $employees = Employee::with('user')->get(); // eager load user
+        $employees = Employee::with('user.roles')->get(); // eager load user
         return view('employees.index', compact('employees'));
     }
+
+     public function edit($id)
+    {
+        $employee = User::findOrFail($id); 
+        $roles = Role::where('guard_name', 'web')->get();
+        return view('employees.edit', compact('employee', 'roles'));
+    }
+
+    public function update(Request $request, $id)
+{
+
+    $user = User::with('employee')->findOrFail($id);
+
+    $request->validate([
+        'full_name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'designation' => 'required|string',
+        'base_salary' => 'required|numeric',
+        'join_date' => 'required|date',
+        'employment_status' => 'required|in:Active,Inactive,Resigned,Terminated',
+        'roles' => 'array|exists:roles,name'
+    ]);
+
+     // Update User table
+     $user->update([
+        'name' => $request->full_name,
+        'email' => $request->email,
+    ]);
+
+    // Update password if present
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+        $user->save();
+    }
+
+    // Update Employee table
+    if ($user->employee) {
+        $user->employee->update([
+            'designation' => $request->designation,
+            'base_salary' => $request->base_salary,
+            'join_date' => $request->join_date,
+            'employment_status' => $request->employment_status,
+        ]);
+    }
+
+        $user->syncRoles($request->input('roles', [])); // empty array clears roles
+
+    return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+}
     
     public function create()
     {
@@ -24,7 +75,6 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'person_id' => 'required|string|unique:employees,person_id',
             'full_name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
@@ -34,30 +84,32 @@ class EmployeeController extends Controller
             'employment_status' => 'required|in:Active,Inactive,Resigned,Terminated',
         ]);
 
-        $user = User::create([
-            'name' => $data['full_name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        DB::beginTransaction();
 
-        // Create employee data and link to user
-        $employee = Employee::create([
-            'user_id' => $user->id,
-            'person_id' => $data['person_id'],
-            'designation' => $data['designation'],
-            'base_salary' => $data['base_salary'],
-            'join_date' => $data['join_date'],
-            'employment_status' => $data['employment_status'],
-        ]);
+        try {
+            // Create user
+            $user = User::create([
+                'name' => $data['full_name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
 
-        // Optionally, you can update the user table with employee info:
-        // $user = User::findOrFail($request->user_id);
-        // $user->designation = $request->designation;
-        // $user->base_salary = $request->base_salary;
-        // $user->join_date = $request->join_date;
-        // $user->employment_status = $request->employment_status;
-        // $user->save();
+            // Create employee linked to the user
+            Employee::create([
+                'user_id' => $user->id,
+                'designation' => $data['designation'],
+                'base_salary' => $data['base_salary'],
+                'join_date' => $data['join_date'],
+                'employment_status' => $data['employment_status'],
+            ]);
 
-        return redirect()->route('employees.index')->with('success', 'Employee registered successfully!');
+            DB::commit();
+
+            return redirect()->route('employees.index')->with('success', 'Employee registered successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->withInput()->withErrors(['error' => 'Registration failed. Please try again.']);
+        }
     }
 }
