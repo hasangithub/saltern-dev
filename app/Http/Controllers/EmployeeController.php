@@ -24,7 +24,6 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'person_id' => 'required|string|unique:employees,person_id',
             'full_name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
@@ -43,7 +42,6 @@ class EmployeeController extends Controller
         // Create employee data and link to user
         $employee = Employee::create([
             'user_id' => $user->id,
-            'person_id' => $data['person_id'],
             'designation' => $data['designation'],
             'base_salary' => $data['base_salary'],
             'join_date' => $data['join_date'],

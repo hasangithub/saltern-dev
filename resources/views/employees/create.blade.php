@@ -40,10 +40,6 @@
         <form action="{{ route('employees.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="person_id" class="form-label">Person ID</label>
-                <input type="text" class="form-control" id="person_id" name="person_id" value="{{ old('person_id') }}" required>
-            </div>
-            <div class="form-group">
                 <label for="full_name">Name</label>
                 <input type="text" name="full_name" id="full_name" class="form-control" value="{{ old('full_name') }}">
             </div>
