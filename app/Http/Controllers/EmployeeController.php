@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
@@ -33,29 +34,32 @@ class EmployeeController extends Controller
             'employment_status' => 'required|in:Active,Inactive,Resigned,Terminated',
         ]);
 
-        $user = User::create([
-            'name' => $data['full_name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        DB::beginTransaction();
 
-        // Create employee data and link to user
-        $employee = Employee::create([
-            'user_id' => $user->id,
-            'designation' => $data['designation'],
-            'base_salary' => $data['base_salary'],
-            'join_date' => $data['join_date'],
-            'employment_status' => $data['employment_status'],
-        ]);
+        try {
+            // Create user
+            $user = User::create([
+                'name' => $data['full_name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
 
-        // Optionally, you can update the user table with employee info:
-        // $user = User::findOrFail($request->user_id);
-        // $user->designation = $request->designation;
-        // $user->base_salary = $request->base_salary;
-        // $user->join_date = $request->join_date;
-        // $user->employment_status = $request->employment_status;
-        // $user->save();
+            // Create employee linked to the user
+            Employee::create([
+                'user_id' => $user->id,
+                'designation' => $data['designation'],
+                'base_salary' => $data['base_salary'],
+                'join_date' => $data['join_date'],
+                'employment_status' => $data['employment_status'],
+            ]);
 
-        return redirect()->route('employees.index')->with('success', 'Employee registered successfully!');
+            DB::commit();
+
+            return redirect()->route('employees.index')->with('success', 'Employee registered successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->withInput()->withErrors(['error' => 'Registration failed. Please try again.']);
+        }
     }
 }
