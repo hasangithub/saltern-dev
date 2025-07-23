@@ -11,6 +11,7 @@
 @section('content_body')
 
 <style>
+
 /* Make focused inputs more visible */
 .form-control:focus {
     border-color: #ff6600 !important;    /* Bright orange border */
@@ -33,9 +34,8 @@ textarea.form-control:focus {
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">Create new entry</h3>
+                    <h3 class="card-title">Create new entry#  {{$nextSerialNo}}</h3>
                 </div>
-
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
@@ -46,13 +46,6 @@ textarea.form-control:focus {
                                     <div class="col-sm-9">
                                         <input type="date" name="transaction_date" id="transaction_date"
                                             class="form-control" value="{{ date('Y-m-d') }}">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="Serial" class="col-sm-3 col-form-label">Order No</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="serial" id="serial" class="form-control"
-                                            value="{{$nextSerialNo}}" readonly  tabindex="-1">
                                     </div>
                                 </div>
                                 <div class="form-group row">

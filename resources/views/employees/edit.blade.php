@@ -37,27 +37,31 @@
             {{ session('success') }}
         </div>
         @endif
-        <form action="{{ route('employees.store') }}" method="POST">
+        <form action="{{ route('employees.update', $employee->id) }}" method="POST">
             @csrf
+            @method('PUT')
+
             <div class="form-group row">
                 <label for="full_name" class="col-sm-3 col-form-label">Full Name</label>
                 <div class="col-sm-9">
                     <input type="text" name="full_name" id="full_name" class="form-control"
-                        value="{{ old('full_name') }}" autocomplete="off" required>
+                        value="{{ old('full_name', $employee->name) }}" required>
                 </div>
             </div>
+
             <div class="form-group row">
                 <label for="email" class="col-sm-3 col-form-label">Email</label>
                 <div class="col-sm-9">
-                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required
-                        autocomplete="off">
+                    <input type="email" name="email" id="email" class="form-control"
+                        value="{{ old('email', $employee->email) }}" required autocomplete="new-email">
                 </div>
             </div>
+
             <div class="form-group row">
                 <label for="password" class="col-sm-3 col-form-label">Password</label>
                 <div class="col-sm-9">
                     <input type="password" name="password" id="password" class="form-control"
-                        value="{{ old('password') }}" required autocomplete="off" required>
+                        placeholder="Leave blank to keep current password" autocomplete="new-password">
                 </div>
             </div>
 
@@ -67,7 +71,8 @@
                     <select name="designation" class="form-control" required>
                         <option value="">Select Designation</option>
                         @foreach(\App\Models\Employee::designations() as $designation)
-                        <option value="{{ $designation }}">
+                        <option value="{{ $designation }}"
+                            {{ old('designation', $employee->employee->designation ?? '') == $designation ? 'selected' : '' }}>
                             {{ $designation }}
                         </option>
                         @endforeach
@@ -78,15 +83,16 @@
             <div class="form-group row">
                 <label for="base_salary" class="col-sm-3 col-form-label">Base Salary</label>
                 <div class="col-sm-9">
-                    <input type="number" class="form-control" id="base_salary" name="base_salary" required
-                        autocomplete="off">
+                    <input type="number" class="form-control" id="base_salary" name="base_salary"
+                        value="{{ old('base_salary', $employee->employee->base_salary) }}" required>
                 </div>
             </div>
 
             <div class="form-group row">
                 <label for="join_date" class="col-sm-3 col-form-label">Join Date</label>
                 <div class="col-sm-9">
-                    <input type="date" class="form-control" id="join_date" name="join_date" autocomplete="off" required>
+                    <input type="date" class="form-control" id="join_date" name="join_date"
+                        value="{{ old('join_date', $employee->employee->join_date) }}" required>
                 </div>
             </div>
 
@@ -94,15 +100,32 @@
                 <label for="employment_status" class="col-sm-3 col-form-label">Employment Status</label>
                 <div class="col-sm-9">
                     <select class="form-control" id="employment_status" name="employment_status" required>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                        <option value="Resigned">Resigned</option>
-                        <option value="Terminated">Terminated</option>
+                        @foreach(['Active', 'Inactive', 'Resigned', 'Terminated'] as $status)
+                        <option value="{{ $status }}"
+                            {{ old('employment_status', $employee->employee->employment_status) == $status ? 'selected' : '' }}>
+                            {{ $status }}
+                        </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Register Employee</button>
+
+            <div class="form-group row">
+                <label for="roles" class="col-sm-3 col-form-label">Roles</label>
+                <div class="col-sm-9">
+                    @foreach($roles as $role)
+                    <label>
+                        <input type="checkbox" name="roles[]" value="{{ $role->name }}"
+                            {{ $employee->hasRole($role->name) ? 'checked' : '' }}>
+                        {{ $role->name }}
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Update Employee</button>
         </form>
+
     </div>
 </div>
 

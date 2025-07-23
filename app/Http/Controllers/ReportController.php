@@ -20,6 +20,8 @@ use App\Models\OtherIncome;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use App\Models\ReceiptDetail;
+use App\Exports\LedgerReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -483,6 +485,69 @@ public function generateLedger(Request $request)
         $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
 
         return view('reports.ledger.summary', compact('ledger', 'opening', 'journalDetails', 'fromDate', 'toDate'));
+    }
+
+    return back()->withErrors('Please select a ledger or subledger.');
+}
+
+public function exportLedgerReport(Request $request)
+{
+    $request->validate([
+        'from_date' => 'required|date',
+        'to_date' => 'required|date',
+        'ledger_id' => 'nullable|exists:ledgers,id',
+        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+    ]);
+
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
+    $ledgerId = $request->ledger_id;
+    $subLedgerId = $request->sub_ledger_id;
+
+    if ($subLedgerId) {
+        $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
+        $ledger = $subLedger->ledger;
+
+        $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
+        $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
+
+        return Excel::download(new LedgerReportExport('subledger_detail', [
+            'opening' => $opening,
+            'journalDetails' => $journalDetails,
+        ]), "ledger_subledger_detail_{$fromDate}_to_{$toDate}.xlsx");
+    }
+
+    if ($ledgerId) {
+        $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
+
+        if ($ledger->subLedgers->isNotEmpty()) {
+            $subLedgerSummaries = [];
+
+            foreach ($ledger->subLedgers as $sub) {
+                $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
+                $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
+
+                if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
+                    $subLedgerSummaries[] = [
+                        'sub_ledger' => $sub,
+                        'opening' => $opening,
+                        'journalDetails' => $journalDetails,
+                    ];
+                }
+            }
+
+            return Excel::download(new LedgerReportExport('subledger_summary', [
+                'subLedgerSummaries' => $subLedgerSummaries,
+            ]), "ledger_subledger_summary_{$fromDate}_to_{$toDate}.xlsx");
+        }
+
+        $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
+        $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
+
+        return Excel::download(new LedgerReportExport('ledger_detail', [
+            'opening' => $opening,
+            'journalDetails' => $journalDetails,
+        ]), "ledger_detail_{$fromDate}_to_{$toDate}.xlsx");
     }
 
     return back()->withErrors('Please select a ledger or subledger.');
