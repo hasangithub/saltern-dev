@@ -96,12 +96,15 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/reports/owner-loans/generate', [ReportController::class, 'ownerLoanReport'])->name('report.owner.loan.generate');
     Route::get('/trial-balance-report', [ReportController::class, 'indexTrialBalance'])->name('trial.report.index');
     Route::get('/reports/pending-payments', [ReportController::class, 'indexPendingPayments'])->name('reports.pending.payments.index');
+    Route::get('/reports/receipts-payments', [ReportController::class, 'indexReceipts'])->name('reports.receipts.index');
+    Route::get('/reports/generate-receipts', [ReportController::class, 'receiptPaymentsReport'])->name('reports.receipts');
     Route::get('/reports/vouchers', [ReportController::class, 'indexVoucher'])->name('reports.voucher.index');
     Route::get('/reports/generate-pending-payments', [ReportController::class, 'pendingPaymentsReport'])->name('reports.pending-payments');
     Route::get('/reports/generate-voucher', [ReportController::class, 'voucherReport'])->name('reports.voucher');
     Route::get('/vouchers/report/print', [VoucherController::class, 'printVoucherReport'])->name('vouchers.report.print');
     Route::get('/ledger-report', [ReportController::class, 'indexLedger'])->name('ledger.report.index');
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
+    Route::get('/ledger-report/export', [ReportController::class, 'exportLedger'])->name('ledger.report.export');
     Route::post('/reports/ledger/pdf', [ReportController::class, 'generateLedgerPdf'])->name('reports.ledger.pdf');
 
 

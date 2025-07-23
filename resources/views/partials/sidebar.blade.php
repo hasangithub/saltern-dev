@@ -210,6 +210,12 @@
                                 <p>Pending Payments</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reports.receipts.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Receipts</p>
+                            </a>
+                        </li>
 
                     </ul>
                 </li>
