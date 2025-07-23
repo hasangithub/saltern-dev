@@ -18,6 +18,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\OwnerLoanRepayment;
 use App\Models\OtherIncome;
 use App\Models\Voucher;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -677,13 +678,14 @@ public function pendingPaymentsReport()
 public function voucherReport(Request $request)
 {
     $query = Voucher::with(['paymentMethod', 'bank']);
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
+
+    $fromDate = Carbon::parse($request->from_date)->startOfDay();
+    $toDate = Carbon::parse($request->to_date)->endOfDay();
 
     if ($request->filled('from_date') && $request->filled('to_date')) {
         $query->whereBetween('created_at', [
-            $request->from_date,
-            $request->to_date
+            $fromDate,
+            $toDate
         ]);
     }
 
