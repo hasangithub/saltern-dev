@@ -63,10 +63,16 @@ class VoucherController extends Controller
             ]);
         }
 
+        $description = "Voucher#" . $voucher->id . " " . $validated['description'];
+
+        if ($validated['payment_method_id'] == 1 && !empty($validated['cheque_no'])) {
+            $description .= " (Cheque No: " . $validated['cheque_no'] . ")";
+        }
+
         
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-            'description' => "Voucher#".$voucher->id." ".$validated['description'],
+            'description' => $description,
         ]);
 
         if ($request->filled('owner_loan_id')) {
