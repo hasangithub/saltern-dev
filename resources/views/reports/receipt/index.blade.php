@@ -26,11 +26,11 @@ $toDate = now()->format('Y-m-d');
                             <div class="col-md-3">
                                 <label>From Date</label>
                                 <input type="date" name="from_date" class="form-control" 
-                                    value="{{$fromDate}}">
+                                    value="{{$toDate}}">
                             </div>
                             <div class="col-md-3">
                                 <label>To Date</label>
-                                <input type="date" name="to_date" class="form-control"  value="{{$fromDate}}">
+                                <input type="date" name="to_date" class="form-control"  value="{{$toDate}}">
                             </div>
                         </div>
                     </div>
