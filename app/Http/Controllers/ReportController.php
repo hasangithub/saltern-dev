@@ -758,6 +758,41 @@ public function generateLedgerPdf(Request $request)
     return back()->withErrors('Please select a ledger or subledger.');
 }
 
+public function generateAllProduction(Request $request)
+{
+    $entries = $this->getAllProduction($request);
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
+    return view('reports.production.all-production', compact('entries', 'fromDate', 'toDate'));
+}
 
+private function getAllProduction(Request $request)
+{
+    $entries = [];
+
+    if ($request->filled('from_date') && $request->filled('to_date')) {
+        $from = $request->from_date . ' 00:00:00';
+        $to = $request->to_date . ' 23:59:59';
+
+        $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern'])
+            ->whereBetween('transaction_date', [$from, $to])
+            ->orderBy('transaction_date', 'desc')
+            ->get();
+    }
+
+    return $entries;
+}
+
+public function printAllProduction(Request $request)
+{
+    $entries = $this->getAllProduction($request);
+    $fromDate = $request->from_date;
+    $toDate = $request->to_date;
+
+    $pdf = Pdf::loadView('reports.production.all-production-print', compact('entries', 'fromDate','toDate'))
+    ->setPaper('a4', 'portrait');
+
+return $pdf->stream('all-production-report.pdf');
+}
 
 }
