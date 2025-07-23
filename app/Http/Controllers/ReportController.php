@@ -19,6 +19,7 @@ use App\Models\OwnerLoanRepayment;
 use App\Models\OtherIncome;
 use App\Models\Voucher;
 use Carbon\Carbon;
+use App\Models\ReceiptDetail;
 
 class ReportController extends Controller
 {
@@ -36,6 +37,25 @@ class ReportController extends Controller
     {
         return view('reports.pending.index');
     }
+
+    public function indexReceipts(Request $request)
+    {
+        return view('reports.receipt.index');
+    }
+
+    public function receiptPaymentsReport(Request $request)
+{
+    $fromDate = $request->from_date;
+    $toDate  = $request->to_date;
+
+
+    $receiptDetails = ReceiptDetail::with(['receipt'])
+    ->whereHas('receipt', function ($q) use ($fromDate, $toDate) {
+        $q->whereBetween('receipt_date', [$fromDate, $toDate]);
+    })->get();
+
+    return view('reports.receipt.receipts-details', compact('receiptDetails', 'fromDate', 'toDate'));
+}
 
     public function indexVoucher(Request $request)
     {

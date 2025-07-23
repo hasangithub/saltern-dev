@@ -32,4 +32,14 @@ class ReceiptDetail extends Model
 
         return null;
     }
+
+    public function entry()
+    {
+        return match ($this->entry_type) {
+            'weighbridge' => $this->belongsTo(\App\Models\WeighbridgeEntry::class, 'entry_id'),
+            'other_income' => $this->belongsTo(\App\Models\OtherIncome::class, 'entry_id'),
+            'loan' => $this->belongsTo(\App\Models\OwnerLoanRepayment::class, 'entry_id'),
+            default => null,
+        };
+    }
 }
