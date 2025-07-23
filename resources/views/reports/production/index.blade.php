@@ -16,9 +16,35 @@ $toDate = now()->format('Y-m-d');
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <div class="card card-primary">
+            <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">Filter Options</h3>
+                    <h3 class="card-title">All Production Details</h3>
+                </div>
+                <form action="{{ route('all-production.report.generate') }}" method="GET">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>From Date</label>
+                                <input type="date" name="from_date" class="form-control" required
+                                    value="{{ $fromDate }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label>To Date</label>
+                                <input type="date" name="to_date" class="form-control" required value="{{ $toDate }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Generate Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Owner Production Details</h3>
                 </div>
                 <form action="{{ route('production.report.generate') }}" method="GET">
                     <div class="card-body">
@@ -66,9 +92,9 @@ $toDate = now()->format('Y-m-d');
         </div>
 
         <div class="col-md-12">
-            <div class="card card-primary">
+            <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">Filter Options</h3>
+                    <h3 class="card-title">Production Details - Buyer</h3>
                 </div>
                 <form action="{{ route('production.report.buyerGenerate') }}" method="GET">
                     <div class="card-body">

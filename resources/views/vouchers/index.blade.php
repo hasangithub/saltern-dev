@@ -35,6 +35,7 @@
                                     <th>Amount</th>
                                     <th>Description</th>
                                     <th>Bank</th>
+                                    <th>Ledger/SubLedger</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -54,6 +55,11 @@
 
                                         @endif
                                     </td>
+                                    <td>
+                                        {{ optional($membership->ledger)->name ?? '-' }} -
+                                        {{ optional(optional($membership->ledger)->subLedgers)->name ?? '' }}
+                                    </td>
+
                                     <td>{{ $membership->status }}</td>
                                     <td>
                                         <a href="{{ route('vouchers.print', $membership->id) }}"
