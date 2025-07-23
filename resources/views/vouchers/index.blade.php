@@ -57,7 +57,7 @@
                                     </td>
                                     <td>
                                         {{ optional($membership->ledger)->name ?? '-' }} -
-                                        {{ optional(optional($membership->ledger)->subLedgers)->name ?? '' }}
+                                        {{ optional(optional($membership->ledger)->subLedgers)->name ?? '-' }}
                                     </td>
 
                                     <td>{{ $membership->status }}</td>

@@ -18,7 +18,7 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
-                            Accounts
+                            Registartion
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -29,18 +29,6 @@
                                 <p>Chart of Accounts</p>
                             </a>
                         </li>
-                    </ul>
-                </li>
-
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>
-                            Waikal Registartion
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
                         <!-- Yahai -->
                         <li class="nav-item">
                             <a href="{{ route('yahai.index') }}" class="nav-link">
@@ -69,14 +57,15 @@
                                 <p>Memberships</p>
                             </a>
                         </li>
+
+                        <!-- Buyers -->
+                        <li class="nav-item">
+                            <a href="{{ route('buyers.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>Vendors</p>
+                            </a>
+                        </li>
                     </ul>
-                </li>
-                <!-- Buyers -->
-                <li class="nav-item">
-                    <a href="{{ route('buyers.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Vendors</p>
-                    </a>
                 </li>
 
                 <!-- Weighbridge -->
@@ -87,18 +76,6 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('vouchers.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-water"></i>
-                        <p>Vouchers</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('journal-entries.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-water"></i>
-                        <p>Journal</p>
-                    </a>
-                </li>
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
@@ -122,6 +99,15 @@
                         </li>
                     </ul>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('vouchers.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Vouchers</p>
+                    </a>
+                </li>
+               
+
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
@@ -140,11 +126,20 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('staff.complaints.index') }}" class="nav-link">
+                    <a href="{{ route('receipts.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>
-                        <p>Complaints</p>
+                        <p>Receipts</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('reports.voucher.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Voucher</p>
+                    </a>
+                </li>
+
+               
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
@@ -167,6 +162,13 @@
                             </a>
                         </li>
                     </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('journal-entries.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-water"></i>
+                        <p>Journal</p>
+                    </a>
                 </li>
 
                 <li class="nav-item has-treeview">
@@ -208,21 +210,16 @@
                                 <p>Pending Payments</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('reports.voucher.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-water"></i>
-                                <p>Voucher</p>
-                            </a>
-                        </li>
+
                     </ul>
                 </li>
-
                 <li class="nav-item">
-                    <a href="{{ route('receipts.index') }}" class="nav-link">
+                    <a href="{{ route('staff.complaints.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-water"></i>
-                        <p>Receipts</p>
+                        <p>Complaints</p>
                     </a>
                 </li>
+
                 <!-- <li class="nav-item">
                     <a href="{{ route('expenses.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-weight"></i>
