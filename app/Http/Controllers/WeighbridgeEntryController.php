@@ -64,6 +64,11 @@ class WeighbridgeEntryController extends Controller
                 });
             })
             ->addColumn('waikal', fn($entry)     => optional($entry->membership->saltern)->name)
+            ->filterColumn('waikal', function ($query, $keyword) {
+                $query->whereHas('membership.saltern', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
             ->addColumn('net_weight', fn($entry) => $entry->net_weight)
             ->addColumn('bags', fn($entry) => $entry->bags_count)
             ->addColumn('amount', fn($entry) => number_format($entry->total_amount, 2))
