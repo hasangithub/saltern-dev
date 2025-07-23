@@ -71,7 +71,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ordering: false, // disables column sorting
-        searching: false, // disables search filter
+        searching: true, // disables search filter
         pageLength: 50,
         ajax: '{{ route("weighbridge_entries.data") }}',
         columns: [{
