@@ -149,15 +149,15 @@ class VoucherController extends Controller
         'to_date' => 'nullable|date|after_or_equal:from_date',
     ]);
 
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
+    $fromDate = Carbon::parse($request->from_date)->startOfDay();
+    $toDate = Carbon::parse($request->to_date)->endOfDay();
 
     $query = Voucher::with(['paymentMethod', 'bank']);
 
     if ($request->filled('from_date') && $request->filled('to_date')) {
         $query->whereBetween('created_at', [
-            $request->from_date,
-            $request->to_date
+            $fromDate,
+            $toDate
         ]);
     }
 
