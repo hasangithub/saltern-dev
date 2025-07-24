@@ -19,6 +19,12 @@ class EmployeeController extends Controller
 
      public function edit($id)
     {
+        $user = auth('web')->user();
+   
+        if (!$user->hasRole('admin')) {
+            abort(403);
+        } 
+
         $employee = User::findOrFail($id); 
         $roles = Role::where('guard_name', 'web')->get();
         return view('employees.edit', compact('employee', 'roles'));
