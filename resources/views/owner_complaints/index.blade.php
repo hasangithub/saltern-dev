@@ -42,6 +42,7 @@
                                         <th>Complaint</th>
                                         <th>Voice File</th>
                                         <th>Status</th>
+                                        <th>Reply</th>
                                         <th>Created At</th>
                                     </tr>
                                 </thead>
@@ -63,6 +64,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $complaint->status }}</td>
+                                        <td>{{ $complaint->reply_text }}</td>
                                         <td>{{ $complaint->created_at }}</td>
                                     </tr>
                                     @endforeach
