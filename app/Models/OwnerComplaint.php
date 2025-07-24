@@ -18,6 +18,10 @@ class OwnerComplaint extends Model
         'replied_by'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
+
     // Relationship to the Owner model
     public function owner()
     {

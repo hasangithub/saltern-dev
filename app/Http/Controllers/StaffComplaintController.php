@@ -4,13 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\OwnerComplaint;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class StaffComplaintController extends Controller
 {
     public function index()
     {
-        $complaints = OwnerComplaint::latest()->get();
+        $user = auth('web')->user();
+   
+        if ($user->hasRole('manager')) {
+            $complaints = OwnerComplaint::latest()->get();
+        } elseif ($user->hasRole('staff')) {
+            $complaints = OwnerComplaint::where('user_assigned', $user->id)->latest()->get();
+        } else {
+            abort(403);
+        }
         return view('staff_complaints.index', compact('complaints'));
     }
 
