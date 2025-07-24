@@ -13,30 +13,34 @@
     <div class="container">
         <h4>Ledger Report: {{ $ledger->name }}</h4>
         <p>Period: {{ $fromDate }} to {{ $toDate }}</p>
-        <form method="POST" action="{{ route('reports.ledger.pdf') }}" target="_blank">
-            @csrf
-            <input type="hidden" name="from_date" value="{{ $fromDate }}">
-            <input type="hidden" name="to_date" value="{{ $toDate }}">
-            <input type="hidden" name="ledger_id" value="{{ $ledger->id }}">
-            @if(isset($subLedger))
-            <input type="hidden" name="sub_ledger_id" value="{{ $subLedger->id }}">
-            @endif
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-print"></i> Print PDF
-            </button>
-        </form>
-        <form method="GET" action="{{ route('ledger.report.export') }}" target="_blank">
-            @csrf
-            <input type="hidden" name="from_date" value="{{ $fromDate }}">
-            <input type="hidden" name="to_date" value="{{ $toDate }}">
-            <input type="hidden" name="ledger_id" value="{{ $ledger->id }}">
-            @if(isset($subLedger))
-            <input type="hidden" name="sub_ledger_id" value="{{ $subLedger->id }}">
-            @endif
-            <button type="submit" class="btn btn-success">
-                <i class="fa fa-print"></i> Export
-            </button>
-        </form>
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <form method="POST" action="{{ route('reports.ledger.pdf') }}" target="_blank" class="mr-2">
+                @csrf
+                <input type="hidden" name="from_date" value="{{ $fromDate }}">
+                <input type="hidden" name="to_date" value="{{ $toDate }}">
+                <input type="hidden" name="ledger_id" value="{{ $ledger->id }}">
+                @if(isset($subLedger))
+                <input type="hidden" name="sub_ledger_id" value="{{ $subLedger->id }}">
+                @endif
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-print"></i> Print PDF
+                </button>
+            </form>
+           
+            <form method="GET" action="{{ route('ledger.report.export') }}" target="_blank">
+                @csrf
+                <input type="hidden" name="from_date" value="{{ $fromDate }}">
+                <input type="hidden" name="to_date" value="{{ $toDate }}">
+                <input type="hidden" name="ledger_id" value="{{ $ledger->id }}">
+                @if(isset($subLedger))
+                <input type="hidden" name="sub_ledger_id" value="{{ $subLedger->id }}">
+                @endif
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-print"></i> Export
+                </button>
+            </form>
+        </div>
+
         <table class="table table-bordered table-sm">
             <thead>
                 <tr class="table-secondary">
