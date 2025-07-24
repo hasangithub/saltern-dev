@@ -67,7 +67,7 @@
                                     <td>
                                         @if ($complaint->status === 'resolved')
                                         <span class="badge bg-success">Resolved</span>
-                                        @elseif ($complaint->status === 'inprogress')
+                                        @elseif ($complaint->status === 'in_progress')
                                         <span class="badge bg-info text-dark">In Progress</span>
                                         @if ($isOldAndUnresolved)
                                         <span class="badge bg-danger ms-1">Overdue</span>
