@@ -24,6 +24,7 @@ class Employee extends Model
             'Manager',
             'Accountant',
             'Cashier',
+            'Management Assistant',
             'Clerk',
             'HR Officer',
             'Field Officer',
