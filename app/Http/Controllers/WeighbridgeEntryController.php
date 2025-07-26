@@ -101,9 +101,6 @@ class WeighbridgeEntryController extends Controller
 
     public function store(Request $request)
     {
-        $message = "entry created successfully for date " . now()->format('d-m-Y');
-        $phone = '94713857269'; 
-
         $validated =  $request->validate([
             'vehicle_id' => 'required|string',
             'culture' => 'required|string',
@@ -153,14 +150,14 @@ class WeighbridgeEntryController extends Controller
                     'buyer_id' => $validated['buyer_id'],
                     'weighbridge_entry_id' => $weighbridgeEntryId,
                     'amount' => $amount,
-                    'repayment_date' => now(),
+                    'repayment_date' => $validated['transaction_date'] ?? date("Y-m-d"),
                     'payment_method' => 'Cash',
                     'notes' => 'Loan Deducation',
                     'status' => 'pending',
                 ]);
 
                 $journal = JournalEntry::create([
-                    'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+                    'journal_date' => $validated['transaction_date'] ?? date("Y-m-d"),
                     'description' => 'Loan deduction for weighbridge entry#'.$weighbridgeEntryId." LoanId#".$loanId,
                 ]);
 
@@ -190,7 +187,7 @@ class WeighbridgeEntryController extends Controller
        
 
         $journal = JournalEntry::create([
-            'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
+            'journal_date' => $validated['transaction_date'] ?? date("Y-m-d"),
             'description' => 'Service Charge Entry - MembershipId#'.$membership->id." weighbridgeEntryId#".$weighbridgeEntryId,
         ]);
 
