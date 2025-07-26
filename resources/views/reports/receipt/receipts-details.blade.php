@@ -23,7 +23,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-        <div class="float-right">Total Pending Amount: <b>Rs. {{number_format($totalAmount,2)}}</b></div>
+        <div class="float-right">Total Amount: <b>Rs. {{number_format($totalAmount,2)}}</b></div>
             <table class="table table-bordered table-sm">
                 <thead>
                     <tr>
