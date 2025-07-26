@@ -516,7 +516,7 @@ public function exportLedgerReport(Request $request)
             'journalDetails' => $journalDetails,
            
         ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
-        'Subledger Detail Report',
+        $ledger->name.' - '.$subLedger->name.' SubLedger Detail Report',
         'For: '.$fromDate.' to '.$toDate), "ledger_subledger_detail_{$fromDate}_to_{$toDate}.xlsx");
     }
 

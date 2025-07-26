@@ -93,14 +93,16 @@ class LedgerReportExport implements FromArray, WithHeadings, WithCustomStartCell
 
         // Opening balance row
         $rows[] = ['Opening Balance', '', '', '', $data['opening']['balance']];
-
+        $running = $data['opening']['balance'];
+       
         foreach ($data['journalDetails'] as $entry) {
+            $running += $entry->debit_amount - $entry->credit_amount;
             $rows[] = [
                 $entry->journal_date,
                 $entry->description,
                 $entry->debit_amount,
                 $entry->credit_amount,
-                $entry->balance,
+                $running,
             ];
         }
         return $rows;
