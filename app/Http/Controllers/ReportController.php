@@ -543,7 +543,7 @@ public function exportLedgerReport(Request $request)
                 'subLedgerSummaries' => $subLedgerSummaries,
                
             ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
-            'Ledger Detail Report',
+            $ledger->name.' Ledger Detail Report',
             'For: '.$fromDate.' to '.$toDate), "ledger_subledger_summary_{$fromDate}_to_{$toDate}.xlsx");
         }
 
@@ -554,7 +554,7 @@ public function exportLedgerReport(Request $request)
             'opening' => $opening,
             'journalDetails' => $journalDetails,
         ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
-        'Ledger Detail Report',
+        $ledger->name.' Ledger Detail Report',
         'For: '.$fromDate.' to '.$toDate), "ledger_detail_{$fromDate}_to_{$toDate}.xlsx");
     }
 

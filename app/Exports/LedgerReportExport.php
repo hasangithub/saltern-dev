@@ -48,7 +48,7 @@ class LedgerReportExport implements FromArray, WithHeadings, WithCustomStartCell
             case 'subledger_detail':
                 return ['Date', 'Description', 'Debit', 'Credit', 'Balance'];
             case 'subledger_summary':
-                return ['Subledger Name', 'Opening Balance', 'Debit', 'Credit', 'Closing Balance'];
+                return ['Date', 'Description', 'Debit', 'Credit', 'Balance'];
             case 'ledger_detail':
                 return ['Date', 'Description', 'Debit', 'Credit', 'Balance'];
             default:
@@ -92,17 +92,18 @@ class LedgerReportExport implements FromArray, WithHeadings, WithCustomStartCell
         $rows = [];
 
         // Opening balance row
-        $rows[] = ['Opening Balance', '', '', '', $data['opening']['balance']];
         $running = $data['opening']['balance'];
+        $rows[] = ['Opening Balance', '', '', '', round((float) $running, 2)];
+       
        
         foreach ($data['journalDetails'] as $entry) {
             $running += $entry->debit_amount - $entry->credit_amount;
             $rows[] = [
                 $entry->journal_date,
                 $entry->description,
-                $entry->debit_amount,
-                $entry->credit_amount,
-                $running,
+                round($entry->debit_amount, 2),
+                round($entry->credit_amount, 2),
+                round($running, 2),
             ];
         }
         return $rows;
@@ -112,24 +113,27 @@ class LedgerReportExport implements FromArray, WithHeadings, WithCustomStartCell
     {
         // $data contains: ['subLedgerSummaries' => [...]]
         $rows = [];
-
+      
         foreach ($data['subLedgerSummaries'] as $summary) {
-            $sub = $summary['sub_ledger'];
-            $opening = $summary['opening'];
+            $running = 0.00;
+            $running = $summary['opening']['balance'];
+            $rows[] = [$summary['sub_ledger']->name, '', '', '', ''];
+            $rows[] = ['Opening Balance', '', '', '', round((float) $running, 2)];
+                    
             $journalDetails = $summary['journalDetails'];
-
-            // Calculate totals for this subledger
-            $totalDebit = $journalDetails->sum('debit_amount');
-            $totalCredit = $journalDetails->sum('credit_amount');
-            $closingBalance = $opening['balance'] + $totalDebit - $totalCredit;
-
-            $rows[] = [
-                $sub->name,
-                $opening['balance'],
-                $totalDebit,
-                $totalCredit,
-                $closingBalance,
-            ];
+ 
+            foreach($journalDetails as $detail) {
+                $running += $detail->debit_amount - $detail->credit_amount;
+                $rows[] = [
+                    $detail->journalEntry->journal_date,
+                    $detail->journalEntry->description,
+                    round($detail->debit_amount, 2),
+                    round($detail->credit_amount, 2),
+                    round($running, 2),
+                ];
+            }
+            $rows[] = ['', '', '', '', ''];
+            $rows[] = ['', '', '', '', ''];
         }
         return $rows;
     }
@@ -138,16 +142,17 @@ class LedgerReportExport implements FromArray, WithHeadings, WithCustomStartCell
     {
         // Similar to subledger detail but without subledger filtering
         $rows = [];
-
-        $rows[] = ['Opening Balance', '', '', '', $data['opening']['balance']];
-
+        $running = $data['opening']['balance'];
+        $rows[] = ['Opening Balance', '', '', '', round((float) $running, 2)];
+       
         foreach ($data['journalDetails'] as $entry) {
+            $running += $entry->debit_amount - $entry->credit_amount;
             $rows[] = [
                 $entry->journalEntry->journal_date,
                 $entry->journalEntry->description,
-                $entry->debit_amount,
-                $entry->credit_amount,
-                $entry->balance,
+                round($entry->debit_amount, 2),
+                round($entry->credit_amount, 2),
+                round($running, 2),
             ];
         }
         return $rows;
