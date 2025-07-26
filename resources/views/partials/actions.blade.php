@@ -8,7 +8,7 @@
     <a href="{{ route('weighbridge_entries.edit', $entry->id) }}" class="btn btn-sm btn-warning">Edit</a>
     @role('admin')
     <form action="{{ route('weighbridge-entries.delete', $entry->id) }}" method="POST" style="display:inline;"
-        onsubmit="return confirm('Are you sure you want to delete this entry?');">
+        onsubmit="return confirm('Are you sure you want to delete this entry {{ $entry->id }}?');">
         @csrf
         @method('DELETE')
         <button type="submit" class="btn btn-sm btn-danger">
