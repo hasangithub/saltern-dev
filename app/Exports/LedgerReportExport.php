@@ -125,8 +125,8 @@ class LedgerReportExport implements FromArray, WithHeadings, WithCustomStartCell
             foreach($journalDetails as $detail) {
                 $running += $detail->debit_amount - $detail->credit_amount;
                 $rows[] = [
-                    $detail->journalEntry->journal_date,
-                    $detail->journalEntry->description,
+                    $detail->journal_date,
+                    $detail->description,
                     round($detail->debit_amount, 2),
                     round($detail->credit_amount, 2),
                     round($running, 2),
