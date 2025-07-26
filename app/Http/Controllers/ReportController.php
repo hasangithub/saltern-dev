@@ -55,8 +55,8 @@ class ReportController extends Controller
     ->whereHas('receipt', function ($q) use ($fromDate, $toDate) {
         $q->whereBetween('receipt_date', [$fromDate, $toDate]);
     })->get();
-
-    return view('reports.receipt.receipts-details', compact('receiptDetails', 'fromDate', 'toDate'));
+    $totalAmount = $receiptDetails->sum('amount');
+    return view('reports.receipt.receipts-details', compact('receiptDetails', 'fromDate', 'toDate', 'totalAmount'));
 }
 
     public function indexVoucher(Request $request)
