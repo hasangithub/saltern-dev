@@ -4,16 +4,26 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\BeforeSheet;
 
-class LedgerReportExport implements FromArray, WithHeadings
+
+class LedgerReportExport implements FromArray, WithHeadings, WithCustomStartCell, WithEvents
 {
     protected $type; // 'subledger_detail', 'subledger_summary', or 'ledger_detail'
     protected $data;
+    protected $salternName;
+    protected $reportTitle;
+    protected $period;
 
-    public function __construct($type, $data)
+    public function __construct($type, $data, $salternName = '', $reportTitle = '', $period = '')
     {
         $this->type = $type;
         $this->data = $data;
+        $this->salternName = $salternName;
+        $this->reportTitle = $reportTitle;
+        $this->period = $period;
     }
 
     public function array(): array
@@ -44,6 +54,36 @@ class LedgerReportExport implements FromArray, WithHeadings
             default:
                 return [];
         }
+    }
+
+    public function registerEvents(): array
+{
+    return [
+        BeforeSheet::class => function (BeforeSheet $event) {
+            $sheet = $event->sheet->getDelegate();
+
+            // Custom header rows
+            $sheet->insertNewRowBefore(1, 4); // Push everything down by 4 rows
+            $sheet->setCellValue('A1', $this->salternName);
+            $sheet->setCellValue('A2', $this->reportTitle);
+            $sheet->setCellValue('A3', $this->period);
+
+            // Optional: Merge cells across all columns (assuming 5 columns)
+            $sheet->mergeCells('A1:E1');
+            $sheet->mergeCells('A2:E2');
+            $sheet->mergeCells('A3:E3');
+
+            // Optional: Style
+            $sheet->getStyle('A1:A3')->getFont()->setBold(true);
+            $sheet->getStyle('A1:A3')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        },
+    ];
+}
+
+
+    public function startCell(): string
+    {
+        return 'A4';
     }
 
     protected function prepareSubledgerDetail($data)

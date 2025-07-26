@@ -514,7 +514,10 @@ public function exportLedgerReport(Request $request)
         return Excel::download(new LedgerReportExport('subledger_detail', [
             'opening' => $opening,
             'journalDetails' => $journalDetails,
-        ]), "ledger_subledger_detail_{$fromDate}_to_{$toDate}.xlsx");
+           
+        ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
+        'Subledger Detail Report',
+        'For: '.$fromDate.' to '.$toDate), "ledger_subledger_detail_{$fromDate}_to_{$toDate}.xlsx");
     }
 
     if ($ledgerId) {
@@ -538,7 +541,10 @@ public function exportLedgerReport(Request $request)
 
             return Excel::download(new LedgerReportExport('subledger_summary', [
                 'subLedgerSummaries' => $subLedgerSummaries,
-            ]), "ledger_subledger_summary_{$fromDate}_to_{$toDate}.xlsx");
+               
+            ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
+            'Ledger Detail Report',
+            'For: '.$fromDate.' to '.$toDate), "ledger_subledger_summary_{$fromDate}_to_{$toDate}.xlsx");
         }
 
         $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
@@ -547,7 +553,9 @@ public function exportLedgerReport(Request $request)
         return Excel::download(new LedgerReportExport('ledger_detail', [
             'opening' => $opening,
             'journalDetails' => $journalDetails,
-        ]), "ledger_detail_{$fromDate}_to_{$toDate}.xlsx");
+        ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
+        'Ledger Detail Report',
+        'For: '.$fromDate.' to '.$toDate), "ledger_detail_{$fromDate}_to_{$toDate}.xlsx");
     }
 
     return back()->withErrors('Please select a ledger or subledger.');
