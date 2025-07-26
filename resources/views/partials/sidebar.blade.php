@@ -92,6 +92,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('admin.owner_loans.create') }}" class="nav-link">
+                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <p>Create Owner Loan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('owner-loan-repayments.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <p>Owner Loan Repayments</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('admin.staff-loans.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-hand-holding-usd"></i>
                                 <p>Staff Loan Management</p>
