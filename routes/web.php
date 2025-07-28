@@ -137,6 +137,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/vouchers/{voucher}/print', [VoucherController::class, 'printVoucher'])->name('vouchers.print');
 
     Route::get('/other-income/{income}/print', [OtherIncomeController::class, 'printOtherIncome'])->name('other-income.print');
+    Route::get('/other-income/{income}/a4print', [OtherIncomeController::class, 'printOtherIncomeA4'])->name('other-income.a4print');
     Route::get('/receipt/{receipt}/print', [ReceiptController::class, 'printReceipt'])->name('receipt.print');
     Route::get('/sms/settings', [SmsController::class, 'showSettings'])->name('sms.settings');
     Route::post('/sms/settings', [SmsController::class, 'updateSettings'])->name('sms.settings.update');

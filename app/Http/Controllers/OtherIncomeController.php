@@ -107,4 +107,22 @@ class OtherIncomeController extends Controller
     
         return $pdf->stream("other_income_{$income->id}.pdf");
     }
+
+    public function printOtherIncomeA4(OtherIncome $income)
+    {
+        $pdf = Pdf::loadView('other_incomes.print_a4', [
+            'income' => $income,
+            'from_pdf' => true,
+        ])
+        ->setPaper('A4', 'portrait')
+        ->setOptions([
+            'defaultFont' => 'Times-Roman',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'isPhpEnabled' => true,
+            'isFontSubsettingEnabled' => true
+        ]);
+    
+        return $pdf->stream("other_income_{$income->id}.pdf");
+    }
 }
