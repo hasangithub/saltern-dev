@@ -129,6 +129,10 @@
                     <td class="text-right"><strong>{{ number_format($equityTotal + $liabilitiesTotal, 2) }}</strong>
                     </td>
                 </tr>
+                <tr>
+                    <td></td>
+                    <td class="text-right">{{ number_format($assetsTotal - ($equityTotal + $liabilitiesTotal), 2) }}</td>
+                </tr>
             </table>
         </div>
     </div>
