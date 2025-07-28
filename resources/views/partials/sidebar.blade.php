@@ -203,6 +203,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('balance.sheet') }}" class="nav-link">
+                                <i class="nav-icon fas fa-calculator"></i>
+                                <p>Balance Sheet</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('reports.owner.loan.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-dollar-sign"></i>
                                 <p>Owner Loan</p>

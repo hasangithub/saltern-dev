@@ -86,6 +86,7 @@ Route::middleware(['auth:web'])->group(function () {
 
 
     Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
+    Route::get('/balance-sheet', [ReportController::class, 'balanceSheet'])->name('balance.sheet');
     Route::get('/production-report', [ReportController::class, 'indexProduction'])->name('production.report.index');
     Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
     Route::get('/all-production-report/generate', [ReportController::class, 'generateAllProduction'])->name('all-production.report.generate');
