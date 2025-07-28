@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\AccountGroup;
 use App\Models\Buyer;
 use App\Models\JournalDetail;
@@ -71,6 +72,94 @@ class ReportController extends Controller
         $toDate = $request->to_date;
         return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit', 'fromDate', 'toDate'));
     }
+
+    public function balanceSheet()
+{
+    $accountGroups = AccountGroup::with('subAccountGroups.ledgers.journalDetails')->get();
+
+    $balanceSheet = [
+        'Assets' => [],
+        'Liability' => [],
+        'Income' => [],
+        'Expenses' => [],
+    ];
+
+    foreach ($accountGroups as $group) {
+        $type = $group->name; // e.g., Assets, Liability
+        if (!isset($balanceSheet[$type])) {
+            $balanceSheet[$type] = [];
+        }
+
+        $groupTotal = 0;
+        $subGroupsData = [];
+
+        foreach ($group->subAccountGroups as $subGroup) {
+            $subTotal = 0;
+
+            foreach ($subGroup->ledgers as $ledger) {
+                $debit = $ledger->journalDetails->sum('debit_amount');
+                $credit = $ledger->journalDetails->sum('credit_amount');
+                $balance = $debit - $credit;
+
+                if (in_array($type, ['Liability', 'Income'])) {
+                    $balance = $credit - $debit;
+                }
+
+                $subTotal += $balance;
+                $subGroupsData[$subGroup->name]['ledgers'][] = [
+                    'name' => $ledger->name,
+                    'balance' => $balance,
+                ];
+            }
+
+            $subGroupsData[$subGroup->name]['total'] = $subTotal;
+            $groupTotal += $subTotal;
+        }
+
+        $balanceSheet[$type][] = [
+            'group_name' => $group->name,
+            'sub_groups' => $subGroupsData,
+            'total' => $groupTotal,
+        ];
+    }
+
+    // Net profit = Income - Expenses
+    $netIncome = $balanceSheet['Income'][0]['total'] ?? 0;
+    $netExpense = $balanceSheet['Expenses'][0]['total'] ?? 0;
+    $netProfit = $netIncome - $netExpense;
+
+    // Accumulated Fund
+    $accumulatedFund = 0;
+    foreach ($balanceSheet['Liability'] as $group) {
+        if (strtolower($group['group_name']) === 'accumulated fund') {
+            $accumulatedFund += $group['total'];
+        }
+    }
+
+    // Reserve
+    $reserves = 0;
+    foreach ($balanceSheet['Liability'] as $group) {
+        if (strtolower($group['group_name']) === 'reserve') {
+            $reserves += $group['total'];
+        }
+    }
+
+    // Accounts Payable
+    $payables = 0;
+    foreach ($balanceSheet['Liability'] as $group) {
+        if (strtolower($group['group_name']) === 'payable') {
+            $payables += $group['total'];
+        }
+    }
+
+    // Final equity + liability total
+    $equityAndLiabilities = $accumulatedFund + $netProfit + $reserves + $payables;
+
+    return view('reports.balance_sheet', compact(
+        'balanceSheet', 'accumulatedFund', 'netProfit', 'reserves', 'payables', 'equityAndLiabilities'
+    ));
+}
+
 
     private function getTrialBalanceData(Request $request)
     {
