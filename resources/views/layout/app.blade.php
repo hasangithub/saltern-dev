@@ -126,19 +126,41 @@
     <!-- For additional scripts -->
     <script>
     /** add active class and stay opened when selected */
-    var url = window.location;
+    document.addEventListener("DOMContentLoaded", function() {
+    const url = window.location.href;
     const allLinks = document.querySelectorAll('.nav-item a');
-    const currentLink = [...allLinks].filter(e => {
-        return e.href == url;
+
+    // Find the link that matches current URL or starts with current URL
+    const currentLink = [...allLinks].find(link => {
+        const linkHref = link.href.replace(/\/$/, '');
+        const currentUrl = url.replace(/\/$/, '');
+
+        return currentUrl === linkHref || currentUrl.startsWith(linkHref + '/');
     });
 
-    if (currentLink.length > 0) { //this filter because some links are not from menu
-        currentLink[0].classList.add("active");
-        currentLink[0].closest(".nav-treeview").style.display = "block";
+    if (currentLink) {
+        // Add active class to the submenu link
+        currentLink.classList.add("active");
 
-        if (currentLink[0].closest(".has-treeview"))
-            currentLink[0].closest(".has-treeview").classList.add("active");
+        // Find the closest nav-treeview (submenu container)
+        const navTreeview = currentLink.closest(".nav-treeview");
+        if (navTreeview) {
+            // Find the parent .has-treeview <li>
+            const parentLi = navTreeview.closest(".has-treeview");
+            if (parentLi) {
+                // Add menu-open to parent <li> to expand submenu
+                parentLi.classList.add("menu-open");
+
+                // Add active to the main menu <a> inside parent <li>
+                const parentLink = parentLi.querySelector('a.nav-link');
+                if (parentLink) {
+                    parentLink.classList.add("active");
+                }
+            }
+        }
     }
+});
+
     </script>
 
 
