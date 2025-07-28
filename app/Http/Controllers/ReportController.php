@@ -26,13 +26,13 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
-    
+
     public function indexTrialBalance(Request $request)
     {
         $yahaies = Yahai::all();
         $owners = Membership::all();
         $buyers = Buyer::all();
-    
+
         return view('reports.trial_balance_index', compact('yahaies', 'owners', 'buyers'));
     }
 
@@ -47,18 +47,18 @@ class ReportController extends Controller
     }
 
     public function receiptPaymentsReport(Request $request)
-{
-    $fromDate = $request->from_date;
-    $toDate  = $request->to_date;
+    {
+        $fromDate = $request->from_date;
+        $toDate  = $request->to_date;
 
 
-    $receiptDetails = ReceiptDetail::with(['receipt'])
-    ->whereHas('receipt', function ($q) use ($fromDate, $toDate) {
-        $q->whereBetween('receipt_date', [$fromDate, $toDate]);
-    })->get();
-    $totalAmount = $receiptDetails->sum('amount');
-    return view('reports.receipt.receipts-details', compact('receiptDetails', 'fromDate', 'toDate', 'totalAmount'));
-}
+        $receiptDetails = ReceiptDetail::with(['receipt'])
+            ->whereHas('receipt', function ($q) use ($fromDate, $toDate) {
+                $q->whereBetween('receipt_date', [$fromDate, $toDate]);
+            })->get();
+        $totalAmount = $receiptDetails->sum('amount');
+        return view('reports.receipt.receipts-details', compact('receiptDetails', 'fromDate', 'toDate', 'totalAmount'));
+    }
 
     public function indexVoucher(Request $request)
     {
@@ -66,7 +66,7 @@ class ReportController extends Controller
     }
 
     public function trialBalance(Request $request)
-    {  
+    {
         [$trialData, $totalDebit, $totalCredit] = $this->getTrialBalanceData($request);
         $fromDate = $request->from_date;
         $toDate = $request->to_date;
@@ -74,153 +74,158 @@ class ReportController extends Controller
     }
 
     public function balanceSheet(Request $request)
-{
-    $request->validate([
-        'from_date' => 'nullable|date',
-        'to_date' => 'nullable|date|after_or_equal:from_date',
-    ]);
+    {
+        $request->validate([
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
+        ]);
 
-    $from = $request->from_date;
-    $to = $request->to_date;
+        $from = $request->from_date;
+        $to = $request->to_date;
 
+        $balanceSheetData = $this->getBalanceSheetData($from, $to);
 
-    $accountGroups = AccountGroup::with([
-        'subAccountGroups.ledgers' => function ($q) use ($from, $to) {
-            $q->with(['journalDetails' => function ($query) use ($from, $to) {
-                $query->when($from && $to, function ($q2) use ($from, $to) {
-                    $q2->whereHas('journalEntry', function ($q3) use ($from, $to) {
-                        $q3->whereBetween('journal_date', [$from, $to]);
+        return view('reports.balance_sheet', $balanceSheetData);
+    }
+
+    private function getBalanceSheetData(?string $from = null, ?string $to = null)
+    {
+        $accountGroups = AccountGroup::with([
+            'subAccountGroups.ledgers' => function ($q) use ($from, $to) {
+                $q->with(['journalDetails' => function ($query) use ($from, $to) {
+                    $query->when($from && $to, function ($q2) use ($from, $to) {
+                        $q2->whereHas('journalEntry', function ($q3) use ($from, $to) {
+                            $q3->whereBetween('journal_date', [$from, $to]);
+                        });
+                    })->when(!$from && !$to, function ($q2) {
+                        // No date filter, get all
+                        $q2->whereHas('journalEntry');
                     });
-                })->when(!$from && !$to, function ($q2) {
-                    // No date filter, get all
-                    $q2->whereHas('journalEntry');
-                });
-            }]);
-        }
-    ])->get()->groupBy('name');
-
-    $data = [
-        'Assets' => [],
-        'Equity' => [],
-        'CurrentLiabilities' => [],
-    ];
-
-    $assetsTotal = 0;
-    $equityTotal = 0;
-    $liabilitiesTotal = 0;
-
-    // ASSETS
-    if ($accountGroups->has('Assets')) {
-        foreach ($accountGroups['Assets'] as $group) {
-            $groupTotal = 0;
-            $subGroups = [];
-
-            foreach ($group->subAccountGroups as $subGroup) {
-                $subTotal = 0;
-
-                foreach ($subGroup->ledgers as $ledger) {
-                    $ledgerTotal = $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
-                    $subTotal += $ledgerTotal;
-                    $subGroups[$subGroup->name]['ledgers'][] = [
-                        'name' => $ledger->name,
-                        'total' => $ledgerTotal,
-                    ];
-                }
-
-                $subGroups[$subGroup->name]['total'] = $subTotal;
-                $groupTotal += $subTotal;
+                }]);
             }
+        ])->get()->groupBy('name');
 
-            $data['Assets'][] = [
-                'name' => $group->name,
-                'subGroups' => $subGroups,
-                'total' => $groupTotal,
-            ];
+        $data = [
+            'Assets' => [],
+            'Equity' => [],
+            'CurrentLiabilities' => [],
+        ];
 
-            $assetsTotal += $groupTotal;
-        }
-    }
+        $assetsTotal = 0;
+        $equityTotal = 0;
+        $liabilitiesTotal = 0;
 
-    // EQUITY (Accumulated Fund, Reserve, Net Profit)
-    $accumFund = 0;
-    $reserves = 0;
+        // ASSETS
+        if ($accountGroups->has('Assets')) {
+            foreach ($accountGroups['Assets'] as $group) {
+                $groupTotal = 0;
+                $subGroups = [];
 
-    if ($accountGroups->has('Liability')) {
-        foreach ($accountGroups['Liability'] as $group) {
-            foreach ($group->subAccountGroups as $subGroup) {
-                foreach ($subGroup->ledgers as $ledger) {
-    
-                    if ($ledger->name === 'Accumulated Fund') {
-                        $accumFund += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                foreach ($group->subAccountGroups as $subGroup) {
+                    $subTotal = 0;
+
+                    foreach ($subGroup->ledgers as $ledger) {
+                        $ledgerTotal = $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
+                        $subTotal += $ledgerTotal;
+                        $subGroups[$subGroup->name]['ledgers'][] = [
+                            'name' => $ledger->name,
+                            'total' => $ledgerTotal,
+                        ];
                     }
-    
-                    if ($ledger->name === 'Gratuity Reserve') {
-                        $reserves += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
-                    }
-    
+
+                    $subGroups[$subGroup->name]['total'] = $subTotal;
+                    $groupTotal += $subTotal;
                 }
+
+                $data['Assets'][] = [
+                    'name' => $group->name,
+                    'subGroups' => $subGroups,
+                    'total' => $groupTotal,
+                ];
+
+                $assetsTotal += $groupTotal;
             }
         }
-    }
 
-    // Net Profit = Income - Expenses
-    $income = 0;
-    if ($accountGroups->has('Income')) {
-        foreach ($accountGroups['Income'] as $group) {
-            foreach ($group->subAccountGroups as $subGroup) {
-                foreach ($subGroup->ledgers as $ledger) {
-                    $income += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
-                }
-            }
-        }
-    }
+        // EQUITY (Accumulated Fund, Reserve, Net Profit)
+        $accumFund = 0;
+        $reserves = 0;
 
-    $expenses = 0;
-    if ($accountGroups->has('Expenses')) {
-        foreach ($accountGroups['Expenses'] as $group) {
-            foreach ($group->subAccountGroups as $subGroup) {
-                foreach ($subGroup->ledgers as $ledger) {
-                    $expenses += $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
-                }
-            }
-        }
-    }
-
-    $netProfit = $income - $expenses;
-
-    $data['Equity'][] = ['name' => 'Accumulated Fund', 'total' => $accumFund];
-    $data['Equity'][] = ['name' => 'Net Profit', 'total' => $netProfit];
-    $data['Equity'][] = ['name' => 'Reserves', 'total' => $reserves];
-
-    $equityTotal = $accumFund + $netProfit + $reserves;
-
-    // CURRENT LIABILITIES
-    if ($accountGroups->has('Liability')) {
-        foreach ($accountGroups['Liability'] as $group) {
-            if ($group->name !== 'Payable') {
-                $payableTotal = 0;
-    
+        if ($accountGroups->has('Liability')) {
+            foreach ($accountGroups['Liability'] as $group) {
                 foreach ($group->subAccountGroups as $subGroup) {
                     foreach ($subGroup->ledgers as $ledger) {
-                        if (trim($ledger->name) === 'Service Charge 30%') {
-                            $payableTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+
+                        if ($ledger->name === 'Accumulated Fund') {
+                            $accumFund += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                        }
+
+                        if ($ledger->name === 'Gratuity Reserve') {
+                            $reserves += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
                         }
                     }
                 }
-    
-                $data['CurrentLiabilities'][] = [
-                    'name' => 'Accounts Payable',
-                    'total' => $payableTotal
-                ];
-    
-                $liabilitiesTotal += $payableTotal;
             }
         }
-    }
-    
 
-    return view('reports.balance_sheet', compact('data', 'assetsTotal', 'equityTotal', 'liabilitiesTotal'));
-}
+        // Net Profit = Income - Expenses
+        $income = 0;
+        if ($accountGroups->has('Income')) {
+            foreach ($accountGroups['Income'] as $group) {
+                foreach ($group->subAccountGroups as $subGroup) {
+                    foreach ($subGroup->ledgers as $ledger) {
+                        $income += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                    }
+                }
+            }
+        }
+
+        $expenses = 0;
+        if ($accountGroups->has('Expenses')) {
+            foreach ($accountGroups['Expenses'] as $group) {
+                foreach ($group->subAccountGroups as $subGroup) {
+                    foreach ($subGroup->ledgers as $ledger) {
+                        $expenses += $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
+                    }
+                }
+            }
+        }
+
+        $netProfit = $income - $expenses;
+
+        $data['Equity'][] = ['name' => 'Accumulated Fund', 'total' => $accumFund];
+        $data['Equity'][] = ['name' => 'Net Profit', 'total' => $netProfit];
+        $data['Equity'][] = ['name' => 'Reserves', 'total' => $reserves];
+
+        $equityTotal = $accumFund + $netProfit + $reserves;
+
+        // CURRENT LIABILITIES
+        if ($accountGroups->has('Liability')) {
+            foreach ($accountGroups['Liability'] as $group) {
+                if ($group->name !== 'Payable') {
+                    $payableTotal = 0;
+
+                    foreach ($group->subAccountGroups as $subGroup) {
+                        foreach ($subGroup->ledgers as $ledger) {
+                            if (trim($ledger->name) === 'Service Charge 30%') {
+                                $payableTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                            }
+                        }
+                    }
+
+                    $data['CurrentLiabilities'][] = [
+                        'name' => 'Accounts Payable',
+                        'total' => $payableTotal
+                    ];
+
+                    $liabilitiesTotal += $payableTotal;
+                }
+            }
+        }
+
+        return compact('data', 'assetsTotal', 'equityTotal', 'liabilitiesTotal');
+        //return view('reports.balance_sheet', compact('data', 'assetsTotal', 'equityTotal', 'liabilitiesTotal'));
+    }
 
 
 
@@ -230,10 +235,10 @@ class ReportController extends Controller
             'from_date' => 'nullable|date',
             'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
-    
+
         $from = $request->from_date;
         $to = $request->to_date;
-    
+
         $accountGroups = AccountGroup::with([
             'subAccountGroups.ledgers' => function ($q) use ($from, $to) {
                 $q->with([
@@ -254,30 +259,30 @@ class ReportController extends Controller
                 ]);
             }
         ])->get();
-    
+
         $trialData = [];
         $totalDebit = 0;
         $totalCredit = 0;
-    
+
         foreach ($accountGroups as $group) {
             foreach ($group->subAccountGroups as $subGroup) {
                 foreach ($subGroup->ledgers as $ledger) {
-    
+
                     // 1. Ledger own entries (excluding subledger)
                     $ledgerDebit = $ledger->directJournalDetails->sum('debit_amount');
                     $ledgerCredit = $ledger->directJournalDetails->sum('credit_amount');
-    
+
                     // 2. Subledgers entries
                     $subRows = [];
                     $subDebitTotal = 0;
                     $subCreditTotal = 0;
-    
+
                     foreach ($ledger->subLedgers as $sub) {
                         $sd = $sub->journalDetails->sum('debit_amount');
                         $sc = $sub->journalDetails->sum('credit_amount');
                         $subBalance = $sd - $sc;
                         [$subDebit, $subCredit] = $this->adjustBalance($group->name, $subBalance);
-    
+
                         if ($subDebit != 0 || $subCredit != 0) {
                             $subRows[] = [
                                 'group' => $group->name,
@@ -288,17 +293,17 @@ class ReportController extends Controller
                                 'is_sub' => true,
                             ];
                         }
-    
+
                         $subDebitTotal += $sd;
                         $subCreditTotal += $sc;
                     }
-    
+
                     // 3. Ledger total including subledgers
                     $totalLedgerDebit = $ledgerDebit + $subDebitTotal;
                     $totalLedgerCredit = $ledgerCredit + $subCreditTotal;
                     $balance = $totalLedgerDebit - $totalLedgerCredit;
                     [$adjDebit, $adjCredit] = $this->adjustBalance($group->name, $balance);
-    
+
                     if ($adjDebit != 0 || $adjCredit != 0) {
                         $trialData[] = [
                             'group' => $group->name,
@@ -308,11 +313,11 @@ class ReportController extends Controller
                             'credit' => $adjCredit,
                             'is_sub' => false,
                         ];
-    
+
                         $totalDebit += $adjDebit;
                         $totalCredit += $adjCredit;
                     }
-    
+
                     // 4. Append subledger rows
                     foreach ($subRows as $row) {
                         $trialData[] = $row;
@@ -320,9 +325,9 @@ class ReportController extends Controller
                 }
             }
         }
-    
-      //  return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
-      return [$trialData, $totalDebit, $totalCredit];
+
+        //  return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit'));
+        return [$trialData, $totalDebit, $totalCredit];
     }
 
     public function printTrialBalance(Request $request)
@@ -330,17 +335,29 @@ class ReportController extends Controller
         [$trialData, $totalDebit, $totalCredit] = $this->getTrialBalanceData($request);
         $fromDate = $request->from_date;
         $toDate = $request->to_date;
-        $pdf = Pdf::loadView('reports.trial_balance_print', compact('trialData', 'totalDebit', 'totalCredit','fromDate', 'toDate'))
-                ->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('reports.trial_balance_print', compact('trialData', 'totalDebit', 'totalCredit', 'fromDate', 'toDate'))
+            ->setPaper('A4', 'portrait');
 
         return $pdf->stream('trial_balance.pdf');
     }
-        
+
+    public function printBalanceSheet(Request $request)
+    {
+        $from = $request->from_date;
+        $to = $request->to_date;
+
+        $balanceSheetData = $this->getBalanceSheetData($from, $to);
+
+        $pdf = PDF::loadView('reports.balance_sheet_print', $balanceSheetData)->setPaper('A4', 'portrait');
+
+        return $pdf->stream('balance_sheet.pdf');
+    }
+
     private function adjustBalance($groupName, $balance)
     {
         $debit = 0;
         $credit = 0;
-    
+
         switch (strtolower($groupName)) {
             case 'assets':
                 $balance >= 0 ? $debit = $balance : $credit = abs($balance);
@@ -354,175 +371,175 @@ class ReportController extends Controller
                 $debit = $balance >= 0 ? $balance : 0;
                 $credit = $balance < 0 ? abs($balance) : 0;
         }
-    
+
         return [$debit, $credit];
     }
-    
-
-public function indexProduction()
-{
-    $yahaies = Yahai::all();
-    $owners = Membership::all();
-    $buyers = Buyer::all();
-
-    return view('reports.production.index', compact('yahaies', 'owners', 'buyers'));
-}
-
-public function indexOwnerLaon()
-{
-    $yahaies = Yahai::all();
-    $owners = Owner::all();
-  
-    return view('reports.ownerLoan.index', compact('owners', 'yahaies'));
-}
-
-public function yahaiWiseLoanPrint(Request $request)
-{
-    $request->validate([
-        'membership_id' => 'required|exists:memberships,id',
-        'from_date' => 'nullable|date',
-        'to_date' => 'nullable|date',
-    ]);
-
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
 
 
-    $memberships = Membership::with([
-        'saltern.yahai',
-        'ownerLoans' => function($query) use ($request) {
-            if ($request->from_date && $request->to_date) {
-                $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
-            } elseif ($request->from_date) {
-                $query->whereDate('created_at', '>=', $request->from_date);
-            } elseif ($request->to_date) {
-                $query->whereDate('created_at', '<=', $request->to_date);
-            }
+    public function indexProduction()
+    {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
 
-            $query->with(['ownerLoanRepayment' => function($q) {
-                $q->orderBy('repayment_date');
-            }]);
-        }
-    ])
-    ->where('id', $request->membership_id)
-    ->get();
-
-    $owner = $memberships->first()?->owner;
-
-
-    $grouped = [];
-
-    foreach ($memberships as $membership) {
-        $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
-
-        foreach ($membership->ownerLoans as $loan) {
-            $balance = $loan->approved_amount;
-            $loanRows = [];
-
-            // Add initial loan row
-            $loanRows[] = [
-                'date' => $loan->created_at->format('Y-m-d'),
-                'description' => 'Loan Issued Loan#'.$loan->id,
-                'debit' => $loan->approved_amount,
-                'credit' => null,
-                'balance' => $balance,
-            ];
-
-            foreach ($loan->ownerLoanRepayment as $repayment) {
-                $balance -= $repayment->amount;
-
-                $loanRows[] = [
-                    'date' => $repayment->repayment_date,
-                    'description' => 'Loan Repayment#'.$repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
-                    'debit' => null,
-                    'credit' => $repayment->amount,
-                    'balance' => $balance,
-                ];
-            }
-
-            $grouped[$salternName][] = [
-                'loan_id' => $loan->id,
-                'rows' => $loanRows,
-            ];
-        }
+        return view('reports.production.index', compact('yahaies', 'owners', 'buyers'));
     }
 
-    $pdf = Pdf::loadView('reports.ownerLoan.print-owner-loan', compact('memberships', 'grouped', 'owner', 'fromDate', 'toDate'))
-    ->setPaper('A4', 'portrait');
+    public function indexOwnerLaon()
+    {
+        $yahaies = Yahai::all();
+        $owners = Owner::all();
 
-    return $pdf->stream('owner_loan_report.pdf');
-}
-
-public function ownerLoanReport(Request $request)
-{ 
-    $request->validate([
-        'membership_id' => 'required|exists:memberships,id',
-        'from_date' => 'nullable|date',
-        'to_date' => 'nullable|date',
-    ]);
-
-
-    $memberships = Membership::with([
-        'saltern.yahai',
-        'ownerLoans' => function($query) use ($request) {
-            if ($request->from_date && $request->to_date) {
-                $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
-            } elseif ($request->from_date) {
-                $query->whereDate('created_at', '>=', $request->from_date);
-            } elseif ($request->to_date) {
-                $query->whereDate('created_at', '<=', $request->to_date);
-            }
-
-            $query->with(['ownerLoanRepayment' => function($q) {
-                $q->orderBy('repayment_date');
-            }]);
-        }
-    ])
-    ->where('id', $request->membership_id)
-    ->get();
-
-    $owner = $memberships->first()?->owner;
-
-
-    $grouped = [];
-
-    foreach ($memberships as $membership) {
-        $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
-
-        foreach ($membership->ownerLoans as $loan) {
-            $balance = $loan->approved_amount;
-            $loanRows = [];
-
-            // Add initial loan row
-            $loanRows[] = [
-                'date' => $loan->created_at->format('Y-m-d'),
-                'description' => 'Loan Issued Loan#'.$loan->id,
-                'debit' => $loan->approved_amount,
-                'credit' => null,
-                'balance' => $balance,
-            ];
-
-            foreach ($loan->ownerLoanRepayment as $repayment) {
-                $balance -= $repayment->amount;
-
-                $loanRows[] = [
-                    'date' => $repayment->repayment_date,
-                    'description' => 'Loan Repayment#'.$repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
-                    'debit' => null,
-                    'credit' => $repayment->amount,
-                    'balance' => $balance,
-                ];
-            }
-
-            $grouped[$salternName][] = [
-                'loan_id' => $loan->id,
-                'rows' => $loanRows,
-            ];
-        }
+        return view('reports.ownerLoan.index', compact('owners', 'yahaies'));
     }
 
-    return view('reports.ownerLoan.owner_loan_report', compact('memberships', 'grouped', 'owner'));
-}
+    public function yahaiWiseLoanPrint(Request $request)
+    {
+        $request->validate([
+            'membership_id' => 'required|exists:memberships,id',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
+
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+
+        $memberships = Membership::with([
+            'saltern.yahai',
+            'ownerLoans' => function ($query) use ($request) {
+                if ($request->from_date && $request->to_date) {
+                    $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+                } elseif ($request->from_date) {
+                    $query->whereDate('created_at', '>=', $request->from_date);
+                } elseif ($request->to_date) {
+                    $query->whereDate('created_at', '<=', $request->to_date);
+                }
+
+                $query->with(['ownerLoanRepayment' => function ($q) {
+                    $q->orderBy('repayment_date');
+                }]);
+            }
+        ])
+            ->where('id', $request->membership_id)
+            ->get();
+
+        $owner = $memberships->first()?->owner;
+
+
+        $grouped = [];
+
+        foreach ($memberships as $membership) {
+            $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
+
+            foreach ($membership->ownerLoans as $loan) {
+                $balance = $loan->approved_amount;
+                $loanRows = [];
+
+                // Add initial loan row
+                $loanRows[] = [
+                    'date' => $loan->created_at->format('Y-m-d'),
+                    'description' => 'Loan Issued Loan#' . $loan->id,
+                    'debit' => $loan->approved_amount,
+                    'credit' => null,
+                    'balance' => $balance,
+                ];
+
+                foreach ($loan->ownerLoanRepayment as $repayment) {
+                    $balance -= $repayment->amount;
+
+                    $loanRows[] = [
+                        'date' => $repayment->repayment_date,
+                        'description' => 'Loan Repayment#' . $repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
+                        'debit' => null,
+                        'credit' => $repayment->amount,
+                        'balance' => $balance,
+                    ];
+                }
+
+                $grouped[$salternName][] = [
+                    'loan_id' => $loan->id,
+                    'rows' => $loanRows,
+                ];
+            }
+        }
+
+        $pdf = Pdf::loadView('reports.ownerLoan.print-owner-loan', compact('memberships', 'grouped', 'owner', 'fromDate', 'toDate'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('owner_loan_report.pdf');
+    }
+
+    public function ownerLoanReport(Request $request)
+    {
+        $request->validate([
+            'membership_id' => 'required|exists:memberships,id',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
+
+
+        $memberships = Membership::with([
+            'saltern.yahai',
+            'ownerLoans' => function ($query) use ($request) {
+                if ($request->from_date && $request->to_date) {
+                    $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+                } elseif ($request->from_date) {
+                    $query->whereDate('created_at', '>=', $request->from_date);
+                } elseif ($request->to_date) {
+                    $query->whereDate('created_at', '<=', $request->to_date);
+                }
+
+                $query->with(['ownerLoanRepayment' => function ($q) {
+                    $q->orderBy('repayment_date');
+                }]);
+            }
+        ])
+            ->where('id', $request->membership_id)
+            ->get();
+
+        $owner = $memberships->first()?->owner;
+
+
+        $grouped = [];
+
+        foreach ($memberships as $membership) {
+            $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
+
+            foreach ($membership->ownerLoans as $loan) {
+                $balance = $loan->approved_amount;
+                $loanRows = [];
+
+                // Add initial loan row
+                $loanRows[] = [
+                    'date' => $loan->created_at->format('Y-m-d'),
+                    'description' => 'Loan Issued Loan#' . $loan->id,
+                    'debit' => $loan->approved_amount,
+                    'credit' => null,
+                    'balance' => $balance,
+                ];
+
+                foreach ($loan->ownerLoanRepayment as $repayment) {
+                    $balance -= $repayment->amount;
+
+                    $loanRows[] = [
+                        'date' => $repayment->repayment_date,
+                        'description' => 'Loan Repayment#' . $repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
+                        'debit' => null,
+                        'credit' => $repayment->amount,
+                        'balance' => $balance,
+                    ];
+                }
+
+                $grouped[$salternName][] = [
+                    'loan_id' => $loan->id,
+                    'rows' => $loanRows,
+                ];
+            }
+        }
+
+        return view('reports.ownerLoan.owner_loan_report', compact('memberships', 'grouped', 'owner'));
+    }
 
 
     public function generateProduction(Request $request)
@@ -530,225 +547,239 @@ public function ownerLoanReport(Request $request)
         $yahaies = Yahai::all();
         $owners = Membership::all();
         $buyers = Buyer::all();
-    
+
         $entries = collect();
-    
+
         if ($request->filled('from_date') && $request->filled('to_date') && $request->filled('yahai_id')) {
             $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
                 ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
-                ->whereHas('membership.saltern', function($query) use ($request) {
+                ->whereHas('membership.saltern', function ($query) use ($request) {
                     $query->where('yahai_id', $request->yahai_id);
                 })
-                ->when($request->membership_id, function($query) use ($request) {
-                    $query->whereHas('membership', function($q) use ($request) {
+                ->when($request->membership_id, function ($query) use ($request) {
+                    $query->whereHas('membership', function ($q) use ($request) {
                         $q->where('id', $request->membership_id);
                     });
                 })
-                ->when($request->buyer_id, function($query) use ($request) {
+                ->when($request->buyer_id, function ($query) use ($request) {
                     $query->where('buyer_id', $request->buyer_id);
                 })
                 ->get();
         }
 
-        return view('reports.production.result', compact('yahaies', 'owners', 'buyers', 'entries'));   
+        return view('reports.production.result', compact('yahaies', 'owners', 'buyers', 'entries'));
     }
 
     public function indexLedger(Request $request)
-{
-    $from = $request->input('from');
-    $to = $request->input('to');
-    $ledgerId = $request->input('ledger_id');
+    {
+        $from = $request->input('from');
+        $to = $request->input('to');
+        $ledgerId = $request->input('ledger_id');
 
-    $query = JournalDetail::query();
+        $query = JournalDetail::query();
 
-    if ($from) {
-        $query->whereDate('entry_date', '>=', $from);
-    }
-    if ($to) {
-        $query->whereDate('entry_date', '<=', $to);
-    }
-    if ($ledgerId) {
-        $query->where('ledger_id', $ledgerId);
-    }
-
-    $entries = $query->get();
-
-    $subAccountGroups = \App\Models\SubAccountGroup::all();
-
-    return view('reports.ledger.index', compact('entries', 'subAccountGroups', 'from', 'to', 'ledgerId'));
-}
-
-public function generateLedger(Request $request)
-{
-    $request->validate([
-        'from_date' => 'required|date',
-        'to_date' => 'required|date',
-        'ledger_id' => 'nullable|exists:ledgers,id',
-        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
-    ]);
-
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
-    $ledgerId = $request->ledger_id;
-    $subLedgerId = $request->sub_ledger_id;
-
-    // If subledger selected
-    if ($subLedgerId) {
-        $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
-        $ledger = $subLedger->ledger;
-
-        $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
-        $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
-
-        return view('reports.ledger.result', compact('ledger', 'subLedger', 'opening', 'journalDetails', 'fromDate', 'toDate'));
-    }
-
-    // If ledger selected
-    if ($ledgerId) {
-        $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
-
-        // Ledger has subledgers — show per subledger details
-        if ($ledger->subLedgers->isNotEmpty()) {
-            $subLedgerSummaries = [];
-
-            foreach ($ledger->subLedgers as $sub) {
-                $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
-                $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
-
-                // Only add subledger if there's some balance or transactions
-                if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
-                    $subLedgerSummaries[] = [
-                        'sub_ledger' => $sub,
-                        'opening' => $opening,
-                        'journalDetails' => $journalDetails,
-                    ];
-                }
-            }
-
-            return view('reports.ledger.subledger_summary', compact('ledger', 'subLedgerSummaries', 'fromDate', 'toDate'));
+        if ($from) {
+            $query->whereDate('entry_date', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('entry_date', '<=', $to);
+        }
+        if ($ledgerId) {
+            $query->where('ledger_id', $ledgerId);
         }
 
-        // Ledger has no subledgers — show ledger transactions
-        $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
-        $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
+        $entries = $query->get();
 
-        return view('reports.ledger.summary', compact('ledger', 'opening', 'journalDetails', 'fromDate', 'toDate'));
+        $subAccountGroups = \App\Models\SubAccountGroup::all();
+
+        return view('reports.ledger.index', compact('entries', 'subAccountGroups', 'from', 'to', 'ledgerId'));
     }
 
-    return back()->withErrors('Please select a ledger or subledger.');
-}
+    public function generateLedger(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+            'ledger_id' => 'nullable|exists:ledgers,id',
+            'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+        ]);
 
-public function exportLedgerReport(Request $request)
-{
-    $request->validate([
-        'from_date' => 'required|date',
-        'to_date' => 'required|date',
-        'ledger_id' => 'nullable|exists:ledgers,id',
-        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
-    ]);
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        $ledgerId = $request->ledger_id;
+        $subLedgerId = $request->sub_ledger_id;
 
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
-    $ledgerId = $request->ledger_id;
-    $subLedgerId = $request->sub_ledger_id;
+        // If subledger selected
+        if ($subLedgerId) {
+            $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
+            $ledger = $subLedger->ledger;
 
-    if ($subLedgerId) {
-        $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
-        $ledger = $subLedger->ledger;
+            $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
+            $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
 
-        $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
-        $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
-
-        return Excel::download(new LedgerReportExport('subledger_detail', [
-            'opening' => $opening,
-            'journalDetails' => $journalDetails,
-           
-        ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
-        $ledger->name.' - '.$subLedger->name.' SubLedger Detail Report 1',
-        'For: '.$fromDate.' to '.$toDate), "ledger_subledger_detail_{$fromDate}_to_{$toDate}.xlsx");
-    }
-
-    if ($ledgerId) {
-        $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
-
-        if ($ledger->subLedgers->isNotEmpty()) {
-            $subLedgerSummaries = [];
-
-            foreach ($ledger->subLedgers as $sub) {
-                $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
-                $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
-
-                if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
-                    $subLedgerSummaries[] = [
-                        'sub_ledger' => $sub,
-                        'opening' => $opening,
-                        'journalDetails' => $journalDetails,
-                    ];
-                }
-            }
-
-            return Excel::download(new LedgerReportExport('subledger_summary', [
-                'subLedgerSummaries' => $subLedgerSummaries,
-               
-            ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
-            $ledger->name.' Ledger Detail Report 2',
-            'For: '.$fromDate.' to '.$toDate), "ledger_subledger_summary_{$fromDate}_to_{$toDate}.xlsx");
+            return view('reports.ledger.result', compact('ledger', 'subLedger', 'opening', 'journalDetails', 'fromDate', 'toDate'));
         }
 
-        $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
-        $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
+        // If ledger selected
+        if ($ledgerId) {
+            $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
 
-        return Excel::download(new LedgerReportExport('ledger_detail', [
-            'opening' => $opening,
-            'journalDetails' => $journalDetails,
-        ],  'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
-        $ledger->name.' Ledger Detail Report 3',
-        'For: '.$fromDate.' to '.$toDate), "ledger_detail_{$fromDate}_to_{$toDate}.xlsx");
+            // Ledger has subledgers — show per subledger details
+            if ($ledger->subLedgers->isNotEmpty()) {
+                $subLedgerSummaries = [];
+
+                foreach ($ledger->subLedgers as $sub) {
+                    $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
+                    $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
+
+                    // Only add subledger if there's some balance or transactions
+                    if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
+                        $subLedgerSummaries[] = [
+                            'sub_ledger' => $sub,
+                            'opening' => $opening,
+                            'journalDetails' => $journalDetails,
+                        ];
+                    }
+                }
+
+                return view('reports.ledger.subledger_summary', compact('ledger', 'subLedgerSummaries', 'fromDate', 'toDate'));
+            }
+
+            // Ledger has no subledgers — show ledger transactions
+            $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
+            $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
+
+            return view('reports.ledger.summary', compact('ledger', 'opening', 'journalDetails', 'fromDate', 'toDate'));
+        }
+
+        return back()->withErrors('Please select a ledger or subledger.');
     }
 
-    return back()->withErrors('Please select a ledger or subledger.');
-}
+    public function exportLedgerReport(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+            'ledger_id' => 'nullable|exists:ledgers,id',
+            'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+        ]);
 
-private function calculateOpeningBalance($ledgerId, $subLedgerId = null, $beforeDate)
-{
-    $query = JournalDetail::where('ledger_id', $ledgerId)
-        ->whereHas('journalEntry', fn($q) => $q->where('journal_date', '<', $beforeDate));
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        $ledgerId = $request->ledger_id;
+        $subLedgerId = $request->sub_ledger_id;
 
-    if ($subLedgerId) {
-        $query->where('sub_ledger_id', $subLedgerId);
-    } else {
-        $query->whereNull('sub_ledger_id');
+        if ($subLedgerId) {
+            $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
+            $ledger = $subLedger->ledger;
+
+            $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
+            $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
+
+            return Excel::download(new LedgerReportExport(
+                'subledger_detail',
+                [
+                    'opening' => $opening,
+                    'journalDetails' => $journalDetails,
+
+                ],
+                'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
+                $ledger->name . ' - ' . $subLedger->name . ' SubLedger Detail Report 1',
+                'For: ' . $fromDate . ' to ' . $toDate
+            ), "ledger_subledger_detail_{$fromDate}_to_{$toDate}.xlsx");
+        }
+
+        if ($ledgerId) {
+            $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
+
+            if ($ledger->subLedgers->isNotEmpty()) {
+                $subLedgerSummaries = [];
+
+                foreach ($ledger->subLedgers as $sub) {
+                    $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
+                    $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
+
+                    if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
+                        $subLedgerSummaries[] = [
+                            'sub_ledger' => $sub,
+                            'opening' => $opening,
+                            'journalDetails' => $journalDetails,
+                        ];
+                    }
+                }
+
+                return Excel::download(new LedgerReportExport(
+                    'subledger_summary',
+                    [
+                        'subLedgerSummaries' => $subLedgerSummaries,
+
+                    ],
+                    'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
+                    $ledger->name . ' Ledger Detail Report 2',
+                    'For: ' . $fromDate . ' to ' . $toDate
+                ), "ledger_subledger_summary_{$fromDate}_to_{$toDate}.xlsx");
+            }
+
+            $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
+            $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
+
+            return Excel::download(new LedgerReportExport(
+                'ledger_detail',
+                [
+                    'opening' => $opening,
+                    'journalDetails' => $journalDetails,
+                ],
+                'PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD',
+                $ledger->name . ' Ledger Detail Report 3',
+                'For: ' . $fromDate . ' to ' . $toDate
+            ), "ledger_detail_{$fromDate}_to_{$toDate}.xlsx");
+        }
+
+        return back()->withErrors('Please select a ledger or subledger.');
     }
 
-    $debit = $query->sum('debit_amount');
-    $credit = $query->sum('credit_amount');
-    $balance = $debit - $credit;
+    private function calculateOpeningBalance($ledgerId, $subLedgerId = null, $beforeDate)
+    {
+        $query = JournalDetail::where('ledger_id', $ledgerId)
+            ->whereHas('journalEntry', fn($q) => $q->where('journal_date', '<', $beforeDate));
 
-    return [
-        'debit' => $debit,
-        'credit' => $credit,
-        'balance' => $balance,
-    ];
-}
+        if ($subLedgerId) {
+            $query->where('sub_ledger_id', $subLedgerId);
+        } else {
+            $query->whereNull('sub_ledger_id');
+        }
 
-private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $toDate)
-{
-    $query = JournalDetail::with('journalEntry')
-        ->where('ledger_id', $ledgerId)
-        ->whereHas('journalEntry', fn($q) =>
-            $q->whereBetween('journal_date', [$fromDate, $toDate])
-        );
+        $debit = $query->sum('debit_amount');
+        $credit = $query->sum('credit_amount');
+        $balance = $debit - $credit;
 
-    if ($subLedgerId) {
-        $query->where('sub_ledger_id', $subLedgerId);
-    } else {
-        $query->whereNull('sub_ledger_id');
+        return [
+            'debit' => $debit,
+            'credit' => $credit,
+            'balance' => $balance,
+        ];
     }
 
-    return $query->get()
-        ->sortBy(fn($d) => optional($d->journalEntry)->journal_date ?? '2100-01-01')
-        ->values(); // Re-index for blade use
-}
+    private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $toDate)
+    {
+        $query = JournalDetail::with('journalEntry')
+            ->where('ledger_id', $ledgerId)
+            ->whereHas(
+                'journalEntry',
+                fn($q) =>
+                $q->whereBetween('journal_date', [$fromDate, $toDate])
+            );
+
+        if ($subLedgerId) {
+            $query->where('sub_ledger_id', $subLedgerId);
+        } else {
+            $query->whereNull('sub_ledger_id');
+        }
+
+        return $query->get()
+            ->sortBy(fn($d) => optional($d->journalEntry)->journal_date ?? '2100-01-01')
+            ->values(); // Re-index for blade use
+    }
 
 
     public function generateBuyerProduction(Request $request)
@@ -756,29 +787,29 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         $yahaies = Yahai::all();
         $owners = Membership::all();
         $buyers = Buyer::all();
-    
+
         $entries = collect();
-    
+
         if ($request->filled('from_date') && $request->filled('to_date')) {
             $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
                 ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
-                ->when($request->buyer_id, function($query) use ($request) {
+                ->when($request->buyer_id, function ($query) use ($request) {
                     $query->where('buyer_id', $request->buyer_id);
                 })
                 ->get();
         }
-        
-        return view('reports.production.buyer-result', compact('yahaies', 'owners', 'buyers', 'entries'));   
+
+        return view('reports.production.buyer-result', compact('yahaies', 'owners', 'buyers', 'entries'));
     }
 
     public function getSalterns(Request $request)
     {
         $salterns = Saltern::with('memberships.owner')
-        ->where('yahai_id', $request->yahai_id)
-        ->whereHas('memberships') // ensures only those with active membership are included
-        ->get();
+            ->where('yahai_id', $request->yahai_id)
+            ->whereHas('memberships') // ensures only those with active membership are included
+            ->get();
 
-            return response()->json(['salterns' => $salterns]);
+        return response()->json(['salterns' => $salterns]);
     }
 
     public function getLedgers(Request $request)
@@ -787,7 +818,7 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
         return response()->json(['ledgers' => $ledgers]);
     }
 
-    
+
 
     public function getSubLedgers(Request $request)
     {
@@ -801,7 +832,7 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
             'from_date' => 'nullable|date',
             'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
-    
+
         $fromDate = $request->from_date;
         $toDate = $request->to_date;
 
@@ -810,28 +841,28 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
             'membership.saltern.yahai',
             'ownerLoanRepayment'
         ])
-        ->when($fromDate, function ($q) use ($fromDate) {
-            $q->whereDate('approval_date', '>=', $fromDate);
-        })
-        ->when($toDate, function ($q) use ($toDate) {
-            $q->whereDate('approval_date', '<=', $toDate);
-        })
-        ->get();
-    
+            ->when($fromDate, function ($q) use ($fromDate) {
+                $q->whereDate('approval_date', '>=', $fromDate);
+            })
+            ->when($toDate, function ($q) use ($toDate) {
+                $q->whereDate('approval_date', '<=', $toDate);
+            })
+            ->get();
+
         $grouped = [];
-    
+
         foreach ($loans as $loan) {
             $yahai = $loan->membership->saltern->yahai->name ?? 'Unknown Yahai';
             $saltern = $loan->membership->saltern->name ?? 'Unknown Saltern';
             $owner = $loan->membership->owner->name_with_initial ?? 'Unknown Owner';
-    
+
             $repaid = $loan->ownerLoanRepayment->sum('amount');
             $outstanding = $loan->approved_amount - $repaid;
-    
+
             if (!isset($grouped[$yahai])) {
                 $grouped[$yahai] = [];
             }
-    
+
             $grouped[$yahai][] = [
                 'saltern' => $saltern,
                 'owner' => $owner,
@@ -841,7 +872,7 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
                 'outstanding' => $outstanding,
             ];
         }
-    
+
         // Yahai-wise totals
         $yahaiTotals = [];
         foreach ($grouped as $yahai => $records) {
@@ -850,7 +881,7 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
 
         $grandTotal = array_sum($yahaiTotals);
         return compact('grouped', 'yahaiTotals', 'grandTotal', 'fromDate', 'toDate');
-       //  view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
+        //  view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
     }
 
     public function yahaiWiseLoanTrialBalance(Request $request)
@@ -860,180 +891,179 @@ private function getJournalDetails($ledgerId, $subLedgerId = null, $fromDate, $t
     }
 
     public function yahaiWiseLoanTrialBalancePrint(Request $request)
-{
-    $data = $this->getYahaiWiseLoanTrialBalanceData($request);
+    {
+        $data = $this->getYahaiWiseLoanTrialBalanceData($request);
 
-    $pdf = Pdf::loadView('reports.loan.loan_trial_balance_print', $data)
-        ->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('reports.loan.loan_trial_balance_print', $data)
+            ->setPaper('A4', 'portrait');
 
-    return $pdf->stream('loan_trial_balance.pdf');
-}
+        return $pdf->stream('loan_trial_balance.pdf');
+    }
 
-public function pendingPaymentsReport()
-{
-    $buyers = Buyer::all();
-    $report = [];
+    public function pendingPaymentsReport()
+    {
+        $buyers = Buyer::all();
+        $report = [];
 
-    foreach ($buyers as $buyer) {
-        // Weighbridge Entries (Unpaid service charges)
-        $weighbridgeTotal = WeighbridgeEntry::where('buyer_id', $buyer->id)
-            ->where('is_service_charge_paid', 0)
-            ->sum('total_amount');
+        foreach ($buyers as $buyer) {
+            // Weighbridge Entries (Unpaid service charges)
+            $weighbridgeTotal = WeighbridgeEntry::where('buyer_id', $buyer->id)
+                ->where('is_service_charge_paid', 0)
+                ->sum('total_amount');
 
-        // Owner Loan Repayments (Pending)
-        $loanTotal = OwnerLoanRepayment::where('buyer_id', $buyer->id)
-            ->where('status', 'pending')
-            ->sum('amount');
+            // Owner Loan Repayments (Pending)
+            $loanTotal = OwnerLoanRepayment::where('buyer_id', $buyer->id)
+                ->where('status', 'pending')
+                ->sum('amount');
 
-        // Other Incomes (Pending)
-        $incomeTotal = OtherIncome::where('buyer_id', $buyer->id)
-            ->where('status', 'pending')
-            ->sum('amount');
+            // Other Incomes (Pending)
+            $incomeTotal = OtherIncome::where('buyer_id', $buyer->id)
+                ->where('status', 'pending')
+                ->sum('amount');
 
-        $total = $weighbridgeTotal + $loanTotal + $incomeTotal;
+            $total = $weighbridgeTotal + $loanTotal + $incomeTotal;
 
-        // Only include if any pending amount exists
-        if ($total > 0) {
-            $report[] = [
-                'buyer' => $buyer,
-                'weighbridge' => $weighbridgeTotal,
-                'loan' => $loanTotal,
-                'income' => $incomeTotal,
-                'total' => $total,
-            ];
+            // Only include if any pending amount exists
+            if ($total > 0) {
+                $report[] = [
+                    'buyer' => $buyer,
+                    'weighbridge' => $weighbridgeTotal,
+                    'loan' => $loanTotal,
+                    'income' => $incomeTotal,
+                    'total' => $total,
+                ];
+            }
         }
+
+        // For final total
+        $grandTotal = [
+            'weighbridge' => array_sum(array_column($report, 'weighbridge')),
+            'loan' => array_sum(array_column($report, 'loan')),
+            'income' => array_sum(array_column($report, 'income')),
+            'total' => array_sum(array_column($report, 'total')),
+        ];
+
+        return view('reports.pending.pending-payments', compact('report', 'grandTotal'));
     }
 
-    // For final total
-    $grandTotal = [
-        'weighbridge' => array_sum(array_column($report, 'weighbridge')),
-        'loan' => array_sum(array_column($report, 'loan')),
-        'income' => array_sum(array_column($report, 'income')),
-        'total' => array_sum(array_column($report, 'total')),
-    ];
 
-    return view('reports.pending.pending-payments', compact('report', 'grandTotal'));
-}
+    public function voucherReport(Request $request)
+    {
+        $query = Voucher::with(['paymentMethod', 'bank']);
 
+        $fromDate = Carbon::parse($request->from_date)->startOfDay();
+        $toDate = Carbon::parse($request->to_date)->endOfDay();
 
-public function voucherReport(Request $request)
-{
-    $query = Voucher::with(['paymentMethod', 'bank']);
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('created_at', [
+                $fromDate,
+                $toDate
+            ]);
+        }
 
-    $fromDate = Carbon::parse($request->from_date)->startOfDay();
-    $toDate = Carbon::parse($request->to_date)->endOfDay();
+        $vouchers = $query->orderBy('created_at', 'desc')->get();
 
-    if ($request->filled('from_date') && $request->filled('to_date')) {
-        $query->whereBetween('created_at', [
-            $fromDate,
-            $toDate
+        return view('reports.voucher.voucher-details', compact('vouchers', 'fromDate', 'toDate'));
+    }
+
+    public function generateLedgerPdf(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+            'ledger_id' => 'nullable|exists:ledgers,id',
+            'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
         ]);
-    }
 
-    $vouchers = $query->orderBy('created_at', 'desc')->get();
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        $ledgerId = $request->ledger_id;
+        $subLedgerId = $request->sub_ledger_id;
 
-    return view('reports.voucher.voucher-details', compact('vouchers', 'fromDate', 'toDate'));
-}
+        if ($subLedgerId) {
+            $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
+            $ledger = $subLedger->ledger;
 
-public function generateLedgerPdf(Request $request)
-{
-    $request->validate([
-        'from_date' => 'nullable|date',
-        'to_date' => 'nullable|date',
-        'ledger_id' => 'nullable|exists:ledgers,id',
-        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
-    ]);
+            $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
+            $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
 
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
-    $ledgerId = $request->ledger_id;
-    $subLedgerId = $request->sub_ledger_id;
+            $pdf = Pdf::loadView('reports.ledger.result_print', compact('ledger', 'subLedger', 'opening', 'journalDetails', 'fromDate', 'toDate'))
+                ->setPaper('a4', 'portrait');
 
-    if ($subLedgerId) {
-        $subLedger = SubLedger::with('ledger')->findOrFail($subLedgerId);
-        $ledger = $subLedger->ledger;
+            return $pdf->stream('ledger-subledger-report.pdf');
+        }
 
-        $opening = $this->calculateOpeningBalance($ledger->id, $subLedgerId, $fromDate);
-        $journalDetails = $this->getJournalDetails($ledger->id, $subLedgerId, $fromDate, $toDate);
+        if ($ledgerId) {
+            $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
 
-        $pdf = Pdf::loadView('reports.ledger.result_print', compact('ledger', 'subLedger', 'opening', 'journalDetails', 'fromDate', 'toDate'))
-                  ->setPaper('a4', 'portrait');
+            if ($ledger->subLedgers->isNotEmpty()) {
+                $subLedgerSummaries = [];
 
-        return $pdf->stream('ledger-subledger-report.pdf');
-    }
+                foreach ($ledger->subLedgers as $sub) {
+                    $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
+                    $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
 
-    if ($ledgerId) {
-        $ledger = Ledger::with('subLedgers')->findOrFail($ledgerId);
-
-        if ($ledger->subLedgers->isNotEmpty()) {
-            $subLedgerSummaries = [];
-
-            foreach ($ledger->subLedgers as $sub) {
-                $opening = $this->calculateOpeningBalance($ledgerId, $sub->id, $fromDate);
-                $journalDetails = $this->getJournalDetails($ledgerId, $sub->id, $fromDate, $toDate);
-
-                if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
-                    $subLedgerSummaries[] = [
-                        'sub_ledger' => $sub,
-                        'opening' => $opening,
-                        'journalDetails' => $journalDetails,
-                    ];
+                    if ($opening['balance'] != 0 || $journalDetails->isNotEmpty()) {
+                        $subLedgerSummaries[] = [
+                            'sub_ledger' => $sub,
+                            'opening' => $opening,
+                            'journalDetails' => $journalDetails,
+                        ];
+                    }
                 }
+
+                $pdf = Pdf::loadView('reports.ledger.subledger_summary_print', compact('ledger', 'subLedgerSummaries', 'fromDate', 'toDate'))
+                    ->setPaper('a4', 'portrait');
+
+                return $pdf->stream('ledger-subledgers-summary.pdf');
             }
 
-            $pdf = Pdf::loadView('reports.ledger.subledger_summary_print', compact('ledger', 'subLedgerSummaries', 'fromDate', 'toDate'))
-                      ->setPaper('a4', 'portrait');
+            $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
+            $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
 
-            return $pdf->stream('ledger-subledgers-summary.pdf');
+            $pdf = Pdf::loadView('reports.ledger.summary_print', compact('ledger', 'opening', 'journalDetails', 'fromDate', 'toDate'))
+                ->setPaper('a4', 'portrait');
+
+            return $pdf->stream('ledger-summary.pdf');
         }
 
-        $opening = $this->calculateOpeningBalance($ledgerId, null, $fromDate);
-        $journalDetails = $this->getJournalDetails($ledgerId, null, $fromDate, $toDate);
-
-        $pdf = Pdf::loadView('reports.ledger.summary_print', compact('ledger', 'opening', 'journalDetails', 'fromDate', 'toDate'))
-                  ->setPaper('a4', 'portrait');
-
-        return $pdf->stream('ledger-summary.pdf');
+        return back()->withErrors('Please select a ledger or subledger.');
     }
 
-    return back()->withErrors('Please select a ledger or subledger.');
-}
-
-public function generateAllProduction(Request $request)
-{
-    $entries = $this->getAllProduction($request);
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
-    return view('reports.production.all-production', compact('entries', 'fromDate', 'toDate'));
-}
-
-private function getAllProduction(Request $request)
-{
-    $entries = [];
-
-    if ($request->filled('from_date') && $request->filled('to_date')) {
-        $from = $request->from_date . ' 00:00:00';
-        $to = $request->to_date . ' 23:59:59';
-
-        $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern'])
-            ->whereBetween('transaction_date', [$from, $to])
-            ->orderBy('transaction_date', 'desc')
-            ->get();
+    public function generateAllProduction(Request $request)
+    {
+        $entries = $this->getAllProduction($request);
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        return view('reports.production.all-production', compact('entries', 'fromDate', 'toDate'));
     }
 
-    return $entries;
-}
+    private function getAllProduction(Request $request)
+    {
+        $entries = [];
 
-public function printAllProduction(Request $request)
-{
-    $entries = $this->getAllProduction($request);
-    $fromDate = $request->from_date;
-    $toDate = $request->to_date;
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $from = $request->from_date . ' 00:00:00';
+            $to = $request->to_date . ' 23:59:59';
 
-    $pdf = Pdf::loadView('reports.production.all-production-print', compact('entries', 'fromDate','toDate'))
-    ->setPaper('a4', 'portrait');
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern'])
+                ->whereBetween('transaction_date', [$from, $to])
+                ->orderBy('transaction_date', 'desc')
+                ->get();
+        }
 
-return $pdf->stream('all-production-report.pdf');
-}
+        return $entries;
+    }
 
+    public function printAllProduction(Request $request)
+    {
+        $entries = $this->getAllProduction($request);
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+        $pdf = Pdf::loadView('reports.production.all-production-print', compact('entries', 'fromDate', 'toDate'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('all-production-report.pdf');
+    }
 }

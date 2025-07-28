@@ -11,6 +11,9 @@
 @section('content_body')
 <div class="container">
     <h2>Balance Sheet</h2>
+    <a href="{{ route('balance-sheet.print', request()->all()) }}" class="btn btn-primary" target="_blank">
+        <i class="fas fa-print"></i> Print Balance Sheet
+    </a>
     <div class="row">
         <!-- Left: Assets -->
         <div class="col-md-6">
@@ -86,7 +89,7 @@
                         <td>Total Equity & Liabilities</td>
                         <td class="text-right"> {{ number_format($equityTotal + $liabilitiesTotal, 2) }}</td>
                     </tr>
-                </table>        
+                </table>
         </div>
     </div>
 </div>
