@@ -62,6 +62,10 @@
                                         target="_blank">
                                         <i class="fas fa-print"></i> Print
                                     </a>
+                                    <a href="{{ route('other-income.a4print', $income->id) }}" class="btn btn-primary"
+                                        target="_blank">
+                                        <i class="fas fa-print"></i> PrintA4
+                                    </a>
                                     </td>
                                 </tr>
                                 @endforeach
