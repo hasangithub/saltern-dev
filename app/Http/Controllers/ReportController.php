@@ -404,7 +404,7 @@ public function yahaiWiseLoanPrint(Request $request)
             // Add initial loan row
             $loanRows[] = [
                 'date' => $loan->created_at->format('Y-m-d'),
-                'description' => 'Loan Issued',
+                'description' => 'Loan Issued Loan#'.$loan->id,
                 'debit' => $loan->approved_amount,
                 'credit' => null,
                 'balance' => $balance,
@@ -415,7 +415,7 @@ public function yahaiWiseLoanPrint(Request $request)
 
                 $loanRows[] = [
                     'date' => $repayment->repayment_date,
-                    'description' => 'Loan Repayment',
+                    'description' => 'Loan Repayment' . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
                     'debit' => null,
                     'credit' => $repayment->amount,
                     'balance' => $balance,
@@ -478,7 +478,7 @@ public function ownerLoanReport(Request $request)
             // Add initial loan row
             $loanRows[] = [
                 'date' => $loan->created_at->format('Y-m-d'),
-                'description' => 'Loan Issued',
+                'description' => 'Loan Issued Loan#'.$loan->id,
                 'debit' => $loan->approved_amount,
                 'credit' => null,
                 'balance' => $balance,
@@ -489,7 +489,7 @@ public function ownerLoanReport(Request $request)
 
                 $loanRows[] = [
                     'date' => $repayment->repayment_date,
-                    'description' => 'Loan Repayment',
+                    'description' => 'Loan Repayment' . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
                     'debit' => null,
                     'credit' => $repayment->amount,
                     'balance' => $balance,
