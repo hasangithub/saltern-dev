@@ -5,7 +5,8 @@
     </a>
     <div class="sidebar">
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column nav-compact nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
+            <ul class="nav nav-pills nav-sidebar flex-column nav-compact nav-child-indent" data-widget="treeview"
+                role="menu" data-accordion="false">
                 <!-- Dashboard -->
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}" class="nav-link">
@@ -88,7 +89,9 @@
                         <li class="nav-item">
                             <a href="{{ route('owner-loans.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-hand-holding-usd"></i>
-                                <p>Owner Loan Management</p>
+                                <p>Owner Loan Management  @if(!empty($pendingOwnerLoanCount))
+                <span class="badge badge-danger right">{{ $pendingOwnerLoanCount }}</span>
+            @endif</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -238,7 +241,11 @@
                 <li class="nav-item">
                     <a href="{{ route('staff.complaints.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-exclamation-circle"></i>
-                        <p>Complaints</p>
+                        <p>Complaints
+                            @if(!empty($pendingComplaintsCount))
+                            <span class="badge badge-danger right">{{ $pendingComplaintsCount }}</span>
+                            @endif
+                        </p>
                     </a>
                 </li>
                 <li class="nav-item">
