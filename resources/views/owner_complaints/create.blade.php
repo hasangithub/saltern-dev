@@ -30,9 +30,20 @@
                     @endif
                     <form action="{{ route('owner.complaints.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        <div class="form-group">
+                            <label for="saltern_id">Membership</label>
+                            <select class="form-control" name="membership_id" id="membership_id" required>
+                                <option value="">Select Membership</option>
+                                @foreach($memberships as $membership)
+                                <option value="{{ $membership->id }}">
+                                    {{ $membership->saltern->yahai->name." - ".$membership->saltern->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div id="text-complaint">
                             <label for="complaint_text">Complaint Text</label>
-                            <textarea name="complaint_text" id="complaint_text" class="form-control" required></textarea>
+                            <textarea name="complaint_text" id="complaint_text" class="form-control"
+                                required></textarea>
                         </div>
                         <br>
                         <div id="voice-complaint">
@@ -97,7 +108,9 @@ document.getElementById('stop-record').addEventListener('click', () => {
         audioPreview.style.display = 'block';
 
         // Convert the blob to a file and set it in the file input
-        const file = new File([blob], 'voice_complaint.webm', { type: 'audio/webm' });
+        const file = new File([blob], 'voice_complaint.webm', {
+            type: 'audio/webm'
+        });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
 
