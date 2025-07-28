@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Membership;
 use App\Models\OwnerComplaint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,9 @@ class OwnerComplaintController extends Controller
      */
     public function create()
     {
-        return view('owner_complaints.create');
+        $ownerId = auth('owner')->id(); 
+        $memberships = Membership::where('owner_id', $ownerId)->get();
+        return view('owner_complaints.create', compact('memberships'));
     }
 
     /**
@@ -30,6 +33,7 @@ class OwnerComplaintController extends Controller
         $request->validate([
             'complaint_text' => 'nullable',
             'complaint_voice' => 'nullable',
+            'membership_id' => 'required'
         ]);
 
         // Handle voice complaint
@@ -42,6 +46,7 @@ class OwnerComplaintController extends Controller
         // Create the complaint
         OwnerComplaint::create([
             'owner_id' => auth('owner')->id(),
+            'membership_id' => $request->membership_id,
             'complaint_text' => $request->complaint_text,
             'complaint_voice' => $complaintVoicePath,
             'type' => 'text',

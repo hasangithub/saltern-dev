@@ -8,6 +8,7 @@ class OwnerComplaint extends Model
 {
     protected $fillable = [
         'owner_id',
+        'membership_id',
         'complaint_text',
         'complaint_voice',
         'type',
@@ -50,5 +51,10 @@ class OwnerComplaint extends Model
     public function repliedByUser()
     {
         return $this->belongsTo(User::class, 'replied_by');
+    }
+
+    public function membership()
+    {
+        return $this->belongsTo(Membership::class);
     }
 }
