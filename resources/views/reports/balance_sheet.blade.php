@@ -100,6 +100,10 @@
                             <td>Total Liabilities & Equity </td>
                             <td class="text-right"> {{ number_format($equityTotal + $liabilitiesTotal, 2) }}</td>
                         </tr>
+                        <tr>
+                            <td></td>
+                            <td class="text-right">{{ number_format($assetsTotal - ($equityTotal + $liabilitiesTotal), 2) }}</td>
+                        </tr>
                     </table>
                 </div>
             </div>
