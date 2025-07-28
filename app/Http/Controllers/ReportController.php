@@ -125,19 +125,17 @@ class ReportController extends Controller
 
     if ($accountGroups->has('Liability')) {
         foreach ($accountGroups['Liability'] as $group) {
-            if ($group->name === 'Accumulated Fund') {
-                foreach ($group->subAccountGroups as $subGroup) {
-                    foreach ($subGroup->ledgers as $ledger) {
+            foreach ($group->subAccountGroups as $subGroup) {
+                foreach ($subGroup->ledgers as $ledger) {
+    
+                    if ($ledger->name === 'Accumulated Fund') {
                         $accumFund += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
                     }
-                }
-            }
-
-            if ($group->name === 'Reserve') {
-                foreach ($group->subAccountGroups as $subGroup) {
-                    foreach ($subGroup->ledgers as $ledger) {
+    
+                    if ($ledger->name === 'Gratuity Reserve') {
                         $reserves += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
                     }
+    
                 }
             }
         }
@@ -177,19 +175,27 @@ class ReportController extends Controller
     // CURRENT LIABILITIES
     if ($accountGroups->has('Liability')) {
         foreach ($accountGroups['Liability'] as $group) {
-            if ($group->name === 'Payable') {
+            if ($group->name !== 'Payable') {
                 $payableTotal = 0;
+    
                 foreach ($group->subAccountGroups as $subGroup) {
                     foreach ($subGroup->ledgers as $ledger) {
-                        $payableTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                        if (trim($ledger->name) === 'Service Charge 30%') {
+                            $payableTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                        }
                     }
                 }
-
-                $data['CurrentLiabilities'][] = ['name' => 'Accounts Payable', 'total' => $payableTotal];
+    
+                $data['CurrentLiabilities'][] = [
+                    'name' => 'Accounts Payable',
+                    'total' => $payableTotal
+                ];
+    
                 $liabilitiesTotal += $payableTotal;
             }
         }
     }
+    
 
     return view('reports.balance_sheet', compact('data', 'assetsTotal', 'equityTotal', 'liabilitiesTotal'));
 }
