@@ -415,7 +415,7 @@ public function yahaiWiseLoanPrint(Request $request)
 
                 $loanRows[] = [
                     'date' => $repayment->repayment_date,
-                    'description' => 'Loan Repayment' . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
+                    'description' => 'Loan Repayment#'.$repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
                     'debit' => null,
                     'credit' => $repayment->amount,
                     'balance' => $balance,
@@ -489,7 +489,7 @@ public function ownerLoanReport(Request $request)
 
                 $loanRows[] = [
                     'date' => $repayment->repayment_date,
-                    'description' => 'Loan Repayment' . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
+                    'description' => 'Loan Repayment#'.$repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
                     'debit' => null,
                     'credit' => $repayment->amount,
                     'balance' => $balance,
