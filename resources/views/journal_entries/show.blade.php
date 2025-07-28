@@ -37,16 +37,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach ($journalDetails->details as $journalDetail)
+                                @foreach ($journalDetails->details as $journalDetail)
                                 <tr>
                                     <td>{{ $journalDetail->id }}</td>
                                     <td>{{ $journalDetail->ledger->name }}</td>
                                     <td>{{ optional($journalDetail->subLedger)->name }}</td>
                                     <td class="text-right">Rs. {{ number_format($journalDetail->debit_amount, 2) }}</td>
-                                    <td class="text-right">Rs. {{ number_format($journalDetail->credit_amount, 2) }}</td>
+                                    <td class="text-right">Rs. {{ number_format($journalDetail->credit_amount, 2) }}
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" style="text-align:right">Total:</th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right"></th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -69,7 +77,42 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#membershipsTable').DataTable();
+    $('#membershipsTable').DataTable({
+        "footerCallback": function(row, data, start, end, display) {
+            var api = this.api();
+
+            // Helper function to parse string to float (remove Rs. and commas)
+            var parseValue = function(i) {
+                if (typeof i === 'string') {
+                    return parseFloat(i.replace(/Rs\.\s?|,/g, '')) || 0;
+                }
+                if (typeof i === 'number') {
+                    return i;
+                }
+                return 0;
+            };
+
+            // Total over all pages for Debit column (index 3)
+            var totalDebit = api
+                .column(3)
+                .data()
+                .reduce(function(a, b) {
+                    return parseValue(a) + parseValue(b);
+                }, 0);
+
+            // Total over all pages for Credit column (index 4)
+            var totalCredit = api
+                .column(4)
+                .data()
+                .reduce(function(a, b) {
+                    return parseValue(a) + parseValue(b);
+                }, 0);
+
+            // Update footer with formatted totals
+            $(api.column(3).footer()).html('Rs. ' + totalDebit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+            $(api.column(4).footer()).html('Rs. ' + totalCredit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+        }
+    });
 });
 </script>
 @endpush
