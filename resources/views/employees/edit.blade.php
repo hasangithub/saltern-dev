@@ -83,7 +83,7 @@
             <div class="form-group row">
                 <label for="base_salary" class="col-sm-3 col-form-label">Base Salary</label>
                 <div class="col-sm-9">
-                    <input type="number" class="form-control" id="base_salary" name="base_salary"
+                    <input type="number" step='0.01' class="form-control" id="base_salary" name="base_salary"
                         value="{{ old('base_salary', $employee->employee->base_salary) }}" required>
                 </div>
             </div>
