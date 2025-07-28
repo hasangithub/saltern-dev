@@ -9,90 +9,49 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
-<div class="container-fluid">
+<div class="container">
+    <h2>Balance Sheet</h2>
     <div class="row">
-        <div class="col-md-12">
-        <div class="container">
-    <h3 class="mb-4">Balance Sheet</h3>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>Assets</th>
-                <th>Amount</th>
-                <th>Equity & Liabilities</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{-- Loop over Assets --}}
-            @php
-                $assetGroups = $balanceSheet['Assets'] ?? [];
-                $maxRows = max(count($assetGroups), 4); // 4 right side rows minimum
-            @endphp
-
-            @for ($i = 0; $i < $maxRows; $i++)
-                <tr>
-                    {{-- Left side: Assets --}}
-                    <td>
-                        @if(isset($assetGroups[$i]))
-                            <strong>{{ $assetGroups[$i]['group_name'] }}</strong>
+        <!-- Left: Assets -->
+        <div class="col-md-6">
+            <h4>Assets</h4>
+            @foreach ($data['Assets'] as $group)
+                <strong>{{ $group['name'] }}</strong>
+                <ul>
+                    @foreach ($group['subGroups'] as $subName => $sub)
+                        <li><strong>{{ $subName }}</strong>
                             <ul>
-                                @foreach($assetGroups[$i]['sub_groups'] as $subName => $sub)
-                                    <li><strong>{{ $subName }}</strong>
-                                        <ul>
-                                            @foreach($sub['ledgers'] as $ledger)
-                                                <li>{{ $ledger['name'] }} - {{ number_format($ledger['balance'], 2) }}</li>
-                                            @endforeach
-                                        </ul>
-                                        <strong>Sub Total: {{ number_format($sub['total'], 2) }}</strong>
-                                    </li>
+                                @foreach ($sub['ledgers'] as $ledger)
+                                    <li>{{ $ledger['name'] }} - {{ number_format($ledger['total'], 2) }}</li>
                                 @endforeach
                             </ul>
-                        @endif
-                    </td>
-                    <td>
-                        @if(isset($assetGroups[$i]))
-                            {{ number_format($assetGroups[$i]['total'], 2) }}
-                        @endif
-                    </td>
+                            <strong>Total: {{ number_format($sub['total'], 2) }}</strong>
+                        </li>
+                    @endforeach
+                </ul>
+                <strong>Group Total: {{ number_format($group['total'], 2) }}</strong>
+                <hr>
+            @endforeach
+            <h5><strong>Grand Total Assets: {{ number_format($assetsTotal, 2) }}</strong></h5>
+        </div>
 
-                    {{-- Right side --}}
-                    <td>
-                        @if($i === 0)
-                            Accumulated Fund
-                        @elseif($i === 1)
-                            Net Profit
-                        @elseif($i === 2)
-                            Reserve
-                        @elseif($i === 3)
-                            Accounts Payable
-                        @endif
-                    </td>
-                    <td>
-                        @if($i === 0)
-                            {{ number_format($accumulatedFund, 2) }}
-                        @elseif($i === 1)
-                            {{ number_format($netProfit, 2) }}
-                        @elseif($i === 2)
-                            {{ number_format($reserves, 2) }}
-                        @elseif($i === 3)
-                            {{ number_format($payables, 2) }}
-                        @endif
-                    </td>
-                </tr>
-            @endfor
+        <!-- Right: Equity & Liabilities -->
+        <div class="col-md-6">
+            <h4>Equity</h4>
+            @foreach ($data['Equity'] as $item)
+                <p>{{ $item['name'] }} - {{ number_format($item['total'], 2) }}</p>
+            @endforeach
+            <strong>Total Equity: {{ number_format($equityTotal, 2) }}</strong>
 
-            <tr class="table-secondary">
-                <th>Total Assets</th>
-                <th>
-                    {{ number_format(collect($assetGroups)->sum('total'), 2) }}
-                </th>
-                <th>Total Equity + Liabilities</th>
-                <th>{{ number_format($equityAndLiabilities, 2) }}</th>
-            </tr>
-        </tbody>
-    </table>
-</div>
+            <hr>
+            <h4>Current Liabilities</h4>
+            @foreach ($data['CurrentLiabilities'] as $item)
+                <p>{{ $item['name'] }} - {{ number_format($item['total'], 2) }}</p>
+            @endforeach
+            <strong>Total Liabilities: {{ number_format($liabilitiesTotal, 2) }}</strong>
+
+            <hr>
+            <h5><strong>Total Equity & Liabilities: {{ number_format($equityTotal + $liabilitiesTotal, 2) }}</strong></h5>
         </div>
     </div>
 </div>
@@ -114,3 +73,4 @@ $(document).ready(function() {
 });
 </script>
 @endpush
+

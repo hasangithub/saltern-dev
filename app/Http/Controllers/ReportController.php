@@ -75,90 +75,125 @@ class ReportController extends Controller
 
     public function balanceSheet()
 {
-    $accountGroups = AccountGroup::with('subAccountGroups.ledgers.journalDetails')->get();
+    $accountGroups = AccountGroup::with('subAccountGroups.ledgers.journalDetails')->get()->groupBy('name');
 
-    $balanceSheet = [
+    $data = [
         'Assets' => [],
-        'Liability' => [],
-        'Income' => [],
-        'Expenses' => [],
+        'Equity' => [],
+        'CurrentLiabilities' => [],
     ];
 
-    foreach ($accountGroups as $group) {
-        $type = $group->name; // e.g., Assets, Liability
-        if (!isset($balanceSheet[$type])) {
-            $balanceSheet[$type] = [];
-        }
+    $assetsTotal = 0;
+    $equityTotal = 0;
+    $liabilitiesTotal = 0;
 
-        $groupTotal = 0;
-        $subGroupsData = [];
+    // ASSETS
+    if ($accountGroups->has('Assets')) {
+        foreach ($accountGroups['Assets'] as $group) {
+            $groupTotal = 0;
+            $subGroups = [];
 
-        foreach ($group->subAccountGroups as $subGroup) {
-            $subTotal = 0;
+            foreach ($group->subAccountGroups as $subGroup) {
+                $subTotal = 0;
 
-            foreach ($subGroup->ledgers as $ledger) {
-                $debit = $ledger->journalDetails->sum('debit_amount');
-                $credit = $ledger->journalDetails->sum('credit_amount');
-                $balance = $debit - $credit;
-
-                if (in_array($type, ['Liability', 'Income'])) {
-                    $balance = $credit - $debit;
+                foreach ($subGroup->ledgers as $ledger) {
+                    $ledgerTotal = $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
+                    $subTotal += $ledgerTotal;
+                    $subGroups[$subGroup->name]['ledgers'][] = [
+                        'name' => $ledger->name,
+                        'total' => $ledgerTotal,
+                    ];
                 }
 
-                $subTotal += $balance;
-                $subGroupsData[$subGroup->name]['ledgers'][] = [
-                    'name' => $ledger->name,
-                    'balance' => $balance,
-                ];
+                $subGroups[$subGroup->name]['total'] = $subTotal;
+                $groupTotal += $subTotal;
             }
 
-            $subGroupsData[$subGroup->name]['total'] = $subTotal;
-            $groupTotal += $subTotal;
-        }
+            $data['Assets'][] = [
+                'name' => $group->name,
+                'subGroups' => $subGroups,
+                'total' => $groupTotal,
+            ];
 
-        $balanceSheet[$type][] = [
-            'group_name' => $group->name,
-            'sub_groups' => $subGroupsData,
-            'total' => $groupTotal,
-        ];
-    }
-
-    // Net profit = Income - Expenses
-    $netIncome = $balanceSheet['Income'][0]['total'] ?? 0;
-    $netExpense = $balanceSheet['Expenses'][0]['total'] ?? 0;
-    $netProfit = $netIncome - $netExpense;
-
-    // Accumulated Fund
-    $accumulatedFund = 0;
-    foreach ($balanceSheet['Liability'] as $group) {
-        if (strtolower($group['group_name']) === 'accumulated fund') {
-            $accumulatedFund += $group['total'];
+            $assetsTotal += $groupTotal;
         }
     }
 
-    // Reserve
+    // EQUITY (Accumulated Fund, Reserve, Net Profit)
+    $accumFund = 0;
     $reserves = 0;
-    foreach ($balanceSheet['Liability'] as $group) {
-        if (strtolower($group['group_name']) === 'reserve') {
-            $reserves += $group['total'];
+
+    if ($accountGroups->has('Liability')) {
+        foreach ($accountGroups['Liability'] as $group) {
+            if ($group->name === 'Accumulated Fund') {
+                foreach ($group->subAccountGroups as $subGroup) {
+                    foreach ($subGroup->ledgers as $ledger) {
+                        $accumFund += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                    }
+                }
+            }
+
+            if ($group->name === 'Reserve') {
+                foreach ($group->subAccountGroups as $subGroup) {
+                    foreach ($subGroup->ledgers as $ledger) {
+                        $reserves += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                    }
+                }
+            }
         }
     }
 
-    // Accounts Payable
-    $payables = 0;
-    foreach ($balanceSheet['Liability'] as $group) {
-        if (strtolower($group['group_name']) === 'payable') {
-            $payables += $group['total'];
+    // Net Profit = Income - Expenses
+    $income = 0;
+    if ($accountGroups->has('Income')) {
+        foreach ($accountGroups['Income'] as $group) {
+            foreach ($group->subAccountGroups as $subGroup) {
+                foreach ($subGroup->ledgers as $ledger) {
+                    $income += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                }
+            }
         }
     }
 
-    // Final equity + liability total
-    $equityAndLiabilities = $accumulatedFund + $netProfit + $reserves + $payables;
+    $expenses = 0;
+    if ($accountGroups->has('Expenses')) {
+        foreach ($accountGroups['Expenses'] as $group) {
+            foreach ($group->subAccountGroups as $subGroup) {
+                foreach ($subGroup->ledgers as $ledger) {
+                    $expenses += $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
+                }
+            }
+        }
+    }
 
-    return view('reports.balance_sheet', compact(
-        'balanceSheet', 'accumulatedFund', 'netProfit', 'reserves', 'payables', 'equityAndLiabilities'
-    ));
+    $netProfit = $income - $expenses;
+
+    $data['Equity'][] = ['name' => 'Accumulated Fund', 'total' => $accumFund];
+    $data['Equity'][] = ['name' => 'Net Profit', 'total' => $netProfit];
+    $data['Equity'][] = ['name' => 'Reserves', 'total' => $reserves];
+
+    $equityTotal = $accumFund + $netProfit + $reserves;
+
+    // CURRENT LIABILITIES
+    if ($accountGroups->has('Liability')) {
+        foreach ($accountGroups['Liability'] as $group) {
+            if ($group->name === 'Payable') {
+                $payableTotal = 0;
+                foreach ($group->subAccountGroups as $subGroup) {
+                    foreach ($subGroup->ledgers as $ledger) {
+                        $payableTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                    }
+                }
+
+                $data['CurrentLiabilities'][] = ['name' => 'Accounts Payable', 'total' => $payableTotal];
+                $liabilitiesTotal += $payableTotal;
+            }
+        }
+    }
+
+    return view('reports.balance_sheet', compact('data', 'assetsTotal', 'equityTotal', 'liabilitiesTotal'));
 }
+
 
 
     private function getTrialBalanceData(Request $request)
