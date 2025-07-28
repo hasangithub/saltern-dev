@@ -73,9 +73,31 @@ class ReportController extends Controller
         return view('reports.trial_balance', compact('trialData', 'totalDebit', 'totalCredit', 'fromDate', 'toDate'));
     }
 
-    public function balanceSheet()
+    public function balanceSheet(Request $request)
 {
-    $accountGroups = AccountGroup::with('subAccountGroups.ledgers.journalDetails')->get()->groupBy('name');
+    $request->validate([
+        'from_date' => 'nullable|date',
+        'to_date' => 'nullable|date|after_or_equal:from_date',
+    ]);
+
+    $from = $request->from_date;
+    $to = $request->to_date;
+
+
+    $accountGroups = AccountGroup::with([
+        'subAccountGroups.ledgers' => function ($q) use ($from, $to) {
+            $q->with(['journalDetails' => function ($query) use ($from, $to) {
+                $query->when($from && $to, function ($q2) use ($from, $to) {
+                    $q2->whereHas('journalEntry', function ($q3) use ($from, $to) {
+                        $q3->whereBetween('journal_date', [$from, $to]);
+                    });
+                })->when(!$from && !$to, function ($q2) {
+                    // No date filter, get all
+                    $q2->whereHas('journalEntry');
+                });
+            }]);
+        }
+    ])->get()->groupBy('name');
 
     $data = [
         'Assets' => [],
@@ -313,11 +335,7 @@ class ReportController extends Controller
 
         return $pdf->stream('trial_balance.pdf');
     }
-    
-    
-    
-
-    
+        
     private function adjustBalance($groupName, $balance)
     {
         $debit = 0;

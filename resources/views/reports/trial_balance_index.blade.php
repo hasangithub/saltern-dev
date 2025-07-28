@@ -67,6 +67,32 @@ $toDate = now()->format('Y-m-d');
             </div>
         </div>
 
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Balance Sheet</h3>
+                </div>
+                <form action="{{ route('balance.sheet') }}" method="GET">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>From Date</label>
+                                <input type="date" name="from_date" class="form-control" 
+                                    value="">
+                            </div>
+                            <div class="col-md-3">
+                                <label>To Date</label>
+                                <input type="date" name="to_date" class="form-control"  value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Generate Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
 @stop
