@@ -48,6 +48,35 @@
         /* reduce line height to compact rows */
         line-height: 1;
     }
+    /* Smaller font and padding for main menu links */
+.sidebar .nav-sidebar > .nav-item > .nav-link {
+    font-size: 0.85rem !important;    /* smaller font */
+    padding: 0.35rem 0.75rem !important;  /* less vertical and horizontal padding */
+    height: auto !important;           /* auto height */
+    line-height: 1.1 !important;       /* tighter line height */
+}
+
+/* Smaller font and padding for submenu links */
+.sidebar .nav-treeview > .nav-item > .nav-link {
+    font-size: 0.8rem !important;
+    padding-left: 1rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+    height: auto !important;
+    line-height: 1.1 !important;
+}
+
+/* Optional: smaller icons in menu and submenu */
+.sidebar .nav-icon {
+    font-size: 0.9rem !important;
+}
+
+/* Optional: reduce spacing between menu items */
+.sidebar .nav-sidebar > .nav-item,
+.sidebar .nav-treeview > .nav-item {
+    margin-bottom: 0.15rem !important;
+}
+
     </style>
 </head>
 
@@ -127,40 +156,39 @@
     <script>
     /** add active class and stay opened when selected */
     document.addEventListener("DOMContentLoaded", function() {
-    const url = window.location.href;
-    const allLinks = document.querySelectorAll('.nav-item a');
+        const url = window.location.href;
+        const allLinks = document.querySelectorAll('.nav-item a');
 
-    // Find the link that matches current URL or starts with current URL
-    const currentLink = [...allLinks].find(link => {
-        const linkHref = link.href.replace(/\/$/, '');
-        const currentUrl = url.replace(/\/$/, '');
+        // Find the link that matches current URL or starts with current URL
+        const currentLink = [...allLinks].find(link => {
+            const linkHref = link.href.replace(/\/$/, '');
+            const currentUrl = url.replace(/\/$/, '');
 
-        return currentUrl === linkHref || currentUrl.startsWith(linkHref + '/');
-    });
+            return currentUrl === linkHref || currentUrl.startsWith(linkHref + '/');
+        });
 
-    if (currentLink) {
-        // Add active class to the submenu link
-        currentLink.classList.add("active");
+        if (currentLink) {
+            // Add active class to the submenu link
+            currentLink.classList.add("active");
 
-        // Find the closest nav-treeview (submenu container)
-        const navTreeview = currentLink.closest(".nav-treeview");
-        if (navTreeview) {
-            // Find the parent .has-treeview <li>
-            const parentLi = navTreeview.closest(".has-treeview");
-            if (parentLi) {
-                // Add menu-open to parent <li> to expand submenu
-                parentLi.classList.add("menu-open");
+            // Find the closest nav-treeview (submenu container)
+            const navTreeview = currentLink.closest(".nav-treeview");
+            if (navTreeview) {
+                // Find the parent .has-treeview <li>
+                const parentLi = navTreeview.closest(".has-treeview");
+                if (parentLi) {
+                    // Add menu-open to parent <li> to expand submenu
+                    parentLi.classList.add("menu-open");
 
-                // Add active to the main menu <a> inside parent <li>
-                const parentLink = parentLi.querySelector('a.nav-link');
-                if (parentLink) {
-                    parentLink.classList.add("active");
+                    // Add active to the main menu <a> inside parent <li>
+                    const parentLink = parentLi.querySelector('a.nav-link');
+                    if (parentLink) {
+                        parentLink.classList.add("active");
+                    }
                 }
             }
         }
-    }
-});
-
+    });
     </script>
 
 
