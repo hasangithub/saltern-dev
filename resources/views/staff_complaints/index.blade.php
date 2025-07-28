@@ -36,6 +36,7 @@
                             <thead>
                                 <tr>
                                     <th>Owner</th>
+                                    <th>Waikal</th>
                                     <th>Complaint</th>
                                     <th>Voice File</th>
                                     <th>Status</th>
@@ -52,6 +53,7 @@
                                 @endphp
                                 <tr>
                                     <td>{{ $complaint->owner->name_with_initial }}</td>
+                                    <td>{{ $complaint->membership->saltern->yahai->name ?? null }} {{$complaint->membership->saltern->name ?? null }}</td>
                                     <td>{{ $complaint->complaint_text }}</td>
                                     <td>
                                         @if ($complaint->complaint_voice)
