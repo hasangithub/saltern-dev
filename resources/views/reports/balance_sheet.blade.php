@@ -14,44 +14,79 @@
     <div class="row">
         <!-- Left: Assets -->
         <div class="col-md-6">
-            <h4>Assets</h4>
+
             @foreach ($data['Assets'] as $group)
-                <strong>{{ $group['name'] }}</strong>
-                <ul>
-                    @foreach ($group['subGroups'] as $subName => $sub)
-                        <li><strong>{{ $subName }}</strong>
-                            <ul>
-                                @foreach ($sub['ledgers'] as $ledger)
-                                    <li>{{ $ledger['name'] }} - {{ number_format($ledger['total'], 2) }}</li>
-                                @endforeach
-                            </ul>
-                            <strong>Total: {{ number_format($sub['total'], 2) }}</strong>
-                        </li>
-                    @endforeach
-                </ul>
-                <strong>Group Total: {{ number_format($group['total'], 2) }}</strong>
-                <hr>
+            <strong>{{ $group['name'] }}</strong>
+            <table class="table">
+
+                @foreach ($group['subGroups'] as $subName => $sub)
+
+                <td><strong>{{ $subName }}</td>
+
+                @foreach ($sub['ledgers'] as $ledger)
+                <tr>
+                    <td>{{ $ledger['name'] }}</td>
+                    <td class="text-right">{{ number_format($ledger['total'], 2) }}</td>
+                </tr>
+
+                @endforeach
+                <tr colspan="2">
+                    <td>Total</td>
+                    <td class="text-right">{{ number_format($sub['total'], 2) }}</td>
+                </tr>
+
+                </li>
+
+                @endforeach
+
+            </table>
+            <hr>
             @endforeach
-            <h5><strong>Grand Total Assets: {{ number_format($assetsTotal, 2) }}</strong></h5>
+            <table class="table">
+                <tr>
+                    <td>Total Assets</td>
+                    <td class="text-right"> {{ number_format($assetsTotal, 2) }}</td>
+                </tr>
+            </table>
         </div>
 
         <!-- Right: Equity & Liabilities -->
         <div class="col-md-6">
-            <h4>Equity</h4>
-            @foreach ($data['Equity'] as $item)
-                <p>{{ $item['name'] }} - {{ number_format($item['total'], 2) }}</p>
-            @endforeach
-            <strong>Total Equity: {{ number_format($equityTotal, 2) }}</strong>
-
+            <strong>Liabilities and Equity</strong></br>
+            <strong>Equity(Capital)</strong>
+            <table class="table">
+                @foreach ($data['Equity'] as $item)
+                <tr>
+                    <td>{{ $item['name'] }}</td>
+                    <td class="text-right">{{ number_format($item['total'], 2) }}</td>
+                </tr>
+                @endforeach
+                <tr>
+                    <td>Total Equity</td>
+                    <td class="text-right">{{ number_format($equityTotal, 2) }}</td>
+                </tr>
+            </table>
             <hr>
-            <h4>Current Liabilities</h4>
-            @foreach ($data['CurrentLiabilities'] as $item)
-                <p>{{ $item['name'] }} - {{ number_format($item['total'], 2) }}</p>
-            @endforeach
-            <strong>Total Liabilities: {{ number_format($liabilitiesTotal, 2) }}</strong>
-
-            <hr>
-            <h5><strong>Total Equity & Liabilities: {{ number_format($equityTotal + $liabilitiesTotal, 2) }}</strong></h5>
+            <strong>Current Liabilities</storng>
+                <table class="table">
+                    @foreach ($data['CurrentLiabilities'] as $item)
+                    <tr>
+                        <td>{{ $item['name'] }}</td>
+                        <td class="text-right">{{ number_format($item['total'], 2) }}</td>
+                    </tr>
+                    @endforeach
+                    <tr>
+                        <td>Total Liabilities</td>
+                        <td class="text-right">{{ number_format($liabilitiesTotal, 2) }}</td>
+                    </tr>
+                </table>
+                <hr>
+                <table class="table">
+                    <tr>
+                        <td>Total Equity & Liabilities</td>
+                        <td class="text-right"> {{ number_format($equityTotal + $liabilitiesTotal, 2) }}</td>
+                    </tr>
+                </table>        
         </div>
     </div>
 </div>
@@ -73,4 +108,3 @@ $(document).ready(function() {
 });
 </script>
 @endpush
-
