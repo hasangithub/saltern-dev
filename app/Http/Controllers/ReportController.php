@@ -202,24 +202,34 @@ class ReportController extends Controller
         // CURRENT LIABILITIES
         if ($accountGroups->has('Liability')) {
             foreach ($accountGroups['Liability'] as $group) {
-                if ($group->name !== 'Payable') {
+             
                     $payableTotal = 0;
+                    $creditorsTotal = 0;
 
                     foreach ($group->subAccountGroups as $subGroup) {
+                        if ($subGroup->name != 'Payable') continue;
                         foreach ($subGroup->ledgers as $ledger) {
                             if (trim($ledger->name) === 'Service Charge 30%') {
                                 $payableTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                            } else {
+                                $creditorsTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
                             }
                         }
                     }
 
                     $data['CurrentLiabilities'][] = [
-                        'name' => 'Accounts Payable',
+                        'name' => 'Owner Payable Service Charge 30%',
                         'total' => $payableTotal
                     ];
 
+                    $data['CurrentLiabilities'][] = [
+                        'name' => 'Creditors',
+                        'total' => $creditorsTotal
+                    ];
+
                     $liabilitiesTotal += $payableTotal;
-                }
+                    $liabilitiesTotal += $creditorsTotal;
+                
             }
         }
 
