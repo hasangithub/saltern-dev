@@ -48,35 +48,44 @@
         /* reduce line height to compact rows */
         line-height: 1;
     }
+
     /* Smaller font and padding for main menu links */
-.sidebar .nav-sidebar > .nav-item > .nav-link {
-    font-size: 0.85rem !important;    /* smaller font */
-    padding: 0.35rem 0.75rem !important;  /* less vertical and horizontal padding */
-    height: auto !important;           /* auto height */
-    line-height: 1.1 !important;       /* tighter line height */
-}
+    .sidebar .nav-sidebar>.nav-item>.nav-link {
+        font-size: 0.85rem !important;
+        /* smaller font */
+        padding: 0.35rem 0.75rem !important;
+        /* less vertical and horizontal padding */
+        height: auto !important;
+        /* auto height */
+        line-height: 1.1 !important;
+        /* tighter line height */
+    }
 
-/* Smaller font and padding for submenu links */
-.sidebar .nav-treeview > .nav-item > .nav-link {
-    font-size: 0.8rem !important;
-    padding-left: 1rem !important;
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.25rem !important;
-    height: auto !important;
-    line-height: 1.1 !important;
-}
+    /* Smaller font and padding for submenu links */
+    .sidebar .nav-treeview>.nav-item>.nav-link {
+        font-size: 0.8rem !important;
+        padding-left: 1rem !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+        height: auto !important;
+        line-height: 1.1 !important;
+    }
 
-/* Optional: smaller icons in menu and submenu */
-.sidebar .nav-icon {
-    font-size: 0.9rem !important;
-}
+    /* Optional: smaller icons in menu and submenu */
+    .sidebar .nav-icon {
+        font-size: 0.9rem !important;
+    }
 
-/* Optional: reduce spacing between menu items */
-.sidebar .nav-sidebar > .nav-item,
-.sidebar .nav-treeview > .nav-item {
-    margin-bottom: 0.15rem !important;
-}
+    /* Optional: reduce spacing between menu items */
+    .sidebar .nav-sidebar>.nav-item,
+    .sidebar .nav-treeview>.nav-item {
+        margin-bottom: 0.15rem !important;
+    }
 
+    .table-hover tbody tr:hover {
+  background-color: #0056b3 !important;
+  color: white !important;
+}
     </style>
 </head>
 
