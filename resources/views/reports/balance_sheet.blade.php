@@ -41,7 +41,7 @@
                         @endforeach
                         <tr colspan="2">
                             <td>Total</td>
-                            <td class="text-right">{{ number_format($sub['total'], 2) }}</td>
+                            <td class="text-right"><b>{{ number_format($sub['total'], 2) }}</b></td>
                         </tr>
 
                         </li>
@@ -64,9 +64,9 @@
                             <td class="text-right">{{ number_format($item['total'], 2) }}</td>
                         </tr>
                         @endforeach
-                        <tr>
+                        <tr class="table-secondary">
                             <td>Total Equity</td>
-                            <td class="text-right">{{ number_format($equityTotal, 2) }}</td>
+                            <td class="text-right"><b>{{ number_format($equityTotal, 2) }}</b></td>
                         </tr>
                     </table>
 
@@ -78,9 +78,9 @@
                             <td class="text-right">{{ number_format($item['total'], 2) }}</td>
                         </tr>
                         @endforeach
-                        <tr>
+                        <tr class="table-secondary">
                             <td>Total Liabilities</td>
-                            <td class="text-right">{{ number_format($liabilitiesTotal, 2) }}</td>
+                            <td class="text-right"><b>{{ number_format($liabilitiesTotal, 2) }}</b></td>
                         </tr>
                     </table>
                 </div>
@@ -88,21 +88,21 @@
             <div class="row">
                 <div class="col-6">
                     <table class="table">
-                        <tr>
+                        <tr class="table-secondary">
                             <td>Total Assets</td>
-                            <td class="text-right"> {{ number_format($assetsTotal, 2) }}</td>
+                            <td class="text-right"> <b>{{ number_format($assetsTotal, 2) }}</b></td>
                         </tr>
                     </table>
                 </div>
                 <div class="col-6">
                     <table class="table">
-                        <tr>
+                        <tr class="table-secondary">
                             <td>Total Liabilities & Equity </td>
-                            <td class="text-right"> {{ number_format($equityTotal + $liabilitiesTotal, 2) }}</td>
+                            <td class="text-right"> <b>{{ number_format($equityTotal + $liabilitiesTotal, 2) }}</b></td>
                         </tr>
-                        <tr>
+                        <tr class="table-secondary">
                             <td></td>
-                            <td class="text-right">{{ number_format($assetsTotal - ($equityTotal + $liabilitiesTotal), 2) }}</td>
+                            <td class="text-right"><b>{{ number_format($assetsTotal - ($equityTotal + $liabilitiesTotal), 2) }}</b></td>
                         </tr>
                     </table>
                 </div>
