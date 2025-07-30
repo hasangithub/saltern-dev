@@ -353,12 +353,15 @@ class ReportController extends Controller
 
     public function printBalanceSheet(Request $request)
     {
-        $from = $request->from_date;
-        $to = $request->to_date;
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
 
-        $balanceSheetData = $this->getBalanceSheetData($from, $to);
+        $balanceSheetData = $this->getBalanceSheetData($fromDate, $toDate);
 
-        $pdf = PDF::loadView('reports.balance_sheet_print', $balanceSheetData)->setPaper('A4', 'portrait');
+        $pdf = PDF::loadView('reports.balance_sheet_print', array_merge(
+            $balanceSheetData,
+            compact('fromDate', 'toDate')
+        ))->setPaper('A4', 'portrait');
 
         return $pdf->stream('balance_sheet.pdf');
     }
