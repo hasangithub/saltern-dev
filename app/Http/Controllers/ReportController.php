@@ -125,7 +125,8 @@ class ReportController extends Controller
                     $subTotal = 0;
 
                     foreach ($subGroup->ledgers as $ledger) {
-                        $ledgerTotal = $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
+                        $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                        $ledgerTotal = $opening['balance'] + ($ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount'));
                         $subTotal += $ledgerTotal;
                         $subGroups[$subGroup->name]['ledgers'][] = [
                             'name' => $ledger->name,
@@ -157,11 +158,13 @@ class ReportController extends Controller
                     foreach ($subGroup->ledgers as $ledger) {
 
                         if ($subGroup->name == 'Reserve') {
-                            $reserves += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                            $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                            $reserves += $opening['balance'] + ($ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount'));
                         }
 
                         if ($ledger->name === 'Accumulated Fund') {
-                            $accumFund += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                            $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                            $accumFund += $opening['balance'] + ($ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount'));
                         }
                     }
                 }
@@ -174,7 +177,8 @@ class ReportController extends Controller
             foreach ($accountGroups['Income'] as $group) {
                 foreach ($group->subAccountGroups as $subGroup) {
                     foreach ($subGroup->ledgers as $ledger) {
-                        $income += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                        $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                        $income += $opening['balance'] + ($ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount'));
                     }
                 }
             }
@@ -185,7 +189,8 @@ class ReportController extends Controller
             foreach ($accountGroups['Expenses'] as $group) {
                 foreach ($group->subAccountGroups as $subGroup) {
                     foreach ($subGroup->ledgers as $ledger) {
-                        $expenses += $ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount');
+                        $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                        $expenses += $opening['balance'] + ($ledger->journalDetails->sum('debit_amount') - $ledger->journalDetails->sum('credit_amount'));
                     }
                 }
             }
@@ -210,9 +215,11 @@ class ReportController extends Controller
                         if ($subGroup->name != 'Payable') continue;
                         foreach ($subGroup->ledgers as $ledger) {
                             if (trim($ledger->name) === 'Service Charge 30%') {
-                                $payableTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                                $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                                $payableTotal += $opening['balance'] + ($ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount'));
                             } else {
-                                $creditorsTotal += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                                $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                                $creditorsTotal += $opening['balance'] + ($ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount'));
                             }
                         }
                     }
