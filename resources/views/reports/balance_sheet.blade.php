@@ -74,8 +74,8 @@
                         @endforeach
                         @endforeach
                         <tr style="border-top: 2px solid #000;">
-                            <td  class="text-left"><strong>Total Assets</strong></td>
-                            <td  class="text-right"><strong>{{ number_format($assetsTotal, 2) }}</strong>
+                            <td class="text-left"><strong>Total Assets</strong></td>
+                            <td class="text-right"><strong>{{ number_format($assetsTotal, 2) }}</strong>
                             </td>
                         </tr>
                     </table>
@@ -132,12 +132,18 @@
                                     <strong>{{ number_format($equityTotal + $liabilitiesTotal, 2) }}</strong>
                                 </td>
                             </tr>
+                            @php
+                            $difference = round($assetsTotal - ($equityTotal + $liabilitiesTotal), 2);
+                            @endphp
+
+                            @if ($difference != 0)
                             <tr>
                                 <td style="border: none;"></td>
-                                <td class="text-right" style="border: none;"><strong>
-                                        {{ number_format($assetsTotal - ($equityTotal + $liabilitiesTotal), 2) }}
-                                    </strong></td>
+                                <td class="text-right" style="border: none;">
+                                    {{ number_format($difference, 2) }}
+                                </td>
                             </tr>
+                            @endif
                     </table>
                 </div>
             </div>
