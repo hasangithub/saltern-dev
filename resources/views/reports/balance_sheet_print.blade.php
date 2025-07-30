@@ -123,11 +123,16 @@
                 </tr>
 
                 {{-- Optional: Difference row --}}
-                @if ($assetsTotal != ($equityTotal + $liabilitiesTotal))
+                @php
+                $difference = round($assetsTotal - ($equityTotal + $liabilitiesTotal), 2);
+                @endphp
+
+                @if ($difference != 0)
                 <tr>
                     <td style="border: none;"></td>
                     <td class="text-right" style="border: none;">
-                        {{ number_format($assetsTotal - ($equityTotal + $liabilitiesTotal), 2) }}</td>
+                        {{ number_format($difference, 2) }}
+                    </td>
                 </tr>
                 @endif
         </table>
