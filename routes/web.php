@@ -129,6 +129,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/receipts/create', [ReceiptController::class, 'create'])->name('receipts.create');
     Route::post('/receipts', [ReceiptController::class, 'store'])->name('receipts.store');
     Route::get('/receipts/{receipt}', [ReceiptController::class, 'show'])->name('receipts.show');
+    Route::get('/subledger-balance/{id}', [VoucherController::class, 'getSubledgerBalance']);
+
 
     Route::get('/reports/trial-balance/print', [ReportController::class, 'printTrialBalance'])->name('trial-balance.print');
     Route::get('/reports/balance-sheet/print', [ReportController::class, 'printBalanceSheet'])->name('balance-sheet.print');

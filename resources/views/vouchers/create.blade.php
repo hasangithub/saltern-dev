@@ -89,6 +89,7 @@
                                 <option value="{{ $bank->id }}">{{ $bank->name }}</option>
                                 @endforeach
                             </select>
+                            <div id="balanceDisplay" class="mt-2 text-success font-weight-bold"></div>
                         </div>
                         <!-- Cheque Number -->
                         <div class="form-group">
@@ -168,6 +169,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     const paymentType = document.getElementById('payment_method');
     const bankDetails = document.getElementById('bankDetails');
+
+    const baseUrlBal = "{{ url('/subledger-balance') }}";
+    document.getElementById('bank').addEventListener('change', function() {
+        document.getElementById('balanceDisplay').innerText = "";
+        const subledgerId = this.value;
+
+        fetch(`${baseUrlBal}/${subledgerId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('balanceDisplay').innerText =
+                    'Current Balance: Rs. ' + Number(data.balance).toLocaleString();
+            });
+    });
+
 
     paymentType.addEventListener('change', function() {
         if (paymentType.value === '1') {

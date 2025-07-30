@@ -196,5 +196,15 @@ public function printVoucher($id)
     return $pdf->stream("voucher_{$voucher->id}.pdf");
 }
 
+public function getSubledgerBalance($id)
+{
+    $balance = JournalDetail::where('sub_ledger_id', $id)
+        ->selectRaw('SUM(debit_amount) - SUM(credit_amount) as balance')
+        ->value('balance');
+
+    return response()->json(['balance' => $balance ?? 0]);
+}
+
+
 
 }
