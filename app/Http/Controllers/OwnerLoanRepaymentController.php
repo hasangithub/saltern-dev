@@ -134,9 +134,12 @@ class OwnerLoanRepaymentController extends Controller
             'ownerLoan.membership.owner',
             'ownerLoan.membership.saltern.yahai',
         ]);
+        $membershipId = $repayment->ownerLoan->membership_id;
+        $outstandingAmount = $this->getOutstandingLoanAmount($membershipId);
 
         $pdf = Pdf::loadView('owner_loan_repayments.print_receipt', [
             'repayment' => $repayment,
+            'outstandingAmount' => $outstandingAmount,
             'from_pdf' => true
         ])->setPaper('A6', 'portrait')
         ->setOptions([
@@ -147,5 +150,23 @@ class OwnerLoanRepaymentController extends Controller
         ]);
 
         return $pdf->stream("loan_repayment_receipt_{$repayment->id}.pdf");
+    }
+
+    private function getOutstandingLoanAmount($membershipId)
+    {
+        // Get all loans for the membership
+        $loanIds = OwnerLoan::where('membership_id', $membershipId)
+            ->pluck('id');
+
+        // Total approved amount
+        $totalApproved = OwnerLoan::whereIn('id', $loanIds)
+            ->sum('approved_amount');
+
+        // Total repaid amount
+        $totalRepaid = OwnerLoanRepayment::whereIn('owner_loan_id', $loanIds)
+            ->sum('amount');
+
+        // Outstanding = approved - repaid
+        return $totalApproved - $totalRepaid;
     }
 }
