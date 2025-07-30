@@ -156,12 +156,12 @@ class ReportController extends Controller
                 foreach ($group->subAccountGroups as $subGroup) {
                     foreach ($subGroup->ledgers as $ledger) {
 
-                        if ($ledger->name === 'Accumulated Fund') {
-                            $accumFund += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                        if ($subGroup->name == 'Reserve') {
+                            $reserves += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
                         }
 
-                        if ($ledger->name === 'Gratuity Reserve') {
-                            $reserves += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
+                        if ($ledger->name === 'Accumulated Fund') {
+                            $accumFund += $ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount');
                         }
                     }
                 }
