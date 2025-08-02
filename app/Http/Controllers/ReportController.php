@@ -298,7 +298,7 @@ class ReportController extends Controller
 
                 // 2. Ledger Opening Balance (if date filter applied)
                 $openingBalance = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
-
+                $openingBalance = is_array($openingBalance) ? $openingBalance['balance'] : $openingBalance;
                 // 3. Subledgers processing
                 $subRows = [];
                 $subDebitTotal = 0;
@@ -308,7 +308,7 @@ class ReportController extends Controller
                     $sd = $sub->journalDetails->sum('debit_amount');
                     $sc = $sub->journalDetails->sum('credit_amount');
                     $subOpening = $from ? $this->calculateOpeningBalance($ledger->id, $sub->id, $from) : 0;
-
+                    $subOpening = is_array($subOpening) ? $subOpening['balance'] : $subOpening;
                     $subBalance = $subOpening + ($sd - $sc);
                     [$subDebit, $subCredit] = $this->adjustBalance($group->name, $subBalance);
 
