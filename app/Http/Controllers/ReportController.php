@@ -293,8 +293,10 @@ class ReportController extends Controller
                 foreach ($subGroup->ledgers as $ledger) {
 
                     // 1. Ledger own entries (excluding subledger)
+                    $ledgerOpening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
                     $ledgerDebit = $ledger->directJournalDetails->sum('debit_amount');
                     $ledgerCredit = $ledger->directJournalDetails->sum('credit_amount');
+                    $ledgerBalance = $ledgerOpening + ($ledgerDebit - $ledgerCredit);
 
                     // 2. Subledgers entries
                     $subRows = [];
@@ -302,9 +304,10 @@ class ReportController extends Controller
                     $subCreditTotal = 0;
 
                     foreach ($ledger->subLedgers as $sub) {
+                        $subOpening = $from ? $this->calculateOpeningBalance($ledger->id, $sub->id, $from) : 0;
                         $sd = $sub->journalDetails->sum('debit_amount');
                         $sc = $sub->journalDetails->sum('credit_amount');
-                        $subBalance = $sd - $sc;
+                        $subBalance = $subOpening + ($sd - $sc);
                         [$subDebit, $subCredit] = $this->adjustBalance($group->name, $subBalance);
 
                         if ($subDebit != 0 || $subCredit != 0) {
@@ -325,7 +328,7 @@ class ReportController extends Controller
                     // 3. Ledger total including subledgers
                     $totalLedgerDebit = $ledgerDebit + $subDebitTotal;
                     $totalLedgerCredit = $ledgerCredit + $subCreditTotal;
-                    $balance = $totalLedgerDebit - $totalLedgerCredit;
+                    $balance = $ledgerBalance + ($subDebitTotal - $subCreditTotal);
                     [$adjDebit, $adjCredit] = $this->adjustBalance($group->name, $balance);
 
                     if ($adjDebit != 0 || $adjCredit != 0) {
