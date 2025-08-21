@@ -136,10 +136,14 @@ class PayrollBatchController extends Controller
                 ->filter();
 
             foreach ($employeeIds as $employeeId) {
+
+                $employee = Employee::find($employeeId);
                 // Upsert master
                 $master = Payroll::firstOrCreate([
-                    'batch_id' => $batch->id,
+                    'batch_id'    => $batch->id,
                     'employee_id' => $employeeId,
+                ], [
+                    'basic_salary' => $employee->base_salary, // set base_salary on creation
                 ]);
 
                 // Clear existing rows for idempotence (re-save cleanly)
