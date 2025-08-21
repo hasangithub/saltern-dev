@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StaffLoan extends Model
 {
-    protected $fillable = ['user_id', 'requested_amount', 'purpose', 'approved_amount', 'approval_comments' , 'approval_date', 'status'];
+    protected $fillable = ['user_id', 'requested_amount', 'purpose', 'approved_amount', 'approval_comments' , 'approval_date', 'status', 'voucher_id', 'is_migrated'];
 
     public function user()
     {

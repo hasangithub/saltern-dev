@@ -39,6 +39,9 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\StaffLoanController;
+
+// routes/web.php
+use App\Http\Controllers\PayrollBatchController;
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [UserLoginController::class, 'login']);
@@ -76,9 +79,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('staff/complaints/{complaint}', [StaffComplaintController::class, 'show'])->name('staff.complaints.show');
     Route::post('staff/complaints/{complaint}/assign', [StaffComplaintController::class, 'assign'])->name('staff.complaints.assign');
     Route::post('staff/complaints/{complaint}/reply', [StaffComplaintController::class, 'reply'])->name('staff.complaints.reply');
-    Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
-    Route::post('/payroll/generate', [PayrollController::class, 'generateCurrentMonth'])->name('payroll.generate');
-    Route::get('/payroll/view', [PayrollController::class, 'view'])->name('payroll.view');
+
 
     Route::get('/attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
     Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
@@ -160,6 +161,18 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/leave/approve/{id}', [LeaveController::class, 'approveLeave'])->name('leave.approve');
     Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
     Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
+
+    Route::prefix('payroll')->name('payroll.')->group(function () {
+        Route::get('/', [PayrollBatchController::class, 'index'])->name('batches.index');
+        Route::get('/batches/create', [PayrollBatchController::class, 'create'])->name('batches.create');
+        Route::post('/batches', [PayrollBatchController::class, 'store'])->name('batches.store'); // validates unique period, redirects to build
+        Route::get('/batches/{batch}/build', [PayrollBatchController::class, 'build'])->name('batches.build');
+        Route::get('/batches/{batch}/edit', [PayrollBatchController::class, 'edit'])->name('batches.edit');
+        Route::post('/batches/{batch}/save', [PayrollBatchController::class, 'save'])->name('batches.save');
+        Route::post('/batches/{batch}/update', [PayrollBatchController::class, 'update'])->name('batches.update');
+        Route::get('/{batch}/print', [PayrollBatchController::class, 'print'])
+        ->name('batches.print');
+    });
 });
 
 
@@ -249,6 +262,8 @@ Route::post('/password/email', [ForgotPasswordController::class, 'sendLink'])->n
 
 Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
 
 
 

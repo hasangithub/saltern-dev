@@ -1,30 +1,20 @@
-<?php
+<?php 
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Payroll extends Model
 {
-
+    protected $table = 'payrolls';
     protected $fillable = [
-        'user_id',
-        'month',
-        'total_days',
-        'present_days',
-        'leave_days',
-        'half_days',
-        'no_pay_days',
-        'basic_salary',
-        'net_salary',
-        'epf_employee',
-        'epf_employer',
-        'etf',
+        'batch_id','employee_id', 'basic_salary','overtime_hours', 'overtime_amount', 'no_pay','gross_earnings','total_deductions','net_pay','status','payslip_path'
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
+    public function batch(): BelongsTo { return $this->belongsTo(PayrollBatch::class, 'batch_id'); }
+    public function employee(): BelongsTo { return $this->belongsTo(Employee::class); }
+    public function earnings(): HasMany { return $this->hasMany(PayrollEarning::class, 'payroll_id'); }
+    public function deductions(): HasMany { return $this->hasMany(PayrollDeduction::class, 'payroll_id'); }
 }

@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payrolls', function (Blueprint $table) {
-            $table->decimal('epf_employee', 10, 2)->default(0);
-            $table->decimal('epf_employer', 10, 2)->default(0);
-            $table->decimal('etf', 10, 2)->default(0);
-            $table->decimal('no_pay_deductions', 10, 2)->default(0);
+        Schema::table('payroll_deductions', function (Blueprint $table) {
+            $table->unsignedBigInteger('loan_id')->nullable()->after('amount');
         });
     }
 
@@ -24,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payrolls', function (Blueprint $table) {
+        Schema::table('payroll_deductions', function (Blueprint $table) {
             //
         });
     }

@@ -163,7 +163,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('payroll.index') }}" class="nav-link">
+                            <a href="{{ route('payroll.batches.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>Payroll</p>
                             </a>

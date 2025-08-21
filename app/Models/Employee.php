@@ -35,4 +35,9 @@ class Employee extends Model
         ];
     }
 
+    public function staffLoans()
+    {
+        return $this->hasMany(StaffLoan::class, 'user_id', 'user_id');
+    }
+
 }

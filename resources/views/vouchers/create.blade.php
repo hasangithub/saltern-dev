@@ -66,6 +66,18 @@
                         </select>
                     </div>
 
+                    <div class="form-group">
+                        <label for="staff_loan_id">Staff Loan</label>
+                        <select name="staff_loan_id" id="staff_loan_id" class="form-control">
+                            <option value=""></option>
+                            @foreach($staffLoans as $staffLoan)
+                            <option value="{{ $staffLoan->id }}">
+                                {{ $staffLoan->user->name . " - ".$staffLoan->approved_amount }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <!-- Payment Method -->
                     <div class="form-group">
                         <label for="payment_method">Payment Method</label>
@@ -112,7 +124,7 @@
                     </div>
                     <div class="form-group">
                         <label for="sub_account">Select Sub-Account:</label>
-                        <select name="sub_account" id="sub_account" class="form-control subAccount" required>
+                        <select name="sub_account" id="sub_account" class="form-control subAccount">
                             <option value="">Select SubAccount</option>
                             @foreach($subAccounts as $subAccount)
                             <option value="{{ $subAccount->id }}">{{ $subAccount->name }}</option>

@@ -9,53 +9,67 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">payrolls</h3>
-                </div>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Payroll Batches</h4>
+        <a href="{{ route('payroll.batches.create') }}" class="btn btn-primary">Create New Batch</a>
+    </div>
 
-                <div class="card-body">
-                    @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                    @endif
-                    <form action="{{ route('payroll.view') }}" method="GET" class="mb-4">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label>Year</label>
-                                <select name="year" class="form-control">
-                                    @foreach($years as $y)
-                                    <option value="{{ $y }}">{{ $y }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label>Month</label>
-                                <select name="month" class="form-control">
-                                    @foreach($months as $m)
-                                    <option value="{{ $m }}">{{ DateTime::createFromFormat('!m', $m)->format('F') }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-4 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary">View Payroll</button>
-                            </div>
-                        </div>
-                    </form>
+    @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
 
-                    <form method="POST" action="{{ route('payroll.generate') }}">
-                        @csrf
-                        <button class="btn btn-success">Generate Current Month Payroll</button>
-                    </form>
-                </div>
-
-            </div>
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Pay Period</th>
+                        <th>Status</th>
+                        <th># Employees</th>
+                        <th>Processed By</th>
+                        <th>Created</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($batches as $batch)
+                    <tr>
+                        <td>{{ $batch->pay_period }}</td>
+                        <td><span
+                                class="badge bg-{{ $batch->status === 'draft' ? 'secondary' : ($batch->status==='approved'?'info':'success') }}">{{ ucfirst($batch->status) }}</span>
+                        </td>
+                        <td>{{ $batch->payrolls_count }}</td>
+                        <td>{{ optional($batch->processor)->name ?? '-' }}</td>
+                        <td>{{ $batch->created_at->format('Y-m-d') }}</td>
+                        <td class="text-end">
+                            @if($batch->payrolls_count == 0)
+                            <a class="btn btn-sm btn-outline-primary"
+                                href="{{ route('payroll.batches.build', $batch) }}">
+                                Open
+                            </a>
+                            @else
+                            <a class="btn btn-sm btn-outline-warning"
+                                href="{{ route('payroll.batches.edit', $batch) }}">
+                                Edit
+                            </a>
+                            @endif
+                            <a href="{{ route('payroll.batches.print', $batch) }}" class="btn btn-sm btn-primary"
+                                target="_blank">
+                                Print
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center p-4">No batches yet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
+    </div>
+
+    <div class="mt-3">
+
     </div>
 </div>
 @stop
