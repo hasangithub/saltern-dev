@@ -209,8 +209,8 @@ class PayrollBatchController extends Controller
         });
 
         return redirect()
-            ->route('payroll.build', $batch)
-            ->with('success', 'Payroll saved for all entered employees.');
+        ->route('payroll.batches.edit', $batch)
+        ->with('success', 'Payroll updated successfully.');
     }
 
     public function update(Request $request, PayrollBatch $batch)
