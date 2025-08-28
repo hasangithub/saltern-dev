@@ -64,7 +64,7 @@
 
                             {{-- Basic Salary --}}
                             <td>
-                                <input type="number" step="0.01" class="form-control text-end earning-input"
+                                <input type="number" step="0.01" class="form-control text-end"
                                     name="payrolls[{{ $payroll->employee_id }}][basic_salary]"
                                     value="{{ $payroll->basic_salary }}" readonly>
                             </td>
