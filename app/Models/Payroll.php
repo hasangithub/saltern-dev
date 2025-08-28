@@ -10,7 +10,17 @@ class Payroll extends Model
 {
     protected $table = 'payrolls';
     protected $fillable = [
-        'batch_id','employee_id', 'basic_salary','overtime_hours', 'overtime_amount', 'no_pay','gross_earnings','total_deductions','net_pay','status','payslip_path'
+        'batch_id','employee_id', 'basic_salary','overtime_hours', 'overtime_amount', 'no_pay',
+        'mercantile_days',
+        'mercantile_days_amount',
+        'extra_full_days',
+        'extra_full_days_amount',
+        'extra_half_days',
+        'extra_half_days_amount',
+        'poovarasan_kuda_allowance_150',
+        'poovarasan_kuda_allowance_150_amount',
+        'labour_amount',
+        'epf_employee' , 'epf_employer', 'etf','gross_earnings','total_deductions','net_pay','status','payslip_path'
     ];
 
     public function batch(): BelongsTo { return $this->belongsTo(PayrollBatch::class, 'batch_id'); }
