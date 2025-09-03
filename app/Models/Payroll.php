@@ -19,6 +19,7 @@ class Payroll extends Model
         'extra_half_days_amount',
         'poovarasan_kuda_allowance_150',
         'poovarasan_kuda_allowance_150_amount',
+        'labour_hours',
         'labour_amount',
         'epf_employee' , 'epf_employer', 'etf','gross_earnings','total_deductions','net_pay','status','payslip_path'
     ];

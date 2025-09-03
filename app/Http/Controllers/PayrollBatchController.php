@@ -72,7 +72,7 @@ class PayrollBatchController extends Controller
         $earningComponents = PayrollComponent::where('type', 'earning')->get();
         $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
 
-        $pdf = Pdf::loadView('payroll.print_payroll', compact('batch', 'earningComponents', 'deductionComponents', 'employees'))->setPaper('A4', 'landscape');
+        $pdf = Pdf::loadView('payroll.print_payroll', compact('batch', 'earningComponents', 'deductionComponents', 'employees'))->setPaper('legal', 'landscape');
         
         // Optionally, force download
         return $pdf->stream("Payroll_{$batch->pay_period}.pdf");
@@ -143,22 +143,29 @@ class PayrollBatchController extends Controller
 
                 $noPay = floatval($payrollsInput[$employeeId]['no_pay'] ?? 0);
                 $effectiveSalary = $employee->base_salary - $noPay;
+                $oneDaySalary = $employee->base_salary / 30;
 
-                  // Extra day calculations
+                $overtimeHours = (float)($payrollsInput[$employeeId]['overtime_hours'] ?? 0);
+                $overtimeAmount = ($effectiveSalary / 30) * (3/16) * $overtimeHours;
+    
+
+            // Extra day calculations
             $mercantileDays = (float)($payrollsInput[$employeeId]['mercantile_days'] ?? 0);
-            $mercantileAmount = ($effectiveSalary / 30) * $mercantileDays;
+            $mercantileAmount = ($oneDaySalary) * $mercantileDays;
 
             $extraFullDays = (float)($payrollsInput[$employeeId]['extra_full_days'] ?? 0);
-            $extraFullAmount = ($effectiveSalary / 30) * $extraFullDays;
+            $extraFullAmount = ($oneDaySalary) * $extraFullDays;
 
             $extraHalfDays = (float)($payrollsInput[$employeeId]['extra_half_days'] ?? 0);
-            $extraHalfAmount = ($effectiveSalary / 30 / 2) * $extraHalfDays;
+            $extraHalfAmount = ($oneDaySalary / 2) * $extraHalfDays;
 
             $poovarasanDays = (float)($payrollsInput[$employeeId]['poovarasan_kuda_allowance_150'] ?? 0);
             $poovarasanAmount = $poovarasanDays * 150;
 
+            $labour_hours = (float)($payrollsInput[$employeeId]['labour_hours'] ?? 0);
             $labourAmount = (float)($payrollsInput[$employeeId]['labour_amount'] ?? 0);
 
+            $extraWork = $mercantileAmount + $extraFullAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
     
                 // Upsert master
                 $master = Payroll::firstOrCreate([
@@ -174,7 +181,7 @@ class PayrollBatchController extends Controller
                 $master->earnings()->delete();
                 $master->deductions()->delete();
 
-                $gross = $effectiveSalary;
+                $gross = $effectiveSalary + $overtimeAmount;
                 $ded = 0;
 
                 // Save earnings
@@ -228,7 +235,7 @@ class PayrollBatchController extends Controller
                     PayrollDeduction::create($deductionData);
                 }
 
-                  // EPF/ETF Calculations
+            // EPF/ETF Calculations
             $epfEmployee = $effectiveSalary * 0.08;
             $epfEmployer = $effectiveSalary * 0.12;
             $etf = $effectiveSalary * 0.03;
@@ -238,14 +245,21 @@ class PayrollBatchController extends Controller
             $master->update([
                 'gross_earnings' => $gross,
                 'total_deductions' => $ded,
-                'net_pay' => $gross - $ded,
+                'net_pay' => $extraWork + $gross - $ded,
                 'epf_employee' => $epfEmployee,
                 'epf_employer' => $epfEmployer,
                 'etf' => $etf,
+                'overtime_hours' => $overtimeHours,
+                'overtime_amount' => $overtimeAmount,
+                'mercantile_days' => $mercantileDays,
                 'mercantile_days_amount' => $mercantileAmount,
+                'extra_full_days' => $extraFullDays,
                 'extra_full_days_amount' => $extraFullAmount,
+                'extra_half_days' => $extraHalfDays,
                 'extra_half_days_amount' => $extraHalfAmount,
+                'poovarasan_kuda_allowance_150' => $poovarasanDays,
                 'poovarasan_kuda_allowance_150_amount' => $poovarasanAmount,
+                'labour_hours' => $labour_hours,
                 'labour_amount' => $labourAmount,
             ]);
             }
@@ -290,21 +304,29 @@ class PayrollBatchController extends Controller
 
                 $noPay = floatval($payrollsInput[$employeeId]['no_pay'] ?? 0);
                 $effectiveSalary = $master->basic_salary - $noPay;
+                $oneDaySalary = $master->basic_salary / 30;
 
-                  // Extra day calculations
-            $mercantileDays = (float)($payrollsInput[$employeeId]['mercantile_days'] ?? 0);
-            $mercantileAmount = ($effectiveSalary / 30) * $mercantileDays;
-            
-            $extraFullDays = (float)($payrollsInput[$employeeId]['extra_full_days'] ?? 0);
-            $extraFullAmount = ($effectiveSalary / 30) * $extraFullDays;
+                $overtimeHours = (float)($payrollsInput[$employeeId]['overtime_hours'] ?? 0);
+                $overtimeAmount = ($effectiveSalary / 30) * (3/16) * $overtimeHours;
 
-            $extraHalfDays = (float)($payrollsInput[$employeeId]['extra_half_days'] ?? 0);
-            $extraHalfAmount = ($effectiveSalary / 30 / 2) * $extraHalfDays;
-
-            $poovarasanDays = (float)($payrollsInput[$employeeId]['poovarasan_kuda_allowance_150'] ?? 0);
-            $poovarasanAmount = $poovarasanDays * 150;
-
-            $labourAmount = (float)($payrollsInput[$employeeId]['labour_amount'] ?? 0);
+             // Extra day calculations
+             $mercantileDays = (float)($payrollsInput[$employeeId]['mercantile_days'] ?? 0);
+             $mercantileAmount = ($oneDaySalary) * $mercantileDays;
+ 
+             $extraFullDays = (float)($payrollsInput[$employeeId]['extra_full_days'] ?? 0);
+             $extraFullAmount = ($oneDaySalary) * $extraFullDays;
+ 
+             $extraHalfDays = (float)($payrollsInput[$employeeId]['extra_half_days'] ?? 0);
+             $extraHalfAmount = ($oneDaySalary / 2) * $extraHalfDays;
+ 
+             $poovarasanDays = (float)($payrollsInput[$employeeId]['poovarasan_kuda_allowance_150'] ?? 0);
+             $poovarasanAmount = $poovarasanDays * 150;
+ 
+             $labour_hours = (float)($payrollsInput[$employeeId]['labour_hours'] ?? 0);
+             $labourAmount = (float)($payrollsInput[$employeeId]['labour_amount'] ?? 0);
+ 
+             $extraWork = $mercantileAmount + $extraFullAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
+ 
 
     
 
@@ -319,7 +341,7 @@ class PayrollBatchController extends Controller
                 'overtime_amount' => $payrollsInput[$employeeId]['overtime_amount'] ?? 0,
                 'no_pay' => $payrollsInput[$employeeId]['no_pay'] ?? 0,
                 ]);
-                $gross = 0;
+                $gross = $effectiveSalary + $overtimeAmount;
                 $ded = 0;
 
                 // --- Earnings ---
@@ -339,8 +361,7 @@ class PayrollBatchController extends Controller
                     $gross += $amount;
                 }
 
-                // Add overtime_amount to gross
-                $gross += $master->overtime_amount;
+
 
                 // --- Deductions ---
                 foreach (($deductions[$employeeId] ?? []) as $key => $amount) {
@@ -378,16 +399,33 @@ class PayrollBatchController extends Controller
                     PayrollDeduction::create($deductionData);
                 }
 
+                            // EPF/ETF Calculations
+            $epfEmployee = $effectiveSalary * 0.08;
+            $epfEmployer = $effectiveSalary * 0.12;
+            $etf = $effectiveSalary * 0.03;
+
+            $ded += $epfEmployee; // only EPF 8% counts in deductions for net pay
+
                 // Update payroll totals
                 $master->update([
                     'gross_earnings' => $gross,
-                    'total_deductions' => $ded,
-                    'net_pay' => $gross - $ded,
-                    'mercantile_days_amount' => $mercantileAmount,
-                    'extra_full_days_amount' => $extraFullAmount,
-                    'extra_half_days_amount' => $extraHalfAmount,
-                    'poovarasan_kuda_allowance_150_amount' => $poovarasanAmount,
-                    'labour_amount' => $labourAmount,
+                'total_deductions' => $ded,
+                'net_pay' => $extraWork + $gross - $ded,
+                'epf_employee' => $epfEmployee,
+                'epf_employer' => $epfEmployer,
+                'etf' => $etf,
+                'overtime_hours' => $overtimeHours,
+                'overtime_amount' => $overtimeAmount,
+                'mercantile_days' => $mercantileDays,
+                'mercantile_days_amount' => $mercantileAmount,
+                'extra_full_days' => $extraFullDays,
+                'extra_full_days_amount' => $extraFullAmount,
+                'extra_half_days' => $extraHalfDays,
+                'extra_half_days_amount' => $extraHalfAmount,
+                'poovarasan_kuda_allowance_150' => $poovarasanDays,
+                'poovarasan_kuda_allowance_150_amount' => $poovarasanAmount,
+                'labour_hours' => $labour_hours,
+                'labour_amount' => $labourAmount,
                 ]);
             }
         });

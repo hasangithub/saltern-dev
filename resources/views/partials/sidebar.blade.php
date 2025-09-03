@@ -254,6 +254,12 @@
                         <p>Employees</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('inventories.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-boxes"></i>
+                        <p>Inventories</p>
+                    </a>
+                </li>
 
                 <!-- <li class="nav-item">
                     <a href="{{ route('expenses.index') }}" class="nav-link">

@@ -38,6 +38,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\StaffLoanController;
 
 // routes/web.php
@@ -173,6 +174,9 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/{batch}/print', [PayrollBatchController::class, 'print'])
         ->name('batches.print');
     });
+
+    Route::resource('inventories', InventoryController::class);
+
 });
 
 
