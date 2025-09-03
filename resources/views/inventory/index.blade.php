@@ -1,14 +1,18 @@
 @extends('layout.app')
 
+{{-- Customize layout sections --}}
+
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Inventory')
-@section('content_header_subtitle', 'List')
+@section('content_header_subtitle', 'Inventory')
+
+{{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container-fluid">
     <a href="{{ route('inventories.create') }}" class="btn btn-primary mb-3">Add Inventory</a>
     
-    <table class="table table-bordered">
+    <table id="inventory-table" class="table table-sm nowrap table-hover" style="width:100%">
         <thead>
             <tr>
                 <th>Name</th>
@@ -44,7 +48,27 @@
             @endforeach
         </tbody>
     </table>
-
-    {{ $inventories->links() }}
 </div>
-@endsection
+@stop
+{{-- Push extra CSS --}}
+
+@push('css')
+{{-- Add here extra stylesheets --}}
+{{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+@endpush
+
+{{-- Push extra scripts --}}
+
+@push('js')
+<script>
+$(document).ready(function() {
+    $('#inventory-table').DataTable({
+        order: [
+            [0, 'desc']
+        ],
+        pageLength: 100
+    });
+});
+
+</script>
+@endpush
