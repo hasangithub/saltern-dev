@@ -88,13 +88,23 @@ class PayrollBatchController extends Controller
             'pay_period.regex' => 'Pay period must be in format YYYY-MM.',
         ]);
 
+        $employees = Employee::where('employment_status','active')->get();
+
         $batch = PayrollBatch::create([
             'pay_period' => $request->pay_period,
             'status' => 'draft',
             'processed_by' => auth('web')->id(),
         ]);
 
-        return redirect()->route('payroll.batches.build', $batch);
+        foreach ($employees as $employee) {
+            Payroll::create([
+                'batch_id'      => $batch->id,
+                'employee_id'   => $employee->id,
+                'basic_salary'  => $employee->base_salary,
+            ]);
+        }
+
+        return redirect()->route('payroll.batches.edit', $batch->id);
     }
 
     public function build(PayrollBatch $batch)

@@ -36,20 +36,20 @@
                             @foreach($earningComponents as $ec)
                             <th style="min-width:120px;" class="text-center">{{ $ec->name }}</th>
                             @endforeach
-                            <th style="min-width:120px;">Hours</th>
+                            <th style="min-width:100px;">Hours</th>
                             <th style="min-width:120px;">Amounts</th>
                             <th class="text-right" style="min-width:120px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
-                            <th style="min-width:200px;" class="text-center">{{ $dc->name }}</th>
+                            <th style="min-width:150px;" class="text-center">{{ $dc->name }}</th>
                             @endforeach
                             <th style="min-width:120px;">EPF</th>
-                            <th style="min-width:120px;">No Pay</th>
+                            <th style="min-width:250px;">No Pay</th>
                             <th style="min-width:250px;">Merch.Day Payments</th>
-                            <th style="min-width:250px;">Extra 1 Day Payments</th>
-                            <th style="min-width:250px;">Extra 12 Hours Payments</th>
+                            <th style="min-width:250px;">Double Duty</th>
+                            <th style="min-width:250px;">12 Hours Duty</th>
                             <th style="min-width:250px;">Poovarsan kuda 150 Payments</th>
-                            <th style="min-width:250px;">Lab. Pay</th>
+                            <th style="min-width:250px;">Extra Hours</th>
                             <th class="text-right" style="min-width:120px;">Deductions</th>
                             <th class="text-right" style="min-width:120px;">Net Pay</th>
                         </tr>
@@ -85,15 +85,16 @@
                             <td>
                                 <input type="number" step="0.1"
                                     name="payrolls[{{ $payroll->employee_id }}][overtime_hours]"
-                                    value="{{ $payroll->overtime_hours }}">
+                                    value="{{ $payroll->overtime_hours }}" class="form-control">
                             </td>
                             <td>
                                 <input type="number" name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
-                                    value="{{ $payroll->overtime_amount }}">
+                                    value="{{ $payroll->overtime_amount }}" class="form-control">
                             </td>
 
                             {{-- Gross --}}
-                            <td class="text-right gross-cell">{{ number_format($payroll->gross_earnings, 2) }}</td>
+                            <td class="text-right gross-cell font-weight-bold">
+                                {{ number_format($payroll->gross_earnings, 2) }}</td>
 
                             {{-- Deductions --}}
                             @foreach($deductionComponents as $dc)
@@ -133,208 +134,207 @@
                             <td><input type="number" step="0.01" name="payrolls[{{ $emp->id }}][epf]"
                                     class="form-control deduction-input" value="{{ $emp->base_salary * 0.08}}" readonly>
                             </td>
-                            <td><input type="number" step="0.01" name="payrolls[{{ $emp->id }}][no_pay]"
-                                    class="form-control no-pay-input" value="{{$payroll->no_pay}}"></td>
-
-                            <td>
-
-                                <div style="display: flex; gap: 5px;">
-                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days]"
-                                        class="form-control " value="{{$payroll->mercantile_days}}">
-                                    <input type="number" step="0.01"
-                                        name="payrolls[{{ $emp->id }}][mercantile_days_amount]"
-                                        class="form-control extra-earning-input"
-                                        value="{{$payroll->mercantile_days_amount}}" readonly>
-                                </div>
-                            </td>
-
                             <td>
                                 <div style="display: flex; gap: 5px;">
-                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days]"
-                                        class="form-control " value="{{$payroll->extra_full_days}}">
-                                    <input type="number" step="0.01"
-                                        name="payrolls[{{ $emp->id }}][extra_full_days_amount]"
-                                        class="form-control extra-earning-input"
-                                        value="{{$payroll->extra_full_days_amount}}" readonly>
-                                </div>
+                                <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][no_pay_days]"
+                                class="form-control" value="{{$payroll->no_pay}}">
+                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][no_pay]"
+                                        class="form-control no-pay-input" value="{{$payroll->no_pay}}" readonly>
                             </td>
-
-                            <td>
-                                <div style="display: flex; gap: 5px;">
-                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
-                                        class="form-control " value="{{$payroll->extra_half_days}}">
-                                    <input type="number" step="0.01"
-                                        name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
-                                        class="form-control extra-earning-input" readonly
-                                        value="{{$payroll->extra_half_days_amount}}">
-                                </div>
-                            </td>
-
-                            <td>
-                                <div style="display: flex; gap: 5px;">
-                                    <input type="number" step="0.01"
-                                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
-                                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
-                                    <input type="number" step="0.01"
-                                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
-                                        class="form-control extra-earning-input" readonly
-                                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
-                                </div>
-
-                            </td>
-
-                            <td>
-                                <div style="display: flex; gap: 5px;">
-                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]"
-                                        class="form-control" value="{{$payroll->labour_hours}}">
-
-                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
-                                        class="form-control extra-earning-input" readonly>
-
-
-                                </div>
-                            </td>
-
-                            {{-- Totals --}}
-                            <td class="text-right ded-cell">{{ number_format($payroll->total_deductions, 2) }}</td>
-                            <td class="text-right net-cell fw-semibold">{{ number_format($payroll->net_pay, 2) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Total</th>
-                            <th class="text-right total-basic">0.00</th>
-
-                            {{-- Earnings totals --}}
-                            @foreach($earningComponents as $ec)
-                            <th class="text-right total-earning" data-component-id="{{ $ec->id }}">0.00</th>
-                            @endforeach
-
-                            <th class="text-right total-overtime-hours">0.00</th>
-                            <th class="text-right total-overtime-amount">0.00</th>
-                            <th class="text-right total-gross">0.00</th>
-
-                            {{-- Deductions totals --}}
-                            @foreach($deductionComponents as $dc)
-                            <th class="text-right total-deduction" data-component-id="{{ $dc->id }}">0.00</th>
-                            @endforeach
-                            <th class="text-right total-epf8">0.00</th>
-                            <th class="text-right total-no_pay">0.00</th>
-                            <th class="text-right">0.00</th>
-                            <th class="text-right">0.00</th>
-                            <th class="text-right">0.00</th>
-                            <th class="text-right">0.00</th>
-                            <th class="text-right">0.00</th>
-                            <th class="text-right total-deductions">0.00</th>
-                            <th class="text-right total-net">0.00</th>
-                        </tr>
-                    </tfoot>
-
-                </table>
             </div>
 
-            <div class="card-footer d-flex justify-content-end gap-2">
-                <button type="submit" class="btn btn-primary">Update Payroll</button>
-            </div>
-            <div class="card-footer">
-                <div class="row payroll-summary">
-                    <!-- Left side: Earnings summary -->
-                    <div class="col-md-4">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th colspan="2">Earnings Summary</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Basic Salary</td>
-                                    <td class="text-right summary-basic">0.00</td>
-                                </tr>
-                                @foreach($earningComponents as $ec)
-                                <tr>
-                                    <td>{{ $ec->name }}</td>
-                                    <td class="text-right summary-earning" data-component-id="{{ $ec->id }}">0.00</td>
-                                </tr>
-                                @endforeach
-                                <tr>
-                                    <td>Overtime Amount</td>
-                                    <td class="text-right summary-overtime-amount">0.00</td>
-                                </tr>
-                                <tr>
-                                    <td>Extra Amount</td>
-                                    <td class="text-right summary-extra-amount">0.00</td>
-                                </tr>
-                                <tr class="fw-semibold">
-                                    <td>Total Earnings</td>
-                                    <td class="text-right summary-total-earnings">0.00</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            <td>
 
-                    <!-- Middle: Employee Deductions (EPF 8% only + others) -->
-                    <div class="col-md-4">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th colspan="2">Deductions Summary</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($deductionComponents as $dc)
-                                @php
-                                $lower = strtolower($dc->name);
-                                @endphp
-                                @if(!str_contains($lower, 'etf') && !str_contains($lower, '12%'))
-                                <tr>
-                                    <td>{{ $dc->name }}</td>
-                                    <td class="text-right summary-deduction" data-component-id="{{ $dc->id }}">0.00</td>
-                                </tr>
-                                @endif
-                                @endforeach
-                                <tr>
-                                    <td>EPF 8%</td>
-                                    <td class="text-right summary-epf8">0.00</td>
-                                </tr>
-                                <tr class="fw-semibold">
-                                    <td>Total Deductions</td>
-                                    <td class="text-right summary-total-deductions">0.00</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days]"
+                        class="form-control " value="{{$payroll->mercantile_days}}">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days_amount]"
+                        class="form-control extra-earning-input" value="{{$payroll->mercantile_days_amount}}" readonly>
+                </div>
+            </td>
 
-                    <!-- Right side: Employer Contributions (EPF 12% + ETF 3%) -->
-                    <div class="col-md-4">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th colspan="2">Employer Contributions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>EPF (12%)</td>
-                                    <td class="text-right summary-epf12">0.00</td>
-                                </tr>
-                                <tr>
-                                    <td>ETF (3%)</td>
-                                    <td class="text-right summary-etf3">0.00</td>
-                                </tr>
-                                <tr class="fw-semibold">
-                                    <td>Total Employer</td>
-                                    <td class="text-right summary-total-employer">0.00</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            <td>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days]"
+                        class="form-control " value="{{$payroll->extra_full_days}}">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days_amount]"
+                        class="form-control extra-earning-input" value="{{$payroll->extra_full_days_amount}}" readonly>
+                </div>
+            </td>
+
+            <td>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
+                        class="form-control " value="{{$payroll->extra_half_days}}">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
+                        class="form-control extra-earning-input" readonly value="{{$payroll->extra_half_days_amount}}">
+                </div>
+            </td>
+
+            <td>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
+                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
+                    <input type="number" step="0.01"
+                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
+                        class="form-control extra-earning-input" readonly
+                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
                 </div>
 
-            </div>
+            </td>
+
+            <td>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]" class="form-control"
+                        value="{{$payroll->labour_hours}}">
+
+                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
+                        class="form-control extra-earning-input" readonly>
+
+
+                </div>
+            </td>
+
+            {{-- Totals --}}
+            <td class="text-right ded-cell">{{ number_format($payroll->total_deductions, 2) }}</td>
+            <td class="text-right net-cell font-weight-bold">{{ number_format($payroll->net_pay, 2) }}</td>
+            </tr>
+            @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total</th>
+                    <th class="text-right total-basic">0.00</th>
+
+                    {{-- Earnings totals --}}
+                    @foreach($earningComponents as $ec)
+                    <th class="text-right total-earning" data-component-id="{{ $ec->id }}">0.00</th>
+                    @endforeach
+
+                    <th class="text-right total-overtime-hours">0.00</th>
+                    <th class="text-right total-overtime-amount">0.00</th>
+                    <th class="text-right total-gross">0.00</th>
+
+                    {{-- Deductions totals --}}
+                    @foreach($deductionComponents as $dc)
+                    <th class="text-right total-deduction" data-component-id="{{ $dc->id }}">0.00</th>
+                    @endforeach
+                    <th class="text-right total-epf8">0.00</th>
+                    <th class="text-right total-no_pay">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right total-deductions">0.00</th>
+                    <th class="text-right total-net">0.00</th>
+                </tr>
+            </tfoot>
+
+            </table>
         </div>
-    </form>
+
+        <div class="card-footer d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-primary">Update Payroll</button>
+        </div>
+        <div class="card-footer">
+            <div class="row payroll-summary">
+                <!-- Left side: Earnings summary -->
+                <div class="col-md-4">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th colspan="2">Earnings Summary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Basic Salary</td>
+                                <td class="text-right summary-basic">0.00</td>
+                            </tr>
+                            @foreach($earningComponents as $ec)
+                            <tr>
+                                <td>{{ $ec->name }}</td>
+                                <td class="text-right summary-earning" data-component-id="{{ $ec->id }}">0.00</td>
+                            </tr>
+                            @endforeach
+                            <tr>
+                                <td>Overtime Amount</td>
+                                <td class="text-right summary-overtime-amount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td>Extra Amount</td>
+                                <td class="text-right summary-extra-amount">0.00</td>
+                            </tr>
+                            <tr class="fw-semibold">
+                                <td>Total Earnings</td>
+                                <td class="text-right summary-total-earnings">0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Middle: Employee Deductions (EPF 8% only + others) -->
+                <div class="col-md-4">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th colspan="2">Deductions Summary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($deductionComponents as $dc)
+                            @php
+                            $lower = strtolower($dc->name);
+                            @endphp
+                            @if(!str_contains($lower, 'etf') && !str_contains($lower, '12%'))
+                            <tr>
+                                <td>{{ $dc->name }}</td>
+                                <td class="text-right summary-deduction" data-component-id="{{ $dc->id }}">0.00</td>
+                            </tr>
+                            @endif
+                            @endforeach
+                            <tr>
+                                <td>EPF 8%</td>
+                                <td class="text-right summary-epf8">0.00</td>
+                            </tr>
+                            <tr class="fw-semibold">
+                                <td>Total Deductions</td>
+                                <td class="text-right summary-total-deductions">0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right side: Employer Contributions (EPF 12% + ETF 3%) -->
+                <div class="col-md-4">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th colspan="2">Employer Contributions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>EPF (12%)</td>
+                                <td class="text-right summary-epf12">0.00</td>
+                            </tr>
+                            <tr>
+                                <td>ETF (3%)</td>
+                                <td class="text-right summary-etf3">0.00</td>
+                            </tr>
+                            <tr class="fw-semibold">
+                                <td>Total Employer</td>
+                                <td class="text-right summary-total-employer">0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+</div>
+</form>
 
 </div>
 @stop
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
         repaymentInput.disabled = !select.value;
 
         // Enable/disable when selection changes
-        select.addEventListener('change', function () {
+        select.addEventListener('change', function() {
             repaymentInput.disabled = !this.value;
             if (!this.value) repaymentInput.value = ''; // Clear if no loan selected
         });
@@ -385,7 +385,14 @@ document.addEventListener('DOMContentLoaded', function() {
         table.querySelectorAll('tbody tr').forEach(tr => {
             const basic = parseFloat(tr.querySelector('input[name*="[basic_salary]"]').value || 0);
 
+            const noPayDays = parseFloat(tr.querySelector('input[name*="[no_pay_days]"]')?.value ||
+            0);
+
             const oneDaySalary = basic / 30;
+
+            const noPayAmount = noPayDays * oneDaySalary;
+
+            tr.querySelector('input[name*="[no_pay]"]').value = noPayAmount.toFixed(2);
 
             const noPayInput = tr.querySelector('input[name*="[no_pay]"]');
             let noPay = parseFloat(noPayInput?.value || 0);
