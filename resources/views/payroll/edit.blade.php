@@ -143,7 +143,7 @@
                             </td>
             </div>
 
-            <td>
+            <td class="table-success">
 
                 <div style="display: flex; gap: 5px;">
                     <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days]"
@@ -153,7 +153,7 @@
                 </div>
             </td>
 
-            <td>
+            <td class="table-success">
                 <div style="display: flex; gap: 5px;">
                     <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days]"
                         class="form-control " value="{{$payroll->extra_full_days}}">
@@ -162,7 +162,7 @@
                 </div>
             </td>
 
-            <td>
+            <td class="table-success">
                 <div style="display: flex; gap: 5px;">
                     <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
                         class="form-control " value="{{$payroll->extra_half_days}}">
@@ -171,7 +171,7 @@
                 </div>
             </td>
 
-            <td>
+            <td class="table-success">
                 <div style="display: flex; gap: 5px;">
                     <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
                         class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
@@ -183,7 +183,7 @@
 
             </td>
 
-            <td>
+            <td class="table-success">
                 <div style="display: flex; gap: 5px;">
                     <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]" class="form-control"
                         value="{{$payroll->labour_hours}}">
