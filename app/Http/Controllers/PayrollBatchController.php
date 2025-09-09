@@ -26,7 +26,7 @@ class PayrollBatchController extends Controller
             ->orderByDesc('pay_period')
             ->get();
 
-        return view('payroll.index', compact('batches'));
+        return view('payroll.batches.index', compact('batches'));
     }
 
     public function create()
@@ -40,7 +40,7 @@ class PayrollBatchController extends Controller
 
         // Allow edit only if batch is still draft
         if ($batch->status !== 'draft') {
-            return redirect()->route('payroll.index')->with('error', 'Only draft payroll batches can be edited.');
+            return redirect()->route('payroll.batches.index')->with('error', 'Only draft payroll batches can be edited.');
         }
 
         // Load all employees who should have payroll in this batch
@@ -76,7 +76,7 @@ class PayrollBatchController extends Controller
 
         // Allow edit only if batch is still draft
         if ($batch->status !== 'draft') {
-            return redirect()->route('payroll.index')->with('error', 'Only draft payroll batches can be edited.');
+            return redirect()->route('payroll.batches.index')->with('error', 'Only draft payroll batches can be edited.');
         }
 
         // Load all employees who should have payroll in this batch
