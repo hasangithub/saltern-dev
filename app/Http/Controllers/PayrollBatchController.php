@@ -74,11 +74,6 @@ class PayrollBatchController extends Controller
             }
         ])->findOrFail($id);
 
-        // Allow edit only if batch is still draft
-        if ($batch->status !== 'draft') {
-            return redirect()->route('payroll.batches.index')->with('error', 'Only draft payroll batches can be edited.');
-        }
-
         // Load all employees who should have payroll in this batch
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
 
