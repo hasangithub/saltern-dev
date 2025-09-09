@@ -26,7 +26,7 @@ class PayrollBatchController extends Controller
             ->orderByDesc('pay_period')
             ->get();
 
-        return view('payroll.batches.index', compact('batches'));
+        return view('payroll.index', compact('batches'));
     }
 
     public function create()
