@@ -11,7 +11,7 @@
 @section('content_body')
 <div class="card card-default">
     <div class="card-header">
-        <h3 class="card-title">Create Employee</h3>
+        <h3 class="card-title">Edit Employee</h3>
         <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
@@ -76,6 +76,41 @@
                             {{ $designation }}
                         </option>
                         @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="employment_type" class="col-sm-3 col-form-label">Employment Type</label>
+                <div class="col-sm-9">
+                    <select name="employment_type" id="employment_type" class="form-control">
+                        <option value="">-- Select Employment Type --</option>
+                        <option value="permanent"
+                            {{ old('employment_type', $employee->employee->employment_type ?? '') == 'permanent' ? 'selected' : '' }}>
+                            Permanent</option>
+                        <option value="contract"
+                            {{ old('employment_type', $employee->employee->employment_type ?? '') == 'contract' ? 'selected' : '' }}>
+                            Contract</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="department" class="col-sm-3 col-form-label">Department</label>
+                <div class="col-sm-9">
+                    <select name="department" id="department" class="form-control">
+                        <option value="">-- Select Department --</option>
+                        <option value="office"
+                            {{ old('department', $employee->employee->department ?? '') == 'office' ? 'selected' : '' }}>Office
+                        </option>
+                        <option value="workshop"
+                            {{ old('department', $employee->employee->department ?? '') == 'workshop' ? 'selected' : '' }}>
+                            Workshop
+                        </option>
+                        <option value="security"
+                            {{ old('department', $employee->employee->department ?? '') == 'security' ? 'selected' : '' }}>
+                            Security
+                        </option>
                     </select>
                 </div>
             </div>

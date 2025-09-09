@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JournalDetail;
 use App\Models\JournalEntry;
+use App\Models\Ledger;
 use App\Models\Membership;
 use App\Models\Owner;
 use App\Models\OwnerLoan;
@@ -55,7 +56,8 @@ class OwnerLoanController extends Controller
     public function adminCreateOwnerLoan()
     {
         $sides  = Side::all();
-        return view('owner_loans_admin.create', compact('sides'));
+        $incomeCategories = Ledger::where('sub_account_group_id', 27)->get();
+        return view('owner_loans_admin.create', compact('sides', 'incomeCategories'));
     }
 
     public function store(Request $request)
@@ -173,6 +175,7 @@ class OwnerLoanController extends Controller
             'membership_id' => 'required|exists:memberships,id',
             'loan_amount' => 'required|numeric|min:1',
             'loan_type' => 'required|in:old,new',
+            'income_category_id' => 'nullable|exists:ledgers,id|required_if:type,old',
         ]);
 
         $ownerLoan = OwnerLoan::create([
@@ -198,6 +201,14 @@ class OwnerLoanController extends Controller
                     'sub_ledger_id' => 115,
                     'debit_amount' => $validated['loan_amount'],
                     'credit_amount' => null,
+                    'description' => 'Owner Loan MembershipId#'.$validated['membership_id']. ' LoanId#'. $ownerLoan->id,
+                ],
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => $validated['income_category_id'],
+                    'sub_ledger_id' => null,
+                    'debit_amount' => null,
+                    'credit_amount' => $validated['loan_amount'],
                     'description' => 'Owner Loan MembershipId#'.$validated['membership_id']. ' LoanId#'. $ownerLoan->id,
                 ],
             ];

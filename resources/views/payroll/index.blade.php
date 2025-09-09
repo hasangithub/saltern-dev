@@ -41,20 +41,14 @@
                         <td>{{ optional($batch->processor)->name ?? '-' }}</td>
                         <td>{{ $batch->created_at->format('Y-m-d') }}</td>
                         <td class="text-end">
-                            @if($batch->payrolls_count == 0)
-                            <a class="btn btn-sm btn-outline-primary"
-                                href="{{ route('payroll.batches.build', $batch) }}">
-                                Open
-                            </a>
-                            @else
-                            <a class="btn btn-sm btn-outline-warning"
-                                href="{{ route('payroll.batches.edit', $batch) }}">
-                                Edit
+                            @if($batch->status === 'draft')
+                            <a href="{{ route('payroll.batches.edit', $batch->id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Edit
                             </a>
                             @endif
-                            <a href="{{ route('payroll.batches.print', $batch) }}" class="btn btn-sm btn-primary"
-                                target="_blank">
-                                Print
+                            <a class="btn btn-sm btn-warning"
+                                href="{{ route('payroll.batches.show', $batch) }}">
+                                View
                             </a>
                         </td>
                     </tr>

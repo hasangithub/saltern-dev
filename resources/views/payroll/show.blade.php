@@ -13,16 +13,35 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h4 class="mb-0">Build Payroll — {{ $batch->pay_period }}</h4>
+            <h4 class="mb-0"> Payroll — {{ $batch->pay_period }}</h4>
             <small class="text-muted">Status: {{ ucfirst($batch->status) }}</small>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('payroll.batches.index') }}" class="btn btn-outline-secondary">Back</a>
         </div>
     </div>
+    <div >
+        <form method="GET" action="{{ route('payroll.batches.show', $batch->id) }}" class="mb-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <select name="department" class="form-control" onchange="this.form.submit()">
+                        <option value="all" {{ $department == 'all' ? 'selected' : '' }}>All Departments</option>
+                        <option value="office" {{ $department == 'office' ? 'selected' : '' }}>Office</option>
+                        <option value="workshop" {{ $department == 'workshop' ? 'selected' : '' }}>Workshop</option>
+                        <option value="security" {{ $department == 'security' ? 'selected' : '' }}>Security</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        {{-- Print Button --}}
+        <a href="{{ route('payroll.batches.print', ['batch' => $batch->id, 'department' => $department]) }}"
+            target="_blank" class="btn btn-secondary">
+            <i class="fas fa-print"></i> Print
+        </a>
+    </div>
 
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-
     <form method="POST" action="{{ route('payroll.batches.update', $batch) }}">
         @csrf
         <div class="card">
@@ -234,9 +253,6 @@
             </table>
         </div>
 
-        <div class="card-footer d-flex justify-content-end gap-2">
-            <button type="submit" class="btn btn-primary">Update Payroll</button>
-        </div>
         <div class="card-footer">
             <div class="row payroll-summary">
                 <!-- Left side: Earnings summary -->
@@ -335,20 +351,7 @@
         </div>
 </div>
 </form>
-{{-- Approve Payroll Batch Form --}}
-@if($batch->status === 'draft')
-    <form action="{{ route('payroll.batches.approve', $batch->id) }}" method="POST"
-          onsubmit="return confirm('Are you sure you want to approve this payroll batch? Once approved, it cannot be edited.')">
-        @csrf
-        <button type="submit" class="btn btn-success mt-3">
-            <i class="fas fa-check-circle"></i> Approve Payroll Batch
-        </button>
-    </form>
-@else
-    <div class="mt-3">
-        <span class="badge bg-success p-2">Approved</span>
-    </div>
-@endif
+
 </div>
 @stop
 

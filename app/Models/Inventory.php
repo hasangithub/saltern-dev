@@ -11,6 +11,11 @@ class Inventory extends Model
 
     protected $fillable = [
         'name',
+        'date_of_purchase', 
+        'stock_code', 
+        'qty', 
+        'warranty_from', 
+        'warranty_to',
         'place',
         'amount',
         'voucher_id',
@@ -18,6 +23,12 @@ class Inventory extends Model
         'status',
         'replaced_id',
         'created_by',
+    ];
+
+    protected $casts = [
+        'date_of_purchase' => 'date',
+        'warranty_from' => 'date',
+        'warranty_to' => 'date',
     ];
 
     public function replacedInventory()

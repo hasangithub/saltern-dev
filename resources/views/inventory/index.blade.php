@@ -11,43 +11,67 @@
 @section('content_body')
 <div class="container-fluid">
     <a href="{{ route('inventories.create') }}" class="btn btn-primary mb-3">Add Inventory</a>
-    
-    <table id="inventory-table" class="table table-sm nowrap table-hover" style="width:100%">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Place</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Replaced From</th>
-                <th>Description</th>
-                <th>Voucher</th>
-                <th>Created By</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($inventories as $inventory)
-            <tr>
-                <td>{{ $inventory->name }}</td>
-                <td>{{ ucfirst($inventory->place) }}</td>
-                <td>{{ number_format($inventory->amount, 2) }}</td>
-                <td>{{ ucfirst($inventory->status) }}</td>
-                <td>{{ $inventory->replacedInventory?->name ?? '-' }}</td>
-                <td>{{ $inventory->description }}</td>
-                <td>{{ $inventory->voucher_id }}</td>
-                <td>{{ $inventory->creator->name ?? 'System' }}</td>
-                <td>
-                    <a href="{{ route('inventories.edit', $inventory) }}" class="btn btn-sm btn-warning">Edit</a>
-                    <form action="{{ route('inventories.destroy', $inventory) }}" method="POST" style="display:inline;">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this inventory?')">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
+    <div class="table-responsive">
+        <table id="inventory-table" class="table table-sm nowrap table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Voucher ID</th>
+                    <th>Name</th>
+                    <th>Place</th>
+                    <th>Stock Code</th>
+                    <th>Qty</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Replaced From</th>
+                    <th>Warranty Period</th>
+                    <th>Expired</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($inventories as $inventory)
+                <tr>
+                    <td>{{ optional($inventory->date_of_purchase)->format('Y-m-d') }}</td>
+                    <td>{{ $inventory->voucher_id }}</td>
+                    <td>{{ $inventory->name }}</td>
+                    <td>{{ $inventory->place }}</td>
+                    <td>{{ $inventory->stock_code }}</td>
+                    <td>{{ $inventory->qty }}</td>
+                    <td>{{ number_format($inventory->amount, 2) }}</td>
+                    <td>{{ $inventory->description }}</td>
+                    <td>{{ $inventory->replacedInventory?->name ?? '-' }}</td>
+                    <td>
+                        @if($inventory->warranty_from && $inventory->warranty_to)
+                        {{ $inventory->warranty_from->format('Y-m-d') }} -
+                        {{ $inventory->warranty_to->format('Y-m-d') }}
+                        @endif
+                    </td>
+                    <td>
+                        @if($inventory->warranty_to && $inventory->warranty_to < now()) Yes @else No @endif </td>
+                    <td>{{ ucfirst($inventory->status) }}</td>
+                    <td>
+                        <a href="{{ route('inventories.edit', $inventory->id) }}"
+                            class="btn btn-sm btn-primary">Edit</a>
+                        <form action="{{ route('inventories.destroy', $inventory->id) }}" method="POST"
+                            style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 @stop
 {{-- Push extra CSS --}}
@@ -69,6 +93,5 @@ $(document).ready(function() {
         pageLength: 100
     });
 });
-
 </script>
 @endpush

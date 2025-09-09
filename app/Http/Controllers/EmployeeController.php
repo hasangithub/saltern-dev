@@ -42,7 +42,9 @@ class EmployeeController extends Controller
         'base_salary' => 'required|numeric',
         'join_date' => 'required|date',
         'employment_status' => 'required|in:Active,Inactive,Resigned,Terminated',
-        'roles' => 'array|exists:roles,name'
+        'roles' => 'array|exists:roles,name',
+        'employment_type'  => 'nullable|in:permanent,contract',
+        'department'       => 'nullable|in:office,workshop,security'
     ]);
 
      // Update User table
@@ -64,6 +66,8 @@ class EmployeeController extends Controller
             'base_salary' => $request->base_salary,
             'join_date' => $request->join_date,
             'employment_status' => $request->employment_status,
+            'employment_type' => $request->employment_type,
+            'department' => $request->department
         ]);
     }
 
@@ -88,6 +92,8 @@ class EmployeeController extends Controller
             'base_salary' => 'required|numeric',
             'join_date' => 'required|date',
             'employment_status' => 'required|in:Active,Inactive,Resigned,Terminated',
+            'employment_type'  => 'nullable|in:permanent,contract',
+            'department'       => 'nullable|in:office,workshop,security'
         ]);
 
         DB::beginTransaction();
@@ -107,6 +113,8 @@ class EmployeeController extends Controller
                 'base_salary' => $data['base_salary'],
                 'join_date' => $data['join_date'],
                 'employment_status' => $data['employment_status'],
+                'employment_type' => $data['employment_type'],
+                'department' => $data['department']
             ]);
 
             DB::commit();

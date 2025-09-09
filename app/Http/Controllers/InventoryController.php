@@ -24,7 +24,12 @@ class InventoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'place' => 'required|string|max:255',
+            'stock_code' => 'nullable|string|max:100',
+            'qty' => 'nullable|numeric',
+            'date_of_purchase' => 'nullable|date',
+            'place' => 'required|string|in:yard,office',
+            'warranty_from' => 'nullable|date',
+            'warranty_to' => 'nullable|date|after_or_equal:warranty_from',
             'amount' => 'required|numeric',
             'voucher_id' => 'nullable|integer',
             'description' => 'nullable|string',
@@ -49,7 +54,12 @@ class InventoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'place' => 'required|string|max:255',
+            'stock_code' => 'nullable|string|max:100',
+            'qty' => 'nullable|numeric',
+            'date_of_purchase' => 'nullable|date',
+            'place' => 'required|string|in:yard,office',
+            'warranty_from' => 'nullable|date',
+            'warranty_to' => 'nullable|date|after_or_equal:warranty_from',
             'amount' => 'required|numeric',
             'voucher_id' => 'nullable|integer',
             'description' => 'nullable|string',
