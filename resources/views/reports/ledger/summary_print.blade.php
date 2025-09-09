@@ -27,7 +27,7 @@
         @php $running += $jd->debit_amount - $jd->credit_amount; @endphp
         <tr>
             <td>{{ \Carbon\Carbon::parse($jd->journalEntry->journal_date)->format('Y-m-d') }}</td>
-            <td>{{ $jd->journalEntry->description }}</td>
+            <td>{{ $jd->description ?? $jd->journalEntry->description ?? '' }}</td>
             <td class="text-right">{{ number_format($jd->debit_amount, 2) }}</td>
             <td class="text-right">{{ number_format($jd->credit_amount, 2) }}</td>
             <td class="text-right">
