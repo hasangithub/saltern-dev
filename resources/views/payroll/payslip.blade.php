@@ -7,12 +7,12 @@
     <style>
     @page {
         size: A4;
-        margin: 10mm;
+        margin: 5mm;
     }
 
     body {
         font-family: sans-serif;
-        font-size: 16px;
+        font-size: 14px;
         margin: 0;
     }
 
@@ -23,7 +23,7 @@
     .header {
         text-align: center;
         font-weight: bold;
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .sub-header {
@@ -40,7 +40,7 @@
     td,
     th {
         padding: 3px 5px;
-        font-size: 12px;
+        font-size: 15px;
     }
 
     .text-right {
