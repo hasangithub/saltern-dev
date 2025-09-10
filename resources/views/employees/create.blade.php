@@ -119,6 +119,14 @@
             </div>
 
             <div class="form-group row">
+                <label for="epf_number" class="col-sm-3 col-form-label">EPF No</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="epf_number" name="epf_number"
+                        value="" required>
+                </div>
+            </div>
+
+            <div class="form-group row">
                 <label for="join_date" class="col-sm-3 col-form-label">Join Date</label>
                 <div class="col-sm-9">
                     <input type="date" class="form-control" id="join_date" name="join_date" autocomplete="off" required>

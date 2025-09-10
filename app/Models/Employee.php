@@ -10,7 +10,7 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id','person_id', 'designation', 'employment_type' , 'department', 'base_salary', 'join_date', 'employment_status'
+        'user_id','person_id', 'designation', 'employment_type' , 'department', 'base_salary', 'epf_number', 'join_date', 'employment_status'
     ];
 
     public function user()
@@ -32,6 +32,7 @@ class Employee extends Model
             'Storekeeper',
             'Technician',
             'Driver',
+            'Security',
         ];
     }
 

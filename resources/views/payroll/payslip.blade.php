@@ -7,12 +7,12 @@
     <style>
     @page {
         size: A4;
-        margin: 15mm;
+        margin: 10mm;
     }
 
     body {
-        font-family: DejaVu Sans, sans-serif;
-        font-size: 12px;
+        font-family: sans-serif;
+        font-size: 16px;
         margin: 0;
     }
 
