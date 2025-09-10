@@ -89,8 +89,8 @@
 
         <div class="section-title">Employer Contribution</div>
         <table>
-            <tr><td>EPF 12%</td><td class="text-right">{{ number_format($payroll->epf12 ?? 0, 2) }}</td></tr>
-            <tr><td>ETF 3%</td><td class="text-right">{{ number_format($payroll->etf3 ?? 0, 2) }}</td></tr>
+            <tr><td>EPF 12%</td><td class="text-right">{{ number_format($payroll->epf_employer ?? 0, 2) }}</td></tr>
+            <tr><td>ETF 3%</td><td class="text-right">{{ number_format($payroll->etf ?? 0, 2) }}</td></tr>
         </table>
 
         <table class="footer">
