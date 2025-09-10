@@ -258,11 +258,15 @@ Route::prefix('staff-loans')->group(function () {
 Route::prefix('admin/staff-loans')->group(function () {
     // Show all loan requests
     Route::get('/', [StaffLoanController::class, 'index'])->name('admin.staff-loans.index');
-
+    Route::get('/create', [StaffLoanController::class, 'adminCreateStaffLoan'])->name('admin.staff_loans.create');
     // Show the form to create a new loan request
+    Route::get('get-loan-details/{user_id}', [StaffLoanController::class, 'getStaffLoanDetails'])->name('get.staff.loan.details');
+
     Route::get('/{loanId}', [StaffLoanController::class, 'show'])->name('admin.staff-loans.show');
 
     Route::put('/{loan_request}/approve', [StaffLoanController::class, 'approve'])->name('admin.staff-loan.approve');
+   
+    Route::post('/admin/owner-loans', [StaffLoanController::class, 'adminStoreStaffLoan'])->name('admin.staff_loans.store');
 });
 
 

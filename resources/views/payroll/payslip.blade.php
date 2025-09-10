@@ -104,7 +104,7 @@
 
                                 <table>
                                     <tr>
-                                        <td><b>Name:</b></td>
+                                        <td><b>Employee Name:</b></td>
                                         <td>{{ $payroll->employee->user->name }}</td>
                                     </tr>
                                     <tr>
@@ -123,12 +123,6 @@
                                         <td>Basic Salary</td>
                                         <td class="text-right">{{ number_format($payroll->basic_salary, 2) }}</td>
                                     </tr>
-                                    @foreach ($payroll->earnings as $earning)
-                                    <tr>
-                                        <td>{{ $earning->component_name }}</td>
-                                        <td class="text-right">{{ number_format($earning->amount ?? 0, 2) }}</td>
-                                    </tr>
-                                    @endforeach
                                     @foreach ($payroll->earnings as $earning)
                                     <tr>
                                         <td>{{ $earning->component_name }}</td>
@@ -162,9 +156,13 @@
                                         <td class="text-right"><b>{{ number_format($payroll->total_deductions, 2) }}</b></td>
                                     </tr>
                                 </table>
-
-                                <p><b>Balance:</b> {{ number_format($payroll->net_pay, 2) }}</p>
-
+                                <table>
+                                    <tr>
+                                        <td><b>Balance</b></td>
+                                        <td class="text-right"><b>{{ number_format($payroll->net_pay, 2) }}</b></td>
+                                    </tr>
+                                </table>
+                               
                                 <div class="section-title">Employer Contribution</div>
                                 <table>
                                     <tr>

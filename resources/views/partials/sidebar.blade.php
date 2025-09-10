@@ -112,6 +112,12 @@
                                 <p>Staff Loan Management</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.staff_loans.create') }}" class="nav-link">
+                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <p>Create Staff Loan</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

@@ -92,7 +92,12 @@ class OwnerLoanController extends Controller
 
         // Validate and save the approved amount
         $request->validate([
-            'approved_amount' => 'required|numeric|min:1',
+            'approved_amount' => [
+                'required',
+                'numeric',
+                'min:1',
+                'max:' . $loan->requested_amount, // ✅ cannot exceed requested amount
+            ],
         ]);
 
         $loan->approved_amount   = $request->approved_amount;
