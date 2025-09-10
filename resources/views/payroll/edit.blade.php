@@ -88,7 +88,7 @@
                                     value="{{ $payroll->overtime_hours }}" class="form-control">
                             </td>
                             <td class="table-secondary">
-                                <input type="number" name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
+                                <input type="number" step="0.01" name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
                                     value="{{ $payroll->overtime_amount }}" class="form-control">
                             </td>
 
