@@ -264,16 +264,16 @@
                 <tbody>
                     <tr>
                         <td>EPF 12%</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf12'),2) }}</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employer'),2) }}</td>
                     </tr>
                     <tr>
                         <td>ETF 3%</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('etf3'),2) }}</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('etf'),2) }}</td>
                     </tr>
                     <tr class="fw-semibold">
                         <td>Total</td>
                         <td class="text-right">
-                            {{ number_format($batch->payrolls->sum('epf12') + $batch->payrolls->sum('etf3'),2) }}</td>
+                            {{ number_format($batch->payrolls->sum('epf_employer') + $batch->payrolls->sum('etf'),2) }}</td>
                     </tr>
                 </tbody>
             </table>
