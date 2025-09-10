@@ -288,11 +288,11 @@
                 </td>
                 <td style="width:33%; padding-top:60px;">
                     -----------------------------<br>
-                    <strong>Checked By</strong>
+                    <strong>Manager</strong>
                 </td>
                 <td style="width:33%; padding-top:60px;">
                     -----------------------------<br>
-                    <strong>Certified By</strong>
+                    <strong>President</strong>
                 </td>
             </tr>
         </table>

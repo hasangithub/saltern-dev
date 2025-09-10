@@ -85,7 +85,7 @@
             </tr>
             <tr>
                 <td><b>E.P.F No:</b></td>
-                <td>{{ $payroll->employee->epf_no ?? '-' }}</td>
+                <td>{{ $payroll->employee->epf_number ?? '-' }}</td>
             </tr>
         </table>
 
