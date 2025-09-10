@@ -45,7 +45,7 @@
     </div>
 
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-    <form method="POST" action="{{ route('payroll.batches.update', $batch) }}">
+    <form method="POST" action="{{ route('payroll.batches.update', $batch) }}" id="payroll-form">
         @csrf
         <div class="card">
             <div class="card-body table-responsive">
@@ -370,7 +370,7 @@
 @push('js')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
+    $('#payroll-form input').attr('readonly', 'readonly');
     document.querySelectorAll('.loan-select').forEach(function(select) {
         const repaymentInput = select.closest('td').querySelector('.loan-repayment');
 
