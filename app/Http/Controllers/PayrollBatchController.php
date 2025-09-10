@@ -509,107 +509,122 @@ class PayrollBatchController extends Controller
         $batch->save();
 
         // Calculate totals
-    $totalNetPay = $batch->payrolls->sum('net_pay');
-    $totalEpf8 = $batch->payrolls->sum('epf_employee');
-    
-    $totalDeductions = [];
-    foreach ($batch->payrolls as $payroll) {
-        foreach ($payroll->deductions as $deduction) {
-            $name = strtolower($deduction->component->name);
-            $totalDeductions[$name] = ($totalDeductions[$name] ?? 0) + $deduction->amount;
+        $totalNetPay = $batch->payrolls->sum('net_pay');
+        $totalEpf8 = $batch->payrolls->sum('epf_employee');
+
+        $totalDeductions = [];
+        foreach ($batch->payrolls as $payroll) {
+            foreach ($payroll->deductions as $deduction) {
+                $name = strtolower($deduction->component->name);
+                $totalDeductions[$name] = ($totalDeductions[$name] ?? 0) + $deduction->amount;
+            }
         }
-    }
 
-    // Create journal entry
-    $journal = JournalEntry::create([
-        'journal_date' => Carbon::now()->toDateString(),
-        'description' => 'Payroll Batch #' . $batch->id,
-    ]);
+        // Create journal entry
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(),
+            'description' => 'Payroll Batch #' . $batch->id,
+        ]);
 
-    $details = [];
+        $details = [];
 
-    // === Debit Entries (All go to Ledger 102) ===
-    $details[] = [
-        'journal_id' => $journal->id,
-        'ledger_id' => 102,
-        'sub_ledger_id' => null,
-        'debit_amount' => $totalNetPay,
-        'credit_amount' => null,
-        'description' => 'Net Pay for Payroll Batch #' . $batch->id,
-    ];
+        // === Debit Entries (All go to Ledger 102) ===
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => 102,
+            'sub_ledger_id' => null,
+            'debit_amount' => $totalNetPay,
+            'credit_amount' => null,
+            'description' => 'Net Pay for Payroll Batch #' . $batch->id,
+        ];
 
-    $details[] = [
-        'journal_id' => $journal->id,
-        'ledger_id' => 102,
-        'sub_ledger_id' => null,
-        'debit_amount' => $totalEpf8,
-        'credit_amount' => null,
-        'description' => 'EPF8 for Payroll Batch #' . $batch->id,
-    ];
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => 102,
+            'sub_ledger_id' => null,
+            'debit_amount' => $totalEpf8,
+            'credit_amount' => null,
+            'description' => 'EPF8 for Payroll Batch #' . $batch->id,
+        ];
 
-    foreach (['salary advance','festival loan','loan','union','fine'] as $key) {
-        if (!empty($totalDeductions[$key])) {
-            $details[] = [
-                'journal_id' => $journal->id,
-                'ledger_id' => 102,
-                'sub_ledger_id' => null,
-                'debit_amount' => $totalDeductions[$key],
-                'credit_amount' => null,
-                'description' => ucfirst(str_replace('_',' ',$key)) . " for Payroll Batch #" . $batch->id,
-            ];
+        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+            if (!empty($totalDeductions[$key])) {
+                $details[] = [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 102,
+                    'sub_ledger_id' => null,
+                    'debit_amount' => $totalDeductions[$key],
+                    'credit_amount' => null,
+                    'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                ];
+            }
         }
-    }
 
-    // === Credit Entries (Batch-level totals) ===
-    $creditMap = [
-        'net_pay' => 177,
-        'salary advance' => 178,
-        'union' => 107,
-        'fine' => 111,
-        'epf_8' => 103,
-        'loan' => ['ledger_id'=>12, 'sub_ledger_id'=>116],
-        'festival loan' => ['ledger_id'=>12, 'sub_ledger_id'=>116],
-    ];
+        // === Credit Entries (Batch-level totals) ===
+        $creditMap = [
+            'net_pay' => 177,
+            'salary advance' => 178,
+            'union' => 107,
+            'fine' => 111,
+            'epf_8' => 103,
+            'loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+            'festival loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+        ];
 
-    // Net Pay
-    $details[] = [
-        'journal_id' => $journal->id,
-        'ledger_id' => $creditMap['net_pay'],
-        'sub_ledger_id' => null,
-        'debit_amount' => null,
-        'credit_amount' => $totalNetPay,
-        'description' => 'Net Pay for Payroll Batch #' . $batch->id,
-    ];
+        // Net Pay
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => $creditMap['net_pay'],
+            'sub_ledger_id' => null,
+            'debit_amount' => null,
+            'credit_amount' => $totalNetPay,
+            'description' => 'Net Pay for Payroll Batch #' . $batch->id,
+        ];
 
-    $details[] = [
-        'journal_id' => $journal->id,
-        'ledger_id' => 103,
-        'sub_ledger_id' => null,
-        'debit_amount' => null,
-        'credit_amount' => $totalEpf8,
-        'description' => 'EPF8 for Payroll Batch #' . $batch->id,
-    ];
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => 103,
+            'sub_ledger_id' => null,
+            'debit_amount' => null,
+            'credit_amount' => $totalEpf8,
+            'description' => 'EPF8 for Payroll Batch #' . $batch->id,
+        ];
 
-    // Other deductions
-    foreach (['salary advance','festival loan','loan','union','fine'] as $key) {
-        if (!empty($totalDeductions[$key])) {
-            $ledgerId = is_array($creditMap[$key]) ? $creditMap[$key]['ledger_id'] : $creditMap[$key];
-            $subLedgerId = is_array($creditMap[$key]) ? $creditMap[$key]['sub_ledger_id'] : null;
+        // Other deductions
+        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+            if (!empty($totalDeductions[$key])) {
+                $ledgerId = is_array($creditMap[$key]) ? $creditMap[$key]['ledger_id'] : $creditMap[$key];
+                $subLedgerId = is_array($creditMap[$key]) ? $creditMap[$key]['sub_ledger_id'] : null;
 
-            $details[] = [
-                'journal_id' => $journal->id,
-                'ledger_id' => $ledgerId,
-                'sub_ledger_id' => $subLedgerId,
-                'debit_amount' => null,
-                'credit_amount' => $totalDeductions[$key],
-                'description' => ucfirst(str_replace('_',' ',$key)) . " for Payroll Batch #" . $batch->id,
-            ];
+                $details[] = [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => $ledgerId,
+                    'sub_ledger_id' => $subLedgerId,
+                    'debit_amount' => null,
+                    'credit_amount' => $totalDeductions[$key],
+                    'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                ];
+            }
         }
-    }
 
-    // Bulk insert
-    JournalDetail::insert($details);
+        // Bulk insert
+        JournalDetail::insert($details);
 
         return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
+    }
+
+    public function printPayslips($id)
+    {
+        $batch = PayrollBatch::with([
+            'payrolls.employee.user',
+            'payrolls.earnings.component',
+            'payrolls.deductions.component'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView('payroll.payslip', compact('batch'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Payslips_Batch_' . $batch->id . '.pdf');
+        // use ->download() if you want to force download
     }
 }

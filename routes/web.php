@@ -176,7 +176,8 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/batches/{batch}/show', [PayrollBatchController::class, 'show'])->name('batches.show');
         Route::post('/batches/{batch}/approve', [PayrollBatchController::class, 'approve'])
     ->name('batches.approve');
-
+    Route::get('/batches/{id}/payslips', [PayrollBatchController::class, 'printPayslips'])
+    ->name('batches.payslips');
     });
 
     Route::resource('inventories', InventoryController::class);

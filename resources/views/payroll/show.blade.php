@@ -20,7 +20,7 @@
             <a href="{{ route('payroll.batches.index') }}" class="btn btn-outline-secondary">Back</a>
         </div>
     </div>
-    <div >
+    <div>
         <form method="GET" action="{{ route('payroll.batches.show', $batch->id) }}" class="mb-3">
             <div class="row">
                 <div class="col-md-3">
@@ -38,6 +38,9 @@
         <a href="{{ route('payroll.batches.print', ['batch' => $batch->id, 'department' => $department]) }}"
             target="_blank" class="btn btn-secondary">
             <i class="fas fa-print"></i> Print
+        </a>
+        <a href="{{ route('payroll.batches.payslips', $batch->id) }}" class="btn btn-sm btn-success" target="_blank">
+            <i class="bi bi-printer"></i> Print Payslips
         </a>
     </div>
 

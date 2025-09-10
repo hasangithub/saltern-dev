@@ -8,7 +8,7 @@
     /* Page setup */
     @page {
         size: legal landscape;
-        margin: 10mm;
+        margin: 5mm;
     }
 
     body {
