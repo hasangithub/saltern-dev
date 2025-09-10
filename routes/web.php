@@ -43,6 +43,8 @@ use App\Http\Controllers\StaffLoanController;
 
 // routes/web.php
 use App\Http\Controllers\PayrollBatchController;
+use App\Http\Controllers\PlaceController;
+
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [UserLoginController::class, 'login']);
@@ -181,6 +183,7 @@ Route::middleware(['auth:web'])->group(function () {
     });
 
     Route::resource('inventories', InventoryController::class);
+    Route::resource('places', PlaceController::class);
 
 });
 

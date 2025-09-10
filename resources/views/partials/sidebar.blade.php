@@ -260,6 +260,12 @@
                         <p>Inventories</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('places.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-boxes"></i>
+                        <p>Places</p>
+                    </a>
+                </li>
 
                 <!-- <li class="nav-item">
                     <a href="{{ route('expenses.index') }}" class="nav-link">

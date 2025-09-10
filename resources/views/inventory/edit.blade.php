@@ -58,11 +58,13 @@
 
             <div class="mb-3">
                 <label>Place</label>
-                <select name="place" class="form-control" required>
-                    <option value="yard" {{ old('place', $inventory->place) == 'yard' ? 'selected' : '' }}>Yard
+                <select name="place_id" class="form-control" required>
+                    <option value="">-- Select Place --</option>
+                    @foreach($places as $place)
+                    <option value="{{ $place->id }}" {{ $inventory->place_id == $place->id ? 'selected' : '' }}>
+                        {{ ucfirst($place->name) }}
                     </option>
-                    <option value="office" {{ old('place', $inventory->place) == 'office' ? 'selected' : '' }}>
-                        Office</option>
+                    @endforeach
                 </select>
             </div>
 

@@ -55,9 +55,11 @@
 
             <div class="mb-3">
                 <label>Place</label>
-                <select name="place" class="form-control" required>
-                    <option value="yard">Yard</option>
-                    <option value="office">Office</option>
+                <select name="place_id" class="form-control" required>
+                    <option value="">-- Select Place --</option>
+                    @foreach($places as $place)
+                    <option value="{{ $place->id }}">{{ ucfirst($place->name) }}</option>
+                    @endforeach
                 </select>
             </div>
 

@@ -16,7 +16,7 @@ class Inventory extends Model
         'qty', 
         'warranty_from', 
         'warranty_to',
-        'place',
+        'place_id',
         'amount',
         'voucher_id',
         'description',
@@ -39,5 +39,10 @@ class Inventory extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function place()
+    {
+        return $this->belongsTo(Place::class);
     }
 }

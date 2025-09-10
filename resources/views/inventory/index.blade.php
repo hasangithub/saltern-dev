@@ -46,7 +46,7 @@
                         <td>{{ optional($inventory->date_of_purchase)->format('Y-m-d') }}</td>
                         <td>{{ $inventory->voucher_id }}</td>
                         <td>{{ $inventory->name }}</td>
-                        <td>{{ $inventory->place }}</td>
+                        <td>{{ $inventory->place?->name }}</td>
                         <td>{{ $inventory->stock_code }}</td>
                         <td>{{ $inventory->qty }}</td>
                         <td>{{ number_format($inventory->amount, 2) }}</td>
