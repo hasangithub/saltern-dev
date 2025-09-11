@@ -66,8 +66,8 @@ class StaffLoanRepaymentController extends Controller
         $details = [
             [
                 'journal_id' => $journal->id,
-                'ledger_id' => 10,
-                'sub_ledger_id' => 100,
+                'ledger_id' => 11,
+                'sub_ledger_id' => 103,
                 'debit_amount' => $validated['amount'],  // cash book debit
                 'credit_amount' => null,
                 'description' => '',
@@ -75,7 +75,7 @@ class StaffLoanRepaymentController extends Controller
             [
                 'journal_id' => $journal->id,
                 'ledger_id' => 12,
-                'sub_ledger_id' => 115,
+                'sub_ledger_id' => 116,
                 'debit_amount' => null,
                 'credit_amount' => $validated['amount'], // recevele staff loan
                 'description' => '',
