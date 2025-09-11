@@ -32,6 +32,15 @@
                                 <label>To Date</label>
                                 <input type="date" name="to_date" class="form-control" value="">
                             </div>
+                            <div class="col-md-3">
+                                <label>Staff</label>
+                                <select name="user_id" class="form-control">
+                                    <option value=""></option>
+                                    @foreach ($users as $user )
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">

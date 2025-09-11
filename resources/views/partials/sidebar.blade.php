@@ -89,9 +89,10 @@
                         <li class="nav-item">
                             <a href="{{ route('owner-loans.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-hand-holding-usd"></i>
-                                <p>Owner Loan Management  @if(!empty($pendingOwnerLoanCount))
-                <span class="badge badge-danger right">{{ $pendingOwnerLoanCount }}</span>
-            @endif</p>
+                                <p>Owner Loan Management @if(!empty($pendingOwnerLoanCount))
+                                    <span class="badge badge-danger right">{{ $pendingOwnerLoanCount }}</span>
+                                    @endif
+                                </p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -271,19 +272,30 @@
                         <p>Employees</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('inventories.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-boxes"></i>
-                        <p>Inventories</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('places.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-boxes"></i>
-                        <p>Places</p>
-                    </a>
-                </li>
 
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-money-check-alt"></i>
+                        <p>
+                            Inventories
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('inventories.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-boxes"></i>
+                                <p>Inventories</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('places.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-boxes"></i>
+                                <p>Places</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <!-- <li class="nav-item">
                     <a href="{{ route('expenses.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-weight"></i>

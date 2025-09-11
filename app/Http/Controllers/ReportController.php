@@ -428,7 +428,8 @@ class ReportController extends Controller
 
     public function indexStaffLaon()
     {
-        return view('reports.staffLoan.index');
+        $users = User::all();
+        return view('reports.staffLoan.index', compact('users'));
     }
 
     public function yahaiWiseLoanPrint(Request $request)
@@ -534,7 +535,10 @@ class ReportController extends Controller
                 }]);
             }
         ])
-            ->get();
+        ->when($request->user_id, function ($q) use ($request) {
+            $q->where('id', $request->user_id);   // ✅ only this user
+        })
+        ->get();
 
         $owner ="dd";
 
@@ -656,6 +660,7 @@ class ReportController extends Controller
     public function staffLoanReport(Request $request)
     { 
         $request->validate([
+            'user_id' => 'nullable',
             'from_date' => 'nullable|date',
             'to_date' => 'nullable|date',
         ]);
@@ -675,8 +680,10 @@ class ReportController extends Controller
                     $q->orderBy('repayment_date');
                 }]);
             }
-        ])
-            ->get();
+        ])->when($request->user_id, function ($q) use ($request) {
+            $q->where('id', $request->user_id);   // ✅ only this user
+        })
+        ->get();
 
         $owner = 'ddd';
 
