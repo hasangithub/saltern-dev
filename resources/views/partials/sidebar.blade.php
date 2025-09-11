@@ -118,6 +118,12 @@
                                 <p>Create Staff Loan</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('staff-loan-repayments.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <p>Staff Loan Repayments</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -127,7 +133,6 @@
                         <p>Vouchers</p>
                     </a>
                 </li>
-
 
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">

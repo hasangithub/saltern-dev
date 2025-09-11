@@ -44,6 +44,7 @@ use App\Http\Controllers\StaffLoanController;
 // routes/web.php
 use App\Http\Controllers\PayrollBatchController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\StaffLoanRepaymentController;
 
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
@@ -206,6 +207,7 @@ Route::resource('owner-loans', OwnerLoanController::class);
 Route::get('/', [DashboardController::class, 'index'])->name('home');
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
+Route::resource('staff-loan-repayments', StaffLoanRepaymentController::class);
 Route::get('loan-repayments/{loanId}/create', [OwnerLoanRepaymentController::class, 'createForLoan'])->name('loan-repayments.create-for-loan');
 Route::post('loan-repayments', [OwnerLoanRepaymentController::class, 'storeForCash'])->name('loan-repayments.store');
 Route::put('owner-loans/{loan_request}/approve', [OwnerLoanController::class, 'approve'])->name('owner-loan.approve');
