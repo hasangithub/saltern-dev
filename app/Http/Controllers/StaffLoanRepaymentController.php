@@ -60,7 +60,7 @@ class StaffLoanRepaymentController extends Controller
 
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-            'description' => 'Loan deducted',
+            'description' => 'Staff Loan deducted UserId-'.$loan->user_id,
         ]);
 
         $details = [
