@@ -22,6 +22,7 @@ use App\Models\Voucher;
 use Carbon\Carbon;
 use App\Models\ReceiptDetail;
 use App\Exports\LedgerReportExport;
+use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -425,6 +426,11 @@ class ReportController extends Controller
         return view('reports.ownerLoan.index', compact('owners', 'yahaies'));
     }
 
+    public function indexStaffLaon()
+    {
+        return view('reports.staffLoan.index');
+    }
+
     public function yahaiWiseLoanPrint(Request $request)
     {
         $request->validate([
@@ -502,6 +508,80 @@ class ReportController extends Controller
         return $pdf->stream('owner_loan_report.pdf');
     }
 
+    public function staffLoanPrint(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
+
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+
+        $memberships = User::with([
+            'staffLoans' => function ($query) use ($request) {
+                if ($request->from_date && $request->to_date) {
+                    $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+                } elseif ($request->from_date) {
+                    $query->whereDate('created_at', '>=', $request->from_date);
+                } elseif ($request->to_date) {
+                    $query->whereDate('created_at', '<=', $request->to_date);
+                }
+
+                $query->with(['staffLoanRepayment' => function ($q) {
+                    $q->orderBy('repayment_date');
+                }]);
+            }
+        ])
+            ->get();
+
+        $owner ="dd";
+
+
+        $grouped = [];
+
+        foreach ($memberships as $membership) {
+            $salternName = $membership->name;
+
+            foreach ($membership->staffLoans as $loan) {
+                $balance = $loan->approved_amount;
+                $loanRows = [];
+
+                // Add initial loan row
+                $loanRows[] = [
+                    'date' => $loan->created_at->format('Y-m-d'),
+                    'description' => 'Loan Issued Loan#' . $loan->id,
+                    'debit' => $loan->approved_amount,
+                    'credit' => null,
+                    'balance' => $balance,
+                ];
+
+                foreach ($loan->staffLoanRepayment as $repayment) {
+                    $balance -= $repayment->amount;
+
+                    $loanRows[] = [
+                        'date' => $repayment->repayment_date,
+                        'description' => 'Loan Repayment#' . $repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
+                        'debit' => null,
+                        'credit' => $repayment->amount,
+                        'balance' => $balance,
+                    ];
+                }
+
+                $grouped[$salternName][] = [
+                    'loan_id' => $loan->id,
+                    'rows' => $loanRows,
+                ];
+            }
+        }
+
+        $pdf = Pdf::loadView('reports.staffLoan.print-staff-loan', compact('memberships', 'grouped', 'owner', 'fromDate', 'toDate'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('staff_loan_report.pdf');
+    }
+
     public function ownerLoanReport(Request $request)
     {
         $request->validate([
@@ -571,6 +651,74 @@ class ReportController extends Controller
         }
 
         return view('reports.ownerLoan.owner_loan_report', compact('memberships', 'grouped', 'owner'));
+    }
+
+    public function staffLoanReport(Request $request)
+    { 
+        $request->validate([
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
+
+
+        $memberships = User::with([
+            'staffLoans' => function ($query) use ($request) {
+                if ($request->from_date && $request->to_date) {
+                    $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+                } elseif ($request->from_date) {
+                    $query->whereDate('created_at', '>=', $request->from_date);
+                } elseif ($request->to_date) {
+                    $query->whereDate('created_at', '<=', $request->to_date);
+                }
+
+                $query->with(['staffLoanRepayment' => function ($q) {
+                    $q->orderBy('repayment_date');
+                }]);
+            }
+        ])
+            ->get();
+
+        $owner = 'ddd';
+
+
+        $grouped = [];
+
+        foreach ($memberships as $membership) {
+            $salternName = $membership->name;
+
+            foreach ($membership->staffLoans as $loan) {
+                $balance = $loan->approved_amount;
+                $loanRows = [];
+
+                // Add initial loan row
+                $loanRows[] = [
+                    'date' => $loan->created_at->format('Y-m-d'),
+                    'description' => 'Loan Issued Loan#' . $loan->id,
+                    'debit' => $loan->approved_amount,
+                    'credit' => null,
+                    'balance' => $balance,
+                ];
+
+                foreach ($loan->staffLoanRepayment as $repayment) {
+                    $balance -= $repayment->amount;
+
+                    $loanRows[] = [
+                        'date' => $repayment->repayment_date,
+                        'description' => 'Loan Repayment#' . $repayment->id . (!empty($repayment->buyer->full_name) ? ' (' . $repayment->buyer->full_name . ')' : ''),
+                        'debit' => null,
+                        'credit' => $repayment->amount,
+                        'balance' => $balance,
+                    ];
+                }
+
+                $grouped[$salternName][] = [
+                    'loan_id' => $loan->id,
+                    'rows' => $loanRows,
+                ];
+            }
+        }
+
+        return view('reports.staffLoan.staff_loan_report', compact('memberships', 'grouped', 'owner'));
     }
 
 

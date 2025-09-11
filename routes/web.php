@@ -99,7 +99,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/production-report/buyerGenerate', [ReportController::class, 'generateBuyerProduction'])->name('production.report.buyerGenerate');
     Route::get('/reports/loan-trial-balance/detailed', [ReportController::class, 'yahaiWiseLoanTrialBalance'])->name('reports.loan-trial-balance.detailed');
     Route::get('/reports/owner-loans', [ReportController::class, 'indexOwnerLaon'])->name('reports.owner.loan.index');
+    Route::get('/reports/staff-loans', [ReportController::class, 'indexStaffLaon'])->name('reports.staff.loan.index');
     Route::get('/reports/owner-loans/generate', [ReportController::class, 'ownerLoanReport'])->name('report.owner.loan.generate');
+    Route::get('/reports/staff-loans/generate', [ReportController::class, 'staffLoanReport'])->name('report.staff.loan.generate');
     Route::get('/trial-balance-report', [ReportController::class, 'indexTrialBalance'])->name('trial.report.index');
     Route::get('/reports/pending-payments', [ReportController::class, 'indexPendingPayments'])->name('reports.pending.payments.index');
     Route::get('/reports/receipts-payments', [ReportController::class, 'indexReceipts'])->name('reports.receipts.index');
@@ -141,6 +143,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/reports/balance-sheet/print', [ReportController::class, 'printBalanceSheet'])->name('balance-sheet.print');
     Route::get('/reports/loan-trial-balance/print', [ReportController::class, 'yahaiWiseLoanTrialBalancePrint'])->name('loan-trial-balance.print');
     Route::get('/reports/owner-loan/print', [ReportController::class, 'yahaiWiseLoanPrint'])->name('owner-loan.print');
+    Route::get('/reports/staff-loan/print', [ReportController::class, 'staffLoanPrint'])->name('staff-loan.print');
     Route::get('/loan-repayment/{repayment}/print', [OwnerLoanRepaymentController::class, 'printReceipt'])->name('loan-repayment.print');
     Route::get('/vouchers/{voucher}/print', [VoucherController::class, 'printVoucher'])->name('vouchers.print');
 

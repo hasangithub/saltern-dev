@@ -229,6 +229,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('reports.staff.loan.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-dollar-sign"></i>
+                                <p>Staff Loan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('reports.pending.payments.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-money-bill-wave"></i>
                                 <p>Pending Payments</p>
