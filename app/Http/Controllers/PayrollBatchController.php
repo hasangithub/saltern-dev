@@ -562,11 +562,11 @@ class PayrollBatchController extends Controller
 
         // === Credit Entries (Batch-level totals) ===
         $creditMap = [
-            'net_pay' => 177,
-            'salary advance' => 178,
-            'union' => 107,
-            'fine' => 111,
-            'epf_8' => 103,
+            'net_pay' => 179,
+            'salary advance' => 180,
+            'union' => 107,  // union charge
+            'fine' => 111, // Security staff -  penalty
+            'epf_8' => 103,  // EPF
             'loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
             'festival loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
         ];

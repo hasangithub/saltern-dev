@@ -10,15 +10,15 @@
 
 @section('content_body')
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <p class=""><strong>Staff:</strong> </p>
-            <a href="{{ route('staff-loan.print', request()->all()) }}" class="btn btn-primary"
-                        target="_blank">
-                        <i class="fas fa-print"></i> Print
-                    </a>
-        </div>
+    <h5 class="mb-0 d-inline-block">Staff Loans</h5>
+    <div class="float-right">
+        <a href="{{ route('staff-loan.print', request()->all()) }}" class="btn btn-primary btn-sm" target="_blank">
+            <i class="fas fa-print"></i> Print
+        </a>
+    </div>
+    <div class="clearfix"></div>
 
+    <div class="row">
         @foreach ($grouped as $saltern => $loans)
         <div class="col-12">
             <div class="card shadow-sm border-0">

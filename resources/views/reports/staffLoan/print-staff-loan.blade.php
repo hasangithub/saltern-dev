@@ -1,5 +1,5 @@
 @extends('layout.report_a4')
-@section('section-title', 'Staff Loan User wise')
+@section('section-title', 'Staff Loan')
 @section('content')
 
 @section('custom-css')
@@ -19,7 +19,7 @@
 
 
     <div class="header">
-        <p><strong>Staff:</strong> </p>
+        <p class="text-right"><strong>Total Outstanding: {{ number_format($totalOutstanding, 2)  }}</strong> </p>
     </div>
 
     @foreach ($grouped as $saltern => $loans)

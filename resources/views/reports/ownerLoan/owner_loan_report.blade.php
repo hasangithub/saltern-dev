@@ -10,13 +10,18 @@
 
 @section('content_body')
 <div class="container-fluid">
+    <h5 class="mb-0 d-inline-block">Owner Loans</h5>
+    <div class="float-right">
+        <a href="{{ route('owner-loan.print', request()->all()) }}" class="btn btn-primary btn-sm" target="_blank">
+            <i class="fas fa-print"></i> Print
+        </a>
+    </div>
+    <div class="clearfix"></div>
+
     <div class="row">
         <div class="col-12">
-            <p class=""><strong>Owner:</strong> {{ $owner->name_with_initial }}</p>
-            <a href="{{ route('owner-loan.print', request()->all()) }}" class="btn btn-primary"
-                        target="_blank">
-                        <i class="fas fa-print"></i> Print
-                    </a>
+            <p class=""><strong>{{ $owner->name_with_initial }}</strong> </p>
+
         </div>
 
         @foreach ($grouped as $saltern => $loans)
