@@ -27,8 +27,9 @@
         @foreach ($grouped as $saltern => $loans)
         <div class="col-12">
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-light">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 text-primary">{{ $saltern }}</h5>
+                    <h5 class="mb-0 text-danger">Total Outstanding: {{ number_format($totalOutstanding, 2) }}</h5>
                 </div>
                 <div class="card-body p-3">
 

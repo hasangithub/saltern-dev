@@ -469,6 +469,8 @@ class ReportController extends Controller
 
         $grouped = [];
 
+        $totalOutstanding = 0;
+
         foreach ($memberships as $membership) {
             $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
 
@@ -497,6 +499,8 @@ class ReportController extends Controller
                     ];
                 }
 
+                $totalOutstanding += $balance;
+
                 $grouped[$salternName][] = [
                     'loan_id' => $loan->id,
                     'rows' => $loanRows,
@@ -504,7 +508,7 @@ class ReportController extends Controller
             }
         }
 
-        $pdf = Pdf::loadView('reports.ownerLoan.print-owner-loan', compact('memberships', 'grouped', 'owner', 'fromDate', 'toDate'))
+        $pdf = Pdf::loadView('reports.ownerLoan.print-owner-loan', compact('memberships', 'grouped', 'owner', 'fromDate', 'toDate', 'totalOutstanding'))
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream('owner_loan_report.pdf');
@@ -559,6 +563,8 @@ class ReportController extends Controller
 
         $grouped = [];
 
+        $totalOutstanding = 0;
+
         foreach ($memberships as $membership) {
             $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
 
@@ -587,6 +593,8 @@ class ReportController extends Controller
                     ];
                 }
 
+                $totalOutstanding += $balance;
+
                 $grouped[$salternName][] = [
                     'loan_id' => $loan->id,
                     'rows' => $loanRows,
@@ -594,7 +602,7 @@ class ReportController extends Controller
             }
         }
 
-        return view('reports.ownerLoan.owner_loan_report', compact('memberships', 'grouped', 'owner'));
+        return view('reports.ownerLoan.owner_loan_report', compact('memberships', 'grouped', 'owner', 'totalOutstanding'));
     }
 
     public function staffLoanReport(Request $request, StaffLoanReportService $service)

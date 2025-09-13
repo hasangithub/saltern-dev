@@ -20,6 +20,7 @@
 
     <div class="header">
         <p><strong>Owner:</strong> {{ $owner->name_with_initial }}</p>
+        <p class="text-right"><strong>Total Outstanding: {{ number_format($totalOutstanding, 2)  }}</strong> </p>
     </div>
 
     @foreach ($grouped as $saltern => $loans)
