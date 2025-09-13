@@ -342,7 +342,8 @@ class WeighbridgeEntryController extends Controller
         {
             $entry = WeighbridgeEntry::findOrFail($id);
 
-            // Soft delete related loan repayments, if any
+            $entry->deleted_by = auth('web')->id();
+            $entry->save();
             OwnerLoanRepayment::where('weighbridge_entry_id', $entry->id)->delete();
 
             // Soft delete the weighbridge entry
