@@ -214,8 +214,6 @@ Route::resource('staff-loan-repayments', StaffLoanRepaymentController::class);
 Route::get('loan-repayments/{loanId}/create', [OwnerLoanRepaymentController::class, 'createForLoan'])->name('loan-repayments.create-for-loan');
 Route::get('staff-loan-repayments/{loanId}/create', [staffLoanRepaymentController::class, 'createForLoan'])->name('staff-loan-repayments.create-for-loan');
 Route::post('loan-repayments', [OwnerLoanRepaymentController::class, 'storeForCash'])->name('loan-repayments.store');
-Route::delete('/owner-loan-repayments/{id}', [OwnerLoanRepaymentController::class, 'destroy'])
-    ->name('owner-loan-repayments.destroy');
 Route::post('staff-loan-repayments', [staffLoanRepaymentController::class, 'storeForCash'])->name('staff-loan-repayments.store');
 Route::put('owner-loans/{loan_request}/approve', [OwnerLoanController::class, 'approve'])->name('owner-loan.approve');
 
