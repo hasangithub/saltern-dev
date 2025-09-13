@@ -24,8 +24,7 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="membershipsTable" class="table table-sm table-bordered table-hover"
-                            style="width:100%">
+                        <table id="membershipsTable" class="table table-sm nowrap table-bordered table-hover" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Repayment ID</th>
@@ -63,7 +62,17 @@
                                     <td><a href="{{ route('loan-repayment.print', $repayment->id) }}"
                                             class="btn btn-sm btn-primary" target="_blank">
                                             <i class="fas fa-print"></i> Print
-                                        </a></td>
+                                        </a>
+                                        <form action="{{ route('owner-loan-repayments.destroy', $repayment->id) }}"
+                                            method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Are you sure you want to delete this repayment?')">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
