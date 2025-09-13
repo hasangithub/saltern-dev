@@ -168,4 +168,13 @@ class OwnerLoanRepaymentController extends Controller
         // Outstanding = approved - repaid
         return $totalApproved - $totalRepaid;
     }
+
+    public function destroy($id)
+    {
+        $repayment = OwnerLoanRepayment::findOrFail($id);
+        $repayment->deleted_by = auth('web')->id();
+        $repayment->save();
+        $repayment->delete(); // soft delete
+        return redirect()->back()->with('success', 'Repayment deleted successfully.');
+    }
 }
