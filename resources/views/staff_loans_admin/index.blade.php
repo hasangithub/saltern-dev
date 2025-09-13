@@ -49,6 +49,10 @@
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
+                                        <a href="{{ route('staff-loan-repayments.create-for-loan', $ownerLoan->id) }}"
+                                            class="btn btn-primary btn-xs">
+                                            + Repayment
+                                        </a>
                                     </td>
                                 </tr>
                                 @endforeach

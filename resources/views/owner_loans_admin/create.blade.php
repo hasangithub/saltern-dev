@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="card-body">
-                @if(session('success'))
+                    @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
@@ -37,7 +37,7 @@
                         <div class="col-md-6">
                             <form action="{{ route('admin.owner_loans.store') }}" method="POST" autocomplete="off">
                                 @csrf
-                            
+
                                 <div class="form-group row">
                                     <label for="side_id" class="col-sm-3 col-form-label">Side</label>
                                     <div class="col-sm-9">
@@ -86,12 +86,25 @@
                                     </div>
                                 </div>
 
+                                {{-- Income Categories (initially hidden) --}}
+                                <div class="form-group row" id="income_category_div" style="display:none;">
+                                    <label for="income_category" class="col-sm-3 col-form-label">Income</label>
+                                    <div class="col-sm-9">
+                                        <select name="income_category_id" id="income_category" class="form-control">
+                                            <option value="">-- Select Income Category --</option>
+                                            @foreach($incomeCategories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="form-group row">
                                     <label for="loan_amount" class="col-sm-3 col-form-label">Loan Amount</label>
                                     <div class="col-sm-9">
-                                    <input type="number" name="loan_amount" class="form-control" required>
+                                        <input type="number" name="loan_amount" class="form-control" required>
                                     </div>
-                                   
+
                                 </div>
 
                                 <div class="mb-3">
@@ -99,7 +112,7 @@
                                     <textarea name="purpose" id="purpose"
                                         class="form-control">{{ old('reason') }}</textarea>
                                 </div>
-                        
+
                                 <div class="col-12">
                                     <div class="card card-default">
                                         <div class="card-header">
@@ -139,6 +152,19 @@
 @push('js')
 <script>
 $(document).ready(function() {
+
+    const loanType = document.getElementById('loan_type');
+    const incomeDiv = document.getElementById('income_category_div');
+
+    loanType.addEventListener('change', function() {
+        if (this.value === 'old') {
+            incomeDiv.style.display = 'block';
+        } else {
+            incomeDiv.style.display = 'none';
+            document.getElementById('income_category').value = '';
+        }
+    });
+
     const $form = $('form');
     const $submitBtn = $form.find('button[type="submit"]');
 
@@ -189,7 +215,7 @@ $(document).ready(function() {
         const yahaiId = $(this).val();
         $('#saltern_id').prop('disabled', true).empty().append(
             '<option value="">Select Saltern</option>');
-        
+
         if (yahaiId) {
             $.ajax({
                 url: "{{ route('get.saltern') }}",
@@ -249,6 +275,5 @@ $(document).ready(function() {
         }
     });
 });
-
 </script>
 @endpush

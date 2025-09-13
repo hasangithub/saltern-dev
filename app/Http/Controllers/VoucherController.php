@@ -8,12 +8,14 @@ use App\Models\JournalEntry;
 use App\Models\Ledger;
 use App\Models\OwnerLoan;
 use App\Models\PaymentMethod;
+use App\Models\StaffLoan;
 use App\Models\SubAccountGroup;
 use App\Models\SubLedger;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
 
 class VoucherController extends Controller
 {
@@ -31,8 +33,9 @@ class VoucherController extends Controller
         $ledgers = Ledger::all();
         $subAccounts = SubAccountGroup::all();
         $ownerLoans = OwnerLoan::with('membership')->where('status', 'approved')->whereNull('voucher_id')->where('is_migrated', false)->get();
+        $staffLoans = StaffLoan::with('user')->where('status', 'approved')->whereNull('voucher_id')->where('is_migrated', false)->get();
 
-        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers', 'ownerLoans', 'subAccounts'));
+        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers', 'ownerLoans', 'subAccounts','staffLoans'));
     }
 
     public function store(Request $request)
@@ -48,8 +51,17 @@ class VoucherController extends Controller
             'amount' => 'required|numeric|min:0',
             'note' => 'nullable|string',
             'status' => 'nullable',
-            'owner_loan_id' => 'nullable|exists:owner_loans,id',
-            'ledger_id' => 'required_without:owner_loan_id',
+            'owner_loan_id' => [
+                'nullable',
+                'exists:owner_loans,id',
+                Rule::prohibitedIf(fn () => $request->staff_loan_id !== null),
+            ],
+            'staff_loan_id' => [
+                'nullable',
+                'exists:staff_loans,id',
+                Rule::prohibitedIf(fn () => $request->owner_loan_id !== null),
+            ],
+            'ledger_id' => 'required_without_all:owner_loan_id,staff_loan_id',
             'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
         ]);
 
@@ -59,6 +71,14 @@ class VoucherController extends Controller
             $ownerLoan = OwnerLoan::findOrFail($request->owner_loan_id);
         
             $ownerLoan->update([
+                'voucher_id' => $voucher->id,
+            ]);
+        }
+
+        if ($request->filled('staff_loan_id')) {
+            $staffLoan = StaffLoan::findOrFail($request->staff_loan_id);
+        
+            $staffLoan->update([
                 'voucher_id' => $voucher->id,
             ]);
         }
@@ -97,7 +117,28 @@ class VoucherController extends Controller
             ];
     
 
-        } else {
+        } elseif($request->filled('staff_loan_id')) {
+            $details = [
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 12,
+                    'sub_ledger_id' => 116,
+                    'debit_amount' => $validated['amount'],
+                    'credit_amount' => null,
+                    'description' => "Voucher#".$voucher->id." Loan Disbursed to Staff#". $staffLoan->user_id,
+                ],
+                [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 11,
+                    'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
+                    'debit_amount' => null,
+                    'credit_amount' => $validated['amount'],
+                    'description' => "Voucher#".$voucher->id,
+                ],
+            ];
+        } 
+        
+        else {
             $details = [
                 [
                     'journal_id' => $journal->id,

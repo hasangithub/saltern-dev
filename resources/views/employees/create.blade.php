@@ -76,10 +76,53 @@
             </div>
 
             <div class="form-group row">
+                <label for="employment_type" class="col-sm-3 col-form-label">Employment Type</label>
+                <div class="col-sm-9">
+                    <select name="employment_type" id="employment_type" class="form-control">
+                        <option value="">-- Select Employment Type --</option>
+                        <option value="permanent"
+                            {{ old('employment_type', $employee->employment_type ?? '') == 'permanent' ? 'selected' : '' }}>
+                            Permanent</option>
+                        <option value="contract"
+                            {{ old('employment_type', $employee->employment_type ?? '') == 'contract' ? 'selected' : '' }}>
+                            Contract</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="department" class="col-sm-3 col-form-label">Department</label>
+                <div class="col-sm-9">
+                    <select name="department" id="department" class="form-control">
+                        <option value="">-- Select Department --</option>
+                        <option value="office"
+                            {{ old('department', $employee->department ?? '') == 'office' ? 'selected' : '' }}>Office
+                        </option>
+                        <option value="workshop"
+                            {{ old('department', $employee->department ?? '') == 'workshop' ? 'selected' : '' }}>
+                            Workshop
+                        </option>
+                        <option value="security"
+                            {{ old('department', $employee->department ?? '') == 'security' ? 'selected' : '' }}>
+                            Security
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
                 <label for="base_salary" class="col-sm-3 col-form-label">Base Salary</label>
                 <div class="col-sm-9">
                     <input type="number" step='0.01' class="form-control" id="base_salary" name="base_salary" required
                         autocomplete="off">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="epf_number" class="col-sm-3 col-form-label">EPF No</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="epf_number" name="epf_number"
+                        value="" required>
                 </div>
             </div>
 

@@ -38,7 +38,14 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\StaffLoanController;
+
+// routes/web.php
+use App\Http\Controllers\PayrollBatchController;
+use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\StaffLoanRepaymentController;
+
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [UserLoginController::class, 'login']);
@@ -76,9 +83,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('staff/complaints/{complaint}', [StaffComplaintController::class, 'show'])->name('staff.complaints.show');
     Route::post('staff/complaints/{complaint}/assign', [StaffComplaintController::class, 'assign'])->name('staff.complaints.assign');
     Route::post('staff/complaints/{complaint}/reply', [StaffComplaintController::class, 'reply'])->name('staff.complaints.reply');
-    Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
-    Route::post('/payroll/generate', [PayrollController::class, 'generateCurrentMonth'])->name('payroll.generate');
-    Route::get('/payroll/view', [PayrollController::class, 'view'])->name('payroll.view');
+
 
     Route::get('/attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
     Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
@@ -94,7 +99,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/production-report/buyerGenerate', [ReportController::class, 'generateBuyerProduction'])->name('production.report.buyerGenerate');
     Route::get('/reports/loan-trial-balance/detailed', [ReportController::class, 'yahaiWiseLoanTrialBalance'])->name('reports.loan-trial-balance.detailed');
     Route::get('/reports/owner-loans', [ReportController::class, 'indexOwnerLaon'])->name('reports.owner.loan.index');
+    Route::get('/reports/staff-loans', [ReportController::class, 'indexStaffLaon'])->name('reports.staff.loan.index');
     Route::get('/reports/owner-loans/generate', [ReportController::class, 'ownerLoanReport'])->name('report.owner.loan.generate');
+    Route::get('/reports/staff-loans/generate', [ReportController::class, 'staffLoanReport'])->name('report.staff.loan.generate');
     Route::get('/trial-balance-report', [ReportController::class, 'indexTrialBalance'])->name('trial.report.index');
     Route::get('/reports/pending-payments', [ReportController::class, 'indexPendingPayments'])->name('reports.pending.payments.index');
     Route::get('/reports/receipts-payments', [ReportController::class, 'indexReceipts'])->name('reports.receipts.index');
@@ -136,6 +143,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/reports/balance-sheet/print', [ReportController::class, 'printBalanceSheet'])->name('balance-sheet.print');
     Route::get('/reports/loan-trial-balance/print', [ReportController::class, 'yahaiWiseLoanTrialBalancePrint'])->name('loan-trial-balance.print');
     Route::get('/reports/owner-loan/print', [ReportController::class, 'yahaiWiseLoanPrint'])->name('owner-loan.print');
+    Route::get('/reports/staff-loan/print', [ReportController::class, 'staffLoanPrint'])->name('staff-loan.print');
     Route::get('/loan-repayment/{repayment}/print', [OwnerLoanRepaymentController::class, 'printReceipt'])->name('loan-repayment.print');
     Route::get('/vouchers/{voucher}/print', [VoucherController::class, 'printVoucher'])->name('vouchers.print');
 
@@ -160,6 +168,27 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/leave/approve/{id}', [LeaveController::class, 'approveLeave'])->name('leave.approve');
     Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
     Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
+
+    Route::prefix('payroll')->name('payroll.')->group(function () {
+        Route::get('/', [PayrollBatchController::class, 'index'])->name('batches.index');
+        Route::get('/batches/create', [PayrollBatchController::class, 'create'])->name('batches.create');
+        Route::post('/batches', [PayrollBatchController::class, 'store'])->name('batches.store'); // validates unique period, redirects to build
+        Route::get('/batches/{batch}/build', [PayrollBatchController::class, 'build'])->name('batches.build');
+        Route::get('/batches/{batch}/edit', [PayrollBatchController::class, 'edit'])->name('batches.edit');
+        Route::post('/batches/{batch}/save', [PayrollBatchController::class, 'save'])->name('batches.save');
+        Route::post('/batches/{batch}/update', [PayrollBatchController::class, 'update'])->name('batches.update');
+        Route::get('/{batch}/print', [PayrollBatchController::class, 'print'])
+        ->name('batches.print');
+        Route::get('/batches/{batch}/show', [PayrollBatchController::class, 'show'])->name('batches.show');
+        Route::post('/batches/{batch}/approve', [PayrollBatchController::class, 'approve'])
+    ->name('batches.approve');
+    Route::get('/batches/{id}/payslips', [PayrollBatchController::class, 'printPayslips'])
+    ->name('batches.payslips');
+    });
+
+    Route::resource('inventories', InventoryController::class);
+    Route::resource('places', PlaceController::class);
+
 });
 
 
@@ -181,8 +210,11 @@ Route::resource('owner-loans', OwnerLoanController::class);
 Route::get('/', [DashboardController::class, 'index'])->name('home');
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
+Route::resource('staff-loan-repayments', StaffLoanRepaymentController::class);
 Route::get('loan-repayments/{loanId}/create', [OwnerLoanRepaymentController::class, 'createForLoan'])->name('loan-repayments.create-for-loan');
+Route::get('staff-loan-repayments/{loanId}/create', [staffLoanRepaymentController::class, 'createForLoan'])->name('staff-loan-repayments.create-for-loan');
 Route::post('loan-repayments', [OwnerLoanRepaymentController::class, 'storeForCash'])->name('loan-repayments.store');
+Route::post('staff-loan-repayments', [staffLoanRepaymentController::class, 'storeForCash'])->name('staff-loan-repayments.store');
 Route::put('owner-loans/{loan_request}/approve', [OwnerLoanController::class, 'approve'])->name('owner-loan.approve');
 
 Route::get('/api/subledgers/{ledgerId}', [SubledgerController::class, 'getSubledgers'])->name('api.subledgers');
@@ -233,11 +265,15 @@ Route::prefix('staff-loans')->group(function () {
 Route::prefix('admin/staff-loans')->group(function () {
     // Show all loan requests
     Route::get('/', [StaffLoanController::class, 'index'])->name('admin.staff-loans.index');
-
+    Route::get('/create', [StaffLoanController::class, 'adminCreateStaffLoan'])->name('admin.staff_loans.create');
     // Show the form to create a new loan request
+    Route::get('get-loan-details/{user_id}', [StaffLoanController::class, 'getStaffLoanDetails'])->name('get.staff.loan.details');
+
     Route::get('/{loanId}', [StaffLoanController::class, 'show'])->name('admin.staff-loans.show');
 
     Route::put('/{loan_request}/approve', [StaffLoanController::class, 'approve'])->name('admin.staff-loan.approve');
+   
+    Route::post('/admin/owner-loans', [StaffLoanController::class, 'adminStoreStaffLoan'])->name('admin.staff_loans.store');
 });
 
 
@@ -249,6 +285,8 @@ Route::post('/password/email', [ForgotPasswordController::class, 'sendLink'])->n
 
 Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
 
 
 

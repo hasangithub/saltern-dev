@@ -22,6 +22,8 @@ use App\Models\Voucher;
 use Carbon\Carbon;
 use App\Models\ReceiptDetail;
 use App\Exports\LedgerReportExport;
+use App\Models\User;
+use App\Services\StaffLoanReportService;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -425,6 +427,12 @@ class ReportController extends Controller
         return view('reports.ownerLoan.index', compact('owners', 'yahaies'));
     }
 
+    public function indexStaffLaon()
+    {
+        $users = User::all();
+        return view('reports.staffLoan.index', compact('users'));
+    }
+
     public function yahaiWiseLoanPrint(Request $request)
     {
         $request->validate([
@@ -502,6 +510,22 @@ class ReportController extends Controller
         return $pdf->stream('owner_loan_report.pdf');
     }
 
+    public function staffLoanPrint(Request $request, StaffLoanReportService $service)
+    {
+        $request->validate([
+            'user_id' => 'nullable',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
+    
+        $data = $service->prepare($request->all());
+
+        $pdf = Pdf::loadView('reports.staffLoan.print-staff-loan', $data)
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('staff_loan_report.pdf');
+    }
+
     public function ownerLoanReport(Request $request)
     {
         $request->validate([
@@ -571,6 +595,19 @@ class ReportController extends Controller
         }
 
         return view('reports.ownerLoan.owner_loan_report', compact('memberships', 'grouped', 'owner'));
+    }
+
+    public function staffLoanReport(Request $request, StaffLoanReportService $service)
+    { 
+        $request->validate([
+            'user_id' => 'nullable',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+        ]);
+
+        $data = $service->prepare($request->all());
+      
+        return view('reports.staffLoan.staff_loan_report', $data);
     }
 
 

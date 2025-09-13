@@ -24,8 +24,8 @@ class OwnerLoanRepaymentController extends Controller
     public function index()
     {
         $repayments = OwnerLoanRepayment::with(['ownerLoan', 'buyer']) // optional relationships
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('owner_loan_repayments.index', compact('repayments'));
     }
 
@@ -55,7 +55,7 @@ class OwnerLoanRepaymentController extends Controller
 
         // Calculate the outstanding balance
         $outstandingBalance = $loan->approved_amount - $loan->ownerLoanRepayment->sum('amount');
-        
+
         // Check if repayment amount exceeds the outstanding balance
         if ($validated['amount'] > $outstandingBalance) {
             return back()->withErrors(['amount' => 'Repayment amount exceeds the outstanding balance.']);
@@ -73,7 +73,7 @@ class OwnerLoanRepaymentController extends Controller
 
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
-            'description' => 'Loan deducted by Buyer#'.$validated['buyer_id']. "from MembershipId#".$loan->membership_id,
+            'description' => 'Loan deducted by Buyer#' . $validated['buyer_id'] . "from MembershipId#" . $loan->membership_id,
         ]);
 
         $details = [
@@ -97,35 +97,34 @@ class OwnerLoanRepaymentController extends Controller
 
         JournalDetail::insert($details);
 
-    $membership = $loan->membership;
-    $waikal = $membership->saltern->yahai->name . " " . $membership->saltern->name;
-    $ownerPhone = $membership->owner->phone_number;
-    $todayDate = date('Y-m-d');
-    $totalPaidNow = $validated['amount'];
-    $totalOutstanding = $outstandingBalance - $validated['amount'];
+        $membership = $loan->membership;
+        $waikal = $membership->saltern->yahai->name . " " . $membership->saltern->name;
+        $ownerPhone = $membership->owner->phone_number;
+        $todayDate = date('Y-m-d');
+        $totalPaidNow = $validated['amount'];
+        $totalOutstanding = $outstandingBalance - $validated['amount'];
 
-    $smsCommon = "{$todayDate}\n"
-        . "{$membership->owner->name_with_initial}\n"
-        . "{$waikal}";
+        $smsCommon = "{$todayDate}\n"
+            . "{$membership->owner->name_with_initial}\n"
+            . "{$waikal}";
 
-    if ($totalPaidNow > 0) {
-        $smsCommon .= "\nLoan Paid : Rs. " . number_format($totalPaidNow, 2)
-            . "\nOutstanding Balance: Rs. " . number_format($totalOutstanding, 2);
-    }
-
-    try {
-        if (!empty($ownerPhone)) {
-            $this->smsService->sendSms($ownerPhone, $smsCommon);
+        if ($totalPaidNow > 0) {
+            $smsCommon .= "\nLoan Paid : Rs. " . number_format($totalPaidNow, 2)
+                . "\nOutstanding Balance: Rs. " . number_format($totalOutstanding, 2);
         }
-    } catch (\Exception $e) {
-       
-    }
 
-        
+        try {
+            if (!empty($ownerPhone)) {
+                $this->smsService->sendSms($ownerPhone, $smsCommon);
+            }
+        } catch (\Exception $e) {
+        }
+
+
 
         // Return a response to show success
         return redirect()->route('loan-repayments.create-for-loan', $loan->id)
-                         ->with('success', 'Repayment recorded successfully!');
+            ->with('success', 'Repayment recorded successfully!');
     }
 
     public function printReceipt(OwnerLoanRepayment $repayment)
@@ -142,12 +141,12 @@ class OwnerLoanRepaymentController extends Controller
             'outstandingAmount' => $outstandingAmount,
             'from_pdf' => true
         ])->setPaper('A6', 'portrait')
-        ->setOptions([
-            'defaultFont' => 'Times-Roman',
-            'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true,
-            'isFontSubsettingEnabled' => true,
-        ]);
+            ->setOptions([
+                'defaultFont' => 'Times-Roman',
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'isFontSubsettingEnabled' => true,
+            ]);
 
         return $pdf->stream("loan_repayment_receipt_{$repayment->id}.pdf");
     }

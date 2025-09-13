@@ -15,6 +15,20 @@
         <div class="col-md-12">
             <!-- Owner Details Card -->
             <div class="card">
+                @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+                @endif
+                @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
                 <div class="card-header">
                     <h3 class="card-title">Loan Details</h3>
                     @if($ownerLoan->status === 'pending')
