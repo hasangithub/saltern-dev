@@ -88,17 +88,18 @@ class StaffLoanController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'loan_amount' => 'required|numeric|min:1',
-            'loan_type' => 'required|in:old,new',
+            'loan_type_oldnew' => 'required|in:old,new',
+            'loan_type' => 'required|in:loan,festival loan',
             'purpose' => 'nullable',
         ]);
 
         $ownerLoan = StaffLoan::create([
             'user_id' => $validated['user_id'],
             'requested_amount'  => $validated['loan_amount'],
-            'approved_amount'  => $validated['loan_type']  === 'old' ? $validated['loan_amount'] : null,
+            'approved_amount'  => $validated['loan_type_oldnew']  === 'old' ? $validated['loan_amount'] : null,
             'purpose'       => $validated['purpose'] ?? null,
-            'status'        => $validated['loan_type'] === 'old' ? 'approved' : 'pending',
-            'is_migrated'   => $validated['loan_type'] === 'old',
+            'status'        => $validated['loan_type_oldnew'] === 'old' ? 'approved' : 'pending',
+            'is_migrated'   => $validated['loan_type_oldnew'] === 'old',
             'created_by'    => auth('web')->id(),
         ]);
 
