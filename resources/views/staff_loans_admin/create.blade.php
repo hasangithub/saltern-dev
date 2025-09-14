@@ -51,12 +51,23 @@
                                 </div>
 
                                 <div class="form-group row">
+                                    <label for="loan_type_oldnew" class="col-sm-3 col-form-label">Old/New Type</label>
+                                    <div class="col-sm-9">
+                                        <select id="loan_type_oldnew" name="loan_type_oldnew" class="form-control" required>
+                                            <option value="">-- Select Type --</option>
+                                            <option value="old">Old</option>
+                                            <option value="new">New</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
                                     <label for="loan_type" class="col-sm-3 col-form-label">Loan Type</label>
                                     <div class="col-sm-9">
                                         <select id="loan_type" name="loan_type" class="form-control" required>
                                             <option value="">-- Select Type --</option>
-                                            <option value="old">Old</option>
-                                            <option value="new">New</option>
+                                            <option value="loan">Loan</option>
+                                            <option value="festival loan">Festival Loan</option>
                                         </select>
                                     </div>
                                 </div>
