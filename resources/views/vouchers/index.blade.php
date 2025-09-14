@@ -49,7 +49,7 @@
                                             title="{{ $membership->name }}">{{ $membership->name }}</span></td>
                                     <td>{{ $membership->amount }}</td>
                                     <td>
-                                        <div style="max-width:150px; line-height:1.2em; max-height:2.4em; overflow:hidden; white-space:normal; cursor:pointer;"
+                                        <div style="max-width:200px; line-height:1.2em; max-height:2.4em; overflow:hidden; white-space:normal; cursor:pointer;"
                                             title="{{ $membership->description }}"
                                             ondblclick="navigator.clipboard.writeText(this.innerText).then(() => alert('Copied!'+this.innerText))">
                                             {{ $membership->description }}
