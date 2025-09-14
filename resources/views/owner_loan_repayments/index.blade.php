@@ -63,6 +63,7 @@
                                             class="btn btn-sm btn-primary" target="_blank">
                                             <i class="fas fa-print"></i> Print
                                         </a>
+                                        @role('admin')
                                         <form action="{{ route('owner-loan-repayments.destroy', $repayment->id) }}"
                                             method="POST" style="display:inline;">
                                             @csrf
@@ -72,6 +73,7 @@
                                                 Delete
                                             </button>
                                         </form>
+                                        @endrole
                                     </td>
                                 </tr>
                                 @endforeach

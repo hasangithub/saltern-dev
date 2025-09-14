@@ -169,7 +169,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
     Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
 
-    Route::prefix('payroll')->name('payroll.')->group(function () {
+    Route::prefix('payroll')->name('payroll.') ->middleware(['role:admin|hr_officer'])->group(function () {
         Route::get('/', [PayrollBatchController::class, 'index'])->name('batches.index');
         Route::get('/batches/create', [PayrollBatchController::class, 'create'])->name('batches.create');
         Route::post('/batches', [PayrollBatchController::class, 'store'])->name('batches.store'); // validates unique period, redirects to build
