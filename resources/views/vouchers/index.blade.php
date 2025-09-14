@@ -45,7 +45,7 @@
                                 <tr>
                                     <td>{{ $membership->id }}</td>
                                     <td>{{ $membership->created_at->format('Y-m-d') }}</td>
-                                    <td>{{ $membership->name }}</td>
+                                    <td><span class="d-inline-block text-truncate" style="max-width: 150px;" title="{{ $membership->name }}">{{ $membership->name }}</span></td>
                                     <td>{{ $membership->amount }}</td>
                                     <td>{{ $membership->description }}</td>
                                     <td> @if ($membership->bank_sub_ledger_id)
