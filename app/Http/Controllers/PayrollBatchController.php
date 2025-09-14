@@ -290,7 +290,7 @@ class PayrollBatchController extends Controller
     }
 
     public function update(Request $request, PayrollBatch $batch)
-    {
+    { 
         abort_if($batch->status !== 'draft', 403, 'Only draft batches can be updated.');
 
         $data = $request->validate([
@@ -346,9 +346,6 @@ class PayrollBatchController extends Controller
 
                 $extraWork = $mercantileAmount + $extraFullAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
 
-
-
-
                 // clear old earnings/deductions
                 $master->earnings()->delete();
                 $master->deductions()->delete();
@@ -388,6 +385,7 @@ class PayrollBatchController extends Controller
                     if ($amount == 0) continue;
 
                     [$componentId, $componentName] = $this->resolveComponent($key, 'deduction');
+                    $lowerName = strtolower($componentName);
 
                     $deductionData = [
                         'payroll_id' => $master->id,
@@ -399,18 +397,19 @@ class PayrollBatchController extends Controller
                     $ded += $amount;
 
                     // Handle loan
-                    if (strtolower($componentName) === 'loan' && !empty($loanIds[$employeeId])) {
-                        $deductionData['loan_id'] = $loanIds[$employeeId];
-
+                    if (in_array($lowerName, ['loan', 'festival loan']) && !empty($loanIds[$employeeId][$componentId])) {
+                        $selectedLoanId = $loanIds[$employeeId][$componentId];
+                        $deductionData['loan_id'] = $selectedLoanId;
+                
                         StaffLoanRepayment::updateOrCreate(
                             [
-                                'payroll_id' => $master->id,
+                                'payroll_id'     => $master->id,
+                                'staff_loan_id'  => $selectedLoanId,
                             ],
                             [
-                                'staff_loan_id' => $loanIds[$employeeId],
-                                'amount' => $amount,
+                                'amount'         => $amount,
                                 'repayment_date' => now(),
-                                'status' => 'pending',
+                                'status'         => 'pending',
                             ]
                         );
                     }
