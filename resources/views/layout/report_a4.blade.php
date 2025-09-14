@@ -5,6 +5,11 @@
     <meta charset="utf-8">
     <title>Ledger Report</title>
     <style>
+    @page {
+        margin: 0.5cm;
+        size: A4 portrait;
+    }
+
     body {
         font-family: sans-serif;
         font-size: 10px;
