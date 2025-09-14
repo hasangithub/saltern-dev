@@ -49,11 +49,11 @@
                                             title="{{ $membership->name }}">{{ $membership->name }}</span></td>
                                     <td>{{ $membership->amount }}</td>
                                     <td>
-                                        <span class="d-inline-block"
-                                            style="max-width: 150px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"
-                                            title="{{ $membership->description }}">
+                                        <div style="max-width:150px; line-height:1.2em; max-height:2.4em; overflow:hidden; white-space:normal; cursor:pointer;"
+                                            title="{{ $membership->description }}"
+                                            ondblclick="navigator.clipboard.writeText(this.innerText).then(() => alert('Copied!'+this.innerText))">
                                             {{ $membership->description }}
-                                        </span>
+                                        </div>
                                     </td>
                                     <td> @if ($membership->bank_sub_ledger_id)
                                         {{ $membership->bank->name }} / {{ $membership->cheque_no }} /
