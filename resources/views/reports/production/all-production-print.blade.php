@@ -6,15 +6,15 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
+                <th style="width: 60px;">Date</th>
                 <th>Owner Name</th>
                 <th>Waikal</th>
                 <th>Buyer Name</th>
-                <th>Culture</th>
-                <th class="text-right">Net Weight (kg)</th>
-                <th class="text-right">Bags</th>
-                <th class="text-right">Tons</th>
-                <th class="text-right">Service Charge 30%</th>
+                <th style="width: 30px;">Culture</th>
+                <th class="text-right" style="width: 30px;">Net Weight (kg)</th>
+                <th class="text-right" style="width: 30px;">Bags</th>
+                <th class="text-right" style="width: 30px;">Tons</th>
+                <th class="text-right" style="width: 50px;">Service Charge 30%</th>
             </tr>
         </thead>
         <tbody>
