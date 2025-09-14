@@ -88,7 +88,7 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('owner-loans.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <i class="nav-icon fas fa-hand-holding-usd text-danger"></i>
                                 <p>Owner Loan Management @if(!empty($pendingOwnerLoanCount))
                                     <span class="badge badge-danger right">{{ $pendingOwnerLoanCount }}</span>
                                     @endif
@@ -97,31 +97,31 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.owner_loans.create') }}" class="nav-link">
-                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <i class="nav-icon fas fa-hand-holding-usd text-danger" ></i>
                                 <p>Create Owner Loan</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('owner-loan-repayments.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <i class="nav-icon fas fa-hand-holding-usd text-danger"></i>
                                 <p>Owner Loan Repayments</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.staff-loans.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <i class="nav-icon fas fa-hand-holding-usd text-danger"></i>
                                 <p>Staff Loan Management</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.staff_loans.create') }}" class="nav-link">
-                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <i class="nav-icon fas fa-hand-holding-usd text-danger"></i>
                                 <p>Create Staff Loan</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('staff-loan-repayments.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-hand-holding-usd"></i>
+                                <i class="nav-icon fas fa-hand-holding-usd text-danger"></i>
                                 <p>Staff Loan Repayments</p>
                             </a>
                         </li>
@@ -146,7 +146,7 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('other_incomes.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-water"></i>
+                                <i class="nav-icon fas fa-water text-warning"></i>
                                 <p>Other Income</p>
                             </a>
                         </li>
@@ -201,55 +201,55 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('production.report.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-industry"></i>
+                                <i class="nav-icon fas fa-industry text-info"></i>
                                 <p>Production Report</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('ledger.report.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice"></i>
+                                <i class="nav-icon fas fa-file-invoice text-info"></i>
                                 <p>Ledger Report</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('trial.report.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-calculator"></i>
+                                <i class="nav-icon fas fa-calculator text-info"></i>
                                 <p>Trial Balance</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('balance.sheet') }}" class="nav-link">
-                                <i class="nav-icon fas fa-calculator"></i>
+                                <i class="nav-icon fas fa-calculator text-info"></i>
                                 <p>Balance Sheet</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('reports.owner.loan.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-dollar-sign"></i>
+                                <i class="nav-icon fas fa-dollar-sign text-info"></i>
                                 <p>Owner Loan</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('reports.staff.loan.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-dollar-sign"></i>
+                                <i class="nav-icon fas fa-dollar-sign text-info"></i>
                                 <p>Staff Loan</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('reports.pending.payments.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-money-bill-wave"></i>
+                                <i class="nav-icon fas fa-money-bill-wave text-info"></i>
                                 <p>Pending Payments</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('reports.receipts.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                <i class="nav-icon fas fa-file-invoice-dollar text-info"></i>
                                 <p>Receipts</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('reports.voucher.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-file-contract"></i>
+                                <i class="nav-icon fas fa-file-contract text-info"></i>
                                 <p>Voucher</p>
                             </a>
                         </li>
