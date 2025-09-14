@@ -29,7 +29,7 @@
                         <table id="membershipsTable" class="table table-sm nowrap table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Voucher Id</th>
+                                    <th>VId</th>
                                     <th>Date</th>
                                     <th>Name</th>
                                     <th>Amount</th>
@@ -99,7 +99,8 @@ $(document).ready(function() {
         order: [
             [0, 'desc']
         ],
-        pageLength: 100
+        pageLength: 100,
+        autoWidth: true,
     });
 });
 </script>
