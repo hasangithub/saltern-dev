@@ -45,9 +45,16 @@
                                 <tr>
                                     <td>{{ $membership->id }}</td>
                                     <td>{{ $membership->created_at->format('Y-m-d') }}</td>
-                                    <td><span class="d-inline-block text-truncate" style="max-width: 150px;" title="{{ $membership->name }}">{{ $membership->name }}</span></td>
+                                    <td><span class="d-inline-block text-truncate" style="max-width: 150px;"
+                                            title="{{ $membership->name }}">{{ $membership->name }}</span></td>
                                     <td>{{ $membership->amount }}</td>
-                                    <td>{{ $membership->description }}</td>
+                                    <td>
+                                        <span class="d-inline-block"
+                                            style="max-width: 150px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;"
+                                            title="{{ $membership->description }}">
+                                            {{ $membership->description }}
+                                        </span>
+                                    </td>
                                     <td> @if ($membership->bank_sub_ledger_id)
                                         {{ $membership->bank->name }} / {{ $membership->cheque_no }} /
                                         {{ $membership->cheque_date }}
