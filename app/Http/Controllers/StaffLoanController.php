@@ -100,6 +100,7 @@ class StaffLoanController extends Controller
             'purpose'       => $validated['purpose'] ?? null,
             'status'        => $validated['loan_type_oldnew'] === 'old' ? 'approved' : 'pending',
             'is_migrated'   => $validated['loan_type_oldnew'] === 'old',
+            'approval_date'  => $validated['loan_type_oldnew'] === 'old' ? date("Y-m-d H:i:s") : null,
             'created_by'    => auth('web')->id(),
         ]);
 
