@@ -97,7 +97,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.owner_loans.create') }}" class="nav-link">
-                                <i class="nav-icon fas fa-hand-holding-usd text-danger" ></i>
+                                <i class="nav-icon fas fa-hand-holding-usd text-danger"></i>
                                 <p>Create Owner Loan</p>
                             </a>
                         </li>
@@ -168,6 +168,12 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('attendance.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-water"></i>
+                                <p>Attendances</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="{{ route('attendance.import') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>

@@ -87,7 +87,7 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::get('/attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
     Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
-
+    Route::resource('attendance', AttendanceController::class);
 
 
     Route::get('/trial-balance', [ReportController::class, 'trialBalance'])->name('trial.balance');
