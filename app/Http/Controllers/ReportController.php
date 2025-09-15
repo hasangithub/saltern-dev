@@ -22,6 +22,7 @@ use App\Models\Voucher;
 use Carbon\Carbon;
 use App\Models\ReceiptDetail;
 use App\Exports\LedgerReportExport;
+use App\Models\StaffLoan;
 use App\Models\User;
 use App\Services\StaffLoanReportService;
 use Maatwebsite\Excel\Facades\Excel;
@@ -975,6 +976,79 @@ class ReportController extends Controller
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream('loan_trial_balance.pdf');
+    }
+
+    public function staffLoanTrialBalancePrint(Request $request)
+    {
+        $data = $this->getStaffTrialBalanceData($request);
+
+        $pdf = Pdf::loadView('reports.loan.staff_loan_trial_balance_print', $data)
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('staff_loan_trial_balance.pdf');
+    }
+
+    public function staffLoanTrialBalance(Request $request)
+    {
+        $data = $this->getStaffTrialBalanceData($request);
+        return view('reports.loan.staff_loan_trial_balance_detailed', $data);
+    }
+
+    public function getStaffTrialBalanceData(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
+        ]);
+
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+        $loans = StaffLoan::with([
+            'user',
+            'staffLoanRepayment'
+        ])
+            ->when($fromDate, function ($q) use ($fromDate) {
+                $q->whereDate('approval_date', '>=', $fromDate);
+            })
+            ->when($toDate, function ($q) use ($toDate) {
+                $q->whereDate('approval_date', '<=', $toDate);
+            })
+            ->get();
+
+        $grouped = [];
+
+        foreach ($loans as $loan) {
+            $yahai = $loan->user->id;
+            $saltern = $loan->user->name;
+            $owner = $loan->user->name;
+
+            $repaid = $loan->staffLoanRepayment()->sum('amount');
+            $outstanding = $loan->approved_amount - $repaid;
+
+            if (!isset($grouped[$yahai])) {
+                $grouped[$yahai] = [];
+            }
+
+            $grouped[$yahai][] = [
+                'saltern' => $saltern,
+                'owner' => $owner,
+                'loan_id' => $loan->id,
+                'approved' => $loan->approved_amount,
+                'repaid' => $repaid,
+                'outstanding' => $outstanding,
+            ];
+        }
+
+        // Yahai-wise totals
+        $yahaiTotals = [];
+        foreach ($grouped as $yahai => $records) {
+            $yahaiTotals[$yahai] = collect($records)->sum('outstanding');
+        }
+
+        $grandTotal = array_sum($yahaiTotals);
+        return compact('grouped', 'yahaiTotals', 'grandTotal', 'fromDate', 'toDate');
+        //  view('reports.loan.loan_trial_balance_detailed', compact('grouped', 'yahaiTotals'));
     }
 
     public function pendingPaymentsReport(Request $request)
