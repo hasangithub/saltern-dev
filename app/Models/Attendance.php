@@ -10,7 +10,9 @@ class Attendance extends Model
     protected $fillable = [
         'user_id',
         'attendance_date',
-        'status', // values: present, leave, half_day, no_pay
+        'status',
+        'punch_times',
+        'worked_hours'
     ];
 
     public function user()
