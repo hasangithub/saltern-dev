@@ -190,6 +190,7 @@ class OwnerLoanController extends Controller
             'purpose'       => $validated['purpose'] ?? null,
             'status'        => $validated['loan_type'] === 'old' ? 'approved' : 'pending',
             'is_migrated'   => $validated['loan_type'] === 'old',
+            'approval_date'  => $validated['loan_type'] === 'old' ? date("Y-m-d H:i:s") : null,
             'created_by'    => auth('web')->id(),
         ]);
 
