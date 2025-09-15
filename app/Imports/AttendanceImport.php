@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Imports;
 
@@ -15,7 +15,7 @@ class AttendanceImport implements ToCollection, WithStartRow
 {
     public function startRow(): int
     {
-        return 2; // Start reading from row 6 (after the header on row 5)
+        return 6; // Start reading from row 6 (after the header on row 5)
     }
 
     public function collection(Collection $rows)
@@ -24,10 +24,16 @@ class AttendanceImport implements ToCollection, WithStartRow
         $attendanceDate = null;
 
         foreach ($rows as $row) {
-           
+
             $personId = $row[1] ?? null; // Column B
             $dateRaw = $row[6] ?? null;  // Column G
+            $punchesRaw = trim($row[9] ?? '');
             $personId = (int) $personId;
+
+
+            if (!$personId || !$dateRaw) {
+                continue;
+            }
 
             if (is_numeric($dateRaw)) {
                 $date = \Carbon\Carbon::instance(ExcelDate::excelToDateTimeObject($dateRaw));
@@ -35,11 +41,6 @@ class AttendanceImport implements ToCollection, WithStartRow
                 $date = \Carbon\Carbon::parse($dateRaw);
             }
 
-          
-          
-            if (!$personId || !$dateRaw) {
-                continue;
-            }
 
             try {
                 $date = $date->format('Y-m-d');
@@ -47,41 +48,47 @@ class AttendanceImport implements ToCollection, WithStartRow
                 continue; // Skip invalid date rows
             }
 
-            $attendanceDate = $attendanceDate ?? $date;
+            
             $presentPersonIds[] = $personId;
 
             $employee = Employee::where('person_id', $personId)->first();
 
-            if ($employee) {
-                Attendance::updateOrCreate(
-                    [
-                        'user_id' => $employee->user_id,
-                        'attendance_date' => $date,
-                    ],
-                    [
-                        'status' => 'present',
-                    ]
-                );
-            }
-        }
+            if (!$employee) continue;
 
-        // Now mark absents for that date
-        if ($attendanceDate) {
-            $allEmployees = Employee::all();
+            // if it's "-" or empty → no punch → absent
+            if (empty($punchesRaw) || trim($punchesRaw) === '-') {
+                $punchTimes = [];
+                $workedHours = 0;
+                $status = 0; // absent
+            } else {
+                // split punches into array
+                $punchTimes = preg_split('/\s+/', trim($punchesRaw));
 
-            foreach ($allEmployees as $employee) {
-                if (!in_array($employee->person_id, $presentPersonIds)) {
-                    Attendance::updateOrCreate(
-                        [
-                            'user_id' => $employee->user_id,
-                            'attendance_date' => $attendanceDate,
-                        ],
-                        [
-                            'status' => 'absent',
-                        ]
-                    );
+                // calculate hours (pair IN/OUT)
+                $workedHours = 0;
+                for ($i = 0; $i < count($punchTimes); $i += 2) {
+                    if (isset($punchTimes[$i + 1])) {
+                        $in  = Carbon::createFromFormat('H:i:s', $punchTimes[$i]);
+                        $out = Carbon::createFromFormat('H:i:s', $punchTimes[$i + 1]);
+                        $workedHours += $in->diffInMinutes($out) / 60;
+                    }
                 }
+
+                $status = 1; // present
             }
+
+            // Save into DB
+            Attendance::updateOrCreate(
+                [
+                    'user_id' => $employee->user_id,
+                    'attendance_date' => $date,
+                ],
+                [
+                    'status' => $status,
+                    'punch_times' => json_encode($punchTimes),
+                    'worked_hours' => round($workedHours, 2),
+                ]
+            );
         }
     }
 }
