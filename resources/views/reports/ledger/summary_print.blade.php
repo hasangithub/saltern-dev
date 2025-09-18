@@ -5,7 +5,7 @@
 <table>
     <thead>
         <tr class="table-secondary">
-            <th>Date</th>
+            <th style="width: 60px;">Date</th>
             <th>Description</th>
             <th class="text-right">Debit</th>
             <th class="text-right">Credit</th>
