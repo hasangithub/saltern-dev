@@ -6,7 +6,7 @@
 @section('content_header_title', 'Inventory')
 @section('content_header_subtitle', 'Inventory')
 @section('page-buttons')
-<a href="{{ route('inventories.create') }}" class="btn btn-primary mb-3">Create Inventory</a>
+<a href="{{ route('inventories.create') }}" class="btn btn-primary btn-sm">Create Inventory</a>
 @endsection
 {{-- Content body: main page content --}}
 
@@ -32,7 +32,7 @@
                         <th>Description</th>
                         <th>Replaced From</th>
                         <th>Warranty Period</th>
-                        <th>Expired</th>
+                        <th>Warranty</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -56,7 +56,14 @@
                             @endif
                         </td>
                         <td>
-                            @if($inventory->warranty_to && $inventory->warranty_to < now()) Yes @else No @endif </td>
+                            @if($inventory->warranty_to)
+                            @if($inventory->warranty_to < now()) <span class="badge bg-danger">Expired</span>
+                                @else
+                                <span class="badge bg-success">Valid</span>
+                                @endif
+                                @endif
+                        </td>
+
                         <td>{{ ucfirst($inventory->status) }}</td>
                         <td>
                             <a href="{{ route('inventories.edit', $inventory->id) }}"
