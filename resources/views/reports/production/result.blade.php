@@ -5,7 +5,11 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Reports')
 @section('content_header_subtitle', 'Production Report')
-
+@section('page-buttons')
+<button onclick="window.print()" class="btn btn-primary btn-sm">
+    <i class="fas fa-print"></i> Print Report
+</button>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -38,9 +42,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Production Report</h3>
-                    <button onclick="window.print()" class="btn btn-primary btn-sm">
-                        <i class="fas fa-print"></i> Print Report
-                    </button>
+
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -103,7 +105,8 @@
                                         $totalNetWeight += $entry->net_weight;
                                         $totalBags += $entry->bags_count;
                                         $totalAmount += $entry->total_amount;
-                                        $serviceCharge30 = round($entry->total_amount * ($entry->owner_share_percentage/100), 2);
+                                        $serviceCharge30 = round($entry->total_amount *
+                                        ($entry->owner_share_percentage/100), 2);
                                         $totalServiceCharge30 += $serviceCharge30;
                                         @endphp
                                         <tr>

@@ -5,7 +5,11 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Reports')
 @section('content_header_subtitle', 'Production Buyer Report')
-
+@section('page-buttons')
+<button onclick="window.print()" class="btn btn-primary btn-sm">
+    <i class="fas fa-print"></i> Print Report
+</button>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -38,9 +42,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Production Buyer Report</h3>
-                    <button onclick="window.print()" class="btn btn-primary btn-sm">
-                        <i class="fas fa-print"></i> Print Report
-                    </button>
+
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -87,14 +89,14 @@
                                         $totalNetWeight = 0;
                                         $totalBags = 0;
                                         $totalAmount = 0;
-                                      
+
                                         @endphp
                                         @foreach($entries as $entry)
                                         @php
                                         $totalNetWeight += $entry->net_weight;
                                         $totalBags += $entry->bags_count;
                                         $totalAmount += $entry->total_amount;
-                                       
+
                                         @endphp
                                         <tr>
                                             <td>{{ $entry->transaction_date }}</td>

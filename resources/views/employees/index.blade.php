@@ -3,9 +3,12 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'employees')
+@section('content_header_title', 'Employees')
 @section('content_header_subtitle', 'Welcome')
-
+@section('page-buttons')
+<a href="{{ route('employees.create') }}" class="btn btn-success ml-auto"> <i
+                            class="fas fa-plus"></i> Create Employee</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -13,12 +16,6 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Employee List</h3>
-                    <a href="{{ route('employees.create') }}" class="btn btn-success ml-auto"> <i
-                            class="fas fa-plus"></i> Create Employee</a>
-                </div>
-
                 <div class="card-body">
                     @if(session('success'))
                     <div class="alert alert-success">

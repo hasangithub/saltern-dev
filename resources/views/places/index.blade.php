@@ -5,20 +5,17 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Places')
 @section('content_header_subtitle', 'Places')
-
+@section('page-buttons')
+<a href="{{ route('places.create') }}" class="btn btn-primary">Create Place</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Places</h4>
-        <a href="{{ route('places.create') }}" class="btn btn-primary">Add Place</a>
-    </div>
-
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
 
     <div class="card">
-        <div class="card-body p-0">
+        <div class="card-body p-4">
             <table class="table table-bordered">
                 <thead>
                     <tr>

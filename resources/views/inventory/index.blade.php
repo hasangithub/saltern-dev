@@ -5,17 +5,14 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Inventory')
 @section('content_header_subtitle', 'Inventory')
-
+@section('page-buttons')
+<a href="{{ route('inventories.create') }}" class="btn btn-primary mb-3">Create Inventory</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="card-title">Inventory List</h3>
-    </div>
-
     <div class="card-body">
-        <a href="{{ route('inventories.create') }}" class="btn btn-primary mb-3">Add Inventory</a>
         @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}

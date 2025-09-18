@@ -5,29 +5,31 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Reports')
 @section('content_header_subtitle', 'Report')
-
+@section('page-buttons')
+<a href="{{ route('owner-loan.print', request()->all()) }}" class="btn btn-primary btn-sm" target="_blank">
+    <i class="fas fa-print"></i> Print
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container-fluid">
-    <h5 class="mb-0 d-inline-block">Owner Loans</h5>
-    <div class="float-right">
-        <a href="{{ route('owner-loan.print', request()->all()) }}" class="btn btn-primary btn-sm" target="_blank">
-            <i class="fas fa-print"></i> Print
-        </a>
-    </div>
-    <div class="clearfix"></div>
-
     <div class="row">
         <div class="col-12">
-            <p class=""><strong>{{ $owner->name_with_initial }}</strong> </p>
-
+            <div class="callout callout-info">
+                {{ now()->format('Y-m-d H:i:s') }}<br>
+                @if(request('from_date') && request('to_date'))
+                {{ request('from_date') }} -
+                {{ request('to_date') }}
+                @endif
+            </div>
         </div>
 
         @foreach ($grouped as $saltern => $loans)
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-primary">{{ $owner->name_with_initial }}</h5>
                     <h5 class="mb-0 text-primary">{{ $saltern }}</h5>
                     <h5 class="mb-0 text-danger">Total Outstanding: {{ number_format($totalOutstanding, 2) }}</h5>
                 </div>

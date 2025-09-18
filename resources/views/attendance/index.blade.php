@@ -5,19 +5,17 @@
 @section('subtitle', 'Attendance')
 @section('content_header_title', 'Attendance')
 @section('content_header_subtitle', 'Attendance')
-
+@section('page-buttons')
+<form method="GET" class="mb-3">
+    <input type="date" name="date" value="{{ request('date') }}">
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+</form>
+@endsection
 
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container">
-    <h3>Attendance Records</h3>
-
-    <form method="GET" class="mb-3">
-        <input type="date" name="date" value="{{ request('date') }}">
-        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-    </form>
-
     <table class="table table-bordered table-sm table-hover">
         <thead>
             <tr>
@@ -36,9 +34,9 @@
                 <td>{{ $attendance->status ? 'Present' : 'Absent' }}</td>
                 <td>
                     @if(!empty($attendance->punch_times))
-                        {{ implode(', ', json_decode($attendance->punch_times)) }}
+                    {{ implode(', ', json_decode($attendance->punch_times)) }}
                     @else
-                        -
+                    -
                     @endif
                 </td>
                 <td>{{ $attendance->worked_hours ?? 0 }}</td>
@@ -65,4 +63,3 @@ $(document).ready(function() {
 });
 </script>
 @endpush
-

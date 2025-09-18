@@ -5,18 +5,28 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Reports')
 @section('content_header_subtitle', 'Trial Balance')
-
+@section('page-buttons')
+<a href="{{ route('vouchers.report.print', request()->all()) }}" class="btn btn-primary" target="_blank">
+    <i class="fas fa-print"></i> Print
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-        <a href="{{ route('vouchers.report.print', request()->all()) }}" class="btn btn-primary"
-                        target="_blank">
-                        <i class="fas fa-print"></i> Print 
-                    </a>
-            <table class="table table-bordered table-sm">
+            <div class="callout callout-info">
+                {{ now()->format('Y-m-d H:i:s') }}<br>
+                @if(request('from_date') && request('to_date'))
+                {{ request('from_date') }} -
+                {{ request('to_date') }}
+                @endif
+            </div>
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body">
+                <table class="table table-bordered table-sm">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -50,6 +60,7 @@
                     </tr>
                 </tbody>
             </table>
+                </div>
         </div>
     </div>
 </div>

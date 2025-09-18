@@ -177,11 +177,14 @@ Route::middleware(['auth:web'])->group(function () {
         Route::post('/batches', [PayrollBatchController::class, 'store'])->name('batches.store'); // validates unique period, redirects to build
         Route::get('/batches/{batch}/build', [PayrollBatchController::class, 'build'])->name('batches.build');
         Route::get('/batches/{batch}/edit', [PayrollBatchController::class, 'edit'])->name('batches.edit');
+        Route::get('/batches/{batch}/contractEdit', [PayrollBatchController::class, 'contractEdit'])->name('batches.contractEdit');
         Route::post('/batches/{batch}/save', [PayrollBatchController::class, 'save'])->name('batches.save');
         Route::post('/batches/{batch}/update', [PayrollBatchController::class, 'update'])->name('batches.update');
+        Route::post('/batches/{batch}/contractUpdate', [PayrollBatchController::class, 'contractUpdate'])->name('batches.contractUpdate');
         Route::get('/{batch}/print', [PayrollBatchController::class, 'print'])
         ->name('batches.print');
         Route::get('/batches/{batch}/show', [PayrollBatchController::class, 'show'])->name('batches.show');
+        Route::get('/batches/{batch}/contractShow', [PayrollBatchController::class, 'contractShow'])->name('batches.contractShow');
         Route::post('/batches/{batch}/approve', [PayrollBatchController::class, 'approve'])
     ->name('batches.approve');
     Route::get('/batches/{id}/payslips', [PayrollBatchController::class, 'printPayslips'])

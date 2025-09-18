@@ -6,7 +6,11 @@
 @section('content_header_title', 'Weighbridge')
 @section('content_header_subtitle', 'Welcome')
 @section('plugins.Datatables', true)
-
+@section('page-buttons')
+<a href="{{ route('weighbridge_entries.create') }}" class="btn btn-success float-right"> <i class="fas fa-plus"></i>
+    Create
+    Entry</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -14,12 +18,6 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Weighbridge Entries</h3>
-                    <a href="{{ route('weighbridge_entries.create') }}" class="btn btn-success float-right"> <i
-                            class="fas fa-plus"></i> Create
-                        Entry</a>
-                </div>
                 <div class="card-body">
                     @if(session('success'))
                     <div class="alert alert-success">
