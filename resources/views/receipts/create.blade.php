@@ -172,6 +172,9 @@
                         <td>
                             {{$pendingOtherIncome->incomeCategory->name}}
                         </td>
+                        <td>
+                            {{$pendingOtherIncome->description}}
+                        </td>
                     </tr>
                     @endforeach
                 </table>
