@@ -13,10 +13,6 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Staff Loan Repayments</h3>
-                </div>
-
                 <div class="card-body">
                     @if(session('success'))
                     <div class="alert alert-success">

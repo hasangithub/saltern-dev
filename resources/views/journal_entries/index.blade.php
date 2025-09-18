@@ -5,7 +5,10 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Journals')
 @section('content_header_subtitle', 'Journals')
-
+@section('page-buttons')
+<a href="{{ route('journal-entries.create') }}" class="btn btn-success ml-auto"> <i
+                            class="fas fa-plus"></i> Create Entry</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -13,12 +16,6 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Journals</h3>
-                    <a href="{{ route('journal-entries.create') }}" class="btn btn-success ml-auto"> <i
-                            class="fas fa-plus"></i> Create Entry</a>
-                </div>
-
                 <div class="card-body">
                     @if(session('success'))
                     <div class="alert alert-success">

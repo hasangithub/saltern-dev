@@ -59,6 +59,31 @@ class PayrollBatchController extends Controller
         ));
     }
 
+    public function contractEdit($id)
+    {
+        $batch = PayrollBatch::with(['payrolls.deductions', 'payrolls.earnings'])->findOrFail($id);
+
+        // Allow edit only if batch is still draft
+        if ($batch->status !== 'draft') {
+            return redirect()->route('payroll.batches.index')->with('error', 'Only draft payroll batches can be edited.');
+        }
+
+        // Load all employees who should have payroll in this batch
+        $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
+
+        // Load earning and deduction components
+        $earningComponents = PayrollComponent::where('type', 'earning')->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
+
+        // Pass to view
+        return view('payroll.contract-edit', compact(
+            'batch',
+            'employees',
+            'earningComponents',
+            'deductionComponents'
+        ));
+    }
+
     public function print(Request $request, $id)
     {
         $department = $request->get('department', 'all');
@@ -89,21 +114,50 @@ class PayrollBatchController extends Controller
 
     public function store(Request $request)
     {
-        // Validate pay period in "YYYY-MM"
         $request->validate([
-            'pay_period' => ['required', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/', 'unique:payroll_batches,pay_period'],
+            'pay_period' => ['required', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
+            'batch_type' => ['required', 'in:permanent,first_half,second_half'],
         ], [
-            'pay_period.unique' => 'A payroll batch for this month already exists.',
             'pay_period.regex' => 'Pay period must be in format YYYY-MM.',
         ]);
 
-        $employees = Employee::where('employment_status', 'active')->get();
+        $payPeriod = $request->pay_period;
+        $batchType = $request->batch_type;
+
+        // Check existing batches
+        $existingBatches = \App\Models\PayrollBatch::where('pay_period', $payPeriod)->pluck('batch_type')->toArray();
+
+        if ($batchType === 'permanent' && in_array('permanent', $existingBatches)) {
+            return back()->withErrors(['pay_period' => 'A permanent payroll batch for this month already exists.'])->withInput();
+        }
+
+        if (in_array($batchType, ['first_half', 'second_half'])) {
+            $contractBatches = array_filter($existingBatches, fn($type) => in_array($type, ['first_half', 'second_half']));
+
+            if (count($contractBatches) >= 2 || in_array($batchType, $contractBatches)) {
+                return back()->withErrors(['pay_period' => 'This contract batch already exists for the selected half.'])->withInput();
+            }
+        }
 
         $batch = PayrollBatch::create([
             'pay_period' => $request->pay_period,
+            'batch_type' => $request->batch_type,
             'status' => 'draft',
             'processed_by' => auth('web')->id(),
         ]);
+
+        $batchType = $batch->batch_type ?? $request->batch_type; // 'permanent', 'first_half', 'second_half'
+
+        if ($batchType === 'permanent') {
+            $employees = Employee::where('employment_status', 'active')
+                ->where('employment_type', 'permanent')
+                ->get();
+        } else {
+            // For contract labour (first_half or second_half)
+            $employees = Employee::where('employment_status', 'active')
+                ->where('employment_type', 'contract')
+                ->get();
+        }
 
         foreach ($employees as $employee) {
             Payroll::create([
@@ -113,7 +167,12 @@ class PayrollBatchController extends Controller
             ]);
         }
 
-        return redirect()->route('payroll.batches.edit', $batch->id);
+        // Redirect based on type
+        if ($batchType === 'permanent') {
+            return redirect()->route('payroll.batches.edit', $batch->id);
+        } else {
+            return redirect()->route('payroll.batches.contractEdit', $batch->id);
+        }
     }
 
     public function build(PayrollBatch $batch)
@@ -290,7 +349,7 @@ class PayrollBatchController extends Controller
     }
 
     public function update(Request $request, PayrollBatch $batch)
-    { 
+    {
         abort_if($batch->status !== 'draft', 403, 'Only draft batches can be updated.');
 
         $data = $request->validate([
@@ -400,7 +459,7 @@ class PayrollBatchController extends Controller
                     if (in_array($lowerName, ['loan', 'festival loan']) && !empty($loanIds[$employeeId][$componentId])) {
                         $selectedLoanId = $loanIds[$employeeId][$componentId];
                         $deductionData['loan_id'] = $selectedLoanId;
-                
+
                         StaffLoanRepayment::updateOrCreate(
                             [
                                 'payroll_id'     => $master->id,
@@ -453,6 +512,170 @@ class PayrollBatchController extends Controller
             ->with('success', 'Payroll updated successfully.');
     }
 
+    public function contractUpdate(Request $request, PayrollBatch $batch)
+    {
+        abort_if($batch->status !== 'draft', 403, 'Only draft batches can be updated.');
+
+        $data = $request->validate([
+            'earnings' => 'array',
+            'deductions' => 'array',
+            'loan' => 'array',
+            'payrolls' => 'array', // for basic_salary, overtime, etc.
+        ]);
+
+        DB::transaction(function () use ($batch, $data) {
+
+            $loanIds = $data['loan'] ?? [];
+            $earnings = $data['earnings'] ?? [];
+            $deductions = $data['deductions'] ?? [];
+            $payrollsInput = $data['payrolls'] ?? [];
+
+            $employeeIds = collect(array_unique(array_merge(array_keys($earnings), array_keys($deductions), array_keys($payrollsInput))))
+                ->map(fn($id) => (int)$id)
+                ->filter();
+
+            foreach ($employeeIds as $employeeId) {
+
+                $master = Payroll::where('batch_id', $batch->id)
+                    ->where('employee_id', $employeeId)
+                    ->first();
+
+                if (!$master) {
+                    continue; // skip if payroll not exist
+                }
+
+                $noPay = floatval($payrollsInput[$employeeId]['no_pay'] ?? 0);
+                $effectiveSalary = $master->basic_salary - $noPay;
+                $oneDaySalary = $master->basic_salary / 30;
+
+                $overtimeHours = (float)($payrollsInput[$employeeId]['overtime_hours'] ?? 0);
+                $overtimeAmount = ($effectiveSalary / 30) * (3 / 16) * $overtimeHours;
+
+                // Extra day calculations
+                $mercantileDays = (float)($payrollsInput[$employeeId]['mercantile_days'] ?? 0);
+                $mercantileAmount = ($oneDaySalary) * $mercantileDays;
+
+                $extraFullDays = (float)($payrollsInput[$employeeId]['extra_full_days'] ?? 0);
+                $extraFullAmount = ($oneDaySalary) * $extraFullDays;
+
+                $extraHalfDays = (float)($payrollsInput[$employeeId]['extra_half_days'] ?? 0);
+                $extraHalfAmount = ($oneDaySalary / 2) * $extraHalfDays;
+
+                $poovarasanDays = (float)($payrollsInput[$employeeId]['poovarasan_kuda_allowance_150'] ?? 0);
+                $poovarasanAmount = $poovarasanDays * 150;
+
+                $labour_hours = (float)($payrollsInput[$employeeId]['labour_hours'] ?? 0);
+                $labourAmount = (float)($payrollsInput[$employeeId]['labour_amount'] ?? 0);
+
+                $extraWork = $mercantileAmount + $extraFullAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
+
+                // clear old earnings/deductions
+                $master->earnings()->delete();
+                $master->deductions()->delete();
+
+                // update basic_salary, overtime, no_pay
+                $master->update([
+                    'basic_salary' => $payrollsInput[$employeeId]['basic_salary'] ?? 0,
+                    'overtime_hours' => $payrollsInput[$employeeId]['overtime_hours'] ?? 0,
+                    'overtime_amount' => $payrollsInput[$employeeId]['overtime_amount'] ?? 0,
+                    'no_pay' => $payrollsInput[$employeeId]['no_pay'] ?? 0,
+                ]);
+                $gross = $effectiveSalary + $overtimeAmount;
+                $ded = 0;
+
+                // --- Earnings ---
+                foreach (($earnings[$employeeId] ?? []) as $key => $amount) {
+                    $amount = (float)($amount ?? 0);
+                    if ($amount == 0) continue;
+
+                    [$componentId, $componentName] = $this->resolveComponent($key, 'earning');
+
+                    PayrollEarning::create([
+                        'payroll_id' => $master->id,
+                        'component_id' => $componentId,
+                        'component_name' => $componentName,
+                        'amount' => $amount,
+                    ]);
+
+                    $gross += $amount;
+                }
+
+
+
+                // --- Deductions ---
+                foreach (($deductions[$employeeId] ?? []) as $key => $amount) {
+                    $amount = (float)($amount ?? 0);
+                    if ($amount == 0) continue;
+
+                    [$componentId, $componentName] = $this->resolveComponent($key, 'deduction');
+                    $lowerName = strtolower($componentName);
+
+                    $deductionData = [
+                        'payroll_id' => $master->id,
+                        'component_id' => $componentId,
+                        'component_name' => $componentName,
+                        'amount' => $amount,
+                    ];
+
+                    $ded += $amount;
+
+                    // Handle loan
+                    if (in_array($lowerName, ['loan', 'festival loan']) && !empty($loanIds[$employeeId][$componentId])) {
+                        $selectedLoanId = $loanIds[$employeeId][$componentId];
+                        $deductionData['loan_id'] = $selectedLoanId;
+
+                        StaffLoanRepayment::updateOrCreate(
+                            [
+                                'payroll_id'     => $master->id,
+                                'staff_loan_id'  => $selectedLoanId,
+                            ],
+                            [
+                                'amount'         => $amount,
+                                'repayment_date' => now(),
+                                'status'         => 'pending',
+                            ]
+                        );
+                    }
+
+                    PayrollDeduction::create($deductionData);
+                }
+
+                // EPF/ETF Calculations
+                $epfEmployee = $effectiveSalary * 0;
+                $epfEmployer = $effectiveSalary * 0;
+                $etf = $effectiveSalary * 0;
+
+                $ded += $epfEmployee; // only EPF 8% counts in deductions for net pay
+
+                // Update payroll totals
+                $master->update([
+                    'gross_earnings' => $gross,
+                    'total_deductions' => $ded,
+                    'net_pay' => $extraWork + $gross - $ded,
+                    'epf_employee' => $epfEmployee,
+                    'epf_employer' => $epfEmployer,
+                    'etf' => $etf,
+                    'overtime_hours' => $overtimeHours,
+                    'overtime_amount' => $overtimeAmount,
+                    'mercantile_days' => $mercantileDays,
+                    'mercantile_days_amount' => $mercantileAmount,
+                    'extra_full_days' => $extraFullDays,
+                    'extra_full_days_amount' => $extraFullAmount,
+                    'extra_half_days' => $extraHalfDays,
+                    'extra_half_days_amount' => $extraHalfAmount,
+                    'poovarasan_kuda_allowance_150' => $poovarasanDays,
+                    'poovarasan_kuda_allowance_150_amount' => $poovarasanAmount,
+                    'labour_hours' => $labour_hours,
+                    'labour_amount' => $labourAmount,
+                ]);
+            }
+        });
+
+        return redirect()
+            ->route('payroll.batches.contractEdit', $batch)
+            ->with('success', 'Payroll updated successfully.');
+    }
+
 
     /**
      * Accepts a key like "12" (component id) or "name:Custom Bonus"
@@ -494,6 +717,34 @@ class PayrollBatchController extends Controller
         $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
 
         return view('payroll.show', compact('batch', 'earningComponents', 'deductionComponents', 'employees', 'department'));
+    }
+
+    public function contractShow(Request $request, $id)
+    {
+        $department = $request->get('department', 'all'); // default = all
+
+        $batch = PayrollBatch::with([
+            'payrolls' => function ($query) use ($department) {
+                $query->with(['deductions', 'earnings', 'employee.user', 'employee.staffLoans']);
+
+                if ($department && $department !== 'all') {
+                    $query->whereHas('employee', function ($q) use ($department) {
+                        $q->where('department', $department);
+                    });
+                }
+            }
+        ])->findOrFail($id);
+
+
+
+        // Load all employees who should have payroll in this batch
+        $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
+
+        // Load earning and deduction components
+        $earningComponents = PayrollComponent::where('type', 'earning')->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
+
+        return view('payroll.contract-show', compact('batch', 'earningComponents', 'deductionComponents', 'employees', 'department'));
     }
 
     public function approve($id)

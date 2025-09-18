@@ -5,43 +5,30 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Reports')
 @section('content_header_subtitle', 'Production Report')
-
+@section('page-buttons')
+<a href="{{ route('all-production.report.print', request()->all()) }}" class="btn btn-primary" target="_blank">
+    <i class="fas fa-print"></i> Print
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
-<style>
-@media print {
-    body * {
-        visibility: hidden;
-    }
 
-    #printable-area,
-    #printable-area * {
-        visibility: visible;
-    }
-
-    #printable-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-    }
-
-    button {
-        display: none;
-    }
-}
-</style>
 <div class="container-fluid">
+    <div class="callout callout-info">
+        {{ now()->format('Y-m-d H:i:s') }}<br>
+        @if(request('from_date') && request('to_date'))
+        {{ request('from_date') }} -
+        {{ request('to_date') }}
+        @endif
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Production Report</h3>
-                    <a href="{{ route('all-production.report.print', request()->all()) }}" class="btn btn-primary"
-                        target="_blank">
-                        <i class="fas fa-print"></i> Print 
-                    </a>
+
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -82,10 +69,11 @@
                                         <tr>
                                             <td>{{ $entry->transaction_date }}</td>
                                             <td>{{ $entry->membership->owner->name_with_initial ?? '-' }}</td>
-                                            <td>{{ $entry->membership->saltern->yahai->name .'-'. $entry->membership->saltern->name}}</td>
+                                            <td>{{ $entry->membership->saltern->yahai->name .'-'. $entry->membership->saltern->name}}
+                                            </td>
                                             <td>{{ $entry->buyer->full_name ?? '-' }}</td>
                                             <td>{{ $entry->culture}}</td>
-                                            
+
                                             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
                                             <td class="text-right">{{ $entry->bags_count }}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}

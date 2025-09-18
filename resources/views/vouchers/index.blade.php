@@ -5,7 +5,10 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Vouchers')
 @section('content_header_subtitle', 'Welcome')
-
+@section('page-buttons')
+<a href="{{ route('vouchers.create') }}" class="btn btn-success ml-auto"> <i
+                            class="fas fa-plus"></i> Create Voucher</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -13,12 +16,6 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Vouchers</h3>
-                    <a href="{{ route('vouchers.create') }}" class="btn btn-success ml-auto"> <i
-                            class="fas fa-plus"></i> Create Voucher</a>
-                </div>
-
                 <div class="card-body">
                     @if(session('success'))
                     <div class="alert alert-success">

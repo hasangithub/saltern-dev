@@ -3,35 +3,29 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Reports')
+@section('content_header_title', 'Reports - Trial Balance')
 @section('content_header_subtitle', 'Trial Balance')
-
+@section('page-buttons')
+<a href="{{ route('trial-balance.print', request()->all()) }}" class="btn btn-primary" target="_blank">
+    <i class="fas fa-print"></i> Print Trial Balance
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
+            <div class="callout callout-info">
+                {{ now()->format('Y-m-d H:i:s') }}<br>
+                @if(request('from_date') && request('to_date'))
+                {{ request('from_date') }} -
+                {{ request('to_date') }}
+                @endif
+            </div>
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Trial Balance</h3>
-                    <a href="{{ route('trial-balance.print', request()->all()) }}" class="btn btn-primary"
-                        target="_blank">
-                        <i class="fas fa-print"></i> Print Trial Balance
-                    </a>
-                </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <div class="meta">
-                        @php
-                        $printedOn = now()->format('Y-m-d H:i:s');
-                        @endphp
-                        <div>Printed on: <strong>{{ $printedOn }}</strong></div>
-                        @if(request('from_date') && request('to_date'))
-                        <div>Date Range: <strong>{{ request('from_date') }}</strong> to
-                            <strong>{{ request('to_date') }}</strong></div>
-                        @endif
-                    </div>
                     <table class="table table-bordered table-sm">
                         <thead>
                             <tr>

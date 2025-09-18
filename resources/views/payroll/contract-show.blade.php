@@ -13,17 +13,39 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h4 class="mb-0">Build Payroll — {{ $batch->pay_period }}</h4>
+            <h4 class="mb-0"> Payroll — {{ $batch->pay_period }}</h4>
             <small class="text-muted">Status: {{ ucfirst($batch->status) }}</small>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('payroll.batches.index') }}" class="btn btn-outline-secondary">Back</a>
         </div>
     </div>
+    <div>
+        <form method="GET" action="{{ route('payroll.batches.contractShow', $batch->id) }}" class="mb-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <select name="department" class="form-control" onchange="this.form.submit()">
+                        <option value="all" {{ $department == 'all' ? 'selected' : '' }}>All Departments</option>
+                        <option value="office" {{ $department == 'office' ? 'selected' : '' }}>Office</option>
+                        <option value="workshop" {{ $department == 'workshop' ? 'selected' : '' }}>Workshop</option>
+                        <option value="security" {{ $department == 'security' ? 'selected' : '' }}>Security</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        {{-- Print Button --}}
+        <a href="{{ route('payroll.batches.print', ['batch' => $batch->id, 'department' => $department]) }}"
+            target="_blank" class="btn btn-secondary">
+            <i class="fas fa-print"></i> Print
+        </a>
+        <a href="{{ route('payroll.batches.payslips', $batch->id) }}" class="btn btn-sm btn-success" target="_blank">
+            <i class="bi bi-printer"></i> Print Payslips
+        </a>
+    </div>
 
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-
-    <form method="POST" action="{{ route('payroll.batches.update', $batch) }}">
+    <form method="POST" action="{{ route('payroll.batches.update', $batch) }}" id="payroll-form">
         @csrf
         <div class="card">
             <div class="card-body table-responsive">
@@ -88,8 +110,7 @@
                                     value="{{ $payroll->overtime_hours }}" class="form-control">
                             </td>
                             <td class="table-secondary">
-                                <input type="number" step="0.01"
-                                    name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
+                                <input type="number" name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
                                     value="{{ $payroll->overtime_amount }}" class="form-control">
                             </td>
 
@@ -102,29 +123,21 @@
                             @php
                             $deduction = $payroll->deductions->firstWhere('component_id', $dc->id);
                             $amount = $deduction->amount ?? 0;
-                            $lowerName = strtolower($dc->name);
-                            $balance = '';
                             @endphp
                             <td class="table-warning">
-                                @if(in_array($lowerName, ['loan', 'festival loan']))
-                                {{-- Loan / Festival Loan Dropdown --}}
-                                <select name="loan[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control loan-select">
-                                    <option value="">-- Select {{ ucfirst(str_replace('_', ' ', $lowerName)) }} --
-                                    </option>
-                                    @foreach($emp->staffLoans->filter(function ($loan) use ($lowerName) {
-                                    return $loan->loan_type == $lowerName
-                                    && ($loan->is_migrated || $loan->voucher_id !== null);
-                                    }) as $loan)
+                                @if(strtolower($dc->name) === 'loan')
+                                {{-- Loan Dropdown --}}
+                                <select name="loan[{{ $payroll->employee_id }}]" class="form-control loan-select">
+                                    <option value="">-- Select Loan --</option>
+                                    @foreach($emp->staffLoans->filter(fn($loan) => $loan->voucher_id !== null) as $loan)
                                     @php
-                                    $repayments = $loan->staffLoanRepayment->sum('amount');
-                                    $balance = $loan->approved_amount - $repayments;
+                                    $repayments = $loan->staffLoanRepayment->sum('amount'); // sum all repayments
+                                    $balance = $loan->approved_amount - $repayments; // remaining balance
                                     @endphp
                                     <option value="{{ $loan->id }}" @if(optional($deduction)->loan_id == $loan->id)
                                         selected @endif
-                                        data-balance="{{ $balance }}">
-                                        {{ ucfirst($loan->loan_type) }} #{{ $loan->id }} - Balance:
-                                        {{ number_format($balance, 2) }}
+                                        data-balance="{{ $loan->balance }}">
+                                        Loan #{{ $loan->id }} - Balance: {{ number_format($balance, 2) }}
                                     </option>
                                     @endforeach
                                 </select>
@@ -132,14 +145,12 @@
                                 {{-- Repayment Amount --}}
                                 <input type="number" step="0.01"
                                     name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}"
-                                    max="{{ $balance }}">
+                                    class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}">
                                 @else
                                 <input type="number" step="0.01" class="form-control text-right deduction-input"
                                     name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]" value="{{ $amount }}">
                                 @endif
                             </td>
-
                             @endforeach
 
                             <td><input type="number" step="0.01" name="payrolls[{{ $emp->id }}][epf]"
@@ -245,9 +256,6 @@
             </table>
         </div>
 
-        <div class="card-footer d-flex justify-content-end gap-2">
-            <button type="submit" class="btn btn-primary">Update Payroll</button>
-        </div>
         <div class="card-footer">
             <div class="row payroll-summary">
                 <!-- Left side: Earnings summary -->
@@ -346,20 +354,7 @@
         </div>
 </div>
 </form>
-{{-- Approve Payroll Batch Form --}}
-@if($batch->status === 'draft')
-<form action="{{ route('payroll.batches.approve', $batch->id) }}" method="POST"
-    onsubmit="return confirm('Are you sure you want to approve this payroll batch? Once approved, it cannot be edited.')">
-    @csrf
-    <button type="submit" class="btn btn-success mt-3">
-        <i class="fas fa-check-circle"></i> Approve Payroll Batch
-    </button>
-</form>
-@else
-<div class="mt-3">
-    <span class="badge bg-success p-2">Approved</span>
-</div>
-@endif
+
 </div>
 @stop
 
@@ -375,22 +370,7 @@
 @push('js')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
-    document.querySelectorAll('.loan-select').forEach(select => {
-        select.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const balance = parseFloat(selectedOption.getAttribute('data-balance') || 0);
-
-            // Find the repayment input in the same cell as this select
-            const repaymentInput = this.closest('td').querySelector('.loan-repayment');
-        
-            if (repaymentInput) {
-                repaymentInput.max = balance; // set max attribute
-            }
-        });
-    });
-
-
+    $('#payroll-form input').attr('readonly', 'readonly');
     document.querySelectorAll('.loan-select').forEach(function(select) {
         const repaymentInput = select.closest('td').querySelector('.loan-repayment');
 
@@ -439,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const adjustedBase = basic - noPay;
             const adjustedOneDaySalary = adjustedBase / 30;
 
-            const epf = adjustedBase * 0.08;
+            const epf = adjustedBase * 0;
             tr.querySelector('input[name*="[epf]"]').value = epf.toFixed(2);
 
             const mercDays = parseFloat(tr.querySelector('input[name*="[mercantile_days]"]')?.value ||
@@ -525,9 +505,9 @@ document.addEventListener('DOMContentLoaded', function() {
             totalDeductions += ded;
             totalNet += (gross - ded);
 
-            totalEPF12 += adjustedBase * 0.12;
-            totalEPF8 += adjustedBase * 0.08;
-            totalETF3 += adjustedBase * 0.03;
+            totalEPF12 += adjustedBase * 0;
+            totalEPF8 += adjustedBase * 0;
+            totalETF3 += adjustedBase * 0;
         });
 
         // Update table footer

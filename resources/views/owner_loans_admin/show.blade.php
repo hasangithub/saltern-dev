@@ -6,7 +6,18 @@
 @section('content_header_title', 'Owner Loan')
 @section('content_header_subtitle', 'Welcome')
 @section('plugins.Datatables', true)
-
+@section('page-buttons')
+@if ($ownerLoan->status === 'pending')
+<a class="btn btn-warning btn-sm mr-1" data-toggle="modal" data-target="#approveLoanModal">
+    Approve Loan
+</a>
+@endif
+@if($ownerLoan->status === 'pending')
+<a href="{{ route('admin.owner-loans.print', $ownerLoan->id) }}" target="_blank" class="btn btn-primary btn-sm">
+    <i class="fas fa-print"></i> Approval Form
+</a>
+@endif
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -29,17 +40,6 @@
                     </ul>
                 </div>
                 @endif
-                <div class="card-header">
-                    <h3 class="card-title">Loan Details</h3>
-                    @if($ownerLoan->status === 'pending')
-                    <div class="d-flex justify-content-end mb-3">
-                        <a href="{{ route('admin.owner-loans.print', $ownerLoan->id) }}" target="_blank"
-                            class="btn btn-outline-primary">
-                            🖨️ Print Approval Form
-                        </a>
-                    </div>
-                    @endif
-                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
@@ -66,12 +66,7 @@
 
                     <div class="row">
                         <div class="col-md-4">
-                            @if ($ownerLoan->status === 'pending')
-                            <button type="button" class="btn btn-warning" data-toggle="modal"
-                                data-target="#approveLoanModal">
-                                Approve Loan Request
-                            </button>
-                            @endif
+
                         </div>
                     </div>
                     <h5 class="mt-4">Repayments</h5>

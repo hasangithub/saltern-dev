@@ -5,7 +5,11 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Reports')
 @section('content_header_subtitle', 'Production Buyer Report')
-
+@section('page-buttons')
+<a href="{{ route('loan-trial-balance.print', request()->all()) }}" class="btn btn-primary" target="_blank">
+    <i class="fas fa-print"></i> Print Loan Trial Balance
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -35,21 +39,23 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
+            <div class="callout callout-info">
+                {{ now()->format('Y-m-d H:i:s') }}<br>
+                @if(request('from_date') && request('to_date'))
+                {{ request('from_date') }} -
+                {{ request('to_date') }}
+                @endif
+            </div>
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"></h3>
-                    <a href="{{ route('loan-trial-balance.print', request()->all()) }}" class="btn btn-primary"
-                        target="_blank">
-                        <i class="fas fa-print"></i> Print Loan Trial Balance
-                    </a>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
                     <h5 class="mb-0 text-primary">
                         Grand Total: Rs. {{ number_format($grandTotal, 2) }}
                     </h5>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
                     @foreach ($grouped as $yahai => $records)
-                    <h5 class="mt-4 fw-bold">{{ $yahai }}</h5>
+                    <h5 class="mt-2 fw-bold">{{ $yahai }}</h5>
                     <table class="table table-sm table-bordered">
                         <thead>
                             <tr class="table-secondary">

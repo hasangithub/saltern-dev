@@ -13,7 +13,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h4 class="mb-0">Build Payroll — {{ $batch->pay_period }}</h4>
+            <h4 class="mb-0">Update Payroll — {{ $batch->pay_period }}</h4>
             <small class="text-muted">Status: {{ ucfirst($batch->status) }}</small>
         </div>
         <div class="d-flex gap-2">
@@ -23,7 +23,7 @@
 
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
 
-    <form method="POST" action="{{ route('payroll.batches.update', $batch) }}">
+    <form method="POST" action="{{ route('payroll.batches.contractUpdate', $batch) }}">
         @csrf
         <div class="card">
             <div class="card-body table-responsive">
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const adjustedBase = basic - noPay;
             const adjustedOneDaySalary = adjustedBase / 30;
 
-            const epf = adjustedBase * 0.08;
+            const epf = adjustedBase * 0;
             tr.querySelector('input[name*="[epf]"]').value = epf.toFixed(2);
 
             const mercDays = parseFloat(tr.querySelector('input[name*="[mercantile_days]"]')?.value ||
@@ -525,9 +525,9 @@ document.addEventListener('DOMContentLoaded', function() {
             totalDeductions += ded;
             totalNet += (gross - ded);
 
-            totalEPF12 += adjustedBase * 0.12;
-            totalEPF8 += adjustedBase * 0.08;
-            totalETF3 += adjustedBase * 0.03;
+            totalEPF12 += adjustedBase * 0;
+            totalEPF8 += adjustedBase * 0;
+            totalETF3 += adjustedBase * 0;
         });
 
         // Update table footer

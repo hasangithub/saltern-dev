@@ -83,9 +83,9 @@
     }
 
     .table-hover tbody tr:hover {
-  background-color: #0056b3 !important;
-  color: white !important;
-}
+        background-color: #0056b3 !important;
+        color: white !important;
+    }
     </style>
 </head>
 
@@ -109,17 +109,16 @@
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
-
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h4 class="m-0">@yield('content_header_title', 'Saltern')</h4>
-                        </div><!-- /.col -->
-                    </div><!-- /.row -->
-                </div><!-- /.container-fluid -->
-            </section>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="card-title mb-0">@yield('content_header_title', 'Saltern')</h4>
+                        <div class="d-flex gap-2">
+                            @yield('page-buttons')
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Main content -->
             <section class="content">

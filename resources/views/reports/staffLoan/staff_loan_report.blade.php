@@ -3,21 +3,17 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Reports')
+@section('content_header_title', 'Reports - Staff Loan')
 @section('content_header_subtitle', 'Report')
-
+@section('page-buttons')
+<a href="{{ route('staff-loan.print', request()->all()) }}" class="btn btn-primary btn-sm" target="_blank">
+    <i class="fas fa-print"></i> Print
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container-fluid">
-    <h5 class="mb-0 d-inline-block">Staff Loans</h5>
-    <div class="float-right">
-        <a href="{{ route('staff-loan.print', request()->all()) }}" class="btn btn-primary btn-sm" target="_blank">
-            <i class="fas fa-print"></i> Print
-        </a>
-    </div>
-    <div class="clearfix"></div>
-
     <div class="row">
         @foreach ($grouped as $saltern => $loans)
         <div class="col-12">

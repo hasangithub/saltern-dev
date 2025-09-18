@@ -3,9 +3,13 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Reports')
+@section('content_header_title', 'Reports - Balance Sheet')
 @section('content_header_subtitle', 'Balance Sheet')
-
+@section('page-buttons')
+<a href="{{ route('balance-sheet.print', request()->all()) }}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-print"></i> Print Balance Sheet
+            </a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -39,12 +43,6 @@
     </style>
 
     <div class="card card-default">
-        <div class="card-header d-flex justify-content-between align-items-right">
-            <h5 class="mb-0">Balance Sheet</h5>
-            <a href="{{ route('balance-sheet.print', request()->all()) }}" class="btn btn-primary" target="_blank">
-                <i class="fas fa-print"></i> Print Balance Sheet
-            </a>
-        </div>
         <div class="card-body">
             <div class="balance-sheet-container">
                 {{-- Left Column: Assets --}}
