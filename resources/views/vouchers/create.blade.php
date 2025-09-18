@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 success: function(response) {
                     response.forEach(led => {
                         $('#ledger').append(
-                            `<option value="${led.id}">${led.id} - ${led.name}</option>`
+                            `<option value="${led.id}">${led.name}</option>`
                         );
                     });
                     $('#ledger').prop('disabled', false);
