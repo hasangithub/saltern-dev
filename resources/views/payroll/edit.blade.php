@@ -41,7 +41,7 @@
                             <th class="text-right" style="min-width:120px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
-                            <th style="min-width:150px;" class="text-center">{{ $dc->name }}</th>
+                            <th style="min-width:250px;" class="text-center">{{ $dc->name }}</th>
                             @endforeach
                             <th style="min-width:120px;">EPF</th>
                             <th style="min-width:250px;">No Pay</th>
@@ -106,8 +106,10 @@
                             $balance = '';
                             @endphp
                             <td class="table-warning">
+                            <div style="display: flex; gap: 5px;">
                                 @if(in_array($lowerName, ['loan', 'festival loan']))
                                 {{-- Loan / Festival Loan Dropdown --}}
+                               
                                 <select name="loan[{{ $payroll->employee_id }}][{{ $dc->id }}]"
                                     class="form-control loan-select">
                                     <option value="">-- Select {{ ucfirst(str_replace('_', ' ', $lowerName)) }} --
@@ -138,7 +140,8 @@
                                 <input type="number" step="0.01" class="form-control text-right deduction-input"
                                     name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]" value="{{ $amount }}">
                                 @endif
-                            </td>
+                                </div>
+                            </td> 
 
                             @endforeach
 
@@ -383,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Find the repayment input in the same cell as this select
             const repaymentInput = this.closest('td').querySelector('.loan-repayment');
-        
+
             if (repaymentInput) {
                 repaymentInput.max = balance; // set max attribute
             }
