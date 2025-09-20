@@ -100,12 +100,12 @@
 
             <div class="mb-3">
                 <label>Replaced Inventory</label>
-                <select name="replaced_id" class="form-control">
+                <select name="replaced_id" class="form-control select2">
                     <option value="">-- None --</option>
                     @foreach($inventories as $inv)
                     <option value="{{ $inv->id }}"
                         {{ old('replaced_id', $inventory->replaced_id) == $inv->id ? 'selected' : '' }}>
-                        {{ $inv->name }}
+                        {{ $inv->name." ". $inv->place->name }}
                     </option>
                     @endforeach
                 </select>
@@ -116,3 +116,11 @@
         </form>
     </div>
     @endsection
+
+    @push('js')
+    <script>
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
+    </script>
+    @endpush

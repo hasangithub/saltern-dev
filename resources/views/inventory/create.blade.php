@@ -89,10 +89,10 @@
 
             <div class="mb-3">
                 <label>Replaced Inventory</label>
-                <select name="replaced_id" class="form-control">
+                <select name="replaced_id" class="form-control select2">
                     <option value="">-- None --</option>
                     @foreach($inventories as $inv)
-                    <option value="{{ $inv->id }}">{{ $inv->name }}</option>
+                    <option value="{{ $inv->id }}">{{ $inv->name." ". $inv->place->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -101,3 +101,13 @@
         </form>
     </div>
     @endsection
+
+    {{-- Push extra scripts --}}
+
+@push('js')
+<script>
+$(document).ready(function() {
+    $('.select2').select2();
+});
+</script>
+@endpush
