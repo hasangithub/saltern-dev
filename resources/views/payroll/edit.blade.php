@@ -141,7 +141,7 @@
                                     name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]" value="{{ $amount }}">
                                 @endif
                                 </div>
-                            </td>
+                            </td> 
 
                             @endforeach
 
