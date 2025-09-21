@@ -266,6 +266,12 @@
                                 <p>Voucher</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reports.inventory.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-file-contract text-info"></i>
+                                <p>Inventory</p>
+                            </a>
+                        </li>
 
                     </ul>
                 </li>
@@ -302,6 +308,12 @@
                                 <p>Places</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('stock.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>Stocks</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <!-- <li class="nav-item">
@@ -310,12 +322,6 @@
                         <p>Expense</p>
                     </a>
                 </li> -->
-                <li class="nav-item">
-                    <a href="{{ route('stock.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-book"></i>
-                        <p>Stocks</p>
-                    </a>
-                </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                         @csrf

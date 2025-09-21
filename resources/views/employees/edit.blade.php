@@ -38,6 +38,14 @@
             </div>
 
             <div class="form-group row">
+                <label for="sort_order" class="col-sm-3 col-form-label">Sort Number</label>
+                <div class="col-sm-9">
+                    <input type="text" name="sort_order" id="sort_order" class="form-control"
+                        value="{{ old('sort_order', $employee->sort_order) }}" required>
+                </div>
+            </div>
+
+            <div class="form-group row">
                 <label for="email" class="col-sm-3 col-form-label">Email</label>
                 <div class="col-sm-9">
                     <input type="email" name="email" id="email" class="form-control"
@@ -115,7 +123,7 @@
                 <label for="epf_number" class="col-sm-3 col-form-label">EPF No</label>
                 <div class="col-sm-9">
                     <input type="text" class="form-control" id="epf_number" name="epf_number"
-                        value="{{ old('epf_number', $employee->employee->epf_number) }}" required>
+                        value="{{ old('epf_number', $employee->employee->epf_number) }}" >
                 </div>
             </div>
 

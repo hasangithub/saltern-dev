@@ -110,7 +110,7 @@
                 <label for="epf_number" class="col-sm-3 col-form-label">EPF No</label>
                 <div class="col-sm-9">
                     <input type="text" class="form-control" id="epf_number" name="epf_number"
-                        value="" required>
+                        value="" >
                 </div>
             </div>
 
