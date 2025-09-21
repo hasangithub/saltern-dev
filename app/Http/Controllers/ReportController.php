@@ -22,6 +22,7 @@ use App\Models\Voucher;
 use Carbon\Carbon;
 use App\Models\ReceiptDetail;
 use App\Exports\LedgerReportExport;
+use App\Models\Inventory;
 use App\Models\StaffLoan;
 use App\Models\User;
 use App\Services\StaffLoanReportService;
@@ -66,6 +67,11 @@ class ReportController extends Controller
     public function indexVoucher(Request $request)
     {
         return view('reports.voucher.index');
+    }
+
+    public function indexInventory(Request $request)
+    {
+        return view('reports.inventory.index');
     }
 
     public function trialBalance(Request $request)
@@ -1165,6 +1171,64 @@ class ReportController extends Controller
         $vouchers = $query->orderBy('created_at', 'desc')->get();
 
         return view('reports.voucher.voucher-details', compact('vouchers', 'fromDate', 'toDate'));
+    }
+
+    public function inventoryReport(Request $request)
+    {
+        $query = Inventory::with(['place']);
+
+        $fromDate = Carbon::parse($request->from_date)->startOfDay();
+        $toDate = Carbon::parse($request->to_date)->endOfDay();
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('created_at', [
+                $fromDate,
+                $toDate
+            ]);
+        }
+
+        $vouchers = $query->orderBy('created_at', 'desc')->get();
+
+        return view('reports.inventory.inventory-details', compact('vouchers', 'fromDate', 'toDate'));
+    }
+
+    public function printInventoryReport(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
+        ]);
+    
+        $fromDate = Carbon::parse($request->from_date)->startOfDay();
+        $toDate = Carbon::parse($request->to_date)->endOfDay();
+    
+        $query = Inventory::with(['place']);
+    
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('created_at', [
+                $fromDate,
+                $toDate
+            ]);
+        }
+    
+        $vouchers = $query->orderBy('created_at', 'desc')->get();
+    
+        $totalAmount = $vouchers->sum('amount');
+    
+        $pdf = Pdf::loadView('reports.inventory.report', [
+            'vouchers' => $vouchers,
+            'totalAmount' => $totalAmount,
+            'fromDate' => $request->from_date,
+            'toDate' => $request->to_date,
+        ])
+        ->setPaper('A4', 'portrait')
+        ->setOptions([
+            'defaultFont' => 'DejaVu Sans',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+        ]);
+    
+        return $pdf->stream('inventory-report.pdf');
     }
 
     public function generateLedgerPdf(Request $request)

@@ -6,8 +6,8 @@
 @section('content_header_title', 'Employees')
 @section('content_header_subtitle', 'Welcome')
 @section('page-buttons')
-<a href="{{ route('employees.create') }}" class="btn btn-success ml-auto"> <i
-                            class="fas fa-plus"></i> Create Employee</a>
+<a href="{{ route('employees.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create
+    Employee</a>
 @endsection
 {{-- Content body: main page content --}}
 
@@ -26,8 +26,10 @@
                         <table id="membershipsTable" class="table table-sm" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Employee Id</th>
+                                    <th>Sort#</th>
+                                    <th>Employee#</th>
                                     <th>Name</th>
+                                    <th>EPF</th>
                                     <th>Email</th>
                                     <th>Designation</th>
                                     <th>Roles</th>
@@ -39,8 +41,10 @@
                             <tbody>
                                 @foreach($employees as $index => $employee)
                                 <tr>
+                                    <td>{{ $employee->sort_order }}</td>
                                     <td>{{ $employee->id }}</td>
                                     <td>{{ $employee->user->name }}</td>
+                                    <td>{{ $employee->epf_number }}</td>
                                     <td>{{ $employee->user->email }}</td>
                                     <td>{{ $employee->designation }}</td>
                                     <td>

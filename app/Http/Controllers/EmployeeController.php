@@ -37,6 +37,7 @@ class EmployeeController extends Controller
 
     $request->validate([
         'full_name' => 'required|string|max:255',
+        'sort_order' => 'required|numeric',
         'email' => 'required|email|unique:users,email,' . $id,
         'designation' => 'required|string',
         'base_salary' => 'required|numeric',
@@ -63,6 +64,7 @@ class EmployeeController extends Controller
     // Update Employee table
     if ($user->employee) {
         $user->employee->update([
+            'sort_order' => $request->sort_order,
             'designation' => $request->designation,
             'base_salary' => $request->base_salary,
             'epf_number' => $request->epf_number,
