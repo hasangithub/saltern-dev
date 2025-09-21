@@ -134,8 +134,7 @@
                                 {{-- Repayment Amount --}}
                                 <input type="number" step="0.01"
                                     name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}"
-                                    max="{{ $balance }}">
+                                    class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}">
                                 @else
                                 <input type="number" step="0.01" class="form-control text-right deduction-input"
                                     name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]" value="{{ $amount }}">
