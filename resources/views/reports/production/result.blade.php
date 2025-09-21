@@ -6,9 +6,9 @@
 @section('content_header_title', 'Reports')
 @section('content_header_subtitle', 'Production Report')
 @section('page-buttons')
-<button onclick="window.print()" class="btn btn-primary btn-sm">
-    <i class="fas fa-print"></i> Print Report
-</button>
+<a href="{{ route('owner-production.report.print', request()->all()) }}" class="btn btn-primary" target="_blank">
+    <i class="fas fa-print"></i> Print
+</a>
 @endsection
 {{-- Content body: main page content --}}
 

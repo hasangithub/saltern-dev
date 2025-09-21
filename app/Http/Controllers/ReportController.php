@@ -648,6 +648,39 @@ class ReportController extends Controller
         return view('reports.production.result', compact('yahaies', 'owners', 'buyers', 'entries'));
     }
 
+    public function printOwnerProduction (Request $request)
+    {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+        $entries = collect();
+
+        if ($request->filled('from_date') && $request->filled('to_date') && $request->filled('yahai_id')) {
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
+                ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
+                ->whereHas('membership.saltern', function ($query) use ($request) {
+                    $query->where('yahai_id', $request->yahai_id);
+                })
+                ->when($request->membership_id, function ($query) use ($request) {
+                    $query->whereHas('membership', function ($q) use ($request) {
+                        $q->where('id', $request->membership_id);
+                    });
+                })
+                ->when($request->buyer_id, function ($query) use ($request) {
+                    $query->where('buyer_id', $request->buyer_id);
+                })
+                ->get();
+        }
+
+        $pdf = Pdf::loadView('reports.production.owner-production-print', compact('yahaies', 'owners', 'buyers', 'entries', 'fromDate', 'toDate'))
+        ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('owner-production-report.pdf');
+    }
+
     public function indexLedger(Request $request)
     {
         $from = $request->input('from');
