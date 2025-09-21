@@ -47,10 +47,10 @@ class PayrollBatchController extends Controller
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
 
         $batch->payrolls = $batch->payrolls
-        ->sortBy(function ($payroll) {
-            return $payroll->employee->sort_order ?? 0;
-        })
-        ->values(); // reindex for proper looping
+            ->sortBy(function ($payroll) {
+                return $payroll->employee->sort_order ?? 0;
+            })
+            ->values(); // reindex for proper looping
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->get();
@@ -78,10 +78,10 @@ class PayrollBatchController extends Controller
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
 
         $batch->payrolls = $batch->payrolls
-        ->sortBy(function ($payroll) {
-            return $payroll->employee->sort_order ?? 0;
-        })
-        ->values(); // reindex for proper looping
+            ->sortBy(function ($payroll) {
+                return $payroll->employee->sort_order ?? 0;
+            })
+            ->values(); // reindex for proper looping
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->get();
@@ -113,6 +113,12 @@ class PayrollBatchController extends Controller
 
         // Load all employees who should have payroll in this batch
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
+
+        $batch->payrolls = $batch->payrolls
+            ->sortBy(function ($payroll) {
+                return $payroll->employee->sort_order ?? 0;
+            })
+            ->values(); // reindex for proper looping
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->get();
@@ -723,6 +729,12 @@ class PayrollBatchController extends Controller
 
         // Load all employees who should have payroll in this batch
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
+
+        $batch->payrolls = $batch->payrolls
+    ->sortBy(function ($payroll) {
+        return $payroll->employee->sort_order ?? 0;
+    })
+    ->values(); // reindex for proper looping
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->get();
