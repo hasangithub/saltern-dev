@@ -6,16 +6,17 @@
 @section('content_header_title', 'Attendance')
 @section('content_header_subtitle', 'Attendance')
 @section('page-buttons')
-<form method="GET" class="mb-3">
-    <input type="date" name="date" value="{{ request('date') }}">
-    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-</form>
+<a href="{{ route('attendance.import') }}" class="btn btn-success btn-sm"> <i class="fas fa-plus"></i> Import Attendance</a>
 @endsection
 
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container">
+<form method="GET" class="mb-3">
+    <input type="date" name="date" value="{{ request('date') }}">
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+</form>
     <table class="table table-bordered table-sm table-hover">
         <thead>
             <tr>

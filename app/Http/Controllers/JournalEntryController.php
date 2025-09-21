@@ -56,7 +56,13 @@ foreach ($request->details as $detail) {
 }
 
 if (round($totalDebit, 2) !== round($totalCredit, 2)) {
-    return back()->withErrors(['total_mismatch' => 'Total debit must equal total credit.'])->withInput();
+   // return back()->withErrors(['total_mismatch' => 'Total debit must equal total credit.'])->withInput();
+   return response()->json([
+    'errors' => [
+        'debit_credit' => ['Total debit must equal total credit.']
+    ]
+], 422);
+
 }
 
     // Start a transaction

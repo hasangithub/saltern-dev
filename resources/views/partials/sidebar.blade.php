@@ -97,7 +97,7 @@
                             <a href="{{ route('owner-loans.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-hand-holding-usd text-danger"></i>
                                 <p>Owner Loan Management @if(!empty($pendingOwnerLoanCount))
-                                    <span class="badge badge-danger right">{{ $pendingOwnerLoanCount }}</span>
+                                    <span class="badge badge-danger right">&nbsp;{{ $pendingOwnerLoanCount }}</span>
                                     @endif
                                 </p>
                             </a>
@@ -179,12 +179,6 @@
                             <a href="{{ route('attendance.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>Attendances</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('attendance.import') }}" class="nav-link">
-                                <i class="nav-icon fas fa-water"></i>
-                                <p>Attendance Import</p>
                             </a>
                         </li>
                         <li class="nav-item">

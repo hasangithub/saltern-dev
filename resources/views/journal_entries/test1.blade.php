@@ -363,7 +363,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     errorMessages += `${data.errors[field][0]}<br>`;
                                 }
                                 Swal.fire({
-                                    icon: 'error',
                                     title: 'Validation Error',
                                     html: errorMessages, // Display error messages
                                     confirmButtonText: 'OK',
