@@ -10,27 +10,29 @@
 
 @section('content_body')
 <style>
-    .payroll-table {
-        border-collapse: separate;
-        border-spacing: 0;
-        width: 100%;
-    }
+.payroll-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
 
-    .payroll-table th.sticky-col,
-    .payroll-table td.sticky-col {
-        position: sticky;
-        left: 0;
-        z-index: 2; /* Ensure above other cells */
-    }
+.payroll-table th.sticky-col,
+.payroll-table td.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    /* Ensure above other cells */
+}
 
-    .payroll-table th.sticky-col {
-        z-index: 3; /* Above sticky td */
-    }
+.payroll-table th.sticky-col {
+    z-index: 3;
+    /* Above sticky td */
+}
 
-    /* Optional: add subtle shadow for better visibility */
-    .payroll-table .sticky-col {
-        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    }
+/* Optional: add subtle shadow for better visibility */
+.payroll-table .sticky-col {
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
 </style>
 
 <div class="container-fluid">
@@ -64,7 +66,10 @@
                             <th class="text-right" style="min-width:120px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
-                            <th style="min-width:250px;" class="text-center">{{ $dc->name }}</th>
+                            <th style="min-width: {{ in_array($dc->name, ['Loan', 'Festival Loan']) ? '230px' : '120px' }};"
+                                class="text-center">
+                                {{ $dc->name }}
+                            </th>
                             @endforeach
                             <th style="min-width:120px;">EPF</th>
                             <th style="min-width:250px;">No Pay</th>
@@ -129,41 +134,42 @@
                             $balance = '';
                             @endphp
                             <td class="table-warning">
-                            <div style="display: flex; gap: 5px;">
-                                @if(in_array($lowerName, ['loan', 'festival loan']))
-                                {{-- Loan / Festival Loan Dropdown --}}
-                               
-                                <select name="loan[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control loan-select">
-                                    <option value="">-- Select {{ ucfirst(str_replace('_', ' ', $lowerName)) }} --
-                                    </option>
-                                    @foreach($emp->staffLoans->filter(function ($loan) use ($lowerName) {
-                                    return $loan->loan_type == $lowerName
-                                    && ($loan->is_migrated || $loan->voucher_id !== null);
-                                    }) as $loan)
-                                    @php
-                                    $repayments = $loan->staffLoanRepayment->sum('amount');
-                                    $balance = $loan->approved_amount - $repayments;
-                                    @endphp
-                                    <option value="{{ $loan->id }}" @if(optional($deduction)->loan_id == $loan->id)
-                                        selected @endif
-                                        data-balance="{{ $balance }}">
-                                        {{ ucfirst($loan->loan_type) }} #{{ $loan->id }} - Balance:
-                                        {{ number_format($balance, 2) }}
-                                    </option>
-                                    @endforeach
-                                </select>
+                                <div style="display: flex; gap: 5px;">
+                                    @if(in_array($lowerName, ['loan', 'festival loan']))
+                                    {{-- Loan / Festival Loan Dropdown --}}
 
-                                {{-- Repayment Amount --}}
-                                <input type="number" step="0.01"
-                                    name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}">
-                                @else
-                                <input type="number" step="0.01" class="form-control text-right deduction-input"
-                                    name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]" value="{{ $amount }}">
-                                @endif
+                                    <select name="loan[{{ $payroll->employee_id }}][{{ $dc->id }}]"
+                                        class="form-control loan-select">
+                                        <option value="">-- Select {{ ucfirst(str_replace('_', ' ', $lowerName)) }} --
+                                        </option>
+                                        @foreach($emp->staffLoans->filter(function ($loan) use ($lowerName) {
+                                        return $loan->loan_type == $lowerName
+                                        && ($loan->is_migrated || $loan->voucher_id !== null);
+                                        }) as $loan)
+                                        @php
+                                        $repayments = $loan->staffLoanRepayment->sum('amount');
+                                        $balance = $loan->approved_amount - $repayments;
+                                        @endphp
+                                        <option value="{{ $loan->id }}" @if(optional($deduction)->loan_id == $loan->id)
+                                            selected @endif
+                                            data-balance="{{ $balance }}">
+                                            {{ ucfirst($loan->loan_type) }} #{{ $loan->id }} - Balance:
+                                            {{ number_format($balance, 2) }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+
+                                    {{-- Repayment Amount --}}
+                                    <input type="number" step="0.01"
+                                        name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
+                                        class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}">
+                                    @else
+                                    <input type="number" step="0.01" class="form-control text-right deduction-input"
+                                        name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
+                                        value="{{ $amount }}">
+                                    @endif
                                 </div>
-                            </td> 
+                            </td>
 
                             @endforeach
 
