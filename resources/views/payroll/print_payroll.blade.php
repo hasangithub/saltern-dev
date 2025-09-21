@@ -23,7 +23,7 @@
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 10px;
-        table-layout: fixed;
+        /* table-layout: fixed; */
     }
 
     .table-main th,
@@ -117,32 +117,32 @@
         <table class="table-main small">
             <thead>
                 <tr>
-                    <th>Employee Name</th>
-                    <th>Basic Salary</th>
+                    <th style="width:40px;">Employee Name</th>
+                    <th style="width:40px;">Basic Salary</th>
 
                     {{-- Dynamic earnings headers --}}
                     @foreach($earningComponents as $ec)
-                    <th style="width: 70px;">{{ $ec->name }}</th>
+                    <th style="width: 40px;">{{ $ec->name }}</th>
                     @endforeach
 
-                    <th style="width:60px;">Hours</th>
-                    <th style="width:80px;">Amounts</th>
-                    <th style="width:90px;">Gross Salary</th>
+                    <th style="width:40px;">Hours</th>
+                    <th style="width:40px;">Amounts</th>
+                    <th style="width:40px;">Gross Salary</th>
 
                     {{-- Dynamic deductions headers --}}
                     @foreach($deductionComponents as $dc)
-                    <th style="width:80px;">{{ $dc->name }}</th>
+                    <th style="width:40px;">{{ $dc->name }}</th>
                     @endforeach
 
-                    <th style="width:70px;">EPF 8%</th>
-                    <th style="width:70px;">No Pay</th>
-                    <th style="width:90px;">Merch.Day</th>
-                    <th style="width:90px;">Double Duty</th>
-                    <th style="width:90px;">12 Hours Duty</th>
-                    <th style="width:90px;">Poovarsan kuda 150 Payments</th>
-                    <th style="width:90px;">Extra Hours</th>
-                    <th style="width:90px;">Deductions</th>
-                    <th style="width:90px;">Net Pay</th>
+                    <th style="width:40px;">EPF 8%</th>
+                    <th style="width:40px;">No Pay</th>
+                    <th style="width:40px;">Merch.Day</th>
+                    <th style="width:40px;">Double Duty</th>
+                    <th style="width:40px;">12 Hours Duty</th>
+                    <th style="width:40px;">Poovarsan kuda 150 Payments</th>
+                    <th style="width:40px;">Extra Hours</th>
+                    <th style="width:40px;">Deductions</th>
+                    <th style="width:40px;">Net Pay</th>
                     <th style="width:90px;">Signature</th>
                 </tr>
             </thead>
