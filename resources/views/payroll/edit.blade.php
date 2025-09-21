@@ -34,6 +34,20 @@
 .payroll-table .sticky-col {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
+
+.table-compact th,
+.table-compact td {
+    padding: 2px 4px !important;  /* reduce cell padding */
+    font-size: 11.5px;              /* smaller font */
+    vertical-align: middle;       /* align nicely */
+}
+
+.table-compact input.form-control {
+    padding: 2px 4px;    /* smaller input height */
+    font-size: 11.5px;
+    height: 25px;        /* fixed compact height */
+    line-height: 1;
+}
 </style>
 
 <div class="container-fluid">
@@ -53,7 +67,7 @@
         @csrf
         <div class="card">
             <div class="card-body table-responsive">
-                <table class="table table-bordered align-middle  payroll-table">
+                <table class="table table-bordered align-middle  payroll-table table-compact">
                     <thead class="table-light">
                         <tr>
                             <th class="sticky-col" style="min-width:120px;">Employee Name</th>
@@ -67,20 +81,20 @@
                             <th class="text-right" style="min-width:120px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
-                            <th style="min-width: {{ in_array($dc->name, ['Loan', 'Festival Loan']) ? '230px' : '120px' }};"
+                            <th style="min-width: {{ in_array($dc->name, ['Loan', 'Festival Loan']) ? '230px' : '120px' }};" 
                                 class="text-center">
                                 {{ $dc->name }}
                             </th>
                             @endforeach
                             <th style="min-width:120px;">EPF</th>
-                            <th style="min-width:250px;">No Pay</th>
-                            <th style="min-width:250px;">Merch.Day Payments</th>
-                            <th style="min-width:250px;">Double Duty</th>
-                            <th style="min-width:250px;">12 Hours Duty</th>
-                            <th style="min-width:250px;">Poovarsan kuda 150 Payments</th>
-                            <th style="min-width:250px;">Extra Hours</th>
-                            <th class="text-right" style="min-width:120px;">Deductions</th>
-                            <th class="text-right" style="min-width:120px;">Net Pay</th>
+                            <th style="min-width:180px;">No Pay</th>
+                            <th style="min-width:180px;">Merch.Day Payments</th>
+                            <th style="min-width:180px;">Double Duty</th>
+                            <th style="min-width:180px;">12 Hours Duty</th>
+                            <th style="min-width:180px;">Poovarsan kuda 150 Payments</th>
+                            <th style="min-width:180px;">Extra Hours</th>
+                            <th class="text-right" style="min-width:90px;">Deductions</th>
+                            <th class="text-right" style="min-width:90px;">Net Pay</th>
                         </tr>
                     </thead>
                     <tbody>
