@@ -399,6 +399,7 @@ class PayrollBatchController extends Controller
                 }
 
                 $noPay = floatval($payrollsInput[$employeeId]['no_pay'] ?? 0);
+                $noPayDays = floatval($payrollsInput[$employeeId]['no_pay_days'] ?? 0);
                 $effectiveSalary = $master->basic_salary - $noPay;
                 $oneDaySalary = $master->basic_salary / 30;
 
@@ -433,6 +434,7 @@ class PayrollBatchController extends Controller
                     'overtime_hours' => $payrollsInput[$employeeId]['overtime_hours'] ?? 0,
                     'overtime_amount' => $payrollsInput[$employeeId]['overtime_amount'] ?? 0,
                     'no_pay' => $payrollsInput[$employeeId]['no_pay'] ?? 0,
+                    'no_pay_days' => $payrollsInput[$employeeId]['no_pay_days'] ?? 0,
                 ]);
                 $gross = $effectiveSalary + $overtimeAmount;
                 $ded = 0;
@@ -597,6 +599,7 @@ class PayrollBatchController extends Controller
                     'overtime_hours' => $payrollsInput[$employeeId]['overtime_hours'] ?? 0,
                     'overtime_amount' => $payrollsInput[$employeeId]['overtime_amount'] ?? 0,
                     'no_pay' => $payrollsInput[$employeeId]['no_pay'] ?? 0,
+                    'no_pay_days' => $payrollsInput[$employeeId]['no_pay_days'] ?? 0,
                 ]);
                 $gross = $effectiveSalary + $overtimeAmount;
                 $ded = 0;
