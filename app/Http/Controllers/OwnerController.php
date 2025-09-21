@@ -64,11 +64,11 @@ class OwnerController extends Controller
         $validatedData = $request->validated();
 
         if ($request->hasFile('profile_picture')) {
-    
-            if (Storage::disk('public')->exists($owner->profile_picture)) {
+
+            if (!empty($owner->profile_picture) && Storage::disk('public')->exists($owner->profile_picture)) {
                 Storage::disk('public')->delete($owner->profile_picture);
             }
-    
+        
             // Store the new profile picture
             $validatedData['profile_picture'] = $request->file('profile_picture')->store('profile', 'public');
         }

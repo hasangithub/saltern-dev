@@ -83,17 +83,20 @@
                                 </div>
 
                                 {{-- Income Categories (initially hidden) --}}
-                                <div class="form-group row" id="income_category_div" style="display:none;">
-                                    <label for="income_category" class="col-sm-3 col-form-label">Income</label>
-                                    <div class="col-sm-9">
-                                        <select name="income_category_id" id="income_category" class="form-control">
-                                            <option value="">-- Select Income Category --</option>
-                                            @foreach($incomeCategories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                            @endforeach
-                                        </select>
+                                <div class="" id="income_category_div" style="display:none;">
+                                    <div class="form-group row">
+                                        <label for="income_category" class="col-sm-3 col-form-label">Income</label>
+                                        <div class="col-sm-9">
+                                            <select name="income_category_id" id="income_category" class="form-control">
+                                                <option value="">-- Select Income Category --</option>
+                                                @foreach($incomeCategories as $category)
+                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <div class="form-group row">
                                     <label for="loan_amount" class="col-sm-3 col-form-label">Loan Amount</label>
