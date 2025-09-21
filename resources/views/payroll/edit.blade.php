@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'payrolls')
+@section('content_header_title', $batch->status.' Payroll - '.$batch->pay_period)
 @section('content_header_subtitle', 'payrolls')
 
 {{-- Content body: main page content --}}
@@ -51,16 +51,7 @@
 </style>
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h4 class="mb-0">Build Payroll — {{ $batch->pay_period }}</h4>
-            <small class="text-muted">Status: {{ ucfirst($batch->status) }}</small>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('payroll.batches.index') }}" class="btn btn-outline-secondary">Back</a>
-        </div>
-    </div>
-
+    
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
 
     <form method="POST" action="{{ route('payroll.batches.update', $batch) }}">
