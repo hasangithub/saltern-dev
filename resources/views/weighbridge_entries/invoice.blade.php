@@ -48,13 +48,13 @@
     <p><strong>Service Charge:</strong> <span class="amount-right">Rs.
             {{ number_format($entry->total_amount, 2) }}</span></p>
     @php
-    $loanPaid = $repayment->amount ?? 0;
+    $loanPaid = $repayment->sum('amount');
     $totalPayable = $entry->total_amount + $loanPaid;
     @endphp
     @if($repayment)
 
     <p><strong>Loan Paid:</strong> <span class="amount-right">Rs.
-            {{ number_format($repayment->amount, 2) }}</span></p>
+            {{ number_format($loanPaid, 2) }}</span></p>
     @endif
 
     <p> {{ \App\Helpers\NumberToWordHelper::convert($totalPayable ?? 0) }} only.
