@@ -41,7 +41,7 @@
                 <label for="sort_order" class="col-sm-3 col-form-label">Sort Number</label>
                 <div class="col-sm-9">
                     <input type="text" name="sort_order" id="sort_order" class="form-control"
-                        value="{{ old('sort_order', $employee->sort_order) }}" required>
+                        value="{{ old('sort_order', $employee->employee->sort_order) }}" required>
                 </div>
             </div>
 
