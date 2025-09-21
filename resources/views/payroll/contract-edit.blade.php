@@ -189,7 +189,7 @@
                             <td>
                                 <div style="display: flex; gap: 5px;">
                                     <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][no_pay_days]"
-                                        class="form-control" value="{{$payroll->no_pay}}">
+                                        class="form-control" value="{{$payroll->no_pay_days}}">
                                     <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][no_pay]"
                                         class="form-control no-pay-input" value="{{$payroll->no_pay}}" readonly>
                             </td>
