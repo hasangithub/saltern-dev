@@ -62,7 +62,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="sticky-col" style="min-width:120px;">Employee Name</th>
-                            <th class="sticky-col" style="min-width:90px;">EPF#</th>
+                            <th class="" style="min-width:90px;">EPF#</th>
                             <th style="min-width:90px;">Basic Salary</th>
                             {{-- Dynamic earnings headers --}}
                             @foreach($earningComponents as $ec)
