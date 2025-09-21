@@ -90,7 +90,7 @@
 
     /* If necessary, reduce spacing so content fits */
     .small {
-        font-size: 9px;
+        font-size: 11px;
     }
     </style>
 </head>
