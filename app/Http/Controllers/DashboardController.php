@@ -33,6 +33,6 @@ class DashboardController extends Controller
 
     public function ownerIndex()
     {
-
+        return view('owner_dashboard');
     }
 }
