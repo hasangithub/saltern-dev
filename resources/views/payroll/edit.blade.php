@@ -45,7 +45,7 @@
 .table-compact input.form-control {
     padding: 2px 4px;    /* smaller input height */
     font-size: 11.5px;
-    height: 25px;        /* fixed compact height */
+    height: 22px;        /* fixed compact height */
     line-height: 1;
 }
 </style>
@@ -71,22 +71,22 @@
                     <thead class="table-light">
                         <tr>
                             <th class="sticky-col" style="min-width:120px;">Employee Name</th>
-                            <th style="min-width:120px;">Basic Salary</th>
+                            <th style="min-width:90px;">Basic Salary</th>
                             {{-- Dynamic earnings headers --}}
                             @foreach($earningComponents as $ec)
-                            <th style="min-width:120px;" class="text-center">{{ $ec->name }}</th>
+                            <th style="min-width:90px;" class="text-center">{{ $ec->name }}</th>
                             @endforeach
-                            <th style="min-width:100px;">Hours</th>
-                            <th style="min-width:120px;">Amounts</th>
-                            <th class="text-right" style="min-width:120px;">Gross Salary</th>
+                            <th style="min-width:70px;">Hours</th>
+                            <th style="min-width:90px;">Amounts</th>
+                            <th class="text-right" style="min-width:90px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
-                            <th style="min-width: {{ in_array($dc->name, ['Loan', 'Festival Loan']) ? '230px' : '120px' }};" 
+                            <th style="min-width: {{ in_array($dc->name, ['Loan', 'Festival Loan']) ? '230px' : '90px' }};" 
                                 class="text-center">
                                 {{ $dc->name }}
                             </th>
                             @endforeach
-                            <th style="min-width:120px;">EPF</th>
+                            <th style="min-width:90px;">EPF</th>
                             <th style="min-width:180px;">No Pay</th>
                             <th style="min-width:180px;">Merch.Day Payments</th>
                             <th style="min-width:180px;">Double Duty</th>
