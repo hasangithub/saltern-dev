@@ -208,8 +208,6 @@ Route::prefix('stock')->group(function () {
     Route::post('/item/{id}/transaction', [StockController::class, 'storeTransaction'])->name('stock.storeTransaction');
 });
 
-Route::get('/', [DashboardController::class, 'index'])->name('home');
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 });
 
@@ -229,7 +227,8 @@ Route::middleware(['auth:owner'])->group(function () {
 });
 
 Route::resource('owner-loans', OwnerLoanController::class);
-
+Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
 Route::resource('staff-loan-repayments', StaffLoanRepaymentController::class);
 Route::get('loan-repayments/{loanId}/create', [OwnerLoanRepaymentController::class, 'createForLoan'])->name('loan-repayments.create-for-loan');
