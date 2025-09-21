@@ -20,6 +20,7 @@
 .payroll-table td.sticky-col {
     position: sticky;
     left: 0;
+    background: #fff !important;  /* white background */
     z-index: 2;
     /* Ensure above other cells */
 }
