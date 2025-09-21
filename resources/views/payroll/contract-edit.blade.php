@@ -3,23 +3,59 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'payrolls')
+@section('content_header_title', $batch->status.' Payroll - '.$batch->pay_period)
 @section('content_header_subtitle', 'payrolls')
 
 {{-- Content body: main page content --}}
 
 @section('content_body')
+<style>
+.payroll-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
 
+.payroll-table th.sticky-col,
+.payroll-table td.sticky-col {
+    position: sticky;
+    left: 0;
+    background: #fff !important;
+    /* white background */
+    z-index: 2;
+    /* Ensure above other cells */
+}
+
+.payroll-table th.sticky-col {
+    z-index: 3;
+    /* Above sticky td */
+}
+
+/* Optional: add subtle shadow for better visibility */
+.payroll-table .sticky-col {
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.table-compact th,
+.table-compact td {
+    padding: 2px 4px !important;
+    /* reduce cell padding */
+    font-size: 11.5px;
+    /* smaller font */
+    vertical-align: middle;
+    /* align nicely */
+}
+
+.table-compact input.form-control {
+    padding: 2px 4px;
+    /* smaller input height */
+    font-size: 11.5px;
+    height: 22px;
+    /* fixed compact height */
+    line-height: 1;
+}
+</style>
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h4 class="mb-0">Update Payroll — {{ $batch->pay_period }}</h4>
-            <small class="text-muted">Status: {{ ucfirst($batch->status) }}</small>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('payroll.batches.index') }}" class="btn btn-outline-secondary">Back</a>
-        </div>
-    </div>
 
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
 
@@ -27,21 +63,24 @@
         @csrf
         <div class="card">
             <div class="card-body table-responsive">
-                <table class="table table-bordered align-middle  payroll-table">
+                <table class="table table-bordered align-middle  payroll-table table-compact">
                     <thead class="table-light">
                         <tr>
                             <th style="min-width:120px;">Employee Name</th>
                             <th style="min-width:120px;">Basic Salary</th>
                             {{-- Dynamic earnings headers --}}
                             @foreach($earningComponents as $ec)
-                            <th style="min-width:120px;" class="text-center">{{ $ec->name }}</th>
+                            <th style="min-width:90px;" class="text-center">{{ $ec->name }}</th>
                             @endforeach
-                            <th style="min-width:100px;">Hours</th>
-                            <th style="min-width:120px;">Amounts</th>
-                            <th class="text-right" style="min-width:120px;">Gross Salary</th>
+                            <th style="min-width:80px;">Hours</th>
+                            <th style="min-width:90px;">Amounts</th>
+                            <th class="text-right" style="min-width:90px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
-                            <th style="min-width:150px;" class="text-center">{{ $dc->name }}</th>
+                            <th style="min-width: {{ in_array($dc->name, ['Loan', 'Festival Loan']) ? '230px' : '90px' }};"
+                                class="text-center">
+                                {{ $dc->name }}
+                            </th>
                             @endforeach
                             <th style="min-width:120px;">EPF</th>
                             <th style="min-width:250px;">No Pay</th>
@@ -50,8 +89,8 @@
                             <th style="min-width:250px;">12 Hours Duty</th>
                             <th style="min-width:250px;">Poovarsan kuda 150 Payments</th>
                             <th style="min-width:250px;">Extra Hours</th>
-                            <th class="text-right" style="min-width:120px;">Deductions</th>
-                            <th class="text-right" style="min-width:120px;">Net Pay</th>
+                            <th class="text-right" style="min-width:90px;">Deductions</th>
+                            <th class="text-right" style="min-width:90px;">Net Pay</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,38 +145,40 @@
                             $balance = '';
                             @endphp
                             <td class="table-warning">
-                                @if(in_array($lowerName, ['loan', 'festival loan']))
-                                {{-- Loan / Festival Loan Dropdown --}}
-                                <select name="loan[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control loan-select">
-                                    <option value="">-- Select {{ ucfirst(str_replace('_', ' ', $lowerName)) }} --
-                                    </option>
-                                    @foreach($emp->staffLoans->filter(function ($loan) use ($lowerName) {
-                                    return $loan->loan_type == $lowerName
-                                    && ($loan->is_migrated || $loan->voucher_id !== null);
-                                    }) as $loan)
-                                    @php
-                                    $repayments = $loan->staffLoanRepayment->sum('amount');
-                                    $balance = $loan->approved_amount - $repayments;
-                                    @endphp
-                                    <option value="{{ $loan->id }}" @if(optional($deduction)->loan_id == $loan->id)
-                                        selected @endif
-                                        data-balance="{{ $balance }}">
-                                        {{ ucfirst($loan->loan_type) }} #{{ $loan->id }} - Balance:
-                                        {{ number_format($balance, 2) }}
-                                    </option>
-                                    @endforeach
-                                </select>
+                                <div style="display: flex; gap: 5px;">
+                                    @if(in_array($lowerName, ['loan', 'festival loan']))
+                                    {{-- Loan / Festival Loan Dropdown --}}
+                                    <select name="loan[{{ $payroll->employee_id }}][{{ $dc->id }}]"
+                                        class="form-control loan-select">
+                                        <option value="">-- Select {{ ucfirst(str_replace('_', ' ', $lowerName)) }} --
+                                        </option>
+                                        @foreach($emp->staffLoans->filter(function ($loan) use ($lowerName) {
+                                        return $loan->loan_type == $lowerName
+                                        && ($loan->is_migrated || $loan->voucher_id !== null);
+                                        }) as $loan)
+                                        @php
+                                        $repayments = $loan->staffLoanRepayment->sum('amount');
+                                        $balance = $loan->approved_amount - $repayments;
+                                        @endphp
+                                        <option value="{{ $loan->id }}" @if(optional($deduction)->loan_id == $loan->id)
+                                            selected @endif
+                                            data-balance="{{ $balance }}">
+                                            {{ ucfirst($loan->loan_type) }} #{{ $loan->id }} - Balance:
+                                            {{ number_format($balance, 2) }}
+                                        </option>
+                                        @endforeach
+                                    </select>
 
-                                {{-- Repayment Amount --}}
-                                <input type="number" step="0.01"
-                                    name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}"
-                                    max="{{ $balance }}">
-                                @else
-                                <input type="number" step="0.01" class="form-control text-right deduction-input"
-                                    name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]" value="{{ $amount }}">
-                                @endif
+                                    {{-- Repayment Amount --}}
+                                    <input type="number" step="0.01"
+                                        name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
+                                        class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}">
+                                    @else
+                                    <input type="number" step="0.01" class="form-control text-right deduction-input"
+                                        name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
+                                        value="{{ $amount }}">
+                                    @endif
+                                </div>
                             </td>
 
                             @endforeach
@@ -383,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Find the repayment input in the same cell as this select
             const repaymentInput = this.closest('td').querySelector('.loan-repayment');
-        
+
             if (repaymentInput) {
                 repaymentInput.max = balance; // set max attribute
             }
