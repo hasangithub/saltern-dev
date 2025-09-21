@@ -24,7 +24,9 @@
                 @endif
             </div>
             <div class="card">
-                <!-- /.card-header -->
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-danger">Total Amount: {{ number_format($vouchers->sum('amount'), 2) }}</h5>
+                </div>
                 <div class="card-body">
                     <table class="table table-bordered table-sm">
                         <thead>

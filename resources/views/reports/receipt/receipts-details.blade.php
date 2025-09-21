@@ -105,7 +105,9 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#membershipsTable').DataTable();
+    $('#membershipsTable').DataTable({
+        pageLength: 100,
+    });
 });
 </script>
 @endpush

@@ -45,6 +45,7 @@ use App\Http\Controllers\StaffLoanController;
 use App\Http\Controllers\PayrollBatchController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\StaffLoanRepaymentController;
+use App\Http\Controllers\StockController;
 
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
@@ -96,6 +97,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
     Route::get('/all-production-report/generate', [ReportController::class, 'generateAllProduction'])->name('all-production.report.generate');
     Route::get('/all-production-report/print', [ReportController::class, 'printAllProduction'])->name('all-production.report.print');
+    Route::get('/owner-production-report/print', [ReportController::class, 'printOwnerProduction'])->name('owner-production.report.print');
     Route::get('/production-report/buyerGenerate', [ReportController::class, 'generateBuyerProduction'])->name('production.report.buyerGenerate');
     Route::get('/reports/loan-trial-balance/detailed', [ReportController::class, 'yahaiWiseLoanTrialBalance'])->name('reports.loan-trial-balance.detailed');
     Route::get('/reports/staff-loan-trial-balance/detailed', [ReportController::class, 'staffLoanTrialBalance'])->name('reports.staff-loan-trial-balance.detailed');
@@ -193,6 +195,16 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::resource('inventories', InventoryController::class);
     Route::resource('places', PlaceController::class);
+
+
+
+Route::prefix('stock')->group(function () {
+    Route::get('/', [StockController::class, 'index'])->name('stock.index');
+    Route::post('/item', [StockController::class, 'storeItem'])->name('stock.storeItem');
+    Route::get('/item/{id}', [StockController::class, 'showItem'])->name('stock.showItem');
+    Route::post('/item/{id}/transaction', [StockController::class, 'storeTransaction'])->name('stock.storeTransaction');
+});
+
 
 });
 
