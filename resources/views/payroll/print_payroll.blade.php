@@ -8,7 +8,7 @@
     /* Page setup */
     @page {
         size: legal landscape;
-        margin: 5mm;
+        margin: 3mm;
     }
 
     body {
@@ -167,7 +167,7 @@
                     <td class="text-right">{{ number_format($deduction->amount ?? 0,2) }}</td>
                     @endforeach
 
-                    <td class="text-right">{{ number_format($payroll->epf ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->epf_employee ?? 0,2) }}</td>
                     <td class="text-right">{{ number_format($payroll->no_pay ?? 0,2) }}</td>
                     <td class="text-right">{{ number_format($payroll->mercantile_days_amount ?? 0,2) }}</td>
                     <td class="text-right">{{ number_format($payroll->extra_full_days_amount ?? 0,2) }}</td>
