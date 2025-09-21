@@ -3,8 +3,8 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Staff Loans')
-@section('content_header_subtitle', 'Staff Loans')
+@section('content_header_title', 'Stock')
+@section('content_header_subtitle', 'Stock')
 @section('page-buttons')
 <button class="btn btn-primary me-2" data-toggle="modal" data-target="#addItemModal">
                 <i class="fas fa-plus"></i> Add Item
