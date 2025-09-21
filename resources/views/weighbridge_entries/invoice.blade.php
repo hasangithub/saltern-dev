@@ -48,10 +48,10 @@
     <p><strong>Service Charge:</strong> <span class="amount-right">Rs.
             {{ number_format($entry->total_amount, 2) }}</span></p>
     @php
-    $loanPaid = $repayment->sum('amount');
+    $loanPaid = $totalPaid;
     $totalPayable = $entry->total_amount + $loanPaid;
     @endphp
-    @if($repayment)
+    @if($loanPaid > 0)
 
     <p><strong>Loan Paid:</strong> <span class="amount-right">Rs.
             {{ number_format($loanPaid, 2) }}</span></p>
