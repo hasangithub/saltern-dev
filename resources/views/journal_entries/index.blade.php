@@ -43,7 +43,7 @@
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        @role('admin')
+                                        @role('admin1')
                                         <form action="{{ route('journal-entries.destroy', $journalEntry->id) }}"
                                             method="POST" style="display:inline;"
                                             onsubmit="return confirm('Are you sure you want to delete this entry?');">
