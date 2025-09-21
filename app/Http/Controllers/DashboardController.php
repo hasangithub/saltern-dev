@@ -30,4 +30,9 @@ class DashboardController extends Controller
             'totalWeighbridgeEntriesWeek'
         ));
     }
+
+    public function ownerIndex()
+    {
+        return view('owner_dashboard');
+    }
 }
