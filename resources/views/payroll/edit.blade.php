@@ -9,6 +9,29 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
+<style>
+    .payroll-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+
+    .payroll-table th.sticky-col,
+    .payroll-table td.sticky-col {
+        position: sticky;
+        left: 0;
+        z-index: 2; /* Ensure above other cells */
+    }
+
+    .payroll-table th.sticky-col {
+        z-index: 3; /* Above sticky td */
+    }
+
+    /* Optional: add subtle shadow for better visibility */
+    .payroll-table .sticky-col {
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+</style>
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -30,7 +53,7 @@
                 <table class="table table-bordered align-middle  payroll-table">
                     <thead class="table-light">
                         <tr>
-                            <th style="min-width:120px;">Employee Name</th>
+                            <th class="sticky-col" style="min-width:120px;">Employee Name</th>
                             <th style="min-width:120px;">Basic Salary</th>
                             {{-- Dynamic earnings headers --}}
                             @foreach($earningComponents as $ec)
@@ -60,7 +83,7 @@
                         $emp = $payroll->employee;
                         @endphp
                         <tr>
-                            <td>{{ $emp->user->name }}</td>
+                            <td class="sticky-col">{{ $emp->user->name }}</td>
 
                             {{-- Basic Salary --}}
                             <td>
