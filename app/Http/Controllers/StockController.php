@@ -40,6 +40,8 @@ class StockController extends Controller
             'type' => 'required|in:purchase,issue',
             'quantity' => 'required|numeric|min:1',
             'transaction_date' => 'required|date',
+            'department' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
         ]);
 
         StockTransaction::create([
@@ -47,6 +49,8 @@ class StockController extends Controller
             'type' => $request->type,
             'quantity' => $request->quantity,
             'transaction_date' => $request->transaction_date,
+            'department' => $request->department ?? null,
+            'description' => $request->description ?? null,
         ]);
 
         return back()->with('success', ucfirst($request->type) . ' recorded successfully.');
