@@ -121,7 +121,7 @@
                                 <table>
                                     <tr>
                                         <td>Basic Salary</td>
-                                        <td class="text-right">{{ number_format($payroll->basic_salary, 2) }}</td>
+                                        <td class="text-right">{{ number_format($payroll->basic_salary - $payroll->no_pay, 2) }}</td>
                                     </tr>
                                     @foreach ($payroll->earnings as $earning)
                                     <tr>
