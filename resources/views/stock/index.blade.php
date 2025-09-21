@@ -5,24 +5,16 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Staff Loans')
 @section('content_header_subtitle', 'Staff Loans')
-
+@section('page-buttons')
+<button class="btn btn-primary me-2" data-toggle="modal" data-target="#addItemModal">
+                <i class="fas fa-plus"></i> Add Item
+            </button>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
 <div class="container-fluid">
     <h4 class="mb-4">Stock Management</h4>
-
-    <!-- Top bar -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex">
-            <!-- Add Item Button -->
-            <button class="btn btn-primary me-2" data-toggle="modal" data-target="#addItemModal">
-                <i class="fas fa-plus"></i> Add Item
-            </button>
-            
-        </div>
-    </div>
-
     <!-- Stock Report -->
     <div id="stockReport" class="card">
         <div class="card-body">
@@ -37,7 +29,7 @@
                 <tbody>
                     @foreach($items as $t)
                     <tr>
-                        <td>{{ $t->transaction_date }}</td>
+                        <td>{{ $t->created_at }}</td>
                         <td>{{ $t->name }}</td>
                         <td><a href="{{ route('stock.showItem', $t->id) }}"
                                             class="btn btn-default btn-xs">
@@ -59,7 +51,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Item</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -72,7 +64,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Save Item</button>
                 </div>
             </div>

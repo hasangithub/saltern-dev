@@ -311,6 +311,12 @@
                     </a>
                 </li> -->
                 <li class="nav-item">
+                    <a href="{{ route('stock.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Stocks</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="nav-link bg-danger text-white">
