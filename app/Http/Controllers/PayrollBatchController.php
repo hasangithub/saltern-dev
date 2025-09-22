@@ -461,40 +461,62 @@ class PayrollBatchController extends Controller
                 // --- Deductions ---
                 foreach (($deductions[$employeeId] ?? []) as $key => $amount) {
                     $amount = (float)($amount ?? 0);
-                    if ($amount == 0) continue;
 
                     [$componentId, $componentName] = $this->resolveComponent($key, 'deduction');
                     $lowerName = strtolower($componentName);
 
-                    $deductionData = [
-                        'payroll_id' => $master->id,
-                        'component_id' => $componentId,
-                        'component_name' => $componentName,
-                        'amount' => $amount,
-                    ];
+                    if ($amount > 0) {
+                        // --- Normal deduction ---
+                        $deductionData = [
+                            'payroll_id' => $master->id,
+                            'component_id' => $componentId,
+                            'component_name' => $componentName,
+                            'amount' => $amount,
+                        ];
 
-                    $ded += $amount;
+                        $ded += $amount;
 
-                    // Handle loan
-                    if (in_array($lowerName, ['loan', 'festival loan']) && !empty($loanIds[$employeeId][$componentId])) {
-                        $selectedLoanId = $loanIds[$employeeId][$componentId];
-                        $deductionData['loan_id'] = $selectedLoanId;
+                        // Handle loan
+                        if (in_array($lowerName, ['loan', 'festival loan']) && !empty($loanIds[$employeeId][$componentId])) {
+                            $selectedLoanId = $loanIds[$employeeId][$componentId];
+                            $deductionData['loan_id'] = $selectedLoanId;
 
-                        StaffLoanRepayment::updateOrCreate(
-                            [
-                                'payroll_id'     => $master->id,
-                                'staff_loan_id'  => $selectedLoanId,
-                            ],
-                            [
-                                'amount'         => $amount,
-                                'repayment_date' => now(),
-                                'status'         => 'pending',
-                            ]
-                        );
+                            StaffLoanRepayment::updateOrCreate(
+                                [
+                                    'payroll_id'     => $master->id,
+                                    'staff_loan_id'  => $selectedLoanId,
+                                ],
+                                [
+                                    'amount'         => $amount,
+                                    'repayment_date' => now(),
+                                    'status'         => 'pending',
+                                ]
+                            );
+                        }
+
+                        PayrollDeduction::create($deductionData);
+                    } else {
+                        // --- Handle zero case ---
+                        if (in_array($lowerName, ['loan', 'festival loan']) && !empty($loanIds[$employeeId][$componentId])) {
+                            $selectedLoanId = $loanIds[$employeeId][$componentId];
+
+                            // If a repayment exists for this payroll+loan, delete if still pending
+                            $repayment = StaffLoanRepayment::where('payroll_id', $master->id)
+                                ->where('staff_loan_id', $selectedLoanId)
+                                ->first();
+
+                            if ($repayment && $repayment->status === 'pending') {
+                                $repayment->delete();
+                            }
+                        }
+
+                        // Also make sure no deduction record is kept when amount = 0
+                        PayrollDeduction::where('payroll_id', $master->id)
+                            ->where('component_id', $componentId)
+                            ->delete();
                     }
-
-                    PayrollDeduction::create($deductionData);
                 }
+
 
                 // EPF/ETF Calculations
                 $epfEmployee = $effectiveSalary * 0.08;
@@ -734,10 +756,10 @@ class PayrollBatchController extends Controller
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
 
         $batch->payrolls = $batch->payrolls
-    ->sortBy(function ($payroll) {
-        return $payroll->employee->sort_order ?? 0;
-    })
-    ->values(); // reindex for proper looping
+            ->sortBy(function ($payroll) {
+                return $payroll->employee->sort_order ?? 0;
+            })
+            ->values(); // reindex for proper looping
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->get();
