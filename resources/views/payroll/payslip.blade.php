@@ -5,7 +5,7 @@
     <title>Payslips</title>
     <style>
   @page {
-        size: A5 portrait;
+        size: A6 portrait;
         margin: 10mm;
     }
 
@@ -27,7 +27,7 @@
         .header {
             text-align: center;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             margin-bottom: 6px;
         }
 
