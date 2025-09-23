@@ -67,7 +67,7 @@
         .footer td {
             width: 50%;
             text-align: center;
-            padding-top: 5px;
+            padding-top: 10px;
             font-size: 11px;
         }
     </style>
