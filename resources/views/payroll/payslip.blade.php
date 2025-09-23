@@ -6,7 +6,7 @@
     <style>
   @page {
         size: A6 portrait;
-        margin: 10mm;
+        margin: 5mm;
     }
 
     body {
@@ -45,7 +45,7 @@
 
         td, th {
             padding: 2px 4px;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .text-right {
@@ -67,7 +67,7 @@
         .footer td {
             width: 50%;
             text-align: center;
-            padding-top: 12px;
+            padding-top: 5px;
             font-size: 11px;
         }
     </style>
