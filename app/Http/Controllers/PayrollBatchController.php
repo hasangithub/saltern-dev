@@ -921,7 +921,7 @@ class PayrollBatchController extends Controller
         ])->findOrFail($id);
 
         $pdf = Pdf::loadView('payroll.payslip', compact('batch'))
-            ->setPaper('a5', 'portrait');
+            ->setPaper('a6', 'portrait');
 
         return $pdf->stream('Payslips_Batch_' . $batch->id . '.pdf');
         // use ->download() if you want to force download
