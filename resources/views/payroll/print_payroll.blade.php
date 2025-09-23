@@ -281,13 +281,9 @@
                     </tr>
 
                     <tr>
-                        <td>Total Earnings</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('gross_earnings'),2) }}</td>
+                        <td colspan="2"></td>
                     </tr>
-                    <tr>
-                        <td>Total Deductions</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
-                    </tr>
+                  
                     <tr class="fw-semibold">
                         <td>Balance</td>
                         <td class="text-right">{{ number_format(($batch->payrolls->sum('gross_earnings') - $batch->payrolls->sum('total_deductions')),2) }}</td>
