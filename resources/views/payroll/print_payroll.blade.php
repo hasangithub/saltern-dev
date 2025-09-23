@@ -99,7 +99,7 @@
     <div class="payroll-wrapper">
         {{-- === Heading === --}}
         <div style="text-align:center; margin-bottom:15px;">
-            <h2 style="margin:0; font-size:16px; font-weight:bold; text-transform:uppercase;">
+            <h2 style="margin:0; font-size:14px; font-weight:bold; text-transform:uppercase;">
                 PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD
             </h2>
             <p style="margin:0; font-size:12px;">Payroll Report - {{ $batch->pay_period }} </p>
@@ -245,7 +245,7 @@
 
                     <tr>
                         <td>EPF 8%</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf'),2) }}</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}</td>
                     </tr>
                     <tr class="fw-semibold">
                         <td>Total</td>
