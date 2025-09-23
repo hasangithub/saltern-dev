@@ -258,7 +258,7 @@
             <table class="summary-table small">
                 <thead>
                     <tr>
-                        <th colspan="2">Employer Contributions</th>
+                        <th colspan="2">Summary</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -267,13 +267,30 @@
                         <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employer'),2) }}</td>
                     </tr>
                     <tr>
-                        <td>ETF 3%</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('etf'),2) }}</td>
+                        <td>EPF 8%</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}</td>
                     </tr>
                     <tr class="fw-semibold">
                         <td>Total</td>
                         <td class="text-right">
-                            {{ number_format($batch->payrolls->sum('epf_employer') + $batch->payrolls->sum('etf'),2) }}</td>
+                            {{ number_format($batch->payrolls->sum('epf_employer') + $batch->payrolls->sum('epf_employee'),2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>ETF 3%</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('etf'),2) }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Total Earnings</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('gross_earnings'),2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Deductions</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
+                    </tr>
+                    <tr class="fw-semibold">
+                        <td>Balance</td>
+                        <td class="text-right">{{ number_format(($batch->payrolls->sum('gross_earnings') - $batch->payrolls->sum('total_deductions')),2) }}</td>
                     </tr>
                 </tbody>
             </table>
