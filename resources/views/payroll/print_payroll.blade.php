@@ -152,7 +152,7 @@
                 @php $emp = $payroll->employee; @endphp
                 <tr>
                     <td>{{ $emp->user->name }}</td>
-                    <td>{{ $emp->epf_no }}</td>
+                    <td>{{ $emp->epf_number }}</td>
                     <td class="text-right">{{ number_format($payroll->basic_salary,2) }}</td>
 
                     @foreach($earningComponents as $ec)
