@@ -229,12 +229,6 @@
                 <td><b>Total</b></td>
                 <td class="text-right"><b>{{ number_format($payroll->total_deductions, 2) }}</b></td>
             </tr>
-            <tr>
-                <td><b>Net Salary</b></td>
-                <td class="text-right">
-                    <b>{{ number_format($payroll->gross_earnings - $payroll->total_deductions, 2) }}</b>
-                </td>
-            </tr>
         </table>
         <!-- Net Pay -->
         <table>
