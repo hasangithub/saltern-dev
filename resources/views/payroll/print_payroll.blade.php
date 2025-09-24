@@ -13,7 +13,7 @@
 
     body {
         font-family: DejaVu Sans, sans-serif;
-        font-size: 10px;
+        font-size: 9px;
         margin: 0;
         color: #000;
     }
@@ -36,7 +36,7 @@
     .table-main th {
         background: #f2f2f2;
         font-weight: 600;
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .text-right {
@@ -61,7 +61,7 @@
         border-collapse: collapse;
         margin-right: 2%;
         box-sizing: border-box;
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .summary-table:last-child {
@@ -90,7 +90,7 @@
 
     /* If necessary, reduce spacing so content fits */
     .small {
-        font-size: 11px;
+        font-size: 9px;
     }
     </style>
 </head>
@@ -99,16 +99,16 @@
     <div class="payroll-wrapper">
         {{-- === Heading === --}}
         <div style="text-align:center; margin-bottom:15px;">
-            <h2 style="margin:0; font-size:14px; font-weight:bold; text-transform:uppercase;">
+            <h2 style="margin:0; font-size:12px; font-weight:bold; text-transform:uppercase;">
                 PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD
             </h2>
-            <p style="margin:0; font-size:12px;">Payroll Report - {{ $batch->pay_period }} </p>
+            <p style="margin:0; font-size:10px;">Payroll Report - {{ $batch->pay_period }} </p>
             @if(isset($department))
-            <p style="margin:0; font-size:12px;">
+            <p style="margin:0; font-size:10px;">
                 Department: {{ ucfirst($department) }}
             </p>
             @else
-            <p style="margin:0; font-size:12px;">
+            <p style="margin:0; font-size:10px;">
                 Department: All
             </p>
             @endif
