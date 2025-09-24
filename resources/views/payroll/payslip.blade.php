@@ -107,15 +107,15 @@
         <div class="section-title">Monthly Salary</div>
         <table>
             <tr>
-                <td>Basic Salary</td>
+                <td colspan="2">Basic Salary</td>
                 <td class="text-right">{{ number_format($payroll->basic_salary, 2) }}</td>
             </tr>
             <tr>
-                <td>No Pay</td>
+                <td colspan="2">No Pay</td>
                 <td class="text-right">{{ number_format($payroll->no_pay, 2) }}</td>
             </tr>
             <tr>
-                <td>Basic Salary (after deduction)</td>
+                <td colspan="2">Basic Salary (after deduction)</td>
                 <td class="text-right">{{ number_format($payroll->basic_salary - $payroll->no_pay, 2) }}</td>
             </tr>
             @foreach ($earningComponents as $component)
@@ -123,17 +123,89 @@
             $value = $payroll->earnings->firstWhere('component_name', $component->name)->amount ?? 0;
             @endphp
             <tr>
-                <td>{{ $component->name }}</td>
+                <td colspan="2">{{ $component->name }}</td>
                 <td class="text-right">{{ number_format($value, 2) }}</td>
             </tr>
             @endforeach
             <tr>
-                <td>Overtime</td>
+                <td colspan="2">Overtime</td>
                 <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0, 2) }}</td>
             </tr>
             <tr>
-                <td><b>Total</b></td>
-                <td class="text-right"><b>{{ number_format($payroll->gross_earnings, 2) }}</b></td>
+                <td>Mercantile Holiday</td>
+                <td>
+                    @if($payroll->mercantile_days > 0)
+                    {{ fmod($payroll->mercantile_days, 1) == 0 
+                    ? number_format($payroll->mercantile_days, 0) 
+                    : rtrim(rtrim(number_format($payroll->mercantile_days, 2), '0'), '.') }}
+                    {{ $payroll->mercantile_days == 1 ? 'day' : 'days' }}
+                    @else
+                    -
+                    @endif
+                </td>
+                <td class="text-right">{{ number_format($payroll->mercantile_days_amount, 2) }}</td>
+            </tr>
+            <tr>
+                <td>Double Shift Payment</td>
+                <td>
+                    @if($payroll->extra_full_days > 0)
+                    {{ fmod($payroll->extra_full_days, 1) == 0 
+                    ? number_format($payroll->extra_full_days, 0) 
+                    : rtrim(rtrim(number_format($payroll->extra_full_days, 2), '0'), '.') }}
+                    {{ $payroll->extra_full_days == 1 ? 'day' : 'days' }}
+                    @else
+                    -
+                    @endif
+                </td>
+                <td class="text-right">{{ number_format($payroll->extra_full_days_amount, 2) }}</td>
+            </tr>
+            <tr>
+                <td>12 Hours Duty Payment</td>
+                <td>
+                    @if($payroll->extra_half_days > 0)
+                    {{ fmod($payroll->extra_half_days, 1) == 0 
+                    ? number_format($payroll->extra_half_days, 0) 
+                    : rtrim(rtrim(number_format($payroll->extra_half_days, 2), '0'), '.') }}
+                    @else
+                    -
+                    @endif
+                </td>
+                <td class="text-right">{{ number_format($payroll->extra_half_days_amount, 2) }}</td>
+            </tr>
+            <tr>
+                <td>Poovarasan kuda Allowance</td>
+                <td>
+                    @if($payroll->poovarasan_kuda_allowance_150 > 0)
+                    {{ fmod($payroll->poovarasan_kuda_allowance_150, 1) == 0 
+                    ? number_format($payroll->poovarasan_kuda_allowance_150, 0) 
+                    : rtrim(rtrim(number_format($payroll->poovarasan_kuda_allowance_150, 2), '0'), '.') }}
+                    {{ $payroll->poovarasan_kuda_allowance_150 == 1 ? 'day' : 'days' }}
+                    @else
+                    -
+                    @endif
+                </td>
+                <td class="text-right">{{ number_format($payroll->poovarasan_kuda_allowance_150_amount, 2) }}</td>
+            </tr>
+            <tr>
+                <td>Extra Hours Duty</td>
+                <td>
+                    @if($payroll->labour_hours > 0)
+                    {{ fmod($payroll->labour_hours, 1) == 0 
+                    ? number_format($payroll->labour_hours, 0) 
+                    : rtrim(rtrim(number_format($payroll->labour_hours, 2), '0'), '.') }}
+                    {{ $payroll->labour_hours == 1 ? 'hour' : 'hours' }}
+                    @else
+                    -
+                    @endif
+                </td>
+                <td class="text-right">{{ number_format($payroll->labour_amount, 2) }}</td>
+            </tr>
+
+            <tr>
+                <td colspan="2"><b>Total</b></td>
+                <td class="text-right">
+                    <b>{{ number_format($payroll->gross_earnings + $payroll->mercantile_days_amount + $payroll->extra_full_days_amount + $payroll->extra_half_days_amount + $payroll->poovarasan_kuda_allowance_150_amount + $payroll->labour_amount, 2) }}</b>
+                </td>
             </tr>
         </table>
 
@@ -160,51 +232,7 @@
             <tr>
                 <td><b>Net Salary</b></td>
                 <td class="text-right">
-                    <b>{{ number_format($payroll->gross_earnings - $payroll->total_deductions, 2) }}</b></td>
-            </tr>
-        </table>
-        <div class="section-title">Extras</div>
-        <table>
-            <tr>
-                <td>Mercantile @if($payroll->mercantile_days > 0)
-                        ({{ fmod($payroll->mercantile_days, 1) == 0 
-                ? number_format($payroll->mercantile_days, 0) 
-                : rtrim(rtrim(number_format($payroll->mercantile_days, 2), '0'), '.') }})
-                        @endif</td>
-                <td class="text-right"><b>{{ number_format($payroll->mercantile_days_amount, 2) }}</b></td>
-            </tr>
-            <tr>
-                <td>Full Days @if($payroll->extra_full_days > 0)
-                        ({{ fmod($payroll->extra_full_days, 1) == 0 
-                ? number_format($payroll->extra_full_days, 0) 
-                : rtrim(rtrim(number_format($payroll->extra_full_days, 2), '0'), '.') }})
-                        @endif</td>
-                <td class="text-right"><b>{{ number_format($payroll->extra_full_days_amount, 2) }}</b></td>
-            </tr>
-            <tr>
-                <td>Half Days @if($payroll->extra_half_days > 0)
-                        ({{ fmod($payroll->extra_half_days, 1) == 0 
-                ? number_format($payroll->extra_half_days, 0) 
-                : rtrim(rtrim(number_format($payroll->extra_half_days, 2), '0'), '.') }})
-                        @endif</td>
-                <td class="text-right"><b>{{ number_format($payroll->extra_half_days_amount, 2) }}</b></td>
-            </tr>
-            <tr>
-                <td>Poovarasan kuda allow @if($payroll->poovarasan_kuda_allowance_150 > 0)
-                        ({{ fmod($payroll->poovarasan_kuda_allowance_150, 1) == 0 
-                ? number_format($payroll->poovarasan_kuda_allowance_150, 0) 
-                : rtrim(rtrim(number_format($payroll->poovarasan_kuda_allowance_150, 2), '0'), '.') }})
-                        @endif</td>
-                <td class="text-right"><b>{{ number_format($payroll->poovarasan_kuda_allowance_150_amount, 2) }}</b>
-                </td>
-            </tr>
-            <tr>
-                <td>Extra Hours @if($payroll->labour_hours > 0)
-                        ({{ fmod($payroll->labour_hours, 1) == 0 
-                ? number_format($payroll->labour_hours, 0) 
-                : rtrim(rtrim(number_format($payroll->labour_hours, 2), '0'), '.') }})
-                        @endif</td>
-                <td class="text-right"><b>{{ number_format($payroll->labour_amount, 2) }}</b>
+                    <b>{{ number_format($payroll->gross_earnings - $payroll->total_deductions, 2) }}</b>
                 </td>
             </tr>
         </table>
