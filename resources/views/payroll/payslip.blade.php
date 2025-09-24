@@ -111,7 +111,15 @@
                 <td class="text-right">{{ number_format($payroll->basic_salary, 2) }}</td>
             </tr>
             <tr>
-                <td colspan="2">No Pay</td>
+                <td >No Pay</td>
+                <td> @if($payroll->no_pay_days > 0)
+                    {{ fmod($payroll->no_pay_days, 1) == 0 
+                    ? number_format($payroll->no_pay_days, 0) 
+                    : rtrim(rtrim(number_format($payroll->no_pay_days, 2), '0'), '.') }}
+                    {{ $payroll->no_pay_days == 1 ? 'day' : 'days' }}
+                    @else
+                    
+                    @endif</td>
                 <td class="text-right">{{ number_format($payroll->no_pay, 2) }}</td>
             </tr>
             <tr>
