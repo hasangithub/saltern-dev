@@ -920,8 +920,8 @@ class PayrollBatchController extends Controller
             'payrolls.deductions.component'
         ])->findOrFail($id);
 
-        $earningComponents = PayrollComponent::where('type', 'earning')->orderBy('is_fixed', 'desc')->orderBy('name')->get();
-        $deductionComponents = PayrollComponent::where('type', 'deduction')->orderBy('is_fixed', 'desc')->orderBy('name')->get();
+        $earningComponents = PayrollComponent::where('type', 'earning')->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
 
         $pdf = Pdf::loadView('payroll.payslip', compact('batch', 'earningComponents', 'deductionComponents'))
             ->setPaper('a5', 'portrait');

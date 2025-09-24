@@ -7,7 +7,7 @@
     <style>
     @page {
         size: A5 portrait;
-        margin: 5mm;
+        margin: 15mm;
     }
 
     body {
@@ -30,13 +30,13 @@
     .header {
         text-align: center;
         font-weight: bold;
-        font-size: 10px;
+        font-size: 11px;
         margin-bottom: 6px;
     }
 
     .sub-header {
         text-align: center;
-        font-size: 10px;
+        font-size: 11px;
         margin-bottom: 10px;
     }
 
@@ -49,7 +49,7 @@
     td,
     th {
         padding: 2px 4px;
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .text-right {
@@ -60,11 +60,11 @@
         font-weight: bold;
         margin: 6px 0 2px;
         border-bottom: 1px solid #000;
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .footer {
-        margin-top: 10px;
+        margin-top: 20px;
         width: 100%;
     }
 
@@ -157,62 +157,67 @@
                 <td><b>Total</b></td>
                 <td class="text-right"><b>{{ number_format($payroll->total_deductions, 2) }}</b></td>
             </tr>
+            <tr>
+                <td><b>Net Salary</b></td>
+                <td class="text-right">
+                    <b>{{ number_format($payroll->gross_earnings - $payroll->total_deductions, 2) }}</b></td>
+            </tr>
         </table>
         <div class="section-title">Extras</div>
         <table>
             <tr>
-                <td><b>Mercantile @if($payroll->mercantile_days > 0)
+                <td>Mercantile @if($payroll->mercantile_days > 0)
                         ({{ fmod($payroll->mercantile_days, 1) == 0 
                 ? number_format($payroll->mercantile_days, 0) 
                 : rtrim(rtrim(number_format($payroll->mercantile_days, 2), '0'), '.') }})
-                        @endif</b></td>
+                        @endif</td>
                 <td class="text-right"><b>{{ number_format($payroll->mercantile_days_amount, 2) }}</b></td>
             </tr>
             <tr>
-                <td><b>Full Days @if($payroll->extra_full_days > 0)
+                <td>Full Days @if($payroll->extra_full_days > 0)
                         ({{ fmod($payroll->extra_full_days, 1) == 0 
                 ? number_format($payroll->extra_full_days, 0) 
                 : rtrim(rtrim(number_format($payroll->extra_full_days, 2), '0'), '.') }})
-                        @endif</b></td>
+                        @endif</td>
                 <td class="text-right"><b>{{ number_format($payroll->extra_full_days_amount, 2) }}</b></td>
             </tr>
             <tr>
-                <td><b>Half Days @if($payroll->extra_half_days > 0)
+                <td>Half Days @if($payroll->extra_half_days > 0)
                         ({{ fmod($payroll->extra_half_days, 1) == 0 
                 ? number_format($payroll->extra_half_days, 0) 
                 : rtrim(rtrim(number_format($payroll->extra_half_days, 2), '0'), '.') }})
-                        @endif</b></td>
+                        @endif</td>
                 <td class="text-right"><b>{{ number_format($payroll->extra_half_days_amount, 2) }}</b></td>
             </tr>
             <tr>
-                <td><b>Poovarasan kuda allow @if($payroll->poovarasan_kuda_allowance_150 > 0)
+                <td>Poovarasan kuda allow @if($payroll->poovarasan_kuda_allowance_150 > 0)
                         ({{ fmod($payroll->poovarasan_kuda_allowance_150, 1) == 0 
                 ? number_format($payroll->poovarasan_kuda_allowance_150, 0) 
                 : rtrim(rtrim(number_format($payroll->poovarasan_kuda_allowance_150, 2), '0'), '.') }})
-                        @endif</b></td>
+                        @endif</td>
                 <td class="text-right"><b>{{ number_format($payroll->poovarasan_kuda_allowance_150_amount, 2) }}</b>
                 </td>
             </tr>
             <tr>
-                <td><b>Extra Hours @if($payroll->labour_hours > 0)
+                <td>Extra Hours @if($payroll->labour_hours > 0)
                         ({{ fmod($payroll->labour_hours, 1) == 0 
                 ? number_format($payroll->labour_hours, 0) 
                 : rtrim(rtrim(number_format($payroll->labour_hours, 2), '0'), '.') }})
-                        @endif</b></td>
+                        @endif</td>
                 <td class="text-right"><b>{{ number_format($payroll->labour_amount, 2) }}</b>
                 </td>
             </tr>
         </table>
         <!-- Net Pay -->
         <table>
-            <tr>
-                <td><b>Balance</b></td>
+            <tr style="border-top: 1px solid #000; border-bottom: double 3px #000;">
+                <td><b>Total</b></td>
                 <td class="text-right"><b>{{ number_format($payroll->net_pay, 2) }}</b></td>
             </tr>
         </table>
 
         <!-- Employer Contribution -->
-        <div class="section-title">Employer Contribution</div>
+        <div class="section-title" style="padding-top: 1px;">Employer Contribution</div>
         <table>
             <tr>
                 <td>EPF 12%</td>

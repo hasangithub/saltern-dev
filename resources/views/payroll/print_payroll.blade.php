@@ -193,9 +193,12 @@
                 <td style="width: 40px;" class="text-right"></td>
                 @endforeach
 
-                <td style="width:40px;"></th>
-                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
-                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('gross_earnings'),2) }}</td>
+                <td style="width:40px;">
+                    </th>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('gross_earnings'),2) }}</td>
 
                 {{-- Dynamic deductions headers --}}
                 @foreach($deductionComponents as $dc)
