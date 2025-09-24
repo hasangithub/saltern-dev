@@ -128,6 +128,13 @@
 
                     <th style="width:40px;">Hours</th>
                     <th style="width:40px;">Amounts</th>
+
+                    <th style="width:40px;">Merch.Day</th>
+                    <th style="width:40px;">Double Duty</th>
+                    <th style="width:40px;">12 Hours Duty</th>
+                    <th style="width:40px;">Poovarsan kuda 150 Payments</th>
+                    <th style="width:40px;">Extra Hours</th>
+
                     <th style="width:40px;">Gross Salary</th>
 
                     {{-- Dynamic deductions headers --}}
@@ -137,11 +144,7 @@
 
                     <th style="width:40px;">EPF 8%</th>
                     <th style="width:40px;">No Pay</th>
-                    <th style="width:40px;">Merch.Day</th>
-                    <th style="width:40px;">Double Duty</th>
-                    <th style="width:40px;">12 Hours Duty</th>
-                    <th style="width:40px;">Poovarsan kuda 150 Payments</th>
-                    <th style="width:40px;">Extra Hours</th>
+
                     <th style="width:40px;">Deductions</th>
                     <th style="width:40px;">Net Pay</th>
                     <th style="width:90px;">Signature</th>
@@ -149,7 +152,12 @@
             </thead>
             <tbody>
                 @foreach($batch->payrolls as $payroll)
-                @php $emp = $payroll->employee; @endphp
+                @php $emp = $payroll->employee;
+                $extraEarnings = $payroll->mercantile_days_amount + $payroll->extra_full_days_amount +
+                $payroll->extra_half_days_amount + $payroll->poovarasan_kuda_allowance_150_amount +
+                $payroll->labour_amount;
+                @endphp
+
                 <tr>
                     <td>{{ $emp->user->name }}</td>
                     <td>{{ $emp->epf_number }}</td>
@@ -162,7 +170,13 @@
 
                     <td class="text-right">{{ number_format($payroll->overtime_hours ?? 0,1) }}</td>
                     <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0,2) }}</td>
-                    <td class="text-right">{{ number_format($payroll->gross_earnings ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->mercantile_days_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->extra_full_days_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->extra_half_days_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->poovarasan_kuda_allowance_150_amount ?? 0,2) }}
+                    </td>
+                    <td class="text-right">{{ number_format($payroll->labour_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->gross_earnings + $extraEarnings ?? 0,2) }}</td>
 
                     @foreach($deductionComponents as $dc)
                     @php $deduction = $payroll->deductions->firstWhere('component_id', $dc->id); @endphp
@@ -171,12 +185,7 @@
 
                     <td class="text-right">{{ number_format($payroll->epf_employee ?? 0,2) }}</td>
                     <td class="text-right">{{ number_format($payroll->no_pay ?? 0,2) }}</td>
-                    <td class="text-right">{{ number_format($payroll->mercantile_days_amount ?? 0,2) }}</td>
-                    <td class="text-right">{{ number_format($payroll->extra_full_days_amount ?? 0,2) }}</td>
-                    <td class="text-right">{{ number_format($payroll->extra_half_days_amount ?? 0,2) }}</td>
-                    <td class="text-right">{{ number_format($payroll->poovarasan_kuda_allowance_150_amount ?? 0,2) }}
-                    </td>
-                    <td class="text-right">{{ number_format($payroll->labour_amount ?? 0,2) }}</td>
+
                     <td class="text-right">{{ number_format($payroll->total_deductions ?? 0,2) }}</td>
                     <td class="text-right fw-semibold">{{ number_format($payroll->net_pay ?? 0,2) }}</td>
                     <td></td>
@@ -184,30 +193,26 @@
                 @endforeach
             </tbody>
             <tr>
-                <th style="width:40px;"></th>
-                <th style="width:20px;"></th>
+                <td style="width:40px;"></td>
+                <td style="width:20px;"></td>
                 <td style="width:40px;">{{ number_format($batch->payrolls->sum('basic_salary'),2) }}</td>
 
                 {{-- Dynamic earnings headers --}}
                 @foreach($earningComponents as $ec)
-                <td style="width: 40px;" class="text-right"></td>
+                <td style="width: 40px;" class="text-right">
+                {{ number_format(
+                    $batch->payrolls->sum(function($payroll) use ($ec) {
+                        $earning = $payroll->earnings->firstWhere('component_id', $ec->id);
+                        return $earning->amount ?? 0;
+                    }), 2)
+                }}
+            </td>
                 @endforeach
 
-                <td style="width:40px;">
-                    </th>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('overtime_hours'),2) }}</td>
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
-                <td style="width:40px;" class="text-right">
-                    {{ number_format($batch->payrolls->sum('gross_earnings'),2) }}</td>
 
-                {{-- Dynamic deductions headers --}}
-                @foreach($deductionComponents as $dc)
-                <td style="width:40px;" class="text-right"></td>
-                @endforeach
-
-                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}
-                </td>
-                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('no_pay'),2) }}</td>
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('mercantile_days_amount'),2) }}</td>
                 <td style="width:40px;" class="text-right">
@@ -218,6 +223,30 @@
                     {{ number_format($batch->payrolls->sum('poovarasan_kuda_allowance_150_amount'),2) }}</td>
                 <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('labour_amount'),2) }}
                 </td>
+
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('gross_earnings') +  $batch->payrolls->sum('mercantile_days_amount') +
+        $batch->payrolls->sum('extra_full_days_amount') +
+        $batch->payrolls->sum('extra_half_days_amount') +
+        $batch->payrolls->sum('poovarasan_kuda_allowance_150_amount') +
+        $batch->payrolls->sum('labour_amount'),2) }}</td>
+
+                {{-- Dynamic deductions headers --}}
+                @foreach($deductionComponents as $dc)
+                <td class="text-right">
+                    {{ number_format(
+                    $batch->payrolls->sum(function($payroll) use ($dc) {
+                        $deduction = $payroll->deductions->firstWhere('component_id', $dc->id);
+                        return $deduction->amount ?? 0;
+                    }), 2)
+                }}
+                </td>
+                @endforeach
+
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}
+                </td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('no_pay'),2) }}</td>
+
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
                 <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('net_pay'),2) }}</td>
@@ -243,7 +272,9 @@
 
                     <tr>
                         <td>Salary (after deduction)</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('basic_salary') - $batch->payrolls->sum('no_pay'),2) }}</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum('basic_salary') - $batch->payrolls->sum('no_pay'),2) }}
+                        </td>
                     </tr>
 
                     @foreach($earningComponents as $ec)
@@ -269,13 +300,15 @@
 
                     <tr class="fw-semibold">
                         <td>Total</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum(fn($p) => $p->mercantile_days_amount + $p->extra_full_days_amount + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->mercantile_days_amount + $p->extra_full_days_amount + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
 
             {{-- Deductions Summary --}}
-            <table class="summary-table small">
+            <table class="summary-table small" style="line-height: 13px;">
                 <thead>
                     <tr>
                         <th colspan="2">Deductions</th>
@@ -303,7 +336,7 @@
             </table>
 
             {{-- Employer Contributions --}}
-            <table class="summary-table small">
+            <table class="summary-table small" style="line-height: 18.5px;">
                 <thead>
                     <tr>
                         <th colspan="2">Summary</th>
@@ -336,7 +369,7 @@
                     <tr class="fw-semibold">
                         <td>Balance</td>
                         <td class="text-right">
-                            {{ number_format(($batch->payrolls->sum('gross_earnings') - $batch->payrolls->sum('total_deductions')),2) }}
+                            {{ number_format(($batch->payrolls->sum('net_pay')),2) }}
                         </td>
                     </tr>
                 </tbody>
