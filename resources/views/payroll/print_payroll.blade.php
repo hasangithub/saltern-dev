@@ -181,6 +181,43 @@
                 </tr>
                 @endforeach
             </tbody>
+            <tr>
+                <th style="width:40px;"></th>
+                <td style="width:40px;">{{ number_format($batch->payrolls->sum('basic_salary'),2) }}</td>
+
+                {{-- Dynamic earnings headers --}}
+                @foreach($earningComponents as $ec)
+                <td style="width: 40px;" class="text-right"></td>
+                @endforeach
+
+                <td style="width:40px;"></th>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('gross_earnings'),2) }}</td>
+
+                {{-- Dynamic deductions headers --}}
+                @foreach($deductionComponents as $dc)
+                <td style="width:40px;" class="text-right"></td>
+                @endforeach
+
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}
+                </td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('no_pay'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('mercantile_days_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('extra_full_days_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('extra_half_days_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('poovarasan_kuda_allowance_150_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('labour_amount'),2) }}
+                </td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('net_pay'),2) }}</td>
+                <td style="width:90px;" class="text-right"></td>
+
+            </tr>
         </table>
 
         {{-- === Summary Tables (side-by-side using floats) === --}}
@@ -273,7 +310,8 @@
                     <tr class="fw-semibold">
                         <td>Total</td>
                         <td class="text-right">
-                            {{ number_format($batch->payrolls->sum('epf_employer') + $batch->payrolls->sum('epf_employee'),2) }}</td>
+                            {{ number_format($batch->payrolls->sum('epf_employer') + $batch->payrolls->sum('epf_employee'),2) }}
+                        </td>
                     </tr>
                     <tr>
                         <td>ETF 3%</td>
@@ -281,12 +319,29 @@
                     </tr>
 
                     <tr>
+                        <td colspan="2" rowspan="6"></td>
+                    </tr>
+                    <tr>
                         <td colspan="2"></td>
                     </tr>
-                  
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+
                     <tr class="fw-semibold">
                         <td>Balance</td>
-                        <td class="text-right">{{ number_format(($batch->payrolls->sum('gross_earnings') - $batch->payrolls->sum('total_deductions')),2) }}</td>
+                        <td class="text-right">
+                            {{ number_format(($batch->payrolls->sum('gross_earnings') - $batch->payrolls->sum('total_deductions')),2) }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
