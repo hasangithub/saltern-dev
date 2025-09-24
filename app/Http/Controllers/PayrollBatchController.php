@@ -920,8 +920,11 @@ class PayrollBatchController extends Controller
             'payrolls.deductions.component'
         ])->findOrFail($id);
 
-        $pdf = Pdf::loadView('payroll.payslip', compact('batch'))
-            ->setPaper('a6', 'portrait');
+        $earningComponents = PayrollComponent::where('type', 'earning')->orderBy('is_fixed', 'desc')->orderBy('name')->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->orderBy('is_fixed', 'desc')->orderBy('name')->get();
+
+        $pdf = Pdf::loadView('payroll.payslip', compact('batch', 'earningComponents', 'deductionComponents'))
+            ->setPaper('a5', 'portrait');
 
         return $pdf->stream('Payslips_Batch_' . $batch->id . '.pdf');
         // use ->download() if you want to force download
