@@ -241,6 +241,11 @@
                         <td class="text-right">{{ number_format($batch->payrolls->sum('basic_salary'),2) }}</td>
                     </tr>
 
+                    <tr>
+                        <td>Salary (after deduction)</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('basic_salary') - $batch->payrolls->sum('no_pay'),2) }}</td>
+                    </tr>
+
                     @foreach($earningComponents as $ec)
                     <tr>
                         <td>{{ $ec->name }}</td>
