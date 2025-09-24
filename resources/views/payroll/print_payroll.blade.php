@@ -118,6 +118,7 @@
             <thead>
                 <tr>
                     <th style="width:40px;">Employee Name</th>
+                    <th style="width:20px;">EPF#</th>
                     <th style="width:40px;">Basic Salary</th>
 
                     {{-- Dynamic earnings headers --}}
@@ -151,6 +152,7 @@
                 @php $emp = $payroll->employee; @endphp
                 <tr>
                     <td>{{ $emp->user->name }}</td>
+                    <td>{{ $emp->epf_no }}</td>
                     <td class="text-right">{{ number_format($payroll->basic_salary,2) }}</td>
 
                     @foreach($earningComponents as $ec)
@@ -183,6 +185,7 @@
             </tbody>
             <tr>
                 <th style="width:40px;"></th>
+                <th style="width:20px;"></th>
                 <td style="width:40px;">{{ number_format($batch->payrolls->sum('basic_salary'),2) }}</td>
 
                 {{-- Dynamic earnings headers --}}
@@ -318,21 +321,6 @@
                         <td class="text-right">{{ number_format($batch->payrolls->sum('etf'),2) }}</td>
                     </tr>
 
-                    <tr>
-                        <td colspan="2" rowspan="6"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                    </tr>
                     <tr>
                         <td colspan="2"></td>
                     </tr>
