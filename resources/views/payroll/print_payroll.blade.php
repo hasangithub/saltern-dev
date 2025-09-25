@@ -200,16 +200,17 @@
                 {{-- Dynamic earnings headers --}}
                 @foreach($earningComponents as $ec)
                 <td style="width: 40px;" class="text-right">
-                {{ number_format(
+                    {{ number_format(
                     $batch->payrolls->sum(function($payroll) use ($ec) {
                         $earning = $payroll->earnings->firstWhere('component_id', $ec->id);
                         return $earning->amount ?? 0;
                     }), 2)
                 }}
-            </td>
+                </td>
                 @endforeach
 
-                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('overtime_hours'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('overtime_hours'),2) }}</td>
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
 
