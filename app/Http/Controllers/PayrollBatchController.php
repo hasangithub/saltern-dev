@@ -929,4 +929,21 @@ class PayrollBatchController extends Controller
         return $pdf->stream('Payslips_Batch_' . $batch->id . '.pdf');
         // use ->download() if you want to force download
     }
+
+    public function printPayrollSummary($id)
+    {
+        $batch = PayrollBatch::with([
+            'payrolls.employee.user',
+            'payrolls.earnings.component',
+            'payrolls.deductions.component'
+        ])->findOrFail($id);
+
+        $earningComponents = PayrollComponent::where('type', 'earning')->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
+
+        $pdf = Pdf::loadView('payroll.payroll_summary', compact('batch', 'earningComponents', 'deductionComponents'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Payroll_Summary_' . $batch->id . '.pdf');
+    }
 }

@@ -6,6 +6,10 @@
 @section('content_header_title', $batch->status.' Payroll - '.$batch->pay_period)
 @section('content_header_subtitle', 'payrolls')
 @section('page-buttons')
+<a href="{{ route('payroll.batches.printSummary',  $batch->id) }}"
+                   target="_blank" class="btn btn-sm btn-primary mr-2">
+                    <i class="fas fa-file-alt"></i> Print Summary
+                </a>
 <a href="{{ route('payroll.batches.payslips', $batch->id) }}" class="btn btn-sm btn-success" target="_blank">
     <i class="bi bi-printer"></i> Print Payslips
 </a>
