@@ -3,9 +3,13 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'payrolls')
+@section('content_header_title', $batch->status.' Payroll - '.$batch->pay_period)
 @section('content_header_subtitle', 'payrolls')
-
+@section('page-buttons')
+<a href="{{ route('payroll.batches.payslips', $batch->id) }}" class="btn btn-sm btn-success" target="_blank">
+    <i class="bi bi-printer"></i> Print Payslips
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
@@ -20,7 +24,8 @@
 .payroll-table td.sticky-col {
     position: sticky;
     left: 0;
-    background: #fff !important;  /* white background */
+    background: #fff !important;
+    /* white background */
     z-index: 2;
     /* Ensure above other cells */
 }
@@ -34,35 +39,13 @@
 .payroll-table .sticky-col {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
-
-.table-compact th,
-.table-compact td {
-    padding: 2px 4px !important;  /* reduce cell padding */
-    font-size: 11.5px;              /* smaller font */
-    vertical-align: middle;       /* align nicely */
-}
-
-.table-compact input.form-control {
-    padding: 2px 4px;    /* smaller input height */
-    font-size: 11.5px;
-    height: 22px;        /* fixed compact height */
-    line-height: 1;
-}
 </style>
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h4 class="mb-0"> Payroll — {{ $batch->pay_period }}</h4>
-            <small class="text-muted">Status: {{ ucfirst($batch->status) }}</small>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('payroll.batches.index') }}" class="btn btn-outline-secondary">Back</a>
-        </div>
-    </div>
-    <div>
+
+    <div class="col-md-12">
         <form method="GET" action="{{ route('payroll.batches.show', $batch->id) }}" class="mb-3">
-            <div class="row">
-                <div class="col-md-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
                     <select name="department" class="form-control" onchange="this.form.submit()">
                         <option value="all" {{ $department == 'all' ? 'selected' : '' }}>All Departments</option>
                         <option value="office" {{ $department == 'office' ? 'selected' : '' }}>Office</option>
@@ -70,349 +53,296 @@
                         <option value="security" {{ $department == 'security' ? 'selected' : '' }}>Security</option>
                     </select>
                 </div>
+                <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                    {{-- Print Button --}}
+                    <a href="{{ route('payroll.batches.print', ['batch' => $batch->id, 'department' => $department]) }}"
+                        target="_blank" class="btn btn-secondary">
+                        <i class="fas fa-print"></i> Print
+                    </a>
+                </div>
             </div>
         </form>
-
-        {{-- Print Button --}}
-        <a href="{{ route('payroll.batches.print', ['batch' => $batch->id, 'department' => $department]) }}"
-            target="_blank" class="btn btn-secondary">
-            <i class="fas fa-print"></i> Print
-        </a>
-        <a href="{{ route('payroll.batches.payslips', $batch->id) }}" class="btn btn-sm btn-success" target="_blank">
-            <i class="bi bi-printer"></i> Print Payslips
-        </a>
     </div>
-
-    @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-    <form method="POST" action="{{ route('payroll.batches.update', $batch) }}" id="payroll-form">
-        @csrf
-        <div class="card">
-            <div class="card-body table-responsive">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
                 <table class="table table-bordered align-middle  payroll-table table-compact">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
-                            <th style="min-width:120px;">Employee Name</th>
-                            <th style="min-width:90px;">EPF#</th>
-                            <th style="min-width:120px;">Basic Salary</th>
+                            <th class="sticky-col" style="min-width:120px;">Employee Name</th>
+                            <th style="width:20px;">EPF#</th>
+                            <th style="width:40px;">Basic Salary</th>
+
                             {{-- Dynamic earnings headers --}}
                             @foreach($earningComponents as $ec)
-                            <th style="min-width:120px;" class="text-center">{{ $ec->name }}</th>
+                            <th style="width: 40px;">{{ $ec->name }}</th>
                             @endforeach
-                            <th style="min-width:100px;">Hours</th>
-                            <th style="min-width:120px;">Amounts</th>
-                            <th class="text-right" style="min-width:120px;">Gross Salary</th>
+
+                            <th style="width:40px;">Hours</th>
+                            <th style="width:40px;">Amounts</th>
+
+                            <th style="width:40px;">Merch.Day</th>
+                            <th style="width:40px;">Double Duty</th>
+                            <th style="width:40px;">12 Hours Duty</th>
+                            <th style="width:40px;">Poovarsan kuda 150 Payments</th>
+                            <th style="width:40px;">Extra Hours</th>
+
+                            <th style="width:40px;">Gross Salary</th>
+
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
-                            <th style="min-width: {{ in_array($dc->name, ['Loan', 'Festival Loan']) ? '230px' : '90px' }};"
-                                class="text-center">
-                                {{ $dc->name }}
-                            </th>
+                            <th style="width:40px;">{{ $dc->name }}</th>
                             @endforeach
-                            <th style="min-width:120px;">EPF</th>
-                            <th style="min-width:250px;">No Pay</th>
-                            <th style="min-width:250px;">Merch.Day Payments</th>
-                            <th style="min-width:250px;">Double Duty</th>
-                            <th style="min-width:250px;">12 Hours Duty</th>
-                            <th style="min-width:250px;">Poovarsan kuda 150 Payments</th>
-                            <th style="min-width:250px;">Extra Hours</th>
-                            <th class="text-right" style="min-width:120px;">Deductions</th>
-                            <th class="text-right" style="min-width:120px;">Net Pay</th>
+
+                            <th style="width:40px;">EPF 8%</th>
+                            <th style="width:40px;">No Pay</th>
+
+                            <th style="width:40px;">Deductions</th>
+                            <th style="width:40px;">Net Pay</th>
+                            <th style="width:90px;">Signature</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($batch->payrolls as $payroll)
-                        @php
-                        $emp = $payroll->employee;
+                        @php $emp = $payroll->employee;
+                        $extraEarnings = $payroll->mercantile_days_amount + $payroll->extra_full_days_amount +
+                        $payroll->extra_half_days_amount + $payroll->poovarasan_kuda_allowance_150_amount +
+                        $payroll->labour_amount;
                         @endphp
+
                         <tr>
                             <td class="sticky-col">{{ $emp->user->name }}</td>
                             <td>{{ $emp->epf_number }}</td>
+                            <td class="text-right">{{ number_format($payroll->basic_salary,2) }}</td>
 
-                            {{-- Basic Salary --}}
-                            <td>
-                                <input type="number" step="0.01" class="form-control text-right"
-                                    name="payrolls[{{ $payroll->employee_id }}][basic_salary]"
-                                    value="{{ $payroll->basic_salary }}" readonly>
-                            </td>
-
-                            {{-- Earnings --}}
                             @foreach($earningComponents as $ec)
-                            @php
-                            $earning = $payroll->earnings->firstWhere('component_id', $ec->id);
-                            @endphp
-                            <td class="table-secondary">
-                                <input type="number" step="0.01" class="form-control text-right earning-input"
-                                    name="earnings[{{ $payroll->employee_id }}][{{ $ec->id }}]"
-                                    value="{{ $earning->amount ?? number_format($ec->default_amount, 2, '.', '') }}">
-                            </td>
+                            @php $earning = $payroll->earnings->firstWhere('component_id', $ec->id); @endphp
+                            <td class="text-right">{{ number_format($earning->amount ?? 0,2) }}</td>
                             @endforeach
 
-                            {{-- Overtime --}}
-                            <td class="table-secondary">
-                                <input type="number" step="0.1"
-                                    name="payrolls[{{ $payroll->employee_id }}][overtime_hours]"
-                                    value="{{ $payroll->overtime_hours }}" class="form-control">
+                            <td class="text-right">{{ number_format($payroll->overtime_hours ?? 0,1) }}</td>
+                            <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0,2) }}</td>
+                            <td class="text-right">{{ number_format($payroll->mercantile_days_amount ?? 0,2) }}</td>
+                            <td class="text-right">{{ number_format($payroll->extra_full_days_amount ?? 0,2) }}</td>
+                            <td class="text-right">{{ number_format($payroll->extra_half_days_amount ?? 0,2) }}</td>
+                            <td class="text-right">
+                                {{ number_format($payroll->poovarasan_kuda_allowance_150_amount ?? 0,2) }}
                             </td>
-                            <td class="table-secondary">
-                                <input type="number" name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
-                                    value="{{ $payroll->overtime_amount }}" class="form-control">
+                            <td class="text-right">{{ number_format($payroll->labour_amount ?? 0,2) }}</td>
+                            <td class="text-right">{{ number_format($payroll->gross_earnings + $extraEarnings ?? 0,2) }}
                             </td>
 
-                            {{-- Gross --}}
-                            <td class="text-right gross-cell font-weight-bold">
-                                {{ number_format($payroll->gross_earnings, 2) }}</td>
-
-                            {{-- Deductions --}}
                             @foreach($deductionComponents as $dc)
-                            @php
-                            $deduction = $payroll->deductions->firstWhere('component_id', $dc->id);
-                            $amount = $deduction->amount ?? 0;
-                            $lowerName = strtolower($dc->name);
-                            $balance = '';
-                            @endphp
-                            <td class="table-warning">
-                                <div style="display: flex; gap: 5px;">
-                                    @if(in_array($lowerName, ['loan', 'festival loan']))
-                                    {{-- Loan / Festival Loan Dropdown --}}
-
-                                    <select name="loan[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                        class="form-control loan-select">
-                                        <option value="">-- Select {{ ucfirst(str_replace('_', ' ', $lowerName)) }} --
-                                        </option>
-                                        @foreach($emp->staffLoans->filter(function ($loan) use ($lowerName) {
-                                        return $loan->loan_type == $lowerName
-                                        && ($loan->is_migrated || $loan->voucher_id !== null);
-                                        }) as $loan)
-                                        @php
-                                        $repayments = $loan->staffLoanRepayment->sum('amount');
-                                        $balance = $loan->approved_amount - $repayments;
-                                        @endphp
-                                        <option value="{{ $loan->id }}" @if(optional($deduction)->loan_id == $loan->id)
-                                            selected @endif
-                                            data-balance="{{ $balance }}">
-                                            {{ ucfirst($loan->loan_type) }} #{{ $loan->id }} - Balance:
-                                            {{ number_format($balance, 2) }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-
-                                    {{-- Repayment Amount --}}
-                                    <input type="number" step="0.01"
-                                        name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                        class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}">
-                                    @else
-                                    <input type="number" step="0.01" class="form-control text-right deduction-input"
-                                        name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                        value="{{ $amount }}">
-                                    @endif
-                                </div>
-                            </td>
-
+                            @php $deduction = $payroll->deductions->firstWhere('component_id', $dc->id); @endphp
+                            <td class="text-right">{{ number_format($deduction->amount ?? 0,2) }}</td>
                             @endforeach
 
-                            <td><input type="number" step="0.01" name="payrolls[{{ $emp->id }}][epf]"
-                                    class="form-control deduction-input" value="{{ $emp->base_salary * 0.08}}" readonly>
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 5px;">
-                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][no_pay_days]"
-                                        class="form-control" value="{{$payroll->no_pay_days}}">
-                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][no_pay]"
-                                        class="form-control no-pay-input" value="{{$payroll->no_pay}}" readonly>
-                            </td>
+                            <td class="text-right">{{ number_format($payroll->epf_employee ?? 0,2) }}</td>
+                            <td class="text-right">{{ number_format($payroll->no_pay ?? 0,2) }}</td>
+
+                            <td class="text-right">{{ number_format($payroll->total_deductions ?? 0,2) }}</td>
+                            <td class="text-right fw-semibold">{{ number_format($payroll->net_pay ?? 0,2) }}</td>
+                            <td></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tr>
+                        <td style="width:40px;"></td>
+                        <td style="width:20px;"></td>
+                        <td style="width:40px;">{{ number_format($batch->payrolls->sum('basic_salary'),2) }}</td>
+
+                        {{-- Dynamic earnings headers --}}
+                        @foreach($earningComponents as $ec)
+                        <td style="width: 40px;" class="text-right">
+                            {{ number_format(
+                    $batch->payrolls->sum(function($payroll) use ($ec) {
+                        $earning = $payroll->earnings->firstWhere('component_id', $ec->id);
+                        return $earning->amount ?? 0;
+                    }), 2)
+                }}
+                        </td>
+                        @endforeach
+
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('overtime_hours'),2) }}</td>
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
+
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('mercantile_days_amount'),2) }}</td>
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('extra_full_days_amount'),2) }}</td>
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('extra_half_days_amount'),2) }}</td>
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('poovarasan_kuda_allowance_150_amount'),2) }}</td>
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('labour_amount'),2) }}
+                        </td>
+
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('gross_earnings') +  $batch->payrolls->sum('mercantile_days_amount') +
+        $batch->payrolls->sum('extra_full_days_amount') +
+        $batch->payrolls->sum('extra_half_days_amount') +
+        $batch->payrolls->sum('poovarasan_kuda_allowance_150_amount') +
+        $batch->payrolls->sum('labour_amount'),2) }}</td>
+
+                        {{-- Dynamic deductions headers --}}
+                        @foreach($deductionComponents as $dc)
+                        <td class="text-right">
+                            {{ number_format(
+                    $batch->payrolls->sum(function($payroll) use ($dc) {
+                        $deduction = $payroll->deductions->firstWhere('component_id', $dc->id);
+                        return $deduction->amount ?? 0;
+                    }), 2)
+                }}
+                        </td>
+                        @endforeach
+
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('epf_employee'),2) }}
+                        </td>
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('no_pay'),2) }}</td>
+
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
+                        <td style="width:40px;" class="text-right">
+                            {{ number_format($batch->payrolls->sum('net_pay'),2) }}</td>
+                        <td style="width:90px;" class="text-right"></td>
+
+                    </tr>
+                </table>
             </div>
-
-            <td class="table-success">
-
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days]"
-                        class="form-control " value="{{$payroll->mercantile_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days_amount]"
-                        class="form-control extra-earning-input" value="{{$payroll->mercantile_days_amount}}" readonly>
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days]"
-                        class="form-control " value="{{$payroll->extra_full_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days_amount]"
-                        class="form-control extra-earning-input" value="{{$payroll->extra_full_days_amount}}" readonly>
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
-                        class="form-control " value="{{$payroll->extra_half_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
-                        class="form-control extra-earning-input" readonly value="{{$payroll->extra_half_days_amount}}">
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
-                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
-                    <input type="number" step="0.01"
-                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
-                        class="form-control extra-earning-input" readonly
-                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
-                </div>
-
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]" class="form-control"
-                        value="{{$payroll->labour_hours}}">
-
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
-                        class="form-control extra-earning-input" readonly>
+        </div>
+    </div>
 
 
-                </div>
-            </td>
 
-            {{-- Totals --}}
-            <td class="text-right ded-cell table-danger">{{ number_format($payroll->total_deductions, 2) }}</td>
-            <td class="text-right net-cell font-weight-bold">{{ number_format($payroll->net_pay, 2) }}</td>
-            </tr>
-            @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Total</th>
-                    <th></th>
-                    <th class="text-right total-basic">0.00</th>
+    {{-- === Summary Tables (side-by-side using floats) === --}}
+    <div class="row">
+        {{-- Earnings Summary --}}
+        <div class="col-md-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="2">Earnings Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Basic Salary</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('basic_salary'),2) }}</td>
+                    </tr>
 
-                    {{-- Earnings totals --}}
+                    <tr>
+                        <td>Salary (after deduction)</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum('basic_salary') - $batch->payrolls->sum('no_pay'),2) }}
+                        </td>
+                    </tr>
+
                     @foreach($earningComponents as $ec)
-                    <th class="text-right total-earning" data-component-id="{{ $ec->id }}">0.00</th>
+                    <tr>
+                        <td>{{ $ec->name }}</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => optional($p->earnings->firstWhere('component_id',$ec->id))->amount),2) }}
+                        </td>
+                    </tr>
                     @endforeach
 
-                    <th class="text-right total-overtime-hours">0.00</th>
-                    <th class="text-right total-overtime-amount">0.00</th>
-                    <th class="text-right total-gross">0.00</th>
+                    <tr>
+                        <td>Overtime</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
+                    </tr>
 
-                    {{-- Deductions totals --}}
-                    @foreach($deductionComponents as $dc)
-                    <th class="text-right total-deduction" data-component-id="{{ $dc->id }}">0.00</th>
-                    @endforeach
-                    <th class="text-right total-epf8">0.00</th>
-                    <th class="text-right total-no_pay">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right total-deductions">0.00</th>
-                    <th class="text-right total-net">0.00</th>
-                </tr>
-            </tfoot>
+                    <tr>
+                        <td>Extra</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->mercantile_days_amount + $p->extra_full_days_amount + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount),2) }}
+                        </td>
+                    </tr>
 
+                    <tr class="fw-semibold">
+                        <td>Total</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->mercantile_days_amount + $p->extra_full_days_amount + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
+        <div class="col-md-4">
+            {{-- Deductions Summary --}}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="2">Deductions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($deductionComponents as $dc)
+                    <tr>
+                        <td>{{ $dc->name }}</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => optional($p->deductions->firstWhere('component_id',$dc->id))->amount),2) }}
+                        </td>
+                    </tr>
+                    @endforeach
 
-        <div class="card-footer">
-            <div class="row payroll-summary">
-                <!-- Left side: Earnings summary -->
-                <div class="col-md-4">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th colspan="2">Earnings Summary</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Basic Salary</td>
-                                <td class="text-right summary-basic">0.00</td>
-                            </tr>
-                            @foreach($earningComponents as $ec)
-                            <tr>
-                                <td>{{ $ec->name }}</td>
-                                <td class="text-right summary-earning" data-component-id="{{ $ec->id }}">0.00</td>
-                            </tr>
-                            @endforeach
-                            <tr>
-                                <td>Overtime Amount</td>
-                                <td class="text-right summary-overtime-amount">0.00</td>
-                            </tr>
-                            <tr>
-                                <td>Extra Amount</td>
-                                <td class="text-right summary-extra-amount">0.00</td>
-                            </tr>
-                            <tr class="fw-semibold">
-                                <td>Total Earnings</td>
-                                <td class="text-right summary-total-earnings">0.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Middle: Employee Deductions (EPF 8% only + others) -->
-                <div class="col-md-4">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th colspan="2">Deductions Summary</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($deductionComponents as $dc)
-                            @php
-                            $lower = strtolower($dc->name);
-                            @endphp
-                            @if(!str_contains($lower, 'etf') && !str_contains($lower, '12%'))
-                            <tr>
-                                <td>{{ $dc->name }}</td>
-                                <td class="text-right summary-deduction" data-component-id="{{ $dc->id }}">0.00</td>
-                            </tr>
-                            @endif
-                            @endforeach
-                            <tr>
-                                <td>EPF 8%</td>
-                                <td class="text-right summary-epf8">0.00</td>
-                            </tr>
-                            <tr class="fw-semibold">
-                                <td>Total Deductions</td>
-                                <td class="text-right summary-total-deductions">0.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Right side: Employer Contributions (EPF 12% + ETF 3%) -->
-                <div class="col-md-4">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th colspan="2">Employer Contributions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>EPF (12%)</td>
-                                <td class="text-right summary-epf12">0.00</td>
-                            </tr>
-                            <tr>
-                                <td>ETF (3%)</td>
-                                <td class="text-right summary-etf3">0.00</td>
-                            </tr>
-                            <tr class="fw-semibold">
-                                <td>Total Employer</td>
-                                <td class="text-right summary-total-employer">0.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+                    <tr>
+                        <td>EPF 8%</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}</td>
+                    </tr>
+                    <tr class="fw-semibold">
+                        <td>Total</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-</div>
-</form>
+        <div class="col-md-4">
+            {{-- Employer Contributions --}}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="2">Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EPF 12%</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employer'),2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>EPF 8%</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}</td>
+                    </tr>
+                    <tr class="fw-semibold">
+                        <td>Total</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum('epf_employer') + $batch->payrolls->sum('epf_employee'),2) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ETF 3%</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('etf'),2) }}</td>
+                    </tr>
 
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+
+                    <tr class="fw-semibold">
+                        <td>Balance</td>
+                        <td class="text-right">
+                            {{ number_format(($batch->payrolls->sum('net_pay')),2) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 @stop
 
