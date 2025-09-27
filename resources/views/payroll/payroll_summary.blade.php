@@ -7,8 +7,8 @@
     <style>
     /* Page setup */
     @page {
-        size: a4 portrait;
-        margin: 3mm;
+        size: a4 landscape;
+        margin: 10mm;
     }
 
     body {
