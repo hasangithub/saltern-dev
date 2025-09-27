@@ -942,7 +942,7 @@ class PayrollBatchController extends Controller
         $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
 
         $pdf = Pdf::loadView('payroll.payroll_summary', compact('batch', 'earningComponents', 'deductionComponents'))
-            ->setPaper('a4', 'portrait');
+            ->setPaper('a4', 'landscape');
 
         return $pdf->stream('Payroll_Summary_' . $batch->id . '.pdf');
     }
