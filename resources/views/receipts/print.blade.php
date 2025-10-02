@@ -24,7 +24,15 @@
             @php $total = 0; @endphp
             @foreach ($receipt->details as $detail)
             <tr>
-                <td>{{ ucfirst($detail->entry_type) }}#{{$detail->entry_id}} {{$detail->owner?->name_with_initial}}</td>
+                <td> 
+                @if ($detail->entry_type === 'other_income')
+                    {{ $detail->entry?->incomeCategory?->name }} #{{ $detail->entry_id }} 
+                    ({{ $detail->entry?->description }})
+                    {{ $detail->owner?->name_with_initial }}
+                @else
+                    {{ ucfirst($detail->entry_type) }}#{{ $detail->entry_id }} 
+                    {{ $detail->owner?->name_with_initial }}
+                @endif</td>
                 <td align="right">{{ number_format($detail->amount, 2) }}</td>
             </tr>
             @php $total += $detail->amount; @endphp
