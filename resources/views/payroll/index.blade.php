@@ -47,7 +47,7 @@
                             <td>{{ $batch->created_at->format('Y-m-d') }}</td>
                             <td class="text-end">
                                 @if($batch->status === 'draft')
-                                @if(optional($batch->payrollTemplate)->type === 'Permanent')
+                                @if(optional($batch->payrollTemplate)->name === 'Permanent')
                                 <a href="{{ route('payroll.batches.edit', $batch->id) }}"
                                     class="btn btn-sm btn-primary">
                                     <i class="fas fa-edit"></i> Edit
@@ -59,7 +59,7 @@
                                 </a>
                                 @endif
                                 @endif
-                                @if(optional($batch->payrollTemplate)->type === 'Permanent')
+                                @if(optional($batch->payrollTemplate)->name === 'Permanent')
                                 <a class="btn btn-sm btn-warning" href="{{ route('payroll.batches.show', $batch) }}">
                                     View
                                 </a>
