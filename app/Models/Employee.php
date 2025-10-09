@@ -10,7 +10,7 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'sort_order','user_id','person_id', 'designation', 'employment_type' , 'department', 'base_salary', 'epf_number', 'join_date', 'employment_status'
+        'sort_order','user_id','person_id', 'designation', 'employment_type' , 'department', 'base_salary', 'day_salary', 'epf_number', 'payroll_template_id', 'join_date', 'employment_status'
     ];
 
     public function user()
@@ -39,6 +39,11 @@ class Employee extends Model
     public function staffLoans()
     {
         return $this->hasMany(StaffLoan::class, 'user_id', 'user_id');
+    }
+
+    public function payrollTemplate()
+    {
+        return $this->belongsTo(PayrollTemplate::class);
     }
 
 }

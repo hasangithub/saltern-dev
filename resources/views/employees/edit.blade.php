@@ -92,12 +92,28 @@
             </div>
 
             <div class="form-group row">
+                <label for="payroll_template_id" class="col-sm-3 col-form-label">Template</label>
+                <div class="col-sm-9">
+                    <select name="payroll_template_id" id="payroll_template_id" class="form-control" required>
+                        <option value="">Select Payroll Template</option>
+                        @foreach($payrollTemplates as $template)
+                        <option value="{{ $template->id }}"
+                            {{ old('payroll_template_id',  $employee->employee->payroll_template_id) == $template->id ? 'selected' : '' }}>
+                            {{ $template->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
                 <label for="department" class="col-sm-3 col-form-label">Department</label>
                 <div class="col-sm-9">
                     <select name="department" id="department" class="form-control">
                         <option value="">-- Select Department --</option>
                         <option value="office"
-                            {{ old('department', $employee->employee->department ?? '') == 'office' ? 'selected' : '' }}>Office
+                            {{ old('department', $employee->employee->department ?? '') == 'office' ? 'selected' : '' }}>
+                            Office
                         </option>
                         <option value="workshop"
                             {{ old('department', $employee->employee->department ?? '') == 'workshop' ? 'selected' : '' }}>
@@ -115,7 +131,15 @@
                 <label for="base_salary" class="col-sm-3 col-form-label">Base Salary</label>
                 <div class="col-sm-9">
                     <input type="number" step='0.01' class="form-control" id="base_salary" name="base_salary"
-                        value="{{ old('base_salary', $employee->employee->base_salary) }}" required>
+                        value="{{ old('base_salary', $employee->employee->base_salary) }}">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="day_salary" class="col-sm-3 col-form-label">Day Salary</label>
+                <div class="col-sm-9">
+                    <input type="number" step="0.01" name="day_salary" id="day_salary" class="form-control"
+                        value="{{ old('day_salary',  $employee->employee->day_salary) }}">
                 </div>
             </div>
 
@@ -123,7 +147,7 @@
                 <label for="epf_number" class="col-sm-3 col-form-label">EPF No</label>
                 <div class="col-sm-9">
                     <input type="text" class="form-control" id="epf_number" name="epf_number"
-                        value="{{ old('epf_number', $employee->employee->epf_number) }}" >
+                        value="{{ old('epf_number', $employee->employee->epf_number) }}">
                 </div>
             </div>
 
