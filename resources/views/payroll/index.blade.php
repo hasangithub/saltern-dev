@@ -41,7 +41,7 @@
                             <td><span
                                     class="badge bg-{{ $batch->status === 'draft' ? 'secondary' : ($batch->status==='approved'?'info':'success') }}">{{ ucfirst($batch->status) }}</span>
                             </td>
-                            <td>{{ $batch->batch_type }}</td>
+                            <td>{{ optional($batch->payrollTemplate)->name ?? '—' }}</td>
                             <td>{{ $batch->payrolls_count }}</td>
                             <td>{{ optional($batch->processor)->name ?? '-' }}</td>
                             <td>{{ $batch->created_at->format('Y-m-d') }}</td>
