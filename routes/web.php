@@ -188,12 +188,16 @@ Route::middleware(['auth:web'])->group(function () {
         Route::post('/batches/{batch}/contractUpdate', [PayrollBatchController::class, 'contractUpdate'])->name('batches.contractUpdate');
         Route::get('/{batch}/print', [PayrollBatchController::class, 'print'])
         ->name('batches.print');
+        Route::get('/{batch}/contractPrint', [PayrollBatchController::class, 'contractPrint'])
+        ->name('batches.contractPrint');
         Route::get('/batches/{batch}/show', [PayrollBatchController::class, 'show'])->name('batches.show');
         Route::get('/batches/{batch}/contractShow', [PayrollBatchController::class, 'contractShow'])->name('batches.contractShow');
         Route::post('/batches/{batch}/approve', [PayrollBatchController::class, 'approve'])
     ->name('batches.approve');
     Route::get('/batches/{id}/payslips', [PayrollBatchController::class, 'printPayslips'])
     ->name('batches.payslips');
+    Route::get('/batches/{id}/contractPayslips', [PayrollBatchController::class, 'printContractPayslips'])
+    ->name('batches.contractPayslips');
     Route::get('/batches/{id}/payrollSummary', [PayrollBatchController::class, 'printPayrollSummary'])
     ->name('batches.printSummary');
     });

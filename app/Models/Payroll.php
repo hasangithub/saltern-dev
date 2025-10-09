@@ -10,7 +10,7 @@ class Payroll extends Model
 {
     protected $table = 'payrolls';
     protected $fillable = [
-        'batch_id','employee_id', 'basic_salary','overtime_hours', 'overtime_amount', 'no_pay','no_pay_days',
+        'batch_id','employee_id', 'basic_salary', 'day_salary', 'worked_days','overtime_hours', 'overtime_amount', 'no_pay','no_pay_days',
         'mercantile_days',
         'mercantile_days_amount',
         'extra_full_days',

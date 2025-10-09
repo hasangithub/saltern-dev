@@ -11,6 +11,7 @@ use App\Models\PayrollComponent;
 use App\Models\PayrollDeduction;
 use App\Models\PayrollEarning;
 use App\Models\Payroll;
+use App\Models\PayrollTemplate;
 use App\Models\StaffLoan;
 use App\Models\StaffLoanRepayment;
 use Illuminate\Http\Request;
@@ -31,7 +32,8 @@ class PayrollBatchController extends Controller
 
     public function create()
     {
-        return view('payroll.create');
+        $payrollTemplates = PayrollTemplate::all();
+        return view('payroll.create', compact('payrollTemplates'));
     }
 
     public function edit($id)
@@ -84,8 +86,8 @@ class PayrollBatchController extends Controller
             ->values(); // reindex for proper looping
 
         // Load earning and deduction components
-        $earningComponents = PayrollComponent::where('type', 'earning')->get();
-        $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
 
         // Pass to view
         return view('payroll.contract-edit', compact(
@@ -130,63 +132,77 @@ class PayrollBatchController extends Controller
         return $pdf->stream("Payroll_{$batch->pay_period}.pdf");
     }
 
+    public function contractPrint(Request $request, $id)
+    {
+        $department = $request->get('department', 'all');
+        $batch = PayrollBatch::with([
+            'payrolls' => function ($query) use ($department) {
+                $query->with(['deductions', 'earnings', 'employee.user', 'employee.staffLoans']);
+
+                if ($department && $department !== 'all') {
+                    $query->whereHas('employee', function ($q) use ($department) {
+                        $q->where('department', $department);
+                    });
+                }
+            }
+        ])->findOrFail($id);
+
+        // Load all employees who should have payroll in this batch
+        $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
+
+        $batch->payrolls = $batch->payrolls
+            ->sortBy(function ($payroll) {
+                return $payroll->employee->sort_order ?? 0;
+            })
+            ->values(); // reindex for proper looping
+
+        // Load earning and deduction components
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
+
+        $pdf = Pdf::loadView('payroll.contract_print_payroll', compact('batch', 'earningComponents', 'deductionComponents', 'employees', 'department'))->setPaper('legal', 'landscape');
+
+        // Optionally, force download
+        return $pdf->stream("Contract_Payroll_{$batch->pay_period}.pdf");
+    }
+
     public function store(Request $request)
     {
         $request->validate([
             'pay_period' => ['required', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
-            'batch_type' => ['required', 'in:permanent,first_half,second_half'],
+            'payroll_template_id' => 'required|exists:payroll_templates,id',
         ], [
             'pay_period.regex' => 'Pay period must be in format YYYY-MM.',
         ]);
 
-        $payPeriod = $request->pay_period;
-        $batchType = $request->batch_type;
 
-        // Check existing batches
-        $existingBatches = \App\Models\PayrollBatch::where('pay_period', $payPeriod)->pluck('batch_type')->toArray();
-
-        if ($batchType === 'permanent' && in_array('permanent', $existingBatches)) {
-            return back()->withErrors(['pay_period' => 'A permanent payroll batch for this month already exists.'])->withInput();
-        }
-
-        if (in_array($batchType, ['first_half', 'second_half'])) {
-            $contractBatches = array_filter($existingBatches, fn($type) => in_array($type, ['first_half', 'second_half']));
-
-            if (count($contractBatches) >= 2 || in_array($batchType, $contractBatches)) {
-                return back()->withErrors(['pay_period' => 'This contract batch already exists for the selected half.'])->withInput();
-            }
-        }
 
         $batch = PayrollBatch::create([
             'pay_period' => $request->pay_period,
-            'batch_type' => $request->batch_type,
+            'payroll_template_id' => $request->payroll_template_id,
             'status' => 'draft',
             'processed_by' => auth('web')->id(),
         ]);
 
-        $batchType = $batch->batch_type ?? $request->batch_type; // 'permanent', 'first_half', 'second_half'
-
-        if ($batchType === 'permanent') {
-            $employees = Employee::where('employment_status', 'active')
-                ->where('employment_type', 'permanent')
-                ->get();
-        } else {
-            // For contract labour (first_half or second_half)
-            $employees = Employee::where('employment_status', 'active')
-                ->where('employment_type', 'contract')
-                ->get();
-        }
+       
+        $employees = Employee::where('employment_status', 'active')
+        ->where('payroll_template_id', $request->payroll_template_id)
+        ->get();
 
         foreach ($employees as $employee) {
             Payroll::create([
                 'batch_id'      => $batch->id,
                 'employee_id'   => $employee->id,
                 'basic_salary'  => $employee->base_salary,
+                'day_salary'  => $employee->day_salary,
             ]);
         }
 
+        $selectedTemplate = PayrollTemplate::find($request->payroll_template_id);
+
+
         // Redirect based on type
-        if ($batchType === 'permanent') {
+        if ($selectedTemplate && strtolower($selectedTemplate->name) === 'permanent') {
             return redirect()->route('payroll.batches.edit', $batch->id);
         } else {
             return redirect()->route('payroll.batches.contractEdit', $batch->id);
@@ -586,12 +602,13 @@ class PayrollBatchController extends Controller
                     continue; // skip if payroll not exist
                 }
 
-                $noPay = floatval($payrollsInput[$employeeId]['no_pay'] ?? 0);
-                $effectiveSalary = $master->basic_salary - $noPay;
-                $oneDaySalary = $master->basic_salary / 30;
+                $workedDays = (float)($payrollsInput[$employeeId]['worked_days'] ?? 0);
+
+                $effectiveSalary = $master->day_salary * $workedDays;
+                $oneDaySalary = $master->day_salary;
 
                 $overtimeHours = (float)($payrollsInput[$employeeId]['overtime_hours'] ?? 0);
-                $overtimeAmount = ($effectiveSalary / 30) * (3 / 16) * $overtimeHours;
+                $overtimeAmount = ($oneDaySalary) * (3 / 16) * $overtimeHours;
 
                 // Extra day calculations
                 $mercantileDays = (float)($payrollsInput[$employeeId]['mercantile_days'] ?? 0);
@@ -617,7 +634,8 @@ class PayrollBatchController extends Controller
 
                 // update basic_salary, overtime, no_pay
                 $master->update([
-                    'basic_salary' => $payrollsInput[$employeeId]['basic_salary'] ?? 0,
+                    'day_salary' => $payrollsInput[$employeeId]['day_salary'] ?? 0,
+                    'worked_days' => $payrollsInput[$employeeId]['worked_days'] ?? 0,
                     'overtime_hours' => $payrollsInput[$employeeId]['overtime_hours'] ?? 0,
                     'overtime_amount' => $payrollsInput[$employeeId]['overtime_amount'] ?? 0,
                     'no_pay' => $payrollsInput[$employeeId]['no_pay'] ?? 0,
@@ -790,8 +808,8 @@ class PayrollBatchController extends Controller
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
 
         // Load earning and deduction components
-        $earningComponents = PayrollComponent::where('type', 'earning')->get();
-        $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
 
         return view('payroll.contract-show', compact('batch', 'earningComponents', 'deductionComponents', 'employees', 'department'));
     }
@@ -924,6 +942,24 @@ class PayrollBatchController extends Controller
         $deductionComponents = PayrollComponent::where('type', 'deduction')->get();
 
         $pdf = Pdf::loadView('payroll.payslip', compact('batch', 'earningComponents', 'deductionComponents'))
+            ->setPaper('a5', 'portrait');
+
+        return $pdf->stream('Payslips_Batch_' . $batch->id . '.pdf');
+        // use ->download() if you want to force download
+    }
+
+    public function printContractPayslips($id)
+    {
+        $batch = PayrollBatch::with([
+            'payrolls.employee.user',
+            'payrolls.earnings.component',
+            'payrolls.deductions.component'
+        ])->findOrFail($id);
+
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
+
+        $pdf = Pdf::loadView('payroll.contract_payslip', compact('batch', 'earningComponents', 'deductionComponents'))
             ->setPaper('a5', 'portrait');
 
         return $pdf->stream('Payslips_Batch_' . $batch->id . '.pdf');
