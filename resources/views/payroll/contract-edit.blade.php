@@ -257,9 +257,9 @@
             <tfoot>
                 <tr>
                     <th>Total</th>
-                    <th class="text-right total-basic">0.00</th>
                     <th></th>  
-                    <th></th>                            
+                    <th></th>   
+                    <th class="text-right total-basic">0.00</th>                         
                     {{-- Earnings totals --}}
                     @foreach($earningComponents as $ec)
                     <th class="text-right total-earning" data-component-id="{{ $ec->id }}">0.00</th>
@@ -301,7 +301,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Basic Salary</td>
+                                <td>Day Salary</td>
                                 <td class="text-right summary-basic">0.00</td>
                             </tr>
                             @foreach($earningComponents as $ec)
@@ -601,6 +601,8 @@ document.addEventListener('DOMContentLoaded', function() {
             td.textContent = val.toFixed(2);
             totalDeds += val;
         });
+
+        document.querySelector('.summary-total-deductions').textContent = (totalDeds).toFixed(2);
     }
 
 
