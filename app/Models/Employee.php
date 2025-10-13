@@ -33,6 +33,7 @@ class Employee extends Model
             'Technician',
             'Driver',
             'Security',
+            'Labour'
         ];
     }
 
