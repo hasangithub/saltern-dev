@@ -41,13 +41,13 @@
                             <td><span
                                     class="badge bg-{{ $batch->status === 'draft' ? 'secondary' : ($batch->status==='approved'?'info':'success') }}">{{ ucfirst($batch->status) }}</span>
                             </td>
-                            <td>{{ $batch->batch_type }}</td>
+                            <td>{{ optional($batch->payrollTemplate)->name ?? '—' }}</td>
                             <td>{{ $batch->payrolls_count }}</td>
                             <td>{{ optional($batch->processor)->name ?? '-' }}</td>
                             <td>{{ $batch->created_at->format('Y-m-d') }}</td>
                             <td class="text-end">
                                 @if($batch->status === 'draft')
-                                @if($batch->batch_type === 'permanent')
+                                @if(optional($batch->payrollTemplate)->name === 'Permanent')
                                 <a href="{{ route('payroll.batches.edit', $batch->id) }}"
                                     class="btn btn-sm btn-primary">
                                     <i class="fas fa-edit"></i> Edit
@@ -59,7 +59,7 @@
                                 </a>
                                 @endif
                                 @endif
-                                @if($batch->batch_type === 'permanent')
+                                @if(optional($batch->payrollTemplate)->name === 'Permanent')
                                 <a class="btn btn-sm btn-warning" href="{{ route('payroll.batches.show', $batch) }}">
                                     View
                                 </a>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
+use App\Models\PayrollTemplate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -27,7 +28,9 @@ class EmployeeController extends Controller
 
         $employee = User::findOrFail($id); 
         $roles = Role::where('guard_name', 'web')->get();
-        return view('employees.edit', compact('employee', 'roles'));
+        $payrollTemplates = PayrollTemplate::all();
+
+        return view('employees.edit', compact('employee', 'roles', 'payrollTemplates'));
     }
 
     public function update(Request $request, $id)
@@ -46,7 +49,9 @@ class EmployeeController extends Controller
         'employment_status' => 'required|in:Active,Inactive,Resigned,Terminated',
         'roles' => 'array|exists:roles,name',
         'employment_type'  => 'nullable|in:permanent,contract',
-        'department'       => 'nullable|in:office,workshop,security'
+        'department'       => 'nullable|in:office,workshop,security',
+        'payroll_template_id' => 'required|exists:payroll_templates,id',
+        'day_salary' => 'nullable|numeric|min:0',
     ]);
 
      // Update User table
@@ -71,7 +76,9 @@ class EmployeeController extends Controller
             'join_date' => $request->join_date,
             'employment_status' => $request->employment_status,
             'employment_type' => $request->employment_type,
-            'department' => $request->department
+            'department' => $request->department,
+            'payroll_template_id' =>  $request->payroll_template_id,
+            'day_salary' =>  $request->day_salary,
         ]);
     }
 

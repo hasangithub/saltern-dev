@@ -29,13 +29,12 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Batch Type</label>
-            <select name="batch_type" class="form-control @error('batch_type') is-invalid @enderror" required>
-                <option value="">-- Select Type --</option>
-                <option value="permanent" {{ old('batch_type') == 'permanent' ? 'selected' : '' }}>Permanent</option>
-                <option value="first_half" {{ old('batch_type') == 'first_half' ? 'selected' : '' }}>First Half</option>
-                <option value="second_half" {{ old('batch_type') == 'second_half' ? 'selected' : '' }}>Second Half
-                </option>
+            <label class="form-label">Template</label>
+            <select name="payroll_template_id" id="payroll_template_id" class="form-control" required>
+                <option value="">Select Template</option>
+                @foreach($payrollTemplates as $template)
+                    <option value="{{ $template->id }}">{{ $template->name }}</option>
+                @endforeach
             </select>
             @error('batch_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
