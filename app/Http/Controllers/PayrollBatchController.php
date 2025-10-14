@@ -87,7 +87,7 @@ class PayrollBatchController extends Controller
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
-        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
         $templateName = $batch->payrollTemplate->name ?? null;
         // Pass to view
         return view('payroll.contract-edit', compact(
@@ -921,6 +921,103 @@ class PayrollBatchController extends Controller
             'debit_amount' => null,
             'credit_amount' => $totalEpf8,
             'description' => 'EPF8 for Payroll Batch #' . $batch->id,
+        ];
+
+        // Other deductions
+        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+            if (!empty($totalDeductions[$key])) {
+                $ledgerId = is_array($creditMap[$key]) ? $creditMap[$key]['ledger_id'] : $creditMap[$key];
+                $subLedgerId = is_array($creditMap[$key]) ? $creditMap[$key]['sub_ledger_id'] : null;
+
+                $details[] = [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => $ledgerId,
+                    'sub_ledger_id' => $subLedgerId,
+                    'debit_amount' => null,
+                    'credit_amount' => $totalDeductions[$key],
+                    'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                ];
+            }
+        }
+
+        // Bulk insert
+        JournalDetail::insert($details);
+
+        return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
+    }
+
+    public function contractApprove($id)
+    {
+        $batch = PayrollBatch::findOrFail($id);
+
+        if ($batch->status !== 'draft') {
+            return redirect()->back()->with('error', 'This payroll batch is already approved.');
+        }
+
+        $batch->status = 'approved';
+        $batch->save();
+
+        // Calculate totals
+        $totalNetPay = $batch->payrolls->sum('net_pay');
+       
+        $totalDeductions = [];
+        foreach ($batch->payrolls as $payroll) {
+            foreach ($payroll->deductions as $deduction) {
+                $name = strtolower($deduction->component->name);
+                $totalDeductions[$name] = ($totalDeductions[$name] ?? 0) + $deduction->amount;
+            }
+        }
+
+        // Create journal entry
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(),
+            'description' => 'Payroll Batch #' . $batch->id,
+        ]);
+
+        $details = [];
+
+        // === Debit Entries (All go to Ledger 102) ===
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => 102,
+            'sub_ledger_id' => null,
+            'debit_amount' => $totalNetPay,
+            'credit_amount' => null,
+            'description' => 'Net Pay for Payroll Batch #' . $batch->id,
+        ];
+
+        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+            if (!empty($totalDeductions[$key])) {
+                $details[] = [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 102,
+                    'sub_ledger_id' => null,
+                    'debit_amount' => $totalDeductions[$key],
+                    'credit_amount' => null,
+                    'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                ];
+            }
+        }
+
+        // === Credit Entries (Batch-level totals) ===
+        $creditMap = [
+            'net_pay' => 179,
+            'salary advance' => 180,
+            'union' => 107,  // union charge
+            'fine' => 111, // Security staff -  penalty
+            'epf_8' => 103,  // EPF
+            'loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+            'festival loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+        ];
+
+        // Net Pay
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => $creditMap['net_pay'],
+            'sub_ledger_id' => null,
+            'debit_amount' => null,
+            'credit_amount' => $totalNetPay,
+            'description' => 'Net Pay for Payroll Batch #' . $batch->id,
         ];
 
         // Other deductions
