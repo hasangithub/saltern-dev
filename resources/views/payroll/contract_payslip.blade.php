@@ -136,32 +136,18 @@
                 <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0, 2) }}</td>
             </tr>
             <tr>
-                <td>Mercantile Holiday</td>
+                <td>8 Hours Duty Payment</td>
                 <td>
-                    @if($payroll->mercantile_days > 0)
-                    {{ fmod($payroll->mercantile_days, 1) == 0 
-                    ? number_format($payroll->mercantile_days, 0) 
-                    : rtrim(rtrim(number_format($payroll->mercantile_days, 2), '0'), '.') }}
-                    {{ $payroll->mercantile_days == 1 ? 'day' : 'days' }}
+                    @if($payroll->eight_hours_duty_hours > 0)
+                    {{ fmod($payroll->eight_hours_duty_hours, 1) == 0 
+                    ? number_format($payroll->eight_hours_duty_hours, 0) 
+                    : rtrim(rtrim(number_format($payroll->eight_hours_duty_hours, 2), '0'), '.') }}
+                    {{ $payroll->eight_hours_duty_hours == 1 ? 'hour' : 'hours' }}
                     @else
                     -
                     @endif
                 </td>
-                <td class="text-right">{{ number_format($payroll->mercantile_days_amount, 2) }}</td>
-            </tr>
-            <tr>
-                <td>Double Shift Payment</td>
-                <td>
-                    @if($payroll->extra_full_days > 0)
-                    {{ fmod($payroll->extra_full_days, 1) == 0 
-                    ? number_format($payroll->extra_full_days, 0) 
-                    : rtrim(rtrim(number_format($payroll->extra_full_days, 2), '0'), '.') }}
-                    {{ $payroll->extra_full_days == 1 ? 'day' : 'days' }}
-                    @else
-                    -
-                    @endif
-                </td>
-                <td class="text-right">{{ number_format($payroll->extra_full_days_amount, 2) }}</td>
+                <td class="text-right">{{ number_format($payroll->eight_hours_duty_amount, 2) }}</td>
             </tr>
             <tr>
                 <td>12 Hours Duty Payment</td>

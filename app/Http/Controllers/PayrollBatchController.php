@@ -69,7 +69,7 @@ class PayrollBatchController extends Controller
 
     public function contractEdit($id)
     {
-        $batch = PayrollBatch::with(['payrolls.deductions', 'payrolls.earnings'])->findOrFail($id);
+        $batch = PayrollBatch::with(['payrollTemplate','payrolls.deductions', 'payrolls.earnings'])->findOrFail($id);
 
         // Allow edit only if batch is still draft
         if ($batch->status !== 'draft') {
@@ -87,14 +87,15 @@ class PayrollBatchController extends Controller
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
-        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
-
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
+        $templateName = $batch->payrollTemplate->name ?? null;
         // Pass to view
         return view('payroll.contract-edit', compact(
             'batch',
             'employees',
             'earningComponents',
-            'deductionComponents'
+            'deductionComponents',
+            'templateName',
         ));
     }
 
@@ -574,6 +575,8 @@ class PayrollBatchController extends Controller
     {
         abort_if($batch->status !== 'draft', 403, 'Only draft batches can be updated.');
 
+      
+
         $data = $request->validate([
             'earnings' => 'array',
             'deductions' => 'array',
@@ -606,27 +609,38 @@ class PayrollBatchController extends Controller
 
                 $effectiveSalary = $master->day_salary * $workedDays;
                 $oneDaySalary = $master->day_salary;
+                $workedDaysAmount = $master->day_salary * $workedDays;
+
+                $templateName = $batch->payrollTemplate->name ?? '';
+
+                if ($templateName === 'Temporary Security') {
+                    $oneHourSalary = $oneDaySalary / 12;
+                } else {
+                    $oneHourSalary = $oneDaySalary / 8;
+                }
+
+                $extraWorkBasic = $oneHourSalary * 8;
 
                 $overtimeHours = (float)($payrollsInput[$employeeId]['overtime_hours'] ?? 0);
                 $overtimeAmount = ($oneDaySalary) * (3 / 16) * $overtimeHours;
 
                 // Extra day calculations
-                $mercantileDays = (float)($payrollsInput[$employeeId]['mercantile_days'] ?? 0);
-                $mercantileAmount = ($oneDaySalary) * $mercantileDays;
+                $mercantileDays = (float)($payrollsInput[$employeeId]['eight_hours_duty_hours'] ?? 0);
+                $mercantileAmount = ($extraWorkBasic) * $mercantileDays;
 
                 $extraFullDays = (float)($payrollsInput[$employeeId]['extra_full_days'] ?? 0);
                 $extraFullAmount = ($oneDaySalary) * $extraFullDays;
 
                 $extraHalfDays = (float)($payrollsInput[$employeeId]['extra_half_days'] ?? 0);
-                $extraHalfAmount = ($oneDaySalary / 2) * $extraHalfDays;
+                $extraHalfAmount = ($extraWorkBasic / 2) * $extraHalfDays;
 
                 $poovarasanDays = (float)($payrollsInput[$employeeId]['poovarasan_kuda_allowance_150'] ?? 0);
                 $poovarasanAmount = $poovarasanDays * 150;
 
                 $labour_hours = (float)($payrollsInput[$employeeId]['labour_hours'] ?? 0);
-                $labourAmount = (float)($payrollsInput[$employeeId]['labour_amount'] ?? 0);
+                $labourAmount = ($labour_hours) * $oneHourSalary;
 
-                $extraWork = $mercantileAmount + $extraFullAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
+                $extraWork = $mercantileAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
 
                 // clear old earnings/deductions
                 $master->earnings()->delete();
@@ -716,10 +730,12 @@ class PayrollBatchController extends Controller
                     'epf_employee' => $epfEmployee,
                     'epf_employer' => $epfEmployer,
                     'etf' => $etf,
+                    'worked_days' => $workedDays,
+                    'worked_days_amount' => $workedDaysAmount,
                     'overtime_hours' => $overtimeHours,
                     'overtime_amount' => $overtimeAmount,
-                    'mercantile_days' => $mercantileDays,
-                    'mercantile_days_amount' => $mercantileAmount,
+                    'eight_hours_duty_hours' => $mercantileDays,
+                    'eight_hours_duty_amount' => $mercantileAmount,
                     'extra_full_days' => $extraFullDays,
                     'extra_full_days_amount' => $extraFullAmount,
                     'extra_half_days' => $extraHalfDays,
@@ -905,6 +921,103 @@ class PayrollBatchController extends Controller
             'debit_amount' => null,
             'credit_amount' => $totalEpf8,
             'description' => 'EPF8 for Payroll Batch #' . $batch->id,
+        ];
+
+        // Other deductions
+        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+            if (!empty($totalDeductions[$key])) {
+                $ledgerId = is_array($creditMap[$key]) ? $creditMap[$key]['ledger_id'] : $creditMap[$key];
+                $subLedgerId = is_array($creditMap[$key]) ? $creditMap[$key]['sub_ledger_id'] : null;
+
+                $details[] = [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => $ledgerId,
+                    'sub_ledger_id' => $subLedgerId,
+                    'debit_amount' => null,
+                    'credit_amount' => $totalDeductions[$key],
+                    'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                ];
+            }
+        }
+
+        // Bulk insert
+        JournalDetail::insert($details);
+
+        return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
+    }
+
+    public function contractApprove($id)
+    {
+        $batch = PayrollBatch::findOrFail($id);
+
+        if ($batch->status !== 'draft') {
+            return redirect()->back()->with('error', 'This payroll batch is already approved.');
+        }
+
+        $batch->status = 'approved';
+        $batch->save();
+
+        // Calculate totals
+        $totalNetPay = $batch->payrolls->sum('net_pay');
+       
+        $totalDeductions = [];
+        foreach ($batch->payrolls as $payroll) {
+            foreach ($payroll->deductions as $deduction) {
+                $name = strtolower($deduction->component->name);
+                $totalDeductions[$name] = ($totalDeductions[$name] ?? 0) + $deduction->amount;
+            }
+        }
+
+        // Create journal entry
+        $journal = JournalEntry::create([
+            'journal_date' => Carbon::now()->toDateString(),
+            'description' => 'Payroll Batch #' . $batch->id,
+        ]);
+
+        $details = [];
+
+        // === Debit Entries (All go to Ledger 102) ===
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => 102,
+            'sub_ledger_id' => null,
+            'debit_amount' => $totalNetPay,
+            'credit_amount' => null,
+            'description' => 'Net Pay for Payroll Batch #' . $batch->id,
+        ];
+
+        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+            if (!empty($totalDeductions[$key])) {
+                $details[] = [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => 102,
+                    'sub_ledger_id' => null,
+                    'debit_amount' => $totalDeductions[$key],
+                    'credit_amount' => null,
+                    'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                ];
+            }
+        }
+
+        // === Credit Entries (Batch-level totals) ===
+        $creditMap = [
+            'net_pay' => 179,
+            'salary advance' => 180,
+            'union' => 107,  // union charge
+            'fine' => 111, // Security staff -  penalty
+            'epf_8' => 103,  // EPF
+            'loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+            'festival loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+        ];
+
+        // Net Pay
+        $details[] = [
+            'journal_id' => $journal->id,
+            'ledger_id' => $creditMap['net_pay'],
+            'sub_ledger_id' => null,
+            'debit_amount' => null,
+            'credit_amount' => $totalNetPay,
+            'description' => 'Net Pay for Payroll Batch #' . $batch->id,
         ];
 
         // Other deductions

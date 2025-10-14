@@ -10,13 +10,15 @@ class Payroll extends Model
 {
     protected $table = 'payrolls';
     protected $fillable = [
-        'batch_id','employee_id', 'basic_salary', 'day_salary', 'worked_days','overtime_hours', 'overtime_amount', 'no_pay','no_pay_days',
+        'batch_id','employee_id', 'basic_salary', 'day_salary', 'worked_days', 'worked_days_amount','overtime_hours', 'overtime_amount', 'no_pay','no_pay_days',
         'mercantile_days',
         'mercantile_days_amount',
         'extra_full_days',
         'extra_full_days_amount',
         'extra_half_days',
         'extra_half_days_amount',
+        'eight_hours_duty_hours',
+        'eight_hours_duty_amount',
         'poovarasan_kuda_allowance_150',
         'poovarasan_kuda_allowance_150_amount',
         'labour_hours',

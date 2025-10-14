@@ -66,7 +66,7 @@
                 <table class="table table-bordered align-middle  payroll-table table-compact">
                     <thead class="table-light">
                         <tr>
-                            <th style="min-width:120px;">Employee Name</th>
+                            <th style="min-width:120px;" class="sticky-col">Employee Name</th>
                             <th style="min-width:120px;">Day Salary</th>
                             <th style="min-width:80px;">Days</th>
                             <th style="min-width:80px;">Total Salary</th>
@@ -76,6 +76,10 @@
                             @endforeach
                             <th style="min-width:80px;">Hours</th>
                             <th style="min-width:90px;">Amounts</th>
+                            <th style="min-width:200px;">8 Hours Duty Payments</th>
+                            <th style="min-width:200px;">12 Hours Duty</th>
+                            <th style="min-width:150px;">Poovarsan kuda 150 Payments</th>
+                            <th style="min-width:150px;">Extra Hours</th>
                             <th class="text-right" style="min-width:90px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
@@ -84,11 +88,7 @@
                                 {{ $dc->name }}
                             </th>
                             @endforeach
-                            <th style="min-width:250px;">Merch.Day Payments</th>
-                            <th style="min-width:250px;">Double Duty</th>
-                            <th style="min-width:250px;">12 Hours Duty</th>
-                            <th style="min-width:250px;">Poovarsan kuda 150 Payments</th>
-                            <th style="min-width:250px;">Extra Hours</th>
+
                             <th class="text-right" style="min-width:90px;">Deductions</th>
                             <th class="text-right" style="min-width:90px;">Net Pay</th>
                         </tr>
@@ -99,7 +99,7 @@
                         $emp = $payroll->employee;
                         @endphp
                         <tr>
-                            <td>{{ $emp->user->name }}</td>
+                            <td class="sticky-col">{{ $emp->user->name }}</td>
 
                             {{-- Basic Salary --}}
                             <td>
@@ -116,7 +116,8 @@
                             <td>
                                 <input type="number" step="0.01"
                                     name="payrolls[{{ $payroll->employee_id }}][total_salary]"
-                                    value="{{ $payroll->day_salary * $payroll->worked_days }}" class="form-control">
+                                    value="{{ $payroll->day_salary * $payroll->worked_days }}" class="form-control"
+                                    readonly>
                             </td>
 
                             {{-- Earnings --}}
@@ -141,6 +142,53 @@
                                 <input type="number" step="0.01"
                                     name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
                                     value="{{ $payroll->overtime_amount }}" class="form-control">
+                            </td>
+
+                            <td class="table-success">
+
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][eight_hours_duty_hours]" class="form-control "
+                                        value="{{$payroll->eight_hours_duty_hours}}">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][eight_hours_duty_amount]"
+                                        class="form-control extra-earning-input"
+                                        value="{{$payroll->eight_hours_duty_amount}}" readonly>
+                                </div>
+                            </td>
+
+                            <td class="table-success">
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
+                                        class="form-control " value="{{$payroll->extra_half_days}}">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
+                                        class="form-control extra-earning-input" readonly
+                                        value="{{$payroll->extra_half_days_amount}}">
+                                </div>
+                            </td>
+
+                            <td class="table-success">
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
+                                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
+                                        class="form-control extra-earning-input" readonly
+                                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
+                                </div>
+
+                            </td>
+
+                            <td class="table-success">
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]"
+                                        class="form-control" value="{{$payroll->labour_hours}}">
+
+                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
+                                        class="form-control extra-earning-input" readonly>
+                                </div>
                             </td>
 
                             {{-- Gross --}}
@@ -193,60 +241,8 @@
                             </td>
 
                             @endforeach
-                           
+
             </div>
-
-            <td class="table-success">
-
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days]"
-                        class="form-control " value="{{$payroll->mercantile_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days_amount]"
-                        class="form-control extra-earning-input" value="{{$payroll->mercantile_days_amount}}" readonly>
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days]"
-                        class="form-control " value="{{$payroll->extra_full_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days_amount]"
-                        class="form-control extra-earning-input" value="{{$payroll->extra_full_days_amount}}" readonly>
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
-                        class="form-control " value="{{$payroll->extra_half_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
-                        class="form-control extra-earning-input" readonly value="{{$payroll->extra_half_days_amount}}">
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
-                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
-                    <input type="number" step="0.01"
-                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
-                        class="form-control extra-earning-input" readonly
-                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
-                </div>
-
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]" class="form-control"
-                        value="{{$payroll->labour_hours}}">
-
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
-                        class="form-control extra-earning-input" readonly>
-
-
-                </div>
-            </td>
 
             {{-- Totals --}}
             <td class="text-right ded-cell table-danger">{{ number_format($payroll->total_deductions, 2) }}</td>
@@ -257,9 +253,9 @@
             <tfoot>
                 <tr>
                     <th>Total</th>
-                    <th></th>  
-                    <th></th>   
-                    <th class="text-right total-basic">0.00</th>                         
+                    <th></th>
+                    <th></th>
+                    <th class="text-right total-basic">0.00</th>
                     {{-- Earnings totals --}}
                     @foreach($earningComponents as $ec)
                     <th class="text-right total-earning" data-component-id="{{ $ec->id }}">0.00</th>
@@ -267,17 +263,17 @@
 
                     <th class="text-right total-overtime-hours">0.00</th>
                     <th class="text-right total-overtime-amount">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
                     <th class="text-right total-gross">0.00</th>
 
                     {{-- Deductions totals --}}
                     @foreach($deductionComponents as $dc)
                     <th class="text-right total-deduction" data-component-id="{{ $dc->id }}">0.00</th>
                     @endforeach
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
+
                     <th class="text-right total-deductions">0.00</th>
                     <th class="text-right total-net">0.00</th>
                 </tr>
@@ -417,6 +413,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     // Main payroll table
     const table = document.querySelector('.payroll-table');
+    const payrollTemplate = "{{ $templateName }}";
+    console.log("Template:", payrollTemplate);
 
     function recomputeTable() {
         let totalBasic = 0,
@@ -432,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
         table.querySelectorAll('tbody tr').forEach(tr => {
             const basic = parseFloat(tr.querySelector('input[name*="[day_salary]"]').value || 0);
             const daySalary = parseFloat(tr.querySelector('input[name*="[day_salary]"]').value || 0);
-            
+
             const workedDays = parseFloat(tr.querySelector('input[name*="[worked_days]"]')?.value ||
                 0);
 
@@ -442,24 +440,24 @@ document.addEventListener('DOMContentLoaded', function() {
             tr.querySelector('input[name*="[total_salary]"]').value = totalSalary.toFixed(2);
 
             const adjustedBase = totalSalary;
-            const adjustedOneDaySalary = oneDaySalary;
+            const adjustedOneHourSalary = (payrollTemplate === 'Temporary Security') ?
+                oneDaySalary / 12 :
+                oneDaySalary / 8;
 
-           
+            const hourlyRate = parseFloat(adjustedOneHourSalary.toFixed(2));
+            const extraWorkBasic = hourlyRate * 8;
 
-            const mercDays = parseFloat(tr.querySelector('input[name*="[mercantile_days]"]')?.value ||
+
+            const mercDays = parseFloat(tr.querySelector('input[name*="[eight_hours_duty_hours]"]')
+                ?.value ||
                 0);
-            const mercAmount = mercDays * oneDaySalary;
-            tr.querySelector('input[name*="[mercantile_days_amount]"]').value = mercAmount.toFixed(2);
-
-            const extraFullDays = parseFloat(tr.querySelector('input[name*="[extra_full_days]"]')
-                ?.value || 0);
-            const extraFullAmount = extraFullDays * oneDaySalary;
-            tr.querySelector('input[name*="[extra_full_days_amount]"]').value = extraFullAmount.toFixed(
-                2);
+            const mercAmount = mercDays * extraWorkBasic;
+            tr.querySelector('input[name*="[eight_hours_duty_amount]"]').value = mercAmount.toFixed(2);
 
             const extraHalfDays = parseFloat(tr.querySelector('input[name*="[extra_half_days]"]')
                 ?.value || 0);
-            const extraHalfAmount = extraHalfDays * oneDaySalary / 2;
+
+            const extraHalfAmount = extraHalfDays * extraWorkBasic / 2;
             tr.querySelector('input[name*="[extra_half_days_amount]"]').value = extraHalfAmount.toFixed(
                 2);
 
@@ -476,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'input[name*="[labour_hours]"]')
                 ?.value || 0);
 
-            const labourAmount = labourHours * (basic / 8);
+            const labourAmount = labourHours * hourlyRate;
             console.log(labourAmount);
             tr.querySelector('input[name*="[labour_amount]"]').value =
                 labourAmount
@@ -518,16 +516,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 ded += val;
             });
 
-            tr.querySelector('.gross-cell').textContent = gross.toFixed(2);
+            tr.querySelector('.gross-cell').textContent = (extraWork + gross).toFixed(2);
             tr.querySelector('.ded-cell').textContent = ded.toFixed(2);
             tr.querySelector('.net-cell').textContent = (extraWork + gross - ded).toFixed(2);
 
             totalBasic += adjustedBase;
             totalOvertimeHours += overtimeHours;
             totalOvertimeAmount += overtimeAmount;
-            totalGross += gross;
+            totalGross += (extraWork + gross);
             totalDeductions += ded;
-            totalNet += (gross - ded);
+            totalNet += (extraWork + gross - ded);
 
         });
 
@@ -573,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add extra amounts: mercantile, extra full/half days, Poovarasan, labour
         let totalExtraAmounts = 0;
         table.querySelectorAll('tbody tr').forEach(tr => {
-            const merc = parseFloat(tr.querySelector('input[name*="[mercantile_days_amount]"]')
+            const merc = parseFloat(tr.querySelector('input[name*="[eight_hours_duty_amount]"]')
                 ?.value || 0);
             const full = parseFloat(tr.querySelector('input[name*="[extra_full_days_amount]"]')
                 ?.value || 0);

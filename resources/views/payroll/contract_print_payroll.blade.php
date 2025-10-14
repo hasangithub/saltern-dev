@@ -128,8 +128,8 @@
                     <th style="width:40px;">Hours</th>
                     <th style="width:40px;">Amounts</th>
 
-                    <th style="width:40px;">Merch.Day</th>
-                    <th style="width:40px;">Double Duty</th>
+                    <th style="width:40px;">Total Salary</th>
+                    <th style="width:40px;">8 Hours Duty</th>
                     <th style="width:40px;">12 Hours Duty</th>
                     <th style="width:40px;">Poovarsan kuda 150 Payments</th>
                     <th style="width:40px;">Extra Hours</th>
@@ -149,7 +149,7 @@
             <tbody>
                 @foreach($batch->payrolls as $payroll)
                 @php $emp = $payroll->employee;
-                $extraEarnings = $payroll->mercantile_days_amount + $payroll->extra_full_days_amount +
+                $extraEarnings = $payroll->eight_hours_duty_amount +
                 $payroll->extra_half_days_amount + $payroll->poovarasan_kuda_allowance_150_amount +
                 $payroll->labour_amount;
                 @endphp
@@ -166,8 +166,9 @@
 
                     <td class="text-right">{{ number_format($payroll->overtime_hours ?? 0,1) }}</td>
                     <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0,2) }}</td>
-                    <td class="text-right">{{ number_format($payroll->mercantile_days_amount ?? 0,2) }}</td>
-                    <td class="text-right">{{ number_format($payroll->extra_full_days_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->worked_days_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->eight_hours_duty_amount ?? 0,2) }}</td>
+                   
                     <td class="text-right">{{ number_format($payroll->extra_half_days_amount ?? 0,2) }}</td>
                     <td class="text-right">{{ number_format($payroll->poovarasan_kuda_allowance_150_amount ?? 0,2) }}
                     </td>
@@ -189,7 +190,7 @@
             </tbody>
             <tr>
                 <td style="width:40px;"></td>
-                <td style="width:40px;">{{ number_format($batch->payrolls->sum('day_salary'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('day_salary'),2) }}</td>
 
                 {{-- Dynamic earnings headers --}}
                 @foreach($earningComponents as $ec)
@@ -209,9 +210,9 @@
                     {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
 
                 <td style="width:40px;" class="text-right">
-                    {{ number_format($batch->payrolls->sum('mercantile_days_amount'),2) }}</td>
+                    {{ number_format($batch->payrolls->sum('worked_days_amount'),2) }}</td>
                 <td style="width:40px;" class="text-right">
-                    {{ number_format($batch->payrolls->sum('extra_full_days_amount'),2) }}</td>
+                    {{ number_format($batch->payrolls->sum('eight_hours_duty_amount'),2) }}</td>
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('extra_half_days_amount'),2) }}</td>
                 <td style="width:40px;" class="text-right">
@@ -220,8 +221,7 @@
                 </td>
 
                 <td style="width:40px;" class="text-right">
-                    {{ number_format($batch->payrolls->sum('gross_earnings') +  $batch->payrolls->sum('mercantile_days_amount') +
-        $batch->payrolls->sum('extra_full_days_amount') +
+                    {{ number_format($batch->payrolls->sum('gross_earnings') +  $batch->payrolls->sum('eight_hours_duty_amount') +
         $batch->payrolls->sum('extra_half_days_amount') +
         $batch->payrolls->sum('poovarasan_kuda_allowance_150_amount') +
         $batch->payrolls->sum('labour_amount'),2) }}</td>
@@ -259,7 +259,7 @@
                     <tr>
                         <td>Total Salary </td>
                         <td class="text-right">
-                            {{ number_format($batch->payrolls->sum('day_salary') * $batch->payrolls->sum('worked_days'),2) }}
+                            {{ number_format($batch->payrolls->sum('worked_days_amount'),2) }}
                         </td>
                     </tr>
 
@@ -280,14 +280,14 @@
                     <tr>
                         <td>Extra</td>
                         <td class="text-right">
-                            {{ number_format($batch->payrolls->sum(fn($p) => $p->mercantile_days_amount + $p->extra_full_days_amount + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount),2) }}
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount),2) }}
                         </td>
                     </tr>
 
                     <tr class="fw-semibold">
                         <td>Total</td>
                         <td class="text-right">
-                            {{ number_format($batch->payrolls->sum(fn($p) => $p->mercantile_days_amount + $p->extra_full_days_amount + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}
                         </td>
                     </tr>
                 </tbody>
@@ -326,24 +326,14 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>EPF 12%</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employer'),2) }}</td>
+                        <td>Total Earnings</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}</td>
                     </tr>
                     <tr>
-                        <td>EPF 8%</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('epf_employee'),2) }}</td>
+                        <td>Total Deductions</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
                     </tr>
-                    <tr class="fw-semibold">
-                        <td>Total</td>
-                        <td class="text-right">
-                            {{ number_format($batch->payrolls->sum('epf_employer') + $batch->payrolls->sum('epf_employee'),2) }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>ETF 3%</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum('etf'),2) }}</td>
-                    </tr>
-
+                    
                     <tr>
                         <td colspan="2"></td>
                     </tr>
