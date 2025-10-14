@@ -76,6 +76,10 @@
                             @endforeach
                             <th style="min-width:80px;">Hours</th>
                             <th style="min-width:90px;">Amounts</th>
+                            <th style="min-width:200px;">8 Hours Duty Payments</th>
+                            <th style="min-width:200px;">12 Hours Duty</th>
+                            <th style="min-width:150px;">Poovarsan kuda 150 Payments</th>
+                            <th style="min-width:150px;">Extra Hours</th>
                             <th class="text-right" style="min-width:90px;">Gross Salary</th>
                             {{-- Dynamic deductions headers --}}
                             @foreach($deductionComponents as $dc)
@@ -84,10 +88,7 @@
                                 {{ $dc->name }}
                             </th>
                             @endforeach
-                            <th style="min-width:200px;">8 Hours Duty Payments</th>
-                            <th style="min-width:200px;">12 Hours Duty</th>
-                            <th style="min-width:150px;">Poovarsan kuda 150 Payments</th>
-                            <th style="min-width:150px;">Extra Hours</th>
+
                             <th class="text-right" style="min-width:90px;">Deductions</th>
                             <th class="text-right" style="min-width:90px;">Net Pay</th>
                         </tr>
@@ -115,7 +116,8 @@
                             <td>
                                 <input type="number" step="0.01"
                                     name="payrolls[{{ $payroll->employee_id }}][total_salary]"
-                                    value="{{ $payroll->day_salary * $payroll->worked_days }}" class="form-control" readonly>
+                                    value="{{ $payroll->day_salary * $payroll->worked_days }}" class="form-control"
+                                    readonly>
                             </td>
 
                             {{-- Earnings --}}
@@ -140,6 +142,53 @@
                                 <input type="number" step="0.01"
                                     name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
                                     value="{{ $payroll->overtime_amount }}" class="form-control">
+                            </td>
+
+                            <td class="table-success">
+
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][eight_hours_duty_hours]" class="form-control "
+                                        value="{{$payroll->eight_hours_duty_hours}}">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][eight_hours_duty_amount]"
+                                        class="form-control extra-earning-input"
+                                        value="{{$payroll->eight_hours_duty_amount}}" readonly>
+                                </div>
+                            </td>
+
+                            <td class="table-success">
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
+                                        class="form-control " value="{{$payroll->extra_half_days}}">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
+                                        class="form-control extra-earning-input" readonly
+                                        value="{{$payroll->extra_half_days_amount}}">
+                                </div>
+                            </td>
+
+                            <td class="table-success">
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
+                                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
+                                    <input type="number" step="0.01"
+                                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
+                                        class="form-control extra-earning-input" readonly
+                                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
+                                </div>
+
+                            </td>
+
+                            <td class="table-success">
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]"
+                                        class="form-control" value="{{$payroll->labour_hours}}">
+
+                                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
+                                        class="form-control extra-earning-input" readonly>
+                                </div>
                             </td>
 
                             {{-- Gross --}}
@@ -195,49 +244,6 @@
 
             </div>
 
-            <td class="table-success">
-
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][eight_hours_duty_hours]"
-                        class="form-control " value="{{$payroll->eight_hours_duty_hours}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][eight_hours_duty_amount]"
-                        class="form-control extra-earning-input" value="{{$payroll->eight_hours_duty_amount}}" readonly>
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
-                        class="form-control " value="{{$payroll->extra_half_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
-                        class="form-control extra-earning-input" readonly value="{{$payroll->extra_half_days_amount}}">
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
-                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
-                    <input type="number" step="0.01"
-                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
-                        class="form-control extra-earning-input" readonly
-                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
-                </div>
-
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]" class="form-control"
-                        value="{{$payroll->labour_hours}}">
-
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
-                        class="form-control extra-earning-input" readonly>
-
-
-                </div>
-            </td>
-
             {{-- Totals --}}
             <td class="text-right ded-cell table-danger">{{ number_format($payroll->total_deductions, 2) }}</td>
             <td class="text-right net-cell font-weight-bold">{{ number_format($payroll->net_pay, 2) }}</td>
@@ -257,16 +263,17 @@
 
                     <th class="text-right total-overtime-hours">0.00</th>
                     <th class="text-right total-overtime-amount">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
+                    <th class="text-right">0.00</th>
                     <th class="text-right total-gross">0.00</th>
 
                     {{-- Deductions totals --}}
                     @foreach($deductionComponents as $dc)
                     <th class="text-right total-deduction" data-component-id="{{ $dc->id }}">0.00</th>
                     @endforeach
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
+
                     <th class="text-right total-deductions">0.00</th>
                     <th class="text-right total-net">0.00</th>
                 </tr>
