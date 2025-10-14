@@ -609,6 +609,7 @@ class PayrollBatchController extends Controller
 
                 $effectiveSalary = $master->day_salary * $workedDays;
                 $oneDaySalary = $master->day_salary;
+                $workedDaysAmount = $master->day_salary * $workedDays;
 
                 $templateName = $batch->payrollTemplate->name ?? '';
 
@@ -639,7 +640,7 @@ class PayrollBatchController extends Controller
                 $labour_hours = (float)($payrollsInput[$employeeId]['labour_hours'] ?? 0);
                 $labourAmount = ($labour_hours) * $oneHourSalary;
 
-                $extraWork = $mercantileAmount + $extraFullAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
+                $extraWork = $mercantileAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
 
                 // clear old earnings/deductions
                 $master->earnings()->delete();
@@ -730,6 +731,7 @@ class PayrollBatchController extends Controller
                     'epf_employer' => $epfEmployer,
                     'etf' => $etf,
                     'worked_days' => $workedDays,
+                    'worked_days_amount' => $workedDaysAmount,
                     'overtime_hours' => $overtimeHours,
                     'overtime_amount' => $overtimeAmount,
                     'eight_hours_duty_hours' => $mercantileDays,
