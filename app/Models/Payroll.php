@@ -17,6 +17,8 @@ class Payroll extends Model
         'extra_full_days_amount',
         'extra_half_days',
         'extra_half_days_amount',
+        'eight_hours_duty_hours',
+        'eight_hours_duty_amount',
         'poovarasan_kuda_allowance_150',
         'poovarasan_kuda_allowance_150_amount',
         'labour_hours',

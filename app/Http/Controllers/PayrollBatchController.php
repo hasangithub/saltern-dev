@@ -69,7 +69,7 @@ class PayrollBatchController extends Controller
 
     public function contractEdit($id)
     {
-        $batch = PayrollBatch::with(['payrolls.deductions', 'payrolls.earnings'])->findOrFail($id);
+        $batch = PayrollBatch::with(['payrollTemplate','payrolls.deductions', 'payrolls.earnings'])->findOrFail($id);
 
         // Allow edit only if batch is still draft
         if ($batch->status !== 'draft') {
@@ -88,13 +88,14 @@ class PayrollBatchController extends Controller
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
         $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
-
+        $templateName = $batch->payrollTemplate->name ?? null;
         // Pass to view
         return view('payroll.contract-edit', compact(
             'batch',
             'employees',
             'earningComponents',
-            'deductionComponents'
+            'deductionComponents',
+            'templateName',
         ));
     }
 
@@ -574,6 +575,8 @@ class PayrollBatchController extends Controller
     {
         abort_if($batch->status !== 'draft', 403, 'Only draft batches can be updated.');
 
+      
+
         $data = $request->validate([
             'earnings' => 'array',
             'deductions' => 'array',
@@ -607,24 +610,34 @@ class PayrollBatchController extends Controller
                 $effectiveSalary = $master->day_salary * $workedDays;
                 $oneDaySalary = $master->day_salary;
 
+                $templateName = $batch->payrollTemplate->name ?? '';
+
+                if ($templateName === 'Temporary Security') {
+                    $oneHourSalary = $oneDaySalary / 12;
+                } else {
+                    $oneHourSalary = $oneDaySalary / 8;
+                }
+
+                $extraWorkBasic = $oneHourSalary * 8;
+
                 $overtimeHours = (float)($payrollsInput[$employeeId]['overtime_hours'] ?? 0);
                 $overtimeAmount = ($oneDaySalary) * (3 / 16) * $overtimeHours;
 
                 // Extra day calculations
-                $mercantileDays = (float)($payrollsInput[$employeeId]['mercantile_days'] ?? 0);
-                $mercantileAmount = ($oneDaySalary) * $mercantileDays;
+                $mercantileDays = (float)($payrollsInput[$employeeId]['eight_hours_duty_hours'] ?? 0);
+                $mercantileAmount = ($extraWorkBasic) * $mercantileDays;
 
                 $extraFullDays = (float)($payrollsInput[$employeeId]['extra_full_days'] ?? 0);
                 $extraFullAmount = ($oneDaySalary) * $extraFullDays;
 
                 $extraHalfDays = (float)($payrollsInput[$employeeId]['extra_half_days'] ?? 0);
-                $extraHalfAmount = ($oneDaySalary / 2) * $extraHalfDays;
+                $extraHalfAmount = ($extraWorkBasic / 2) * $extraHalfDays;
 
                 $poovarasanDays = (float)($payrollsInput[$employeeId]['poovarasan_kuda_allowance_150'] ?? 0);
                 $poovarasanAmount = $poovarasanDays * 150;
 
                 $labour_hours = (float)($payrollsInput[$employeeId]['labour_hours'] ?? 0);
-                $labourAmount = (float)($payrollsInput[$employeeId]['labour_amount'] ?? 0);
+                $labourAmount = ($labour_hours) * $oneHourSalary;
 
                 $extraWork = $mercantileAmount + $extraFullAmount + $extraHalfAmount + $poovarasanAmount + $labourAmount;
 
@@ -716,10 +729,11 @@ class PayrollBatchController extends Controller
                     'epf_employee' => $epfEmployee,
                     'epf_employer' => $epfEmployer,
                     'etf' => $etf,
+                    'worked_days' => $workedDays,
                     'overtime_hours' => $overtimeHours,
                     'overtime_amount' => $overtimeAmount,
-                    'mercantile_days' => $mercantileDays,
-                    'mercantile_days_amount' => $mercantileAmount,
+                    'eight_hours_duty_hours' => $mercantileDays,
+                    'eight_hours_duty_amount' => $mercantileAmount,
                     'extra_full_days' => $extraFullDays,
                     'extra_full_days_amount' => $extraFullAmount,
                     'extra_half_days' => $extraHalfDays,
