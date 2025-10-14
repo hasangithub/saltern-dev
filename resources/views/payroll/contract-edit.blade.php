@@ -66,7 +66,7 @@
                 <table class="table table-bordered align-middle  payroll-table table-compact">
                     <thead class="table-light">
                         <tr>
-                            <th style="min-width:120px;">Employee Name</th>
+                            <th style="min-width:120px;" class="sticky-col">Employee Name</th>
                             <th style="min-width:120px;">Day Salary</th>
                             <th style="min-width:80px;">Days</th>
                             <th style="min-width:80px;">Total Salary</th>
@@ -99,7 +99,7 @@
                         $emp = $payroll->employee;
                         @endphp
                         <tr>
-                            <td>{{ $emp->user->name }}</td>
+                            <td class="sticky-col">{{ $emp->user->name }}</td>
 
                             {{-- Basic Salary --}}
                             <td>
