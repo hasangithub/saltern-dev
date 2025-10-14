@@ -516,16 +516,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 ded += val;
             });
 
-            tr.querySelector('.gross-cell').textContent = gross.toFixed(2);
+            tr.querySelector('.gross-cell').textContent = (extraWork + gross).toFixed(2);
             tr.querySelector('.ded-cell').textContent = ded.toFixed(2);
             tr.querySelector('.net-cell').textContent = (extraWork + gross - ded).toFixed(2);
 
             totalBasic += adjustedBase;
             totalOvertimeHours += overtimeHours;
             totalOvertimeAmount += overtimeAmount;
-            totalGross += gross;
+            totalGross += (extraWork + gross);
             totalDeductions += ded;
-            totalNet += (gross - ded);
+            totalNet += (extraWork + gross - ded);
 
         });
 
