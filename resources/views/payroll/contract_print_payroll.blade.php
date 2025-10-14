@@ -190,7 +190,7 @@
             </tbody>
             <tr>
                 <td style="width:40px;"></td>
-                <td style="width:40px;">{{ number_format($batch->payrolls->sum('day_salary'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('day_salary'),2) }}</td>
 
                 {{-- Dynamic earnings headers --}}
                 @foreach($earningComponents as $ec)

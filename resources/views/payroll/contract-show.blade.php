@@ -39,293 +39,286 @@
             target="_blank" class="btn btn-secondary">
             <i class="fas fa-print"></i> Print
         </a>
-        <a href="{{ route('payroll.batches.contractPayslips', $batch->id) }}" class="btn btn-sm btn-success" target="_blank">
+        <a href="{{ route('payroll.batches.contractPayslips', $batch->id) }}" class="btn btn-sm btn-success"
+            target="_blank">
             <i class="bi bi-printer"></i> Print Payslips
         </a>
     </div>
 
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-    <form method="POST" action="{{ route('payroll.batches.update', $batch) }}" id="payroll-form">
-        @csrf
-        <div class="card">
-            <div class="card-body table-responsive">
-                <table class="table table-bordered align-middle  payroll-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="min-width:120px;">Employee Name</th>
-                            <th style="min-width:120px;">Day Salary</th>
-                            <th style="min-width:120px;">Days</th>
-                            <th style="min-width:120px;">Total Salary</th>
-                            {{-- Dynamic earnings headers --}}
-                            @foreach($earningComponents as $ec)
-                            <th style="min-width:120px;" class="text-center">{{ $ec->name }}</th>
-                            @endforeach
-                            <th style="min-width:100px;">Hours</th>
-                            <th style="min-width:120px;">Amounts</th>
-                            <th class="text-right" style="min-width:120px;">Gross Salary</th>
-                            {{-- Dynamic deductions headers --}}
-                            @foreach($deductionComponents as $dc)
-                            <th style="min-width:150px;" class="text-center">{{ $dc->name }}</th>
-                            @endforeach
-                            <th style="min-width:250px;">Merch.Day Payments</th>
-                            <th style="min-width:250px;">Double Duty</th>
-                            <th style="min-width:250px;">12 Hours Duty</th>
-                            <th style="min-width:250px;">Poovarsan kuda 150 Payments</th>
-                            <th style="min-width:250px;">Extra Hours</th>
-                            <th class="text-right" style="min-width:120px;">Deductions</th>
-                            <th class="text-right" style="min-width:120px;">Net Pay</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($batch->payrolls as $payroll)
-                        @php
-                        $emp = $payroll->employee;
-                        @endphp
-                        <tr>
-                            <td>{{ $emp->user->name }}</td>
-
-                            {{-- Basic Salary --}}
-                            <td>
-                                <input type="number" step="0.01" class="form-control text-right"
-                                    name="payrolls[{{ $payroll->employee_id }}][day_salary]"
-                                    value="{{ $payroll->day_salary }}" readonly>
-                            </td>
-
-                            <td>
-                                <input type="number" step="0.01" class="form-control text-right day-input"
-                                    name="payrolls[{{ $payroll->employee_id }}][worked_days]"
-                                    value="{{ $payroll->worked_days }}">
-                            </td>
-                            <td>
-                                <input type="number" step="0.01"
-                                    name="payrolls[{{ $payroll->employee_id }}][total_salary]"
-                                    value="{{ $payroll->day_salary * $payroll->worked_days }}" class="form-control">
-                            </td>
-
-                            {{-- Earnings --}}
-                            @foreach($earningComponents as $ec)
-                            @php
-                            $earning = $payroll->earnings->firstWhere('component_id', $ec->id);
-                            @endphp
-                            <td class="table-secondary">
-                                <input type="number" step="0.01" class="form-control text-right earning-input"
-                                    name="earnings[{{ $payroll->employee_id }}][{{ $ec->id }}]"
-                                    value="{{ $earning->amount ?? number_format($ec->default_amount, 2, '.', '') }}">
-                            </td>
-                            @endforeach
-
-                            {{-- Overtime --}}
-                            <td class="table-secondary">
-                                <input type="number" step="0.1"
-                                    name="payrolls[{{ $payroll->employee_id }}][overtime_hours]"
-                                    value="{{ $payroll->overtime_hours }}" class="form-control">
-                            </td>
-                            <td class="table-secondary">
-                                <input type="number" name="payrolls[{{ $payroll->employee_id }}][overtime_amount]"
-                                    value="{{ $payroll->overtime_amount }}" class="form-control">
-                            </td>
-
-                            {{-- Gross --}}
-                            <td class="text-right gross-cell font-weight-bold">
-                                {{ number_format($payroll->gross_earnings, 2) }}</td>
-
-                            {{-- Deductions --}}
-                            @foreach($deductionComponents as $dc)
-                            @php
-                            $deduction = $payroll->deductions->firstWhere('component_id', $dc->id);
-                            $amount = $deduction->amount ?? 0;
-                            @endphp
-                            <td class="table-warning">
-                                @if(strtolower($dc->name) === 'loan')
-                                {{-- Loan Dropdown --}}
-                                <select name="loan[{{ $payroll->employee_id }}]" class="form-control loan-select">
-                                    <option value="">-- Select Loan --</option>
-                                    @foreach($emp->staffLoans->filter(fn($loan) => $loan->voucher_id !== null) as $loan)
-                                    @php
-                                    $repayments = $loan->staffLoanRepayment->sum('amount'); // sum all repayments
-                                    $balance = $loan->approved_amount - $repayments; // remaining balance
-                                    @endphp
-                                    <option value="{{ $loan->id }}" @if(optional($deduction)->loan_id == $loan->id)
-                                        selected @endif
-                                        data-balance="{{ $loan->balance }}">
-                                        Loan #{{ $loan->id }} - Balance: {{ number_format($balance, 2) }}
-                                    </option>
-                                    @endforeach
-                                </select>
-
-                                {{-- Repayment Amount --}}
-                                <input type="number" step="0.01"
-                                    name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]"
-                                    class="form-control mt-1 loan-repayment deduction-input" value="{{ $amount }}">
-                                @else
-                                <input type="number" step="0.01" class="form-control text-right deduction-input"
-                                    name="deductions[{{ $payroll->employee_id }}][{{ $dc->id }}]" value="{{ $amount }}">
-                                @endif
-                            </td>
-                            @endforeach
-                            
-            </div>
-
-            <td class="table-success">
-
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days]"
-                        class="form-control " value="{{$payroll->mercantile_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][mercantile_days_amount]"
-                        class="form-control extra-earning-input" value="{{$payroll->mercantile_days_amount}}" readonly>
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days]"
-                        class="form-control " value="{{$payroll->extra_full_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_full_days_amount]"
-                        class="form-control extra-earning-input" value="{{$payroll->extra_full_days_amount}}" readonly>
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days]"
-                        class="form-control " value="{{$payroll->extra_half_days}}">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][extra_half_days_amount]"
-                        class="form-control extra-earning-input" readonly value="{{$payroll->extra_half_days_amount}}">
-                </div>
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150]"
-                        class="form-control " value="{{$payroll->poovarasan_kuda_allowance_150}}">
-                    <input type="number" step="0.01"
-                        name="payrolls[{{ $emp->id }}][poovarasan_kuda_allowance_150_amount]"
-                        class="form-control extra-earning-input" readonly
-                        value="{{$payroll->poovarasan_kuda_allowance_150_amount}}">
-                </div>
-
-            </td>
-
-            <td class="table-success">
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_hours]" class="form-control"
-                        value="{{$payroll->labour_hours}}">
-
-                    <input type="number" step="0.01" name="payrolls[{{ $emp->id }}][labour_amount]"
-                        class="form-control extra-earning-input" readonly>
-
-
-                </div>
-            </td>
-
-            {{-- Totals --}}
-            <td class="text-right ded-cell table-danger">{{ number_format($payroll->total_deductions, 2) }}</td>
-            <td class="text-right net-cell font-weight-bold">{{ number_format($payroll->net_pay, 2) }}</td>
-            </tr>
-            @endforeach
-            </tbody>
-            <tfoot>
+    <div class="payroll-wrapper">
+        {{-- === Heading === --}}
+        <div style="text-align:center; margin-bottom:15px;">
+            <h2 style="margin:0; font-size:12px; font-weight:bold; text-transform:uppercase;">
+                PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD
+            </h2>
+            <p style="margin:0; font-size:10px;">Payroll Report - {{ $batch->pay_period }} </p>
+            @if(isset($department))
+            <p style="margin:0; font-size:10px;">
+                Department: {{ ucfirst($department) }}
+            </p>
+            @else
+            <p style="margin:0; font-size:10px;">
+                Department: All
+            </p>
+            @endif
+        </div>
+        {{-- === Main Table === --}}
+       <div class="table-responsive">
+       <table class=" table table-main small">
+            <thead>
                 <tr>
-                    <th>Total</th>
-                    <th class="text-right total-basic">0.00</th>
-                    <th></th>  
-                    <th></th>  
-                    {{-- Earnings totals --}}
+                    <th style="width:40px;">Employee Name</th>
+                    <th style="width:40px;">Day Salary</th>
+
+                    {{-- Dynamic earnings headers --}}
                     @foreach($earningComponents as $ec)
-                    <th class="text-right total-earning" data-component-id="{{ $ec->id }}">0.00</th>
+                    <th style="width: 40px;">{{ $ec->name }}</th>
                     @endforeach
 
-                    <th class="text-right total-overtime-hours">0.00</th>
-                    <th class="text-right total-overtime-amount">0.00</th>
-                    <th class="text-right total-gross">0.00</th>
+                    <th style="width:40px;">Hours</th>
+                    <th style="width:40px;">Amounts</th>
 
-                    {{-- Deductions totals --}}
+                    <th style="width:40px;">Total Salary</th>
+                    <th style="width:40px;">8 Hours Duty</th>
+                    <th style="width:40px;">12 Hours Duty</th>
+                    <th style="width:40px;">Poovarsan kuda 150 Payments</th>
+                    <th style="width:40px;">Extra Hours</th>
+
+                    <th style="width:40px;">Gross Salary</th>
+
+                    {{-- Dynamic deductions headers --}}
                     @foreach($deductionComponents as $dc)
-                    <th class="text-right total-deduction" data-component-id="{{ $dc->id }}">0.00</th>
+                    <th style="width:40px;">{{ $dc->name }}</th>
                     @endforeach
-                  
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right">0.00</th>
-                    <th class="text-right total-deductions">0.00</th>
-                    <th class="text-right total-net">0.00</th>
+
+                    <th style="width:40px;">Deductions</th>
+                    <th style="width:40px;">Net Pay</th>
+                    <th style="width:90px;">Signature</th>
                 </tr>
-            </tfoot>
+            </thead>
+            <tbody>
+                @foreach($batch->payrolls as $payroll)
+                @php $emp = $payroll->employee;
+                $extraEarnings = $payroll->eight_hours_duty_amount +
+                $payroll->extra_half_days_amount + $payroll->poovarasan_kuda_allowance_150_amount +
+                $payroll->labour_amount;
+                @endphp
 
+                <tr>
+                    <td>{{ $emp->user->name }}</td>
+                  
+                    <td class="text-right">{{ number_format($payroll->day_salary,2) }}</td>
+
+                    @foreach($earningComponents as $ec)
+                    @php $earning = $payroll->earnings->firstWhere('component_id', $ec->id); @endphp
+                    <td class="text-right">{{ number_format($earning->amount ?? 0,2) }}</td>
+                    @endforeach
+
+                    <td class="text-right">{{ number_format($payroll->overtime_hours ?? 0,1) }}</td>
+                    <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->worked_days_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->eight_hours_duty_amount ?? 0,2) }}</td>
+                   
+                    <td class="text-right">{{ number_format($payroll->extra_half_days_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->poovarasan_kuda_allowance_150_amount ?? 0,2) }}
+                    </td>
+                    <td class="text-right">{{ number_format($payroll->labour_amount ?? 0,2) }}</td>
+                    <td class="text-right">{{ number_format($payroll->gross_earnings + $extraEarnings ?? 0,2) }}</td>
+
+                    @foreach($deductionComponents as $dc)
+                    @php $deduction = $payroll->deductions->firstWhere('component_id', $dc->id); @endphp
+                    <td class="text-right">{{ number_format($deduction->amount ?? 0,2) }}</td>
+                    @endforeach
+
+                   
+
+                    <td class="text-right">{{ number_format($payroll->total_deductions ?? 0,2) }}</td>
+                    <td class="text-right fw-semibold">{{ number_format($payroll->net_pay ?? 0,2) }}</td>
+                    <td></td>
+                </tr>
+                @endforeach
+            </tbody>
+            <tr>
+                <td style="width:40px;"></td>
+                <td style="width:40px;">{{ number_format($batch->payrolls->sum('day_salary'),2) }}</td>
+
+                {{-- Dynamic earnings headers --}}
+                @foreach($earningComponents as $ec)
+                <td style="width: 40px;" class="text-right">
+                    {{ number_format(
+                    $batch->payrolls->sum(function($payroll) use ($ec) {
+                        $earning = $payroll->earnings->firstWhere('component_id', $ec->id);
+                        return $earning->amount ?? 0;
+                    }), 2)
+                }}
+                </td>
+                @endforeach
+
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('overtime_hours'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
+
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('worked_days_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('eight_hours_duty_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('extra_half_days_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('poovarasan_kuda_allowance_150_amount'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('labour_amount'),2) }}
+                </td>
+
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('gross_earnings') +  $batch->payrolls->sum('eight_hours_duty_amount') +
+        $batch->payrolls->sum('extra_half_days_amount') +
+        $batch->payrolls->sum('poovarasan_kuda_allowance_150_amount') +
+        $batch->payrolls->sum('labour_amount'),2) }}</td>
+
+                {{-- Dynamic deductions headers --}}
+                @foreach($deductionComponents as $dc)
+                <td class="text-right">
+                    {{ number_format(
+                    $batch->payrolls->sum(function($payroll) use ($dc) {
+                        $deduction = $payroll->deductions->firstWhere('component_id', $dc->id);
+                        return $deduction->amount ?? 0;
+                    }), 2)
+                }}
+                </td>
+                @endforeach
+
+                <td style="width:40px;" class="text-right">
+                    {{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('net_pay'),2) }}</td>
+                <td style="width:90px;" class="text-right"></td>
+
+            </tr>
+        </table>
+       </div>
+
+        {{-- === Summary Tables (side-by-side using floats) === --}}
+        <div class="summary-wrapper">
+            {{-- Earnings Summary --}}
+            <table class=" table summary-table small">
+                <thead>
+                    <tr>
+                        <th colspan="2">Earnings Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Salary </td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum('worked_days_amount'),2) }}
+                        </td>
+                    </tr>
+
+                    @foreach($earningComponents as $ec)
+                    <tr>
+                        <td>{{ $ec->name }}</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => optional($p->earnings->firstWhere('component_id',$ec->id))->amount),2) }}
+                        </td>
+                    </tr>
+                    @endforeach
+
+                    <tr>
+                        <td>Overtime</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Extra</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount),2) }}
+                        </td>
+                    </tr>
+
+                    <tr class="fw-semibold">
+                        <td>Total</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}
+                        </td>
+                    </tr>
+                </tbody>
             </table>
+
+            {{-- Deductions Summary --}}
+            <table class=" table summary-table small" style="line-height: 13px;">
+                <thead>
+                    <tr>
+                        <th colspan="2">Deductions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($deductionComponents as $dc)
+                    <tr>
+                        <td>{{ $dc->name }}</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => optional($p->deductions->firstWhere('component_id',$dc->id))->amount),2) }}
+                        </td>
+                    </tr>
+                    @endforeach
+
+                    <tr class="fw-semibold">
+                        <td>Total</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            {{-- Employer Contributions --}}
+            <table class=" table summary-table small" style="line-height: 18.5px;">
+                <thead>
+                    <tr>
+                        <th colspan="2">Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Earnings</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Deductions</td>
+                        <td class="text-right">{{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
+                    </tr>
+                    
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+
+                    <tr class="fw-semibold">
+                        <td>Balance</td>
+                        <td class="text-right">
+                            {{ number_format(($batch->payrolls->sum('net_pay')),2) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="clear: both;"></div>
         </div>
+        <table style="width:100%; margin-top:50px; text-align:center; border:0;">
+            <tr>
+                <td style="width:33%; padding-top:60px;">
+                    -----------------------------<br>
+                    <strong>Prepared By</strong>
+                </td>
+                <td style="width:33%; padding-top:60px;">
+                    -----------------------------<br>
+                    <strong>Manager</strong>
+                </td>
+                <td style="width:33%; padding-top:60px;">
+                    -----------------------------<br>
+                    <strong>President</strong>
+                </td>
+            </tr>
+        </table>
 
-        <div class="card-footer">
-            <div class="row payroll-summary">
-                <!-- Left side: Earnings summary -->
-                <div class="col-md-4">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th colspan="2">Earnings Summary</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Day Salary</td>
-                                <td class="text-right summary-basic">0.00</td>
-                            </tr>
-                            @foreach($earningComponents as $ec)
-                            <tr>
-                                <td>{{ $ec->name }}</td>
-                                <td class="text-right summary-earning" data-component-id="{{ $ec->id }}">0.00</td>
-                            </tr>
-                            @endforeach
-                            <tr>
-                                <td>Overtime Amount</td>
-                                <td class="text-right summary-overtime-amount">0.00</td>
-                            </tr>
-                            <tr>
-                                <td>Extra Amount</td>
-                                <td class="text-right summary-extra-amount">0.00</td>
-                            </tr>
-                            <tr class="fw-semibold">
-                                <td>Total Earnings</td>
-                                <td class="text-right summary-total-earnings">0.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="col-md-4">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th colspan="2">Deductions Summary</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($deductionComponents as $dc)
-                            @php
-                            $lower = strtolower($dc->name);
-                            @endphp
-                            @if(!str_contains($lower, 'etf') && !str_contains($lower, '12%'))
-                            <tr>
-                                <td>{{ $dc->name }}</td>
-                                <td class="text-right summary-deduction" data-component-id="{{ $dc->id }}">0.00</td>
-                            </tr>
-                            @endif
-                            @endforeach
-                            
-                            <tr class="fw-semibold">
-                                <td>Total Deductions</td>
-                                <td class="text-right summary-total-deductions">0.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-</div>
-</form>
+    </div>
 
 </div>
 @stop
@@ -340,213 +333,5 @@
 {{-- Push extra scripts --}}
 
 @push('js')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    $('#payroll-form input').attr('readonly', 'readonly');
-    document.querySelectorAll('.loan-select').forEach(function(select) {
-        const repaymentInput = select.closest('td').querySelector('.loan-repayment');
 
-        // Enable/disable on page load
-        repaymentInput.disabled = !select.value;
-
-        // Enable/disable when selection changes
-        select.addEventListener('change', function() {
-            repaymentInput.disabled = !this.value;
-            if (!this.value) repaymentInput.value = ''; // Clear if no loan selected
-        });
-    });
-    // Main payroll table
-    const table = document.querySelector('.payroll-table');
-
-    function recomputeTable() {
-        let totalBasic = 0,
-            totalOvertimeHours = 0,
-            totalOvertimeAmount = 0,
-            totalGross = 0,
-            totalDeductions = 0,
-            totalNet = 0;
-
-        const earningTotals = {};
-        const deductionTotals = {};
-
-        table.querySelectorAll('tbody tr').forEach(tr => {
-            const basic = parseFloat(tr.querySelector('input[name*="[day_salary]"]').value || 0);
-            const daySalary = parseFloat(tr.querySelector('input[name*="[day_salary]"]').value || 0);
-            
-            const workedDays = parseFloat(tr.querySelector('input[name*="[worked_days]"]')?.value ||
-                0);
-
-            const oneDaySalary = daySalary;
-            const totalSalary = workedDays * oneDaySalary;
-
-            tr.querySelector('input[name*="[total_salary]"]').value = totalSalary.toFixed(2);
-
-            const adjustedBase = totalSalary;
-            const adjustedOneDaySalary = oneDaySalary;
-
-            const mercDays = parseFloat(tr.querySelector('input[name*="[mercantile_days]"]')?.value ||
-                0);
-            const mercAmount = mercDays * oneDaySalary;
-            tr.querySelector('input[name*="[mercantile_days_amount]"]').value = mercAmount.toFixed(2);
-
-            const extraFullDays = parseFloat(tr.querySelector('input[name*="[extra_full_days]"]')
-                ?.value || 0);
-            const extraFullAmount = extraFullDays * oneDaySalary;
-            tr.querySelector('input[name*="[extra_full_days_amount]"]').value = extraFullAmount.toFixed(
-                2);
-
-            const extraHalfDays = parseFloat(tr.querySelector('input[name*="[extra_half_days]"]')
-                ?.value || 0);
-            const extraHalfAmount = extraHalfDays * oneDaySalary / 2;
-            tr.querySelector('input[name*="[extra_half_days_amount]"]').value = extraHalfAmount.toFixed(
-                2);
-
-            const poovarasanDays = parseFloat(tr.querySelector(
-                    'input[name*="[poovarasan_kuda_allowance_150]"]')
-                ?.value || 0);
-
-            const poovarasanAmount = poovarasanDays * 150;
-            tr.querySelector('input[name*="[poovarasan_kuda_allowance_150_amount]"]').value =
-                poovarasanAmount
-                .toFixed(2);
-
-            const labourHours = parseFloat(tr.querySelector(
-                    'input[name*="[labour_hours]"]')
-                ?.value || 0);
-
-            const labourAmount = labourHours * (oneDaySalary / 8);
-            console.log(labourAmount);
-            tr.querySelector('input[name*="[labour_amount]"]').value =
-                labourAmount
-                .toFixed(2);
-
-            const overtimeHours = parseFloat(tr.querySelector('input[name*="[overtime_hours]"]')
-                .value || 0);
-
-            const overtimeAmount = ((oneDaySalary) * (3 / 16)) * overtimeHours;
-            tr.querySelector('input[name*="[overtime_amount]"]').value =
-                overtimeAmount.toFixed(2);
-
-            let gross = adjustedBase + overtimeAmount;
-            let ded = 0;
-            let extraWork = 0;
-
-            // Earnings
-            tr.querySelectorAll('.earning-input').forEach(input => {
-                const val = parseFloat(input.value || 0);
-                const compId = input.name.match(/\[(\d+)\]$/)?. [1];
-                if (compId) {
-                    earningTotals[compId] = (earningTotals[compId] || 0) + val;
-                }
-                gross += val;
-            });
-
-            tr.querySelectorAll('.extra-earning-input').forEach(input => {
-                const val = parseFloat(input.value || 0);
-                extraWork += val;
-            });
-
-            // Deductions
-            tr.querySelectorAll('.deduction-input').forEach(input => {
-                const val = parseFloat(input.value || 0);
-                const compId = input.name.match(/\[(\d+)\]$/)?. [1];
-                if (compId) {
-                    deductionTotals[compId] = (deductionTotals[compId] || 0) + val;
-                }
-                ded += val;
-            });
-
-            tr.querySelector('.gross-cell').textContent = gross.toFixed(2);
-            tr.querySelector('.ded-cell').textContent = ded.toFixed(2);
-            tr.querySelector('.net-cell').textContent = (extraWork + gross - ded).toFixed(2);
-
-            totalBasic += adjustedBase;
-            totalOvertimeHours += overtimeHours;
-            totalOvertimeAmount += overtimeAmount;
-            totalGross += gross;
-            totalDeductions += ded;
-            totalNet += (gross - ded);
-        });
-
-        // Update table footer
-        table.querySelector('.total-basic').textContent = totalBasic.toFixed(2);
-        table.querySelector('.total-overtime-hours').textContent = totalOvertimeHours.toFixed(2);
-        table.querySelector('.total-overtime-amount').textContent = totalOvertimeAmount.toFixed(2);
-        table.querySelector('.total-gross').textContent = totalGross.toFixed(2);
-        table.querySelector('.total-deductions').textContent = totalDeductions.toFixed(2);
-        table.querySelector('.total-net').textContent = totalNet.toFixed(2);
-
-        table.querySelectorAll('.total-earning').forEach(th => {
-            const compId = th.dataset.componentId;
-            th.textContent = (earningTotals[compId] || 0).toFixed(2);
-        });
-
-        table.querySelectorAll('.total-deduction').forEach(th => {
-            const compId = th.dataset.componentId;
-            th.textContent = (deductionTotals[compId] || 0).toFixed(2);
-        });
-
-        updateFooterSummary();
-    }
-
-    function updateFooterSummary() {
-        // Left side: Basic + Earnings + Overtime
-        const totalBasic = parseFloat(table.querySelector('.total-basic').textContent || 0);
-        const totalOvertimeAmount = parseFloat(table.querySelector('.total-overtime-amount').textContent || 0);
-
-        document.querySelector('.summary-basic').textContent = totalBasic.toFixed(2);
-        document.querySelector('.summary-overtime-amount').textContent = totalOvertimeAmount.toFixed(2);
-
-        let grandEarnings = totalBasic + totalOvertimeAmount;
-
-        document.querySelectorAll('.summary-earning').forEach(td => {
-            const compId = td.dataset.componentId;
-            const val = parseFloat(document.querySelector(
-                `.total-earning[data-component-id="${compId}"]`).textContent || 0);
-            td.textContent = val.toFixed(2);
-            grandEarnings += val;
-        });
-
-        // Add extra amounts: mercantile, extra full/half days, Poovarasan, labour
-        let totalExtraAmounts = 0;
-        table.querySelectorAll('tbody tr').forEach(tr => {
-            const merc = parseFloat(tr.querySelector('input[name*="[mercantile_days_amount]"]')
-                ?.value || 0);
-            const full = parseFloat(tr.querySelector('input[name*="[extra_full_days_amount]"]')
-                ?.value || 0);
-            const half = parseFloat(tr.querySelector('input[name*="[extra_half_days_amount]"]')
-                ?.value || 0);
-            const poovarasan = parseFloat(tr.querySelector(
-                    'input[name*="[poovarasan_kuda_allowance_150_amount]"]')
-                ?.value || 0);
-            const labour = parseFloat(tr.querySelector('input[name*="[labour_amount]"]')?.value || 0);
-
-            totalExtraAmounts += merc + full + half + poovarasan + labour;
-        });
-
-        document.querySelector('.summary-extra-amount').textContent = totalExtraAmounts.toFixed(2);
-        grandEarnings += totalExtraAmounts;
-
-        document.querySelector('.summary-total-earnings').textContent = grandEarnings.toFixed(2);
-
-        let totalDeds = 0;
-        document.querySelectorAll('.summary-deduction').forEach(td => {
-            const compId = td.dataset.componentId;
-            const val = parseFloat(document.querySelector(
-                `.total-deduction[data-component-id="${compId}"]`).textContent || 0);
-            td.textContent = val.toFixed(2);
-            totalDeds += val;
-        });
-    }
-
-
-    // Recompute on any input in this table only
-    table.querySelectorAll('tbody input').forEach(input => {
-        input.addEventListener('input', recomputeTable);
-    });
-
-    // Initial totals
-    recomputeTable();
-});
-</script>
 @endpush
