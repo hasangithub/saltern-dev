@@ -356,7 +356,7 @@
 </form>
 {{-- Approve Payroll Batch Form --}}
 @if($batch->status === 'draft')
-<form action="{{ route('payroll.batches.approve', $batch->id) }}" method="POST"
+<form action="{{ route('payroll.batches.contractApprove', $batch->id) }}" method="POST"
     onsubmit="return confirm('Are you sure you want to approve this payroll batch? Once approved, it cannot be edited.')">
     @csrf
     <button type="submit" class="btn btn-success mt-3">

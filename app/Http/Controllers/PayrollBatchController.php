@@ -947,7 +947,7 @@ class PayrollBatchController extends Controller
     }
 
     public function contractApprove($id)
-    {
+    {   
         $batch = PayrollBatch::findOrFail($id);
 
         if ($batch->status !== 'draft') {
@@ -959,6 +959,8 @@ class PayrollBatchController extends Controller
 
         // Calculate totals
         $totalNetPay = $batch->payrolls->sum('net_pay');
+        $payrollTemplate = $batch->PayrollTemplate->name;
+        $isTemporarySecurity = $payrollTemplate === 'Temporary Security';
        
         $totalDeductions = [];
         foreach ($batch->payrolls as $payroll) {
@@ -971,26 +973,26 @@ class PayrollBatchController extends Controller
         // Create journal entry
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(),
-            'description' => 'Payroll Batch #' . $batch->id,
+            'description' => $payrollTemplate.' Payroll Batch #' . $batch->id,
         ]);
 
         $details = [];
 
-        // === Debit Entries (All go to Ledger 102) ===
+        // === Debit Entries 
         $details[] = [
             'journal_id' => $journal->id,
-            'ledger_id' => 102,
+            'ledger_id' => $isTemporarySecurity ? 112 : 110,
             'sub_ledger_id' => null,
             'debit_amount' => $totalNetPay,
             'credit_amount' => null,
             'description' => 'Net Pay for Payroll Batch #' . $batch->id,
         ];
 
-        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+        foreach (['salary advance', 'festival loan', 'loan', 'fine'] as $key) {
             if (!empty($totalDeductions[$key])) {
                 $details[] = [
                     'journal_id' => $journal->id,
-                    'ledger_id' => 102,
+                    'ledger_id' => $isTemporarySecurity ? 112 : 110,
                     'sub_ledger_id' => null,
                     'debit_amount' => $totalDeductions[$key],
                     'credit_amount' => null,
@@ -1003,9 +1005,7 @@ class PayrollBatchController extends Controller
         $creditMap = [
             'net_pay' => 179,
             'salary advance' => 180,
-            'union' => 107,  // union charge
             'fine' => 111, // Security staff -  penalty
-            'epf_8' => 103,  // EPF
             'loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
             'festival loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
         ];
@@ -1021,7 +1021,7 @@ class PayrollBatchController extends Controller
         ];
 
         // Other deductions
-        foreach (['salary advance', 'festival loan', 'loan', 'union', 'fine'] as $key) {
+        foreach (['salary advance', 'festival loan', 'loan', 'fine'] as $key) {
             if (!empty($totalDeductions[$key])) {
                 $ledgerId = is_array($creditMap[$key]) ? $creditMap[$key]['ledger_id'] : $creditMap[$key];
                 $subLedgerId = is_array($creditMap[$key]) ? $creditMap[$key]['sub_ledger_id'] : null;
@@ -1039,6 +1039,10 @@ class PayrollBatchController extends Controller
 
         // Bulk insert
         JournalDetail::insert($details);
+
+        $loanPayrollIds = $batch->payrolls->pluck('id');
+        StaffLoanRepayment::whereIn('payroll_id', $loanPayrollIds)
+        ->update(['status' => 'paid']);
 
         return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
     }
