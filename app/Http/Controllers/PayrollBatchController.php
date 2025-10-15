@@ -1074,7 +1074,7 @@ class PayrollBatchController extends Controller
         ])->findOrFail($id);
 
         $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
-        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
 
         $pdf = Pdf::loadView('payroll.contract_payslip', compact('batch', 'earningComponents', 'deductionComponents'))
             ->setPaper('a5', 'portrait');
