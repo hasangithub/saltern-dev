@@ -105,11 +105,7 @@
         <div class="section-title">Monthly Salary</div>
         <table>
             <tr>
-                <td colspan="2">Day Salary</td>
-                <td class="text-right">{{ number_format($payroll->day_salary, 2) }}</td>
-            </tr>
-            <tr>
-                <td>Worked Days</td>
+                <td>Salary</td>
                 <td> @if($payroll->worked_days > 0)
                     {{ fmod($payroll->worked_days, 1) == 0 
                     ? number_format($payroll->worked_days, 0) 
@@ -118,8 +114,9 @@
                     @else
 
                     @endif</td>
-                <td class="text-right"></td>
+                <td class="text-right">{{ number_format($payroll->worked_days_amount, 2) }}</td>
             </tr>
+            
             
             @foreach ($earningComponents as $component)
             @php
