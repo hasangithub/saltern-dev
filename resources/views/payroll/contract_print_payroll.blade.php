@@ -123,13 +123,14 @@
                 <tr>
                     <th style="width:40px;">Employee Name</th>
                     <th style="width:40px;">Day Salary</th>
+                    <th style="width:10px;">Days</th>
 
                     {{-- Dynamic earnings headers --}}
                     @foreach($earningComponents as $ec)
                     <th style="width: 40px;">{{ $ec->name }}</th>
                     @endforeach
 
-                    <th style="width:40px;">Hours</th>
+                    <th style="width:20px;">Hours</th>
                     <th style="width:40px;">Amounts</th>
 
                     <th style="width:40px;">Total Salary</th>
@@ -166,7 +167,7 @@
                     <td>{{ $emp->user->name }}</td>
 
                     <td class="text-right">{{ number_format($payroll->day_salary,2) }}</td>
-
+                    <td class="text-right">{{ $payroll->worked_days }}</td>
                     @foreach($earningComponents as $ec)
                     @php $earning = $payroll->earnings->firstWhere('component_id', $ec->id); @endphp
                     <td class="text-right">{{ number_format($earning->amount ?? 0,2) }}</td>
@@ -201,7 +202,8 @@
             </tbody>
             <tr>
                 <td style="width:40px;"></td>
-                <td style="width:40px;" class="text-right">
+                <td style="width:40px;"></td>
+                <td style="width:10px;" class="text-right">
                 </td>
 
                 {{-- Dynamic earnings headers --}}
@@ -216,7 +218,7 @@
                 </td>
                 @endforeach
 
-                <td style="width:40px;" class="text-right">
+                <td style="width:20px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('overtime_hours'),2) }}</td>
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
