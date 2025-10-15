@@ -194,6 +194,8 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/batches/{batch}/contractShow', [PayrollBatchController::class, 'contractShow'])->name('batches.contractShow');
         Route::post('/batches/{batch}/approve', [PayrollBatchController::class, 'approve'])
     ->name('batches.approve');
+    Route::post('/batches/{batch}/contractApprove', [PayrollBatchController::class, 'contractApprove'])
+    ->name('batches.contractApprove');
     Route::get('/batches/{id}/payslips', [PayrollBatchController::class, 'printPayslips'])
     ->name('batches.payslips');
     Route::get('/batches/{id}/contractPayslips', [PayrollBatchController::class, 'printContractPayslips'])
