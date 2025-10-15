@@ -118,12 +118,9 @@
                     @else
 
                     @endif</td>
-                <td class="text-right">{{ number_format($payroll->worked_days, 2) }}</td>
+                <td class="text-right"></td>
             </tr>
-            <tr>
-                <td colspan="2">Total Salary </td>
-                <td class="text-right">{{ number_format($payroll->worked_days * $payroll->day_salary, 2) }}</td>
-            </tr>
+            
             @foreach ($earningComponents as $component)
             @php
             $value = $payroll->earnings->firstWhere('component_name', $component->name)->amount ?? 0;
@@ -200,7 +197,7 @@
             <tr>
                 <td colspan="2"><b>Total</b></td>
                 <td class="text-right">
-                    <b>{{ number_format($payroll->gross_earnings + $payroll->mercantile_days_amount + $payroll->extra_full_days_amount + $payroll->extra_half_days_amount + $payroll->poovarasan_kuda_allowance_150_amount + $payroll->labour_amount, 2) }}</b>
+                    <b>{{ number_format($payroll->gross_earnings + $payroll->eight_hours_duty_amount + $payroll->extra_full_days_amount + $payroll->extra_half_days_amount + $payroll->poovarasan_kuda_allowance_150_amount + $payroll->labour_amount, 2) }}</b>
                 </td>
             </tr>
         </table>
