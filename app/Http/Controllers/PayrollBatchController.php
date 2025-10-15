@@ -159,7 +159,7 @@ class PayrollBatchController extends Controller
 
         // Load earning and deduction components
         $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allowance', 'Fixed Allowance'])->get();
-        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
+        $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
 
         $pdf = Pdf::loadView('payroll.contract_print_payroll', compact('batch', 'earningComponents', 'deductionComponents', 'employees', 'department'))->setPaper('legal', 'landscape');
 
