@@ -114,6 +114,10 @@
             @endif
         </div>
         {{-- === Main Table === --}}
+        @php
+        $isTemporarySecurity =  $batch->payrollTemplate->name === 'Temporary Security';
+        @endphp
+        {{ $batch->payrollTemplate->name }}
         <table class="table-main small">
             <thead>
                 <tr>
@@ -129,9 +133,13 @@
                     <th style="width:40px;">Amounts</th>
 
                     <th style="width:40px;">Total Salary</th>
+                    @if($isTemporarySecurity)
                     <th style="width:40px;">8 Hours Duty</th>
+                    @endif
                     <th style="width:40px;">12 Hours Duty</th>
+                    @if($isTemporarySecurity)    
                     <th style="width:40px;">Poovarsan kuda 150 Payments</th>
+                    @endif
                     <th style="width:40px;">Extra Hours</th>
 
                     <th style="width:40px;">Gross Salary</th>
@@ -156,7 +164,7 @@
 
                 <tr>
                     <td>{{ $emp->user->name }}</td>
-                  
+
                     <td class="text-right">{{ number_format($payroll->day_salary,2) }}</td>
 
                     @foreach($earningComponents as $ec)
@@ -167,11 +175,14 @@
                     <td class="text-right">{{ number_format($payroll->overtime_hours ?? 0,1) }}</td>
                     <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0,2) }}</td>
                     <td class="text-right">{{ number_format($payroll->worked_days_amount ?? 0,2) }}</td>
+                    @if($isTemporarySecurity)
                     <td class="text-right">{{ number_format($payroll->eight_hours_duty_amount ?? 0,2) }}</td>
-                   
+                    @endif
                     <td class="text-right">{{ number_format($payroll->extra_half_days_amount ?? 0,2) }}</td>
+                    @if($isTemporarySecurity)    
                     <td class="text-right">{{ number_format($payroll->poovarasan_kuda_allowance_150_amount ?? 0,2) }}
                     </td>
+                    @endif
                     <td class="text-right">{{ number_format($payroll->labour_amount ?? 0,2) }}</td>
                     <td class="text-right">{{ number_format($payroll->gross_earnings + $extraEarnings ?? 0,2) }}</td>
 
@@ -180,7 +191,7 @@
                     <td class="text-right">{{ number_format($deduction->amount ?? 0,2) }}</td>
                     @endforeach
 
-                   
+
 
                     <td class="text-right">{{ number_format($payroll->total_deductions ?? 0,2) }}</td>
                     <td class="text-right fw-semibold">{{ number_format($payroll->net_pay ?? 0,2) }}</td>
@@ -190,7 +201,8 @@
             </tbody>
             <tr>
                 <td style="width:40px;"></td>
-                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('day_salary'),2) }}</td>
+                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('day_salary'),2) }}
+                </td>
 
                 {{-- Dynamic earnings headers --}}
                 @foreach($earningComponents as $ec)
@@ -211,12 +223,16 @@
 
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('worked_days_amount'),2) }}</td>
+                @if($isTemporarySecurity)
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('eight_hours_duty_amount'),2) }}</td>
+                @endif
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('extra_half_days_amount'),2) }}</td>
+                @if($isTemporarySecurity)    
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('poovarasan_kuda_allowance_150_amount'),2) }}</td>
+                @endif
                 <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('labour_amount'),2) }}
                 </td>
 
@@ -294,7 +310,7 @@
             </table>
 
             {{-- Deductions Summary --}}
-            <table class="summary-table small" style="line-height: 13px;">
+            <table class="summary-table small">
                 <thead>
                     <tr>
                         <th colspan="2">Deductions</th>
@@ -327,13 +343,15 @@
                 <tbody>
                     <tr>
                         <td>Total Earnings</td>
-                        <td class="text-right">{{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}</td>
+                        <td class="text-right">
+                            {{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}
+                        </td>
                     </tr>
                     <tr>
                         <td>Total Deductions</td>
                         <td class="text-right">{{ number_format($batch->payrolls->sum('total_deductions'),2) }}</td>
                     </tr>
-                    
+
                     <tr>
                         <td colspan="2"></td>
                     </tr>

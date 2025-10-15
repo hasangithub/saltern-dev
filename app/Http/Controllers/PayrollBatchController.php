@@ -136,7 +136,7 @@ class PayrollBatchController extends Controller
     public function contractPrint(Request $request, $id)
     {
         $department = $request->get('department', 'all');
-        $batch = PayrollBatch::with([
+        $batch = PayrollBatch::with(['payrollTemplate',
             'payrolls' => function ($query) use ($department) {
                 $query->with(['deductions', 'earnings', 'employee.user', 'employee.staffLoans']);
 
@@ -1067,7 +1067,7 @@ class PayrollBatchController extends Controller
 
     public function printContractPayslips($id)
     {
-        $batch = PayrollBatch::with([
+        $batch = PayrollBatch::with(['payrollTemplate',
             'payrolls.employee.user',
             'payrolls.earnings.component',
             'payrolls.deductions.component'
