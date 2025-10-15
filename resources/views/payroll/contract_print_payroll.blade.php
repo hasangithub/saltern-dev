@@ -8,7 +8,7 @@
     /* Page setup */
     @page {
         size: legal landscape;
-        margin: 3mm;
+        margin: 2mm;
     }
 
     body {
@@ -29,7 +29,7 @@
     .table-main th,
     .table-main td {
         border: 1px solid #000;
-        padding: 4px;
+        padding: 2px;
         vertical-align: middle;
     }
 
@@ -71,7 +71,7 @@
     .summary-table th,
     .summary-table td {
         border: 1px solid #000;
-        padding: 4px;
+        padding: 1px;
     }
 
     .summary-table thead th {
@@ -201,7 +201,7 @@
             </tbody>
             <tr>
                 <td style="width:40px;"></td>
-                <td style="width:40px;" class="text-right">{{ number_format($batch->payrolls->sum('day_salary'),2) }}
+                <td style="width:40px;" class="text-right">
                 </td>
 
                 {{-- Dynamic earnings headers --}}
@@ -369,15 +369,15 @@
         </div>
         <table style="width:100%; margin-top:50px; text-align:center; border:0;">
             <tr>
-                <td style="width:33%; padding-top:60px;">
+                <td style="width:33%; padding-top:50px;">
                     -----------------------------<br>
                     <strong>Prepared By</strong>
                 </td>
-                <td style="width:33%; padding-top:60px;">
+                <td style="width:33%; padding-top:50px;">
                     -----------------------------<br>
                     <strong>Manager</strong>
                 </td>
-                <td style="width:33%; padding-top:60px;">
+                <td style="width:33%; padding-top:50px;">
                     -----------------------------<br>
                     <strong>President</strong>
                 </td>
