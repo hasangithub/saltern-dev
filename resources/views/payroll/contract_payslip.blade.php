@@ -7,7 +7,7 @@
     <style>
     @page {
         size: A5 portrait;
-        margin: 15mm;
+        margin: 20mm;
     }
 
     body {
@@ -19,7 +19,7 @@
     .payslip {
         width: 100%;
         border: 1px solid #000;
-        padding: 5px;
+        padding: 15px;
         box-sizing: border-box;
         page-break-after: always;
         /* New page after each slip */
@@ -30,7 +30,7 @@
     .header {
         text-align: center;
         font-weight: bold;
-        font-size: 11px;
+        font-size: 12px;
         margin-bottom: 6px;
     }
 
@@ -49,7 +49,7 @@
     td,
     th {
         padding: 2px 4px;
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .text-right {
@@ -60,25 +60,27 @@
         font-weight: bold;
         margin: 6px 0 2px;
         border-bottom: 1px solid #000;
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .footer {
-        margin-top: 20px;
+        margin-top: 25px;
         width: 100%;
     }
 
     .footer td {
         width: 50%;
         text-align: center;
-        padding-top: 10px;
+        padding-top: 20px;
         font-size: 11px;
     }
     </style>
 </head>
 
 <body>
-
+    @php
+    $isTemporarySecurity = $batch->payrollTemplate->name === 'Temporary Security';
+    @endphp
     @foreach($batch->payrolls as $payroll)
     <div class="payslip">
         <!-- Header -->
@@ -107,14 +109,14 @@
                 <td class="text-right">{{ number_format($payroll->day_salary, 2) }}</td>
             </tr>
             <tr>
-                <td >Worked Days</td>
+                <td>Worked Days</td>
                 <td> @if($payroll->worked_days > 0)
                     {{ fmod($payroll->worked_days, 1) == 0 
                     ? number_format($payroll->worked_days, 0) 
                     : rtrim(rtrim(number_format($payroll->worked_days, 2), '0'), '.') }}
                     {{ $payroll->worked_days == 1 ? 'day' : 'days' }}
                     @else
-                    
+
                     @endif</td>
                 <td class="text-right">{{ number_format($payroll->worked_days, 2) }}</td>
             </tr>
@@ -135,6 +137,7 @@
                 <td colspan="2">Overtime</td>
                 <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0, 2) }}</td>
             </tr>
+            @if($isTemporarySecurity)    
             <tr>
                 <td>8 Hours Duty Payment</td>
                 <td>
@@ -149,6 +152,7 @@
                 </td>
                 <td class="text-right">{{ number_format($payroll->eight_hours_duty_amount, 2) }}</td>
             </tr>
+            @endif
             <tr>
                 <td>12 Hours Duty Payment</td>
                 <td>
@@ -162,6 +166,7 @@
                 </td>
                 <td class="text-right">{{ number_format($payroll->extra_half_days_amount, 2) }}</td>
             </tr>
+            @if($isTemporarySecurity)    
             <tr>
                 <td>Poovarasan kuda Allowance</td>
                 <td>
@@ -176,6 +181,7 @@
                 </td>
                 <td class="text-right">{{ number_format($payroll->poovarasan_kuda_allowance_150_amount, 2) }}</td>
             </tr>
+            @endif
             <tr>
                 <td>Extra Hours Duty</td>
                 <td>
