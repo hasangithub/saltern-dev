@@ -167,7 +167,8 @@
                     <td>{{ $emp->user->name }}</td>
 
                     <td class="text-right">{{ number_format($payroll->day_salary,2) }}</td>
-                    <td class="text-right">{{ $payroll->worked_days }}</td>
+                    <td class="text-right">{{ fmod($payroll->worked_days, 1) == 0 ? (int)$payroll->worked_days : number_format($payroll->worked_days, 2, '.', '') }}
+                    </td>
                     @foreach($earningComponents as $ec)
                     @php $earning = $payroll->earnings->firstWhere('component_id', $ec->id); @endphp
                     <td class="text-right">{{ number_format($earning->amount ?? 0,2) }}</td>
