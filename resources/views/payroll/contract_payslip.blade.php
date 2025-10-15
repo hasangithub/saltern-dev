@@ -145,7 +145,7 @@
                     {{ fmod($payroll->eight_hours_duty_hours, 1) == 0 
                     ? number_format($payroll->eight_hours_duty_hours, 0) 
                     : rtrim(rtrim(number_format($payroll->eight_hours_duty_hours, 2), '0'), '.') }}
-                    {{ $payroll->eight_hours_duty_hours == 1 ? 'hour' : 'hours' }}
+                    {{ $payroll->eight_hours_duty_hours == 1 ? 'day' : 'days' }}
                     @else
                     -
                     @endif
