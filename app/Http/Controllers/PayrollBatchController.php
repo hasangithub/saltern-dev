@@ -544,25 +544,26 @@ class PayrollBatchController extends Controller
 
                 // Update payroll totals
                 $master->update([
-                    'gross_earnings' => $gross,
-                    'total_deductions' => $ded,
-                    'net_pay' => $extraWork + $gross - $ded,
-                    'epf_employee' => $epfEmployee,
-                    'epf_employer' => $epfEmployer,
-                    'etf' => $etf,
-                    'overtime_hours' => $overtimeHours,
-                    'overtime_amount' => $overtimeAmount,
-                    'mercantile_days' => $mercantileDays,
-                    'mercantile_days_amount' => $mercantileAmount,
-                    'extra_full_days' => $extraFullDays,
-                    'extra_full_days_amount' => $extraFullAmount,
-                    'extra_half_days' => $extraHalfDays,
-                    'extra_half_days_amount' => $extraHalfAmount,
-                    'poovarasan_kuda_allowance_150' => $poovarasanDays,
-                    'poovarasan_kuda_allowance_150_amount' => $poovarasanAmount,
-                    'labour_hours' => $labour_hours,
-                    'labour_amount' => $labourAmount,
+                    'gross_earnings' => round($gross, 2),
+                    'total_deductions' => round($ded, 2),
+                    'net_pay' => round($extraWork + $gross - $ded, 2),
+                    'epf_employee' => round($epfEmployee, 2),
+                    'epf_employer' => round($epfEmployer, 2),
+                    'etf' => round($etf, 2),
+                    'overtime_hours' => round($overtimeHours, 2),
+                    'overtime_amount' => round($overtimeAmount, 2),
+                    'mercantile_days' => round($mercantileDays, 2),
+                    'mercantile_days_amount' => round($mercantileAmount, 2),
+                    'extra_full_days' => round($extraFullDays, 2),
+                    'extra_full_days_amount' => round($extraFullAmount, 2),
+                    'extra_half_days' => round($extraHalfDays, 2),
+                    'extra_half_days_amount' => round($extraHalfAmount, 2),
+                    'poovarasan_kuda_allowance_150' => round($poovarasanDays, 2),
+                    'poovarasan_kuda_allowance_150_amount' => round($poovarasanAmount, 2),
+                    'labour_hours' => round($labour_hours, 2),
+                    'labour_amount' => round($labourAmount, 2),
                 ]);
+                
             }
         });
 
@@ -724,27 +725,27 @@ class PayrollBatchController extends Controller
 
                 // Update payroll totals
                 $master->update([
-                    'gross_earnings' => $gross,
-                    'total_deductions' => $ded,
-                    'net_pay' => $extraWork + $gross - $ded,
-                    'epf_employee' => $epfEmployee,
-                    'epf_employer' => $epfEmployer,
-                    'etf' => $etf,
-                    'worked_days' => $workedDays,
-                    'worked_days_amount' => $workedDaysAmount,
-                    'overtime_hours' => $overtimeHours,
-                    'overtime_amount' => $overtimeAmount,
-                    'eight_hours_duty_hours' => $mercantileDays,
-                    'eight_hours_duty_amount' => $mercantileAmount,
-                    'extra_full_days' => $extraFullDays,
-                    'extra_full_days_amount' => $extraFullAmount,
-                    'extra_half_days' => $extraHalfDays,
-                    'extra_half_days_amount' => $extraHalfAmount,
-                    'poovarasan_kuda_allowance_150' => $poovarasanDays,
-                    'poovarasan_kuda_allowance_150_amount' => $poovarasanAmount,
-                    'labour_hours' => $labour_hours,
-                    'labour_amount' => $labourAmount,
-                ]);
+                    'gross_earnings' => round($gross, 2),
+                    'total_deductions' => round($ded, 2),
+                    'net_pay' => round($extraWork + $gross - $ded, 2),
+                    'epf_employee' => round($epfEmployee, 2),
+                    'epf_employer' => round($epfEmployer, 2),
+                    'etf' => round($etf, 2),
+                    'worked_days' => ($workedDays == floor($workedDays)) ? (int)$workedDays : round($workedDays, 2),
+                    'worked_days_amount' => round($workedDaysAmount, 2),
+                    'overtime_hours' => round($overtimeHours, 2),
+                    'overtime_amount' => round($overtimeAmount, 2),
+                    'eight_hours_duty_hours' => ($mercantileDays == floor($mercantileDays)) ? (int)$mercantileDays : round($mercantileDays, 2),
+                    'eight_hours_duty_amount' => round($mercantileAmount, 2),
+                    'extra_full_days' => ($extraFullDays == floor($extraFullDays)) ? (int)$extraFullDays : round($extraFullDays, 2),
+                    'extra_full_days_amount' => round($extraFullAmount, 2),
+                    'extra_half_days' => ($extraHalfDays == floor($extraHalfDays)) ? (int)$extraHalfDays : round($extraHalfDays, 2),
+                    'extra_half_days_amount' => round($extraHalfAmount, 2),
+                    'poovarasan_kuda_allowance_150' => ($poovarasanDays == floor($poovarasanDays)) ? (int)$poovarasanDays : round($poovarasanDays, 2),
+                    'poovarasan_kuda_allowance_150_amount' => round($poovarasanAmount, 2),
+                    'labour_hours' => round($labour_hours, 2),
+                    'labour_amount' => round($labourAmount, 2),
+                ]);                
             }
         });
 
