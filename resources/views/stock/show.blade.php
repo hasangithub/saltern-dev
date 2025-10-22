@@ -33,6 +33,7 @@
                         <th>Issued Qty</th>
                         <th>Stock in Hand</th>
                         <th>Details</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,6 +46,7 @@
                         <td></td>
                         <td class="text-right">{{ $opening }}</td>
                         <td>Opening Balance</td>
+                        <td></td>
                     </tr>
 
                     {{-- Transaction Rows --}}
@@ -65,6 +67,13 @@
                         <td class="text-right">{{ $t->type === 'issue' ? $t->quantity : '' }}</td>
                         <td class="text-right">{{ number_format($stockInHand, 2) }}</td>
                         <td>{{ $t->description }}</td>
+                        <td> <button class="btn btn-sm btn-primary edit-btn" data-id="{{ $t->id }}"
+                                data-type="{{ $t->type }}" data-quantity="{{ $t->quantity }}"
+                                data-date="{{ $t->transaction_date }}" data-department="{{ $t->department }}"
+                                data-description="{{ $t->description }}" data-toggle="modal"
+                                data-target="#editIssueModal">
+                                <i class="fas fa-edit"></i> Edit
+                            </button></td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -146,6 +155,57 @@
     </div>
 </div>
 
+<!-- ================= Edit Issue Modal ================= -->
+<div class="modal fade" id="editIssueModal" tabindex="-1" aria-labelledby="editIssueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        {{-- The form action will be set dynamically with JavaScript --}}
+        <form id="editIssueForm" method="POST" action="">
+            @csrf
+            @method('PUT')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Issue</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="type" value="issue">
+
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" step="0.01" name="quantity" id="edit_quantity" class="form-control"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="transaction_date" id="edit_transaction_date" class="form-control"
+                            required>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label for="department">Department</label>
+                        <input type="text" class="form-control" name="department" id="edit_department"
+                            placeholder="e.g. Transport">
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" name="description" id="edit_description" rows="2"
+                            placeholder="Details..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Issue</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 @stop
 
 {{-- Push extra CSS --}}
@@ -161,6 +221,25 @@
 <script>
 $(document).ready(function() {
     $('#membershipsTable').DataTable();
+    $('.edit-btn').on('click', function() {
+        const id = $(this).data('id');
+        const type = $(this).data('type');
+        const quantity = $(this).data('quantity');
+        const date = $(this).data('date');
+        const department = $(this).data('department');
+        const description = $(this).data('description');
+
+        // Populate the modal fields
+        $('#edit_type').val(type);
+        $('#edit_quantity').val(quantity);
+        $('#edit_transaction_date').val(date);
+        $('#edit_department').val(department);
+        $('#edit_description').val(description);
+
+        // Update form action dynamically
+        $('#editIssueForm').attr('action', "{{ url('stock/item') }}/" + id + "/updateTransaction");
+
+    });
 });
 </script>
 @endpush

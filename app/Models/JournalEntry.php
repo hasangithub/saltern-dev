@@ -16,4 +16,16 @@ class JournalEntry extends Model
     {
         return $this->hasMany(JournalDetail::class, 'journal_id');
     }
+
+    // Total Debit
+    public function getTotalDebitAttribute()
+    {
+        return $this->details()->sum('debit_amount');
+    }
+
+    // Total Credit
+    public function getTotalCreditAttribute()
+    {
+        return $this->details()->sum('credit_amount');
+    }
 }

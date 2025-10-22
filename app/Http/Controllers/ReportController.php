@@ -23,6 +23,7 @@ use Carbon\Carbon;
 use App\Models\ReceiptDetail;
 use App\Exports\LedgerReportExport;
 use App\Models\Inventory;
+use App\Models\Place;
 use App\Models\StaffLoan;
 use App\Models\User;
 use App\Services\StaffLoanReportService;
@@ -71,7 +72,9 @@ class ReportController extends Controller
 
     public function indexInventory(Request $request)
     {
-        return view('reports.inventory.index');
+        $places = Place::all();
+
+        return view('reports.inventory.index', compact('places'));
     }
 
     public function trialBalance(Request $request)
@@ -1187,6 +1190,11 @@ class ReportController extends Controller
             ]);
         }
 
+        if ($request->filled('place_id')) {
+            $query->where('place_id', $request->place_id);
+        }
+    
+
         $vouchers = $query->orderBy('created_at', 'desc')->get();
 
         return view('reports.inventory.inventory-details', compact('vouchers', 'fromDate', 'toDate'));
@@ -1209,6 +1217,10 @@ class ReportController extends Controller
                 $fromDate,
                 $toDate
             ]);
+        }
+
+        if ($request->filled('place_id')) {
+            $query->where('place_id', $request->place_id);
         }
     
         $vouchers = $query->orderBy('created_at', 'desc')->get();

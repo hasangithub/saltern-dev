@@ -29,6 +29,7 @@
                                     <th>Journal ID</th>
                                     <th>Date</th>
                                     <th>Description</th>
+                                    <th>Amount</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -38,6 +39,7 @@
                                     <td>{{ $journalEntry->id }}</td>
                                     <td>{{ $journalEntry->journal_date }}</td>
                                     <td>{{ $journalEntry->description }}</td>
+                                    <td class="text-end">{{ number_format($journalEntry->total_debit, 2) }}</td>
                                     <td>
                                         <a href="{{ route('journal-entries.show', $journalEntry->id) }}"
                                             class="btn btn-default btn-xs">
