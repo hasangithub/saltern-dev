@@ -214,6 +214,8 @@ Route::prefix('stock')->group(function () {
     Route::post('/item', [StockController::class, 'storeItem'])->name('stock.storeItem');
     Route::get('/item/{id}', [StockController::class, 'showItem'])->name('stock.showItem');
     Route::post('/item/{id}/transaction', [StockController::class, 'storeTransaction'])->name('stock.storeTransaction');
+    Route::put('/item/{id}/updateTransaction', [StockController::class, 'updateTransaction'])->name('stock.updateTransaction');
+
 });
 
 

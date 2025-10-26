@@ -55,4 +55,31 @@ class StockController extends Controller
 
         return back()->with('success', ucfirst($request->type) . ' recorded successfully.');
     }
+
+    public function updateTransaction(Request $request, $id)
+    {
+        // Validate input fields
+        $validated = $request->validate([
+            'quantity' => 'required|numeric|min:0.01',
+            'transaction_date' => 'required|date',
+            'department' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:500',
+            'type' => 'required|in:issue,purchase',
+        ]);
+
+        // Find the transaction
+        $transaction = StockTransaction::findOrFail($id);
+
+        // Update with new values
+        $transaction->update([
+            'quantity' => $validated['quantity'],
+            'transaction_date' => $validated['transaction_date'],
+            'department' => $validated['department'] ?? null,
+            'description' => $validated['description'] ?? null,
+            'type' => $validated['type'],
+        ]);
+
+        return redirect()->back()->with('success', 'Transaction updated successfully!');
+    }
+
 }

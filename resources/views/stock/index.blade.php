@@ -23,14 +23,22 @@
                     <tr>
                         <th>Date</th>
                         <th>Item</th>
+                        <th>Stock In Hand</th>
                         <th>Acton</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($items as $t)
+                    @php
+                        // Calculate current quantity
+                        $purchases = $t->transactions()->where('type', 'purchase')->sum('quantity');
+                        $issues = $t->transactions()->where('type', 'issue')->sum('quantity');
+                        $currentQty = $t->opening_balance + $purchases - $issues;
+                    @endphp
                     <tr>
-                        <td>{{ $t->created_at }}</td>
+                    <td>{{ $t->created_at->format('Y-m-d') }}</td>
                         <td>{{ $t->name }}</td>
+                        <td>{{ number_format($currentQty, 2) }}</td>
                         <td><a href="{{ route('stock.showItem', $t->id) }}"
                                             class="btn btn-default btn-xs">
                                             <i class="fas fa-eye"></i> View

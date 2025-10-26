@@ -32,6 +32,15 @@ $toDate = now()->format('Y-m-d');
                                 <label>To Date</label>
                                 <input type="date" name="to_date" class="form-control"  value="">
                             </div>
+                            <div class="col-md-3">
+                                <label>Place</label>
+                                <select name="place_id" id="place_id" class="form-control" >
+                                    <option value=""></option>
+                                    @foreach($places as $place)
+                                    <option value="{{ $place->id }}">{{ $place->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">
