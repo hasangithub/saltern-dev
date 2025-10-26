@@ -215,12 +215,19 @@ public function store(Request $request)
             'description' => 'Receipt Other Income Receipt#'.$receipt->id,
         ]);
 
-        foreach($otherIncomeIds as $otherIncomeId) {
+       
 
-            $otherIncomeAmount = OtherIncome::find($otherIncomeId)?->amount;
-            $categoryId = OtherIncome::find($otherIncomeId)?->income_category_id;
-
-            // Categories: 162, 163, 165 → ledger_id = 10, else ledger_id = 27
+        $journalDetails = [];
+        $totalReceiptDetails = [];
+        
+        foreach ($otherIncomeIds as $otherIncomeId) {
+            $income = OtherIncome::find($otherIncomeId);
+            if (!$income) continue;
+        
+            $amount = $income->amount;
+            $categoryId = $income->income_category_id;
+        
+            // Determine ledger and sub_ledger
             switch ($categoryId) {
                 case 162:
                     $ledgerId = 10;
@@ -239,36 +246,55 @@ public function store(Request $request)
                     $subLedgerId = null;
                     break;
             }
-
-            $details = [
-                [
-                    'journal_id' => $journal->id,
-                    'ledger_id' => 11,
-                    'sub_ledger_id' => $paymentMethod == 1 ? $request->input('bank_sub_ledger_id'): 103,
-                    'debit_amount' => $otherIncomeAmount,
-                    'credit_amount' => null,
-                    'description' => '',
-                ],
-                [
+        
+            // ---- Credit Side (Income) ----
+            $keyCredit = $ledgerId . '-' . ($subLedgerId ?? 'null');
+            if (!isset($journalDetails[$keyCredit])) {
+                $journalDetails[$keyCredit] = [
                     'journal_id' => $journal->id,
                     'ledger_id' => $ledgerId,
                     'sub_ledger_id' => $subLedgerId,
                     'debit_amount' => null,
-                    'credit_amount' => $otherIncomeAmount,
+                    'credit_amount' => 0,
                     'description' => '',
-                ],
-            ];
-    
-            JournalDetail::insert($details);
-
-            ReceiptDetail::create([
+                ];
+            }
+            $journalDetails[$keyCredit]['credit_amount'] += $amount;
+        
+            // ---- Debit Side (Cash/Bank) ----
+            $cashLedgerId = 11;
+            $cashSubLedgerId = ($paymentMethod == 1)
+                ? $request->input('bank_sub_ledger_id')
+                : 103;
+        
+            $keyDebit = $cashLedgerId . '-' . $cashSubLedgerId;
+            if (!isset($journalDetails[$keyDebit])) {
+                $journalDetails[$keyDebit] = [
+                    'journal_id' => $journal->id,
+                    'ledger_id' => $cashLedgerId,
+                    'sub_ledger_id' => $cashSubLedgerId,
+                    'debit_amount' => 0,
+                    'credit_amount' => null,
+                    'description' => '',
+                ];
+            }
+            $journalDetails[$keyDebit]['debit_amount'] += $amount;
+        
+            // ---- Receipt Detail ----
+            $totalReceiptDetails[] = [
                 'receipt_id' => $receipt->id,
                 'entry_type' => 'other_income',
                 'entry_id'   => $otherIncomeId,
-                'amount'     => $otherIncomeAmount,
-            ]);
-
+                'amount'     => $amount,
+            ];
         }
+        
+        // ---- Insert all combined journal details ----
+        JournalDetail::insert(array_values($journalDetails));
+        
+        // ---- Insert all receipt details ----
+        ReceiptDetail::insert($totalReceiptDetails);
+        
 
         OtherIncome::whereIn('id', $otherIncomeIds)->update(['status' => 'paid']);
     }
