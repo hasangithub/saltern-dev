@@ -944,6 +944,10 @@ class PayrollBatchController extends Controller
         // Bulk insert
         JournalDetail::insert($details);
 
+        $loanPayrollIds = $batch->payrolls->pluck('id');
+        StaffLoanRepayment::whereIn('payroll_id', $loanPayrollIds)
+        ->update(['status' => 'paid']);
+
         return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
     }
 
