@@ -124,7 +124,7 @@
                     <th style="width:40px;">Employee Name</th>
                     <th style="width:40px;">Day Salary</th>
                     <th style="width:10px;">Days</th>
-
+                    <th style="width:40px;">Salary</th>
                     {{-- Dynamic earnings headers --}}
                     @foreach($earningComponents as $ec)
                     <th style="width: 40px;">{{ $ec->name }}</th>
@@ -168,6 +168,7 @@
                     <td class="text-right">{{ number_format($payroll->day_salary,2) }}</td>
                     <td class="text-right">{{ fmod($payroll->worked_days, 1) == 0 ? (int)$payroll->worked_days : number_format($payroll->worked_days, 2, '.', '') }}
                     </td>
+                    <td class="text-right">{{ number_format($payroll->worked_days_amount,2) }}</td>
                     @foreach($earningComponents as $ec)
                     @php $earning = $payroll->earnings->firstWhere('component_id', $ec->id); @endphp
                     <td class="text-right">{{ number_format($earning->amount ?? 0,2) }}</td>
@@ -207,9 +208,10 @@
             <tr>
                 <td style="width:40px;"></td>
                 <td style="width:40px;"></td>
+                
                 <td style="width:10px;" class="text-right">
                 </td>
-
+                <td style="width:40px;"  class="text-right"> {{ number_format($batch->payrolls->sum('worked_days_amount'),2) }}</td>
                 {{-- Dynamic earnings headers --}}
                 @foreach($earningComponents as $ec)
                 <td style="width: 40px;" class="text-right">
