@@ -259,7 +259,10 @@ public function createRefundVoucher()
     // Load only refunds not yet vouchered
     $refunds = ServiceChargeRefund::with(['memberships.saltern.yahai', 'memberships.owner'])
         ->whereNull('voucher_id')
-        ->get();
+        ->get()
+        ->sortBy(function($refund) {
+            return $refund->memberships->saltern->yahai->name ?? '';
+        });
 
     return view('vouchers.refund_create', compact('paymentMethods', 'banks', 'ledgers', 'subAccounts', 'refunds'));
 }
@@ -278,7 +281,7 @@ public function storeRefundVoucher(Request $request)
         'cheque_date' => 'nullable|date',
         'amount' => 'required|numeric|min:0',
         'note' => 'nullable|string',
-        'ledger_id' => 'required_without:refund_id',
+        'ledger_id' => 'required',
         'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
     ]);
 

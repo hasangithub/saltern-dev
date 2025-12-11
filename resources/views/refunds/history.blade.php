@@ -17,6 +17,9 @@
             @if($refunds->isEmpty())
             <div class="alert alert-info">No refunds found yet.</div>
             @else
+            <div class="mb-3">
+                <h4>Total Refund Amount: Rs. {{ number_format($totalRefundAmount, 2) }}</h4>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-sm">
                     <thead>
@@ -59,10 +62,6 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-
-            <div class="mt-2">
-                {{ $refunds->links() }}
             </div>
             @endif
         </div>

@@ -48,18 +48,21 @@
                         <div class="form-group">
                             <label for="description">Description</label>
                             <textarea name="description" id="description" class="form-control"
-                                required>{{ old('description') }}</textarea>
+                                required>30% Service Charge Refund</textarea>
                         </div>
 
                         <div class="form-group">
-                        <label for="refund_id">Select Refund</label>
+                            <label for="refund_id">Select Refund</label>
                             <select name="refund_id" id="refund_id" class="form-control" required>
                                 <option value="">-- Select Refund --</option>
                                 @foreach($refunds as $refund)
-                                <option value="{{ $refund->id }}" data-amount="{{ $refund->refund_amount }}">
+                                <option value="{{ $refund->id }}" data-amount="{{ $refund->refund_amount }}"
+                                    data-owner="{{ $refund->memberships->owner->name_with_initial }}"
+                                    data-yahai="{{ $refund->memberships->saltern->yahai->name }}"
+                                    data-saltern="{{ $refund->memberships->saltern->name }}">
                                     {{ $refund->memberships->saltern->yahai->name ?? '-' }} |
                                     {{ $refund->memberships->saltern->name ?? '-' }} |
-                                    {{ $refund->memberships->owner->name_with_initial ?? '-' }} - 
+                                    {{ $refund->memberships->owner->name_with_initial ?? '-' }} -
                                     Rs. {{ number_format($refund->refund_amount,2) }}
                                 </option>
                                 @endforeach
@@ -72,7 +75,8 @@
                             <select name="payment_method_id" id="payment_method" class="form-control" required>
                                 <option value=""></option>
                                 @foreach($paymentMethods as $method)
-                                <option value="{{ $method->id }}">{{ $method->payment_method_name }}</option>
+                                <option value="{{ $method->id }}" {{ $method->id == 1 ? 'selected' : '' }}>
+                                    {{ $method->payment_method_name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -81,27 +85,33 @@
                     <div class="col-md-6">
                         <div id="bankDetails" class="row" style="display: none;">
                             <!-- Bank -->
-                            <div class="form-group">
-                                <label for="bank">Bank</label>
-                                <select name="bank_sub_ledger_id" id="bank" class="form-control">
-                                    <option value=""></option>
-                                    @foreach($banks as $bank)
-                                    <option value="{{ $bank->id }}">{{ $bank->name }}</option>
-                                    @endforeach
-                                </select>
-                                <div id="balanceDisplay" class="mt-2 text-success font-weight-bold"></div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="bank">Bank</label>
+                                    <select name="bank_sub_ledger_id" id="bank" class="form-control">
+                                        <option value=""></option>
+                                        @foreach($banks as $bank)
+                                        <option value="{{ $bank->id }}"  {{ $bank->id == 107 ? 'selected' : '' }}>{{ $bank->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div id="balanceDisplay" class="mt-2 text-success font-weight-bold"></div>
+                                </div>
                             </div>
                             <!-- Cheque Number -->
-                            <div class="form-group">
-                                <label for="cheque_no">Cheque Number</label>
-                                <input type="text" name="cheque_no" id="cheque_no" class="form-control"
-                                    value="{{ old('cheque_no') }}">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cheque_no">Cheque Number</label>
+                                    <input type="text" name="cheque_no" id="cheque_no" class="form-control"
+                                        value="{{ old('cheque_no') }}">
+                                </div>
                             </div>
                             <!-- Cheque Date -->
-                            <div class="form-group">
-                                <label for="cheque_date">Cheque Date</label>
-                                <input type="date" name="cheque_date" id="cheque_date" class="form-control"
-                                    value="{{ old('cheque_date') }}">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cheque_date">Cheque Date</label>
+                                    <input type="date" name="cheque_date" id="cheque_date" class="form-control"
+                                    value="{{ date('Y-m-d') }}">
+                                </div>
                             </div>
                         </div>
                         <!-- Amount -->
@@ -167,91 +177,149 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.7/dist/sweetalert2.min.js"></script>
 <script>
 $(document).ready(function() {
-    $("#refund_id").on("change", function() {
-        let amount = $(this).find(":selected").data("amount") || "";
-        $("#amount").val(amount);
-    });
-});
-document.addEventListener('DOMContentLoaded', function() {
-    const paymentType = document.getElementById('payment_method');
-    const bankDetails = document.getElementById('bankDetails');
 
+    /* ------------------------------
+       AUTO FILL REFUND FIELDS
+    ------------------------------ */
+    $("#refund_id").on("change", function() {
+        let selected = $(this).find(":selected");
+
+        $("#amount").val(selected.data("amount") || "");
+        $("#name").val(selected.data("owner") || "");
+
+        let address = "";
+        if (selected.data("yahai")) address += selected.data("yahai");
+        if (selected.data("saltern")) address += " - " + selected.data("saltern");
+        $("#address").val(address.trim());
+    });
+
+
+    /* ------------------------------
+       PAYMENT METHOD (DEFAULT BANK)
+    ------------------------------ */
+
+    function toggleBankFields() {
+        const paymentMethod = $("#payment_method").val();
+
+        if (paymentMethod == "1") { // 1 = BANK
+            $("#bankDetails").show();
+
+            $("#cheque_no").attr("required", true);
+            $("#cheque_date").attr("required", true);
+            $("#bank").attr("required", true);
+
+        } else {
+            $("#bankDetails").hide();
+
+            $("#cheque_no").removeAttr("required");
+            $("#cheque_date").removeAttr("required");
+            $("#bank").removeAttr("required");
+        }
+    }
+
+    // Run on page load
+    toggleBankFields();
+
+    // Run on change
+    $("#payment_method").on("change", toggleBankFields);
+
+
+
+    /* ------------------------------
+       BANK BALANCE FETCH
+    ------------------------------ */
     const baseUrlBal = "{{ url('/subledger-balance') }}";
-    document.getElementById('bank').addEventListener('change', function() {
-        document.getElementById('balanceDisplay').innerText = "";
-        const subledgerId = this.value;
+
+    $("#bank").on("change", function() {
+        $("#balanceDisplay").html("");
+        const subledgerId = $(this).val();
+
+        if (!subledgerId) return;
 
         fetch(`${baseUrlBal}/${subledgerId}`)
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                document.getElementById('balanceDisplay').innerText =
-                    'Current Balance: Rs. ' + Number(data.balance).toLocaleString();
+                $("#balanceDisplay").html(
+                    "Current Balance: Rs. " + Number(data.balance).toLocaleString()
+                );
             });
     });
 
+    $("#bank").trigger("change");
 
-    paymentType.addEventListener('change', function() {
-        if (paymentType.value === '1') {
-            bankDetails.style.display = 'block'; // Show bank details
-            document.getElementById('cheque_no').setAttribute('required', 'true');
-            document.getElementById('cheque_date').setAttribute('required', 'true');
-            document.getElementById('bank_id').setAttribute('required', 'true');
-        } else {
-            bankDetails.style.display = 'none'; // Hide bank details
-            document.getElementById('cheque_no').removeAttribute('required');
-            document.getElementById('cheque_date').removeAttribute('required');
-            document.getElementById('bank_id').removeAttribute('required');
-        }
-    });
 
-    $('#sub_account').change(function() {
-        const subAccountId = $(this).val();
+
+    /* ------------------------------
+       SUB ACCOUNT → LOAD LEDGERS
+    ------------------------------ */
+    function loadLedger(subAccountId, defaultLedgerId = null) {
         $('#ledger').prop('disabled', true).empty().append(
-            '<option value="">Select Ledgers</option>');
-        if (subAccountId) {
-            $.ajax({
-                url: "{{ url('api/subaccount-ledgers') }}/" + subAccountId,
-                type: "GET",
-                success: function(response) {
-                    response.forEach(led => {
-                        $('#ledger').append(
-                            `<option value="${led.id}">${led.name}</option>`
-                        );
-                    });
-                    $('#ledger').prop('disabled', false);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching salterns :', error);
+            '<option value="">Select Ledgers</option>'
+        );
+
+        if (!subAccountId) return;
+
+        $.ajax({
+            url: "{{ url('api/subaccount-ledgers') }}/" + subAccountId,
+            type: "GET",
+            success: function(response) {
+                response.forEach(led => {
+                    $('#ledger').append(
+                        `<option value="${led.id}">${led.name}</option>`
+                    );
+                });
+                $('#ledger').prop('disabled', false);
+
+                // Set default ledger if provided
+                if (defaultLedgerId) {
+                    $('#ledger').val(defaultLedgerId).trigger('change');
                 }
-            });
-        }
-    });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching ledgers :', error);
+            }
+        });
+    }
 
-    document.getElementById('ledger').addEventListener('change', function() {
-        const ledgerId = this.value;
-        const subLedgerSelect = document.getElementById('sub_ledger');
 
-        // Clear the sub-ledger dropdown
-        subLedgerSelect.innerHTML = '<option value="">-- Select Sub-Ledger --</option>';
+
+
+
+    /* ------------------------------
+       LEDGER → LOAD SUB LEDGERS
+    ------------------------------ */
+    $("#ledger").on("change", function() {
+        const ledgerId = $(this).val();
+        const subLedgerSelect = $("#sub_ledger");
+
+        subLedgerSelect.html('<option value="">-- Select Sub-Ledger --</option>');
 
         if (ledgerId) {
-            const fetchSubledgersUrl = "{{ route('api.subledgers', ':ledgerId') }}";
-            const url = fetchSubledgersUrl.replace(':ledgerId', ledgerId);
-            // Make AJAX request to fetch sub-ledgers
+            const url = "{{ route('api.subledgers', ':ledgerId') }}".replace(':ledgerId', ledgerId);
+
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    // Populate sub-ledger dropdown
-                    data.forEach(subLedger => {
-                        const option = document.createElement('option');
-                        option.value = subLedger.id;
-                        option.textContent = subLedger.name;
-                        subLedgerSelect.appendChild(option);
+                    data.forEach(sl => {
+                        subLedgerSelect.append(
+                            `<option value="${sl.id}">${sl.name}</option>`);
                     });
-                })
-                .catch(error => console.error('Error fetching sub-ledgers:', error));
+                });
         }
     });
+
+    const defaultSubAccount = '30';
+    const defaultLedger = '176';
+
+    $('#sub_account').val(defaultSubAccount);
+    loadLedger(defaultSubAccount, defaultLedger);
+
+    $('#sub_account').change(function() {
+        const subAccountId = $(this).val();
+        loadLedger(subAccountId);
+    });
+
 });
 </script>
+
 @endpush
