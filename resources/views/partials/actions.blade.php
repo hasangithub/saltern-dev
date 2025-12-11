@@ -5,6 +5,11 @@
     <a href="{{ route('weighbridge_entries.show', $entry->id) }}" class="btn btn-default btn-xs">
         <i class="fas fa-eye"></i> View
     </a>
+    @if(is_null($entry->tare_weight))
+    <a href="{{ route('weighbridge.final.edit', $entry->id) }}" class="btn btn-sm btn-warning">
+        2nd Weight
+    </a>
+@endif
     <a href="{{ route('weighbridge_entries.edit', $entry->id) }}" class="btn btn-sm btn-warning">Edit</a>
     @role('admin')
     <form action="{{ route('weighbridge-entries.delete', $entry->id) }}" method="POST" style="display:inline;"

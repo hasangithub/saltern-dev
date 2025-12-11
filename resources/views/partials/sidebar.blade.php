@@ -77,11 +77,28 @@
                 </li>
 
                 <!-- Weighbridge -->
-                <li class="nav-item">
-                    <a href="{{ route('weighbridge_entries.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-weight"></i>
-                        <p>Weighbridge</p>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                        Weighbridge
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('weighbridge_entries.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-weight"></i>
+                                <p>Weighbridge</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('weighbridge.initial.create') }}" class="nav-link">
+                                <i class="nav-icon fas fa-weight"></i>
+                                <p>First Weight</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item has-treeview">
@@ -310,12 +327,18 @@
                         </li>
                     </ul>
                 </li>
-                <!-- <li class="nav-item">
-                    <a href="{{ route('expenses.index') }}" class="nav-link">
+                <li class="nav-item">
+                    <a href="{{ route('refunds.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-weight"></i>
-                        <p>Expense</p>
+                        <p>Refunds</p>
                     </a>
-                </li> -->
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('vouchers.refund.create') }}" class="nav-link">
+                        <i class="nav-icon fas fa-weight"></i>
+                        <p>Refund Voucher</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                         @csrf

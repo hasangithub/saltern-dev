@@ -27,6 +27,7 @@ class WeighbridgeEntry extends Model
         'owner_share_percentage',
         'status',
         'is_service_charge_paid',
+        'refund_id', 
         'created_by',
         'updated_by',
     ];
@@ -80,17 +81,17 @@ class WeighbridgeEntry extends Model
             $ownerSharePercentage = Setting::where('key', 'owner_share_percentage')->value('value') ?? 30;
             $bagPerWeight = Setting::where('key', 'bag_per_weight')->value('value') ?? 30;
             // Calculate net_weight when a new record is created
-            $entry->net_weight = bcsub($entry->tare_weight, $entry->initial_weight, 2);
+           // $entry->net_weight = bcsub($entry->tare_weight, $entry->initial_weight, 2);
         
             // Calculate bags_count and total_amount based on net_weight
-            if (!is_null($entry->net_weight)) {
-                $entry->bags_count = bcdiv($entry->net_weight, $bagPerWeight, 2); // Divide net_weight by 50, keep 2 decimal places
-                $entry->total_amount = bcmul($entry->bags_count, $entry->bag_price, 2);
-            }
+            // if (!is_null($entry->net_weight)) {
+            //     $entry->bags_count = bcdiv($entry->net_weight, $bagPerWeight, 2); // Divide net_weight by 50, keep 2 decimal places
+            //     $entry->total_amount = bcmul($entry->bags_count, $entry->bag_price, 2);
+            // }
 
             $entry->created_by = auth('web')->id();
             $entry->updated_by = auth('web')->id();
-            $entry->owner_share_percentage = $ownerSharePercentage;
+           // $entry->owner_share_percentage = $ownerSharePercentage;
 
             $entry->turn_no = static::whereDate('transaction_date', $entry->transaction_date)->max('turn_no') + 1 ?? 1;
         });        
@@ -114,5 +115,10 @@ class WeighbridgeEntry extends Model
     public function getFormattedNetWeightAttribute()
     {
         return number_format($this->net_weight, 2) . ' kg';
+    }
+
+    public function refundBatch()
+    {
+        return $this->belongsTo(ServiceChargeRefund::class, 'refund_id');
     }
 }
