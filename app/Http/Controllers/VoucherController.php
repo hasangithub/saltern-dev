@@ -278,7 +278,7 @@ public function storeRefundVoucher(Request $request)
         'cheque_date' => 'nullable|date',
         'amount' => 'required|numeric|min:0',
         'note' => 'nullable|string',
-        'ledger_id' => 'required_without:refund_id',
+        'ledger_id' => 'required',
         'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
     ]);
 
