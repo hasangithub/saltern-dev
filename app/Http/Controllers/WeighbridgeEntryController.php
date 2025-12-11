@@ -397,7 +397,7 @@ class WeighbridgeEntryController extends Controller
         $ownerSharePercentage = SettingsHelper::get('owner_share_percentage', 30);
 
         
-        $data['net_weight'] = bcsub($validated['tare_weight'], $entry->initial_weight, 2);
+        $data['net_weight'] = bcsub($validated['tare_weight'], $validated['initial_weight'], 2);
         $data['bags_count'] = bcdiv($data['net_weight'], $bagPerWeight, 2); // Divide net_weight by 50, keep 2 decimal places
         $data['total_amount'] = bcmul($data['bags_count'], $bagPrice, 2);
         $data['owner_share_percentage'] =  $ownerSharePercentage;
