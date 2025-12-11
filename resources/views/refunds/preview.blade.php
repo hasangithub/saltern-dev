@@ -55,7 +55,7 @@
                                         <td> {{ $g->membership->id ?? '-' }} |
                                             {{ $g->membership->saltern->name ?? '-' }} |
                                             {{ $g->membership->saltern->yahai->name ?? '-' }} |
-                                            {{ $g->membership->owner->name ?? '-' }}</td>
+                                            {{ $g->membership->owner->name_with_initial ?? '-' }}</td>
                                         <td class="text-right">{{ number_format($g->total_service_charge, 2) }}</td>
                                         <td class="text-right">{{ number_format($refundAmount, 2) }}</td>
                                         <td class="text-center">{{ $g->count }}</td>

@@ -47,7 +47,7 @@ class ServiceChargeRefundController extends Controller
 
         // Group totals by membership_id
         $grouped = $entries->groupBy('membership_id')->map(function ($rows, $membershipId) {
-            $total = $rows->sum('service_charge') ?: 0;
+            $total = $rows->sum('total_amount') ?: 0;
             return (object) [
                 'membership_id' => $membershipId,
                 'membership' => $rows->first()->membership, // get membership object
