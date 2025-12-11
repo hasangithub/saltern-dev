@@ -26,6 +26,8 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\StaffComplaintController;
+use App\Http\Controllers\ServiceChargeRefundController;
+
 
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\Auth\OwnerLoginController;
@@ -88,6 +90,18 @@ Route::get('/weighbridge/final/{entry}/edit', [WeighbridgeEntryController::class
 
 Route::post('/weighbridge/final/{entry}/update', [WeighbridgeEntryController::class, 'finalUpdate'])
     ->name('weighbridge.final.update');
+
+    Route::get('refunds', [ServiceChargeRefundController::class, 'index'])->name('refunds.index');
+    Route::post('refunds/preview', [ServiceChargeRefundController::class, 'preview'])->name('refunds.preview');
+    Route::post('refunds/approve', [ServiceChargeRefundController::class, 'approve'])->name('refunds.approve');
+    Route::get('refunds/history', [ServiceChargeRefundController::class, 'history'])->name('refunds.history');
+    Route::get('refunds/{refund}', [ServiceChargeRefundController::class, 'show'])->name('refunds.show');
+
+    Route::prefix('vouchers')->group(function () {
+        Route::get('refund/create', [VoucherController::class, 'createRefundVoucher'])->name('vouchers.refund.create');
+        Route::post('refund/store', [VoucherController::class, 'storeRefundVoucher'])->name('vouchers.refund.store');
+    });
+    
     
     Route::resource('other_incomes', OtherIncomeController::class);
     Route::resource('expenses', ExpenseController::class);

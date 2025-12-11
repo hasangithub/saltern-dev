@@ -327,12 +327,18 @@
                         </li>
                     </ul>
                 </li>
-                <!-- <li class="nav-item">
-                    <a href="{{ route('expenses.index') }}" class="nav-link">
+                <li class="nav-item">
+                    <a href="{{ route('refunds.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-weight"></i>
-                        <p>Expense</p>
+                        <p>Refunds</p>
                     </a>
-                </li> -->
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('vouchers.refund.create') }}" class="nav-link">
+                        <i class="nav-icon fas fa-weight"></i>
+                        <p>Refund Voucher</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                         @csrf

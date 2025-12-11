@@ -27,6 +27,7 @@ class WeighbridgeEntry extends Model
         'owner_share_percentage',
         'status',
         'is_service_charge_paid',
+        'refund_id', 
         'created_by',
         'updated_by',
     ];
@@ -114,5 +115,10 @@ class WeighbridgeEntry extends Model
     public function getFormattedNetWeightAttribute()
     {
         return number_format($this->net_weight, 2) . ' kg';
+    }
+
+    public function refundBatch()
+    {
+        return $this->belongsTo(ServiceChargeRefund::class, 'refund_id');
     }
 }

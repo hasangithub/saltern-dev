@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Validation\Rule;
+use App\Models\ServiceChargeRefund;
+
 
 class VoucherController extends Controller
 {
@@ -245,6 +247,91 @@ public function getSubledgerBalance($id)
 
     return response()->json(['balance' => $balance ?? 0]);
 }
+
+// Show form to create a refund voucher
+public function createRefundVoucher()
+{
+    $paymentMethods = PaymentMethod::all();
+    $banks = SubLedger::where('ledger_id', 11)->get();
+    $ledgers = Ledger::all();
+    $subAccounts = SubAccountGroup::all();
+
+    // Load only refunds not yet vouchered
+    $refunds = ServiceChargeRefund::with(['memberships.saltern.yahai', 'memberships.owner'])
+        ->whereNull('voucher_id')
+        ->get();
+
+    return view('vouchers.refund_create', compact('paymentMethods', 'banks', 'ledgers', 'subAccounts', 'refunds'));
+}
+
+// Store refund voucher
+public function storeRefundVoucher(Request $request)
+{
+    $validated = $request->validate([
+        'refund_id' => 'required|exists:service_charge_refunds,id',
+        'name' => 'required|string|max:255',
+        'address' => 'nullable|string|max:255',
+        'description' => 'required|string',
+        'payment_method_id' => 'required|exists:payment_methods,id',
+        'bank_sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+        'cheque_no' => 'nullable|string|max:50',
+        'cheque_date' => 'nullable|date',
+        'amount' => 'required|numeric|min:0',
+        'note' => 'nullable|string',
+        'ledger_id' => 'required_without:refund_id',
+        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+    ]);
+
+    // Create voucher
+    $voucher = Voucher::create($validated);
+
+    // Update refund record with voucher_id
+    $refund = ServiceChargeRefund::findOrFail($validated['refund_id']);
+    $refund->update(['voucher_id' => $voucher->id]);
+
+    // Journal entry
+    $description = "Refund Voucher#" . $voucher->id . " " . $validated['description'];
+    if ($validated['payment_method_id'] == 1 && !empty($validated['cheque_no'])) {
+        $description .= " (Cheque No: " . $validated['cheque_no'] . ")";
+    }
+
+    $journal = JournalEntry::create([
+        'journal_date' => now()->toDateString(),
+        'description' => $description,
+    ]);
+
+    $membership = $refund->memberships;
+    $salternName = $membership->saltern->name ?? '-';
+    $yahaiName = $membership->saltern->yahai->name ?? '-';
+    $ownerName = $membership->owner->name_with_initial ?? '-';
+
+    $descriptionText = "Refund Voucher#{$voucher->id} | Membership#{$membership->id} | {$yahaiName} {$salternName} | {$ownerName}";
+
+
+    $details = [
+        [
+            'journal_id' => $journal->id,
+            'ledger_id' => $request->input('ledger_id'),
+            'sub_ledger_id' => $request->input('sub_ledger_id'),
+            'debit_amount' => $validated['amount'],
+            'credit_amount' => null,
+            'description' => $descriptionText,
+        ],
+        [
+            'journal_id' => $journal->id,
+            'ledger_id' => 11,
+            'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
+            'debit_amount' => null,
+            'credit_amount' => $validated['amount'],
+            'description' => $descriptionText,
+        ],
+    ];
+
+    JournalDetail::insert($details);
+
+    return redirect()->route('vouchers.refund.create')->with('success', 'Refund Voucher created successfully.');
+}
+
 
 
 
