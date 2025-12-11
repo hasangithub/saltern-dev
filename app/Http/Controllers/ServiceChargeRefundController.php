@@ -141,8 +141,13 @@ class ServiceChargeRefundController extends Controller
      */
     public function history(Request $request)
     {
-        $refunds = ServiceChargeRefund::orderBy('created_at', 'desc')->paginate(25);
-        return view('refunds.history', compact('refunds'));
+        $refunds = ServiceChargeRefund::orderBy('created_at', 'desc')->get();
+
+        // Calculate total refund amount
+        $totalRefundAmount = $refunds->sum('refund_amount');
+    
+        // Pass both to the view
+        return view('refunds.history', compact('refunds', 'totalRefundAmount'));
     }
 
     /**
