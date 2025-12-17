@@ -14,7 +14,7 @@ class JournalEntryController extends Controller
 {
     public function index()
     {
-        $journalEntries = JournalEntry::with('details')->where('is_reversal', 0)->latest()->get();
+        $journalEntries = JournalEntry::with('details')->where('is_reversal', 1)->latest()->get();
         return view('journal_entries.index', compact('journalEntries'));
     }
 
