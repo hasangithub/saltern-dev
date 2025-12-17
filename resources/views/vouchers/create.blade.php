@@ -152,7 +152,7 @@
                     </div>
                 </div>
 
-                <button type="submit" id="saveTransaction" class="btn btn-primary">
+                <button type="submit" id="saveTransaction" class="btn btn-primary" onclick="this.disabled=true; this.form.submit();">
                     <i class="fas fa-save"></i> Save Voucher
                 </button>
             </form>
