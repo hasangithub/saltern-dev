@@ -492,6 +492,9 @@ class ReportController extends Controller
             $salternName = $membership->saltern->yahai->name . " - " . $membership->saltern->name;
 
             foreach ($membership->ownerLoans as $loan) {
+                if ($loan->status !== 'approved') {
+                    continue;
+                }
                 $balance = $loan->approved_amount;
                 $loanRows = [];
 
@@ -590,7 +593,7 @@ class ReportController extends Controller
                 if ($loan->status !== 'approved') {
                     continue;
                 }
-                
+
                 $balance = $loan->approved_amount;
                 $loanRows = [];
 
