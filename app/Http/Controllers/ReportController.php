@@ -164,6 +164,7 @@ class ReportController extends Controller
         // EQUITY (Accumulated Fund, Reserve, Net Profit)
         $accumFund = 0;
         $reserves = 0;
+        $depreciation = 0;
 
         if ($accountGroups->has('Liability')) {
             foreach ($accountGroups['Liability'] as $group) {
@@ -180,6 +181,12 @@ class ReportController extends Controller
                             $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
                             $openingBal = is_array($opening) ? $opening['balance'] : $opening;
                             $accumFund += $openingBal + ($ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount'));
+                        }
+
+                        if ($ledger->name === 'Accumulated Depreciation') {
+                            $opening = $from ? $this->calculateOpeningBalance($ledger->id, null, $from) : 0;
+                            $openingBal = is_array($opening) ? $opening['balance'] : $opening;
+                            $depreciation += $openingBal + ($ledger->journalDetails->sum('credit_amount') - $ledger->journalDetails->sum('debit_amount'));
                         }
                     }
                 }
@@ -215,11 +222,11 @@ class ReportController extends Controller
 
         $netProfit = $income - $expenses;
 
-        $data['Equity'][] = ['name' => 'Accumulated Fund', 'total' => $accumFund];
+        $data['Equity'][] = ['name' => 'Accumulated Fund', 'total' => $accumFund + $depreciation];
         $data['Equity'][] = ['name' => 'Net Profit', 'total' => $netProfit];
         $data['Equity'][] = ['name' => 'Reserves', 'total' => $reserves];
 
-        $equityTotal = $accumFund + $netProfit + $reserves;
+        $equityTotal = $accumFund + $netProfit + $reserves + $depreciation;
 
         // CURRENT LIABILITIES
         if ($accountGroups->has('Liability')) {
