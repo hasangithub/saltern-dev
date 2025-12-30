@@ -987,6 +987,9 @@ class ReportController extends Controller
         $grouped = [];
 
         foreach ($loans as $loan) {
+            if ($loan->status !== 'approved') {
+                continue;
+            }
             $yahai = $loan->membership->saltern->yahai->name ?? 'Unknown Yahai';
             $saltern = $loan->membership->saltern->name ?? 'Unknown Saltern';
             $owner = $loan->membership->owner->name_with_initial ?? 'Unknown Owner';
