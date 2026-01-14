@@ -109,7 +109,7 @@
 
         <table class="details">
             <tr>
-                <td class="label">Name:</td>
+                <td class="label">Name: </td>
                 <td colspan="5">{{ $voucher->name }}</td>
             </tr>
             <tr>
