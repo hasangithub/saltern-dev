@@ -103,7 +103,7 @@
                 <td class="label">Ledger:</td>
                 <td>{{ $voucher->ledger->name ?? '-' }}</td>
                 <td class="label">Date:</td>
-                <td>{{ \Carbon\Carbon::parse($voucher->date)->format('d-m-Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($voucher->created_at)->format('d-m-Y') }}</td>
             </tr>
         </table>
 
