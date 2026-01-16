@@ -128,7 +128,17 @@
             </tr>
             @endforeach
             <tr>
-                <td colspan="2">Overtime</td>
+                <td>Overtime</td>
+                <td>
+                    @if($payroll->overtime_hours > 0)
+                    {{ fmod($payroll->overtime_hours, 1) == 0 
+                    ? number_format($payroll->overtime_hours, 0) 
+                    : rtrim(rtrim(number_format($payroll->overtime_hours, 2), '0'), '.') }}
+                    {{ $payroll->overtime_hours == 1 ? 'hour' : 'hours' }}
+                    @else
+                    -
+                    @endif
+                </td>
                 <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0, 2) }}</td>
             </tr>
             @if($isTemporarySecurity)    
