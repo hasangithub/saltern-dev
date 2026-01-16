@@ -23,7 +23,7 @@ class PayrollBatchController extends Controller
 {
     public function index()
     {
-        $batches = PayrollBatch::with('payrollTemplate')->withCount('payrolls')
+        $batches = PayrollBatch::with('payrollTemplate')->where('is_visible', true)->withCount('payrolls')
             ->orderByDesc('pay_period')
             ->get();
 
