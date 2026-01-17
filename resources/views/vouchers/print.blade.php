@@ -134,7 +134,7 @@
                 <td style="border: 1px solid #333; width: 18%;">{{ $voucher->cheque_no }}</td>
 
                 <td style="border: 1px solid #333; font-weight: bold; width: 15%;">Bank</td>
-                <td style="border: 1px solid #333; width: 18%;">{{ $voucher->bank->name }}</td>
+                <td style="border: 1px solid #333; width: 18%;">{{ $voucher->bank?->name ?? '' }}</td>
 
                 <td style="border: 1px solid #333; font-weight: bold; width: 15%;">Cheque Date</td>
                 <td style="border: 1px solid #333; width: 19%;">
