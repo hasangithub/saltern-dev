@@ -10,12 +10,16 @@
 
 @section('content_body')
 
+@php
+$manualEnabled = \App\Models\Setting::get('weighbridge_manual_enable', 0);
+@endphp
 <style>
-
 /* Make focused inputs more visible */
 .form-control:focus {
-    border-color: #ff6600 !important;    /* Bright orange border */
-    box-shadow: 0 0 5px 2px rgba(255, 102, 0, 0.5) !important; /* Glowing outline */
+    border-color: #ff6600 !important;
+    /* Bright orange border */
+    box-shadow: 0 0 5px 2px rgba(255, 102, 0, 0.5) !important;
+    /* Glowing outline */
     outline: none !important;
 }
 
@@ -34,12 +38,13 @@ textarea.form-control:focus {
         <div class="col-12">
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">Create First Weight #  {{$nextSerialNo}}</h3>
+                    <h3 class="card-title">Create First Weight # {{$nextSerialNo}}</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <form id="weighbridge_form" action="{{ route('weighbridge.initial.store') }}" method="POST" autocomplete="off">
+                            <form id="weighbridge_form" action="{{ route('weighbridge.initial.store') }}" method="POST"
+                                autocomplete="off">
                                 @csrf
                                 <div class="form-group row">
                                     <label for="transaction_date" class="col-sm-3 col-form-label">Date</label>
@@ -73,7 +78,8 @@ textarea.form-control:focus {
                                 <div class="form-group row">
                                     <label for="yahai_id" class="col-sm-3 col-form-label">Yahai</label>
                                     <div class="col-sm-9">
-                                        <select id="yahai_id" name="yahai_id" class="form-control" required tabindex="3">
+                                        <select id="yahai_id" name="yahai_id" class="form-control" required
+                                            tabindex="3">
                                             <option value="">-- Select Yahai --</option>
                                         </select>
                                     </div>
@@ -81,7 +87,8 @@ textarea.form-control:focus {
                                 <div class="form-group row">
                                     <label for="saltern_id" class="col-sm-3 col-form-label">Waikal No</label>
                                     <div class="col-sm-9">
-                                        <select id="saltern_id" name="saltern_id" class="form-control" required tabindex="4">
+                                        <select id="saltern_id" name="saltern_id" class="form-control" required
+                                            tabindex="4">
                                             <option value="">-- Select Waikal No --</option>
                                         </select>
                                     </div>
@@ -98,7 +105,8 @@ textarea.form-control:focus {
                                 <div class="form-group row">
                                     <label for="buyer_id" class="col-sm-3 col-form-label">Buyer</label>
                                     <div class="col-sm-9">
-                                        <select name="buyer_id" id="buyer_id" class="form-control" required tabindex="5">
+                                        <select name="buyer_id" id="buyer_id" class="form-control" required
+                                            tabindex="5">
                                             <option value="">Select Buyer</option>
                                             @foreach($buyers as $buyer)
                                             <option value="{{ $buyer->id }}">{{ $buyer->full_name }}</option>
@@ -116,11 +124,18 @@ textarea.form-control:focus {
                                 <div class="form-group row">
                                     <label for="initial_weight" class="col-sm-3 col-form-label">1st Weight</label>
                                     <div class="col-sm-9">
-                                        <input type="number" step="1" name="initial_weight" id="initial_weight"
-                                            class="form-control" required tabindex="7">
+                                        <div class="input-group">
+                                            <input type="number" step="1" name="initial_weight" id="initial_weight"
+                                                class="form-control" required tabindex="7" value=""
+                                                {{ $manualEnabled ? '' : 'readonly' }}>
+
+                                            <button type="button" id="clear_weight"
+                                                class="btn btn-sm btn-secondary">Clear</button>
+                                        </div>
                                     </div>
                                 </div>
-                               
+
+
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Save
                                 </button>
@@ -144,66 +159,75 @@ textarea.form-control:focus {
 {{-- Push extra scripts --}}
 
 @push('js')
-@if(session('success'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
-                window.open("{{ route('weighbridge_entries.invoicePrintFirst', session('print_entry_id')) }}", "_blank");
-            }
-        });
-    </script>
-@endif
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("#weighbridge_form"); // Change as needed
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.querySelector("#weighbridge_form");
+    const initialWeight = document.getElementById('initial_weight');
+    const submitBtn = form.querySelector('button[type="submit"]');
 
-    form.addEventListener("keydown", function (e) {
+    const clearBtn = document.getElementById('clear_weight');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            initialWeight.value = ''; // Reset value
+            initialWeight.focus(); // Focus back to input
+        });
+    }
+
+    // ---------------------
+    // Submit event with validation
+    // ---------------------
+    form.addEventListener('submit', function(e) {
+        const weightVal = initialWeight.value.trim();
+
+        // Stop submit if empty
+        if (weightVal === '') {
+            e.preventDefault();
+            alert('First weight cannot be empty!');
+            initialWeight.focus();
+            return false;
+        }
+
+        // Disable button to prevent double submit
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    });
+
+    // ---------------------
+    // Tab key navigation skipping readonly/disabled
+    // ---------------------
+    form.addEventListener("keydown", function(e) {
         if (e.key === "Tab") {
             const focusable = Array.from(form.querySelectorAll("input, select, textarea, button"))
                 .filter(el =>
                     !el.disabled &&
                     el.type !== "hidden" &&
-                    el.offsetParent !== null && // visible
-                    !el.readOnly // skip readonly
+                    el.offsetParent !== null &&
+                    !el.readOnly
                 );
 
             const index = focusable.indexOf(document.activeElement);
-            if (index === -1) return; // if not in list
+            if (index === -1) return;
 
             e.preventDefault();
-
-            const nextIndex = e.shiftKey
-                ? (index - 1 + focusable.length) % focusable.length
-                : (index + 1) % focusable.length;
-
+            const nextIndex = e.shiftKey ?
+                (index - 1 + focusable.length) % focusable.length :
+                (index + 1) % focusable.length;
             focusable[nextIndex].focus();
         }
     });
-});
-$(document).ready(function() {
-    const $form = $('form');
-    const $submitBtn = $form.find('button[type="submit"]');
 
-    // Re-enable submit button on page load in case it was disabled before
-    if ($submitBtn.prop('disabled')) {
-        $submitBtn.prop('disabled', false);
-        $submitBtn.text('Save'); // Reset to your default button text
+    // ---------------------
+    // Dropdown AJAX handling
+    // ---------------------
+    function clearMembershipDetails() {
+        $('#membership_id').val('');
+        $('#membership_name').val('');
     }
-
-    $form.on('submit', function() {
-        $submitBtn.prop('disabled', true);
-        $submitBtn.text('Submitting...');
-    });
 
     $('#side_id').change(function() {
         const sideId = $(this).val();
-
         clearMembershipDetails();
-
-        // Reset and disable the Yahai dropdown
         $('#yahai_id').prop('disabled', true).empty().append('<option value="">Select Yahai</option>');
-
-        // Reset and disable the Saltern dropdown
         $('#saltern_id').prop('disabled', true).empty().append(
             '<option value="">Select Saltern</option>');
 
@@ -221,9 +245,6 @@ $(document).ready(function() {
                         );
                     });
                     $('#yahai_id').prop('disabled', false);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching Yahais:', error);
                 }
             });
         }
@@ -234,6 +255,7 @@ $(document).ready(function() {
         $('#saltern_id').prop('disabled', true).empty().append(
             '<option value="">Select Saltern</option>');
         clearMembershipDetails();
+
         if (yahaiId) {
             $.ajax({
                 url: "{{ route('get.saltern') }}",
@@ -248,17 +270,13 @@ $(document).ready(function() {
                         );
                     });
                     $('#saltern_id').prop('disabled', false);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching salterns :', error);
                 }
             });
         }
     });
 
     $('#saltern_id').change(function() {
-        const salternId = $(this).val(); // Get selected saltern ID
-
+        const salternId = $(this).val();
         clearMembershipDetails();
 
         if (salternId) {
@@ -267,30 +285,25 @@ $(document).ready(function() {
                 type: "GET",
                 success: function(response) {
                     if (response.status === 'success') {
-                        const membership = response.membership;
-                        const owner = response.owner;
-                        // Populate the form with membership details
-                        $('#membership_id').val(membership.id);
-                        $('#membership_name').val(owner.name_with_initial);
+                        $('#membership_id').val(response.membership.id);
+                        $('#membership_name').val(response.owner.name_with_initial);
                     } else {
                         alert('No membership found for this saltern');
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching membership details:', error);
                 }
             });
         }
     });
 
-    function clearMembershipDetails() {
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
+    // ---------------------
+    // Success session alert & print
+    // ---------------------
+    @if(session('success'))
+    if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
+        window.open("{{ route('weighbridge_entries.invoicePrintFirst', session('print_entry_id')) }}",
+            "_blank");
     }
+    @endif
 });
-
 </script>
 @endpush
