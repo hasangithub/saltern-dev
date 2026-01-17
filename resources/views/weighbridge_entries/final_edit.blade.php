@@ -10,6 +10,9 @@
 
 @section('content_body')
 
+@php
+$manualEnabled = \App\Models\Setting::get('weighbridge_manual_enable', 0);
+@endphp
 <style>
 /* Make focused inputs more visible */
 .form-control:focus {
@@ -38,10 +41,24 @@ textarea.form-control:focus {
                     <h3 class="card-title">Add 2nd weight entry# {{$data->id}}</h3>
                 </div>
                 <div class="card-body">
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <div class="row">
                         <div class="col-md-6">
-                            <form id="weighbridge_form"  action="{{ route('weighbridge.final.update', $data->id) }}" method="POST"
-                                autocomplete="off">
+                            <form id="weighbridge_form" action="{{ route('weighbridge.final.update', $data->id) }}"
+                                method="POST" autocomplete="off">
                                 @csrf
                                 <div class="form-group row">
                                     <label for="transaction_date" class="col-sm-3 col-form-label">Date</label>
@@ -148,12 +165,20 @@ textarea.form-control:focus {
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="initial_weight" class="col-sm-3 col-form-label">2nd Weight</label>
+                                    <label for="tare_weight" class="col-sm-3 col-form-label">2nd Weight</label>
                                     <div class="col-sm-9">
-                                        <input type="number" step="1" name="tare_weight" id="tare_weight"
-                                            class="form-control" required tabindex="8">
+                                        <div class="input-group">
+                                            <input type="number" step="1" name="tare_weight" id="tare_weight"
+                                                class="form-control" required tabindex="8"
+                                                {{ $manualEnabled ? '' : 'readonly' }}>
+
+                                            <button type="button" id="clear_weight" class="btn btn-sm  btn-outline-secondary">
+                                                Clear
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <div class="col-12">
                                     <div class="card card-default">
@@ -227,66 +252,114 @@ textarea.form-control:focus {
 {{-- Push extra scripts --}}
 
 @push('js')
-@if(session('success'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
-        window.open("{{ route('weighbridge_entries.invoice', session('print_entry_id')) }}", "_blank");
-    }
-});
-</script>
-@endif
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const form = document.querySelector("#weighbridge_form"); // Change as needed
+    const form = document.querySelector("#weighbridge_form");
+    const initialWeightInput = document.getElementById('initial_weight'); // readonly
+    const tareWeightInput = document.getElementById('tare_weight'); // 2nd weight
+    const netWeightInput = document.getElementById('net_weight');
+    const serviceChargeInput = document.getElementById('service_charge');
+    const bagsInput = document.getElementById('bags');
+    const descriptionText = document.getElementById('description');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const clearBtn = document.getElementById('clear_weight');
 
+    const SERVICE_CHARGE_RATE = 100; // adjust as needed
+
+    // ---------------------
+    // 2nd Weight Calculation
+    // ---------------------
+    function calculateValues() {
+        const initialWeight = parseFloat(initialWeightInput.value) || 0;
+        const tareWeight = parseFloat(tareWeightInput.value) || 0;
+
+        if (initialWeight > 0 && tareWeight > 0 && tareWeight >= initialWeight) {
+            const netWeight = tareWeight - initialWeight;
+            const bags = netWeight / 50;
+            const serviceCharge = bags * SERVICE_CHARGE_RATE;
+
+            netWeightInput.value = netWeight;
+            serviceChargeInput.value = serviceCharge.toFixed(2);
+            bagsInput.value = bags.toFixed(2);
+
+            const debitAmount = serviceCharge * 0.30;
+            const creditAmount = serviceCharge * 0.70;
+
+            descriptionText.innerHTML = `
+                Owner's Account: Debit <strong>30%</strong> = <strong>LKR ${debitAmount.toFixed(2)}</strong><br>
+                Service Charge Account: Credit <strong>70%</strong> = <strong>LKR ${creditAmount.toFixed(2)}</strong>
+            `;
+        } else {
+            netWeightInput.value = '';
+            serviceChargeInput.value = '';
+            bagsInput.value = '';
+            descriptionText.innerHTML = '';
+        }
+    }
+
+    tareWeightInput.addEventListener('input', calculateValues);
+
+    // ---------------------
+    // Clear Button
+    // ---------------------
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            tareWeightInput.value = '';
+            netWeightInput.value = '';
+            serviceChargeInput.value = '';
+            bagsInput.value = '';
+            descriptionText.innerHTML = '';
+            tareWeightInput.focus();
+        });
+    }
+
+    // ---------------------
+    // Form Submit Validation
+    // ---------------------
+    form.addEventListener('submit', function(e) {
+        if (tareWeightInput.value.trim() === '') {
+            e.preventDefault();
+            alert('Please enter 2nd weight!');
+            tareWeightInput.focus();
+            return false;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    });
+
+    // ---------------------
+    // Tab key navigation
+    // ---------------------
     form.addEventListener("keydown", function(e) {
         if (e.key === "Tab") {
             const focusable = Array.from(form.querySelectorAll("input, select, textarea, button"))
-                .filter(el =>
-                    !el.disabled &&
-                    el.type !== "hidden" &&
-                    el.offsetParent !== null && // visible
-                    !el.readOnly // skip readonly
-                );
+                .filter(el => !el.disabled && el.type !== "hidden" && el.offsetParent !== null && !el
+                    .readOnly);
 
             const index = focusable.indexOf(document.activeElement);
-            if (index === -1) return; // if not in list
+            if (index === -1) return;
 
             e.preventDefault();
-
-            const nextIndex = e.shiftKey ?
-                (index - 1 + focusable.length) % focusable.length :
-                (index + 1) % focusable.length;
-
+            const nextIndex = e.shiftKey ? (index - 1 + focusable.length) % focusable.length : (index +
+                1) % focusable.length;
             focusable[nextIndex].focus();
         }
     });
-});
-$(document).ready(function() {
-    const $form = $('form');
-    const $submitBtn = $form.find('button[type="submit"]');
 
-    // Re-enable submit button on page load in case it was disabled before
-    if ($submitBtn.prop('disabled')) {
-        $submitBtn.prop('disabled', false);
-        $submitBtn.text('Save'); // Reset to your default button text
+    // ---------------------
+    // Dropdown AJAX: Side -> Yahai -> Saltern -> Membership
+    // ---------------------
+    function clearMembershipDetails() {
+        $('#membership_id').val('');
+        $('#membership_name').val('');
     }
-
-    $form.on('submit', function() {
-        $submitBtn.prop('disabled', true);
-        $submitBtn.text('Submitting...');
-    });
 
     $('#side_id').change(function() {
         const sideId = $(this).val();
-
         clearMembershipDetails();
 
-        // Reset and disable the Yahai dropdown
         $('#yahai_id').prop('disabled', true).empty().append('<option value="">Select Yahai</option>');
-
-        // Reset and disable the Saltern dropdown
         $('#saltern_id').prop('disabled', true).empty().append(
             '<option value="">Select Saltern</option>');
 
@@ -304,9 +377,6 @@ $(document).ready(function() {
                         );
                     });
                     $('#yahai_id').prop('disabled', false);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching Yahais:', error);
                 }
             });
         }
@@ -314,9 +384,10 @@ $(document).ready(function() {
 
     $('#yahai_id').change(function() {
         const yahaiId = $(this).val();
+        clearMembershipDetails();
         $('#saltern_id').prop('disabled', true).empty().append(
             '<option value="">Select Saltern</option>');
-        clearMembershipDetails();
+
         if (yahaiId) {
             $.ajax({
                 url: "{{ route('get.saltern') }}",
@@ -331,123 +402,51 @@ $(document).ready(function() {
                         );
                     });
                     $('#saltern_id').prop('disabled', false);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching salterns :', error);
                 }
             });
         }
     });
 
     $('#saltern_id').change(function() {
-        const salternId = $(this).val(); // Get selected saltern ID
-
+        const salternId = $(this).val();
         clearMembershipDetails();
 
         if (salternId) {
+            // Membership
             $.ajax({
                 url: "{{ route('get.membership', '') }}/" + salternId,
                 type: "GET",
                 success: function(response) {
-                    if (response.status === 'success') {
-                        const membership = response.membership;
-                        const owner = response.owner;
-                        // Populate the form with membership details
-                        $('#membership_id').val(membership.id);
-                        $('#membership_name').val(owner.name_with_initial);
+                    if (response.status === "success") {
+                        $('#membership_id').val(response.membership.id);
+                        $('#membership_name').val(response.owner.name_with_initial);
                     } else {
                         alert('No membership found for this saltern');
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching membership details:', error);
                 }
             });
 
+            // Saltern loan details
             $.ajax({
                 url: "{{ route('get.saltern.details', '') }}/" + salternId,
                 type: "GET",
-                success: function(loans) {
-                    $('#saltern_details').html(loans);
+                success: function(data) {
+                    $('#saltern_details').html(data);
                 },
                 error: function() {
                     $('#saltern_details').html(
                         '<p>An error occurred. Please try again.</p>');
-                },
+                }
             });
         }
     });
 
-    function clearMembershipDetails() {
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-        $('#membership_name').val('');
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const initialWeightInput = document.getElementById('initial_weight');
-    const tareWeightInput = document.getElementById('tare_weight');
-    const netWeightInput = document.getElementById('net_weight');
-    const serviceChargeInput = document.getElementById('service_charge');
-    const bagsInput = document.getElementById('bags');
-    const descriptionText = document.getElementById('description');
-
-    const SERVICE_CHARGE_RATE = 100; // Example service charge per kg (adjust as needed)
-
-    function calculateValues() {
-        const initialWeight = parseFloat(initialWeightInput.value) || 0;
-        const tareWeight = parseFloat(tareWeightInput.value) || 0;
-
-        if (initialWeight > 0 && tareWeight > 0 && tareWeight >= initialWeight) {
-            const netWeight = tareWeight - initialWeight;
-            const bags = netWeight / 50;
-            const serviceCharge = bags * SERVICE_CHARGE_RATE;
-
-
-            netWeightInput.value = netWeight; // Display net weight
-            serviceChargeInput.value = serviceCharge.toFixed(2); // Display service charge
-            bagsInput.value = bags.toFixed(2);
-
-            const debitAmount = serviceCharge * 0.30;
-            const creditAmount = serviceCharge * 0.70;
-
-            // Update the description field
-            descriptionText.innerHTML = `<br>
-                Owner's Account: Debit <strong> 30% </strong> of Service Charge = <strong>LKR ${debitAmount.toFixed(2)} </strong><br>
-                Service Charge Account: Credit <strong> 70% </strong> of Service Charge = <strong> LKR ${creditAmount.toFixed(2)} </strong>
-            `.trim();
-
-        } else {
-            netWeightInput.value = ''; // Clear fields if invalid input
-            serviceChargeInput.value = '';
-            bagsInput.value = '';
-            descriptionText.innerHTML = '';
-        }
-    }
-
-    // Add event listeners to update values dynamically
-    initialWeightInput.addEventListener('input', calculateValues);
-    tareWeightInput.addEventListener('input', calculateValues);
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-
+    // ---------------------
+    // Load data on page load if editing
+    // ---------------------
     let salternId = "{{ $data->membership->saltern_id }}";
-
     if (salternId) {
-        // Load saltern loan details
-        $.ajax({
-            url: "{{ route('get.saltern.details', '') }}/" + salternId,
-            type: "GET",
-            success: function(data) {
-                $('#saltern_details').html(data);
-            }
-        });
-
-        // Load membership details
+        // Load membership and loans
         $.ajax({
             url: "{{ route('get.membership', '') }}/" + salternId,
             type: "GET",
@@ -458,7 +457,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         });
+
+        $.ajax({
+            url: "{{ route('get.saltern.details', '') }}/" + salternId,
+            type: "GET",
+            success: function(data) {
+                $('#saltern_details').html(data);
+            }
+        });
     }
+
 });
 </script>
 @endpush

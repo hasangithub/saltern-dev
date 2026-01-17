@@ -48,6 +48,7 @@ use App\Http\Controllers\PayrollBatchController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\StaffLoanRepaymentController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\SettingController;
 
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
@@ -188,6 +189,11 @@ Route::post('/weighbridge/final/{entry}/update', [WeighbridgeEntryController::cl
     Route::post('/sms/settings', [SmsController::class, 'updateSettings'])->name('sms.settings.update');
     Route::post('/sms/test', [SmsController::class, 'testSms'])->name('sms.test');
     Route::post('/sms/send', [SmsController::class, 'sendSms'])->name('sms.send');
+
+    Route::middleware(['role:manager'])->group(function () {
+        Route::get('/settings', [SettingController::class,'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class,'update'])->name('settings.update');
+    });
 
     Route::get('test/',function() {
         return view('journal_entries.test');
