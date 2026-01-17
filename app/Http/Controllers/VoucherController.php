@@ -47,7 +47,7 @@ class VoucherController extends Controller
             'address' => 'nullable|string|max:255',
             'description' => 'required|string',
             'payment_method_id' => 'required|exists:payment_methods,id',
-            'bank_sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+            'bank_sub_ledger_id' => 'required_if:payment_method_id,1|nullable|exists:sub_ledgers,id',
             'cheque_no' => 'nullable|string|max:50',
             'cheque_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
