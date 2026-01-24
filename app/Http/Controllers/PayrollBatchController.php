@@ -86,7 +86,7 @@ class PayrollBatchController extends Controller
             ->values(); // reindex for proper looping
 
         // Load earning and deduction components
-        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Fixed Allowance'])->get();
         $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
         $templateName = $batch->payrollTemplate->name ?? null;
         // Pass to view
@@ -158,7 +158,7 @@ class PayrollBatchController extends Controller
             ->values(); // reindex for proper looping
 
         // Load earning and deduction components
-        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allowance', 'Fixed Allowance'])->get();
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Fixed Allowance'])->get();
         $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
 
         $pdf = Pdf::loadView('payroll.contract_print_payroll', compact('batch', 'earningComponents', 'deductionComponents', 'employees', 'department'))->setPaper('legal', 'landscape');
@@ -825,7 +825,7 @@ class PayrollBatchController extends Controller
         $employees = $batch->payrolls->load('employee.user', 'employee.staffLoans');
 
         // Load earning and deduction components
-        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Fixed Allowance'])->get();
         $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->get();
 
         return view('payroll.contract-show', compact('batch', 'earningComponents', 'deductionComponents', 'employees', 'department'));
@@ -1078,7 +1078,7 @@ class PayrollBatchController extends Controller
             'payrolls.deductions.component'
         ])->findOrFail($id);
 
-        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Cost of Living Allow', 'Fixed Allowance'])->get();
+        $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Fixed Allowance'])->get();
         $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
 
         $pdf = Pdf::loadView('payroll.contract_payslip', compact('batch', 'earningComponents', 'deductionComponents'))
