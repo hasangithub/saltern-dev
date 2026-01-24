@@ -308,6 +308,7 @@
                     <tr class="fw-semibold">
                         <td>Total</td>
                         <td class="text-right">
+                        {{ number_format($batch->payrolls->sum(fn($p) => $p->eight_hours_duty_amount  + $p->extra_half_days_amount + $p->poovarasan_kuda_allowance_150_amount + $p->labour_amount) + $batch->payrolls->sum('gross_earnings'),2) }}
                          {{ number_format($batch->payrolls->sum('gross_earnings'),2) }}
                         </td>
                     </tr>
