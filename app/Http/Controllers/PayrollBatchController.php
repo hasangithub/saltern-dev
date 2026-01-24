@@ -136,7 +136,7 @@ class PayrollBatchController extends Controller
     public function contractPrint(Request $request, $id)
     {
         $department = $request->get('department', 'all');
-        $batch = PayrollBatch::with(['payrollTemplate',
+        $batch = PayrollBatch::with([
             'payrolls' => function ($query) use ($department) {
                 $query->with(['deductions', 'earnings', 'employee.user', 'employee.staffLoans']);
 
