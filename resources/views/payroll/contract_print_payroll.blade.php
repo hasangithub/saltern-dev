@@ -308,7 +308,7 @@
                     <tr class="fw-semibold">
                         <td>Total</td>
                         <td class="text-right">
-                         {{ number_format($batch->payrolls->sum('net_pay'),2) }}
+                         {{ number_format($batch->payrolls->sum('gross_earnings'),2) }}
                         </td>
                     </tr>
                 </tbody>
