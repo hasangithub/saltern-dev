@@ -43,6 +43,8 @@
         </tr>
     </table>
 </div>
+@if ($mode === 'list')
+    
 
 <div class="details">
     <p><strong>Service Charge:</strong> <span class="amount-right">Rs.
@@ -62,6 +64,8 @@
     <p><span class="amount-right">Rs.
             {{ number_format($totalPayable, 2) }}</span></p>
 </div>
+
+@endif
 
 <div class="footer">
     <div class="signature">

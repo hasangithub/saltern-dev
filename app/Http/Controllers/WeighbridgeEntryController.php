@@ -160,6 +160,7 @@ class WeighbridgeEntryController extends Controller
        return redirect()
        ->route('weighbridge.initial.create')
        ->with('success', 'First weight created successfully. Printing...')
+       ->with('print_type', 'first')
        ->with('print_entry_id', $entry->id);
     }
 
@@ -371,6 +372,7 @@ class WeighbridgeEntryController extends Controller
        return redirect()
        ->route('weighbridge.initial.create')
        ->with('success', 'Entry created successfully. Printing invoice...')
+       ->with('print_type', 'second')
        ->with('print_entry_id', $entry->id);
     }
 
@@ -637,11 +639,12 @@ class WeighbridgeEntryController extends Controller
                             ->with('success', 'Weighbridge entry and related loan repayment deleted.');
         }
 
-        public function invoice(WeighbridgeEntry $entry)
+        public function invoice(WeighbridgeEntry $entry, Request $request)
         {
+            $mode = $request->query('mode');
             $repayment = OwnerLoanRepayment::where('weighbridge_entry_id', $entry->id)->get();
             $totalPaid = $repayment->sum('amount');
-            $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true,  'repayment' => $repayment, 'totalPaid' => $totalPaid])
+            $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true,  'repayment' => $repayment, 'totalPaid' => $totalPaid, 'mode'=> $mode])
             ->setPaper('A6', 'portrait')
             ->setOptions([
                 'defaultFont' => 'times',

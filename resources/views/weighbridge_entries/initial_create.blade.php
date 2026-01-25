@@ -298,10 +298,18 @@ document.addEventListener("DOMContentLoaded", function() {
     // Success session alert & print
     // ---------------------
     @if(session('success'))
-    if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
-        window.open("{{ route('weighbridge_entries.invoicePrintFirst', session('print_entry_id')) }}",
-            "_blank");
-    }
+        @if(session('print_type') === 'second')
+        if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
+            window.open("{{ route('weighbridge_entries.invoice', session('print_entry_id')) }}",
+                "_blank");
+        }
+        @else
+        if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
+            window.open("{{ route('weighbridge_entries.invoicePrintFirst', session('print_entry_id')) }}",
+                "_blank");
+        }
+        @endif
+   
     @endif
 });
 </script>
