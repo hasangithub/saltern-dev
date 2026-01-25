@@ -168,9 +168,8 @@ textarea.form-control:focus {
                                     <label for="tare_weight" class="col-sm-3 col-form-label">2nd Weight</label>
                                     <div class="col-sm-9">
                                         <div class="input-group">
-                                            <input type="number" step="1" name="tare_weight" id="tare_weight"
-                                                class="form-control" required tabindex="8"
-                                                {{ $manualEnabled ? '' : 'readonly' }}>
+                                            <input type="text" name="tare_weight" id="tare_weight"
+                                                class="form-control" required tabindex="8">
 
                                             <button type="button" id="clear_weight" class="btn btn-sm  btn-outline-secondary">
                                                 Clear
@@ -467,6 +466,47 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const weightInput = document.getElementById("tare_weight");
+
+    // Laravel → JS flag
+    const manualEnabled = {{ $manualEnabled ? 'true' : 'false' }};
+
+    let filledByWeighbridge = false;
+
+    /* ❌ Block paste only if manual disabled */
+    weightInput.addEventListener("paste", e => {
+        if (!manualEnabled) {
+            e.preventDefault();
+            alert("Paste is disabled. Use weighbridge (F8).");
+        }
+    });
+
+    /* ❌ Detect manual typing only if manual disabled */
+    weightInput.addEventListener("input", () => {
+        if (!manualEnabled && !filledByWeighbridge) {
+            weightInput.value = "";
+        }
+    });
+
+    /* 🎯 F8 prepares field */
+    document.addEventListener("keydown", e => {
+        if (e.key === "F8") {
+            e.preventDefault();
+
+            filledByWeighbridge = true;
+            weightInput.focus();
+            weightInput.value = ""; // python types next
+
+            // reset AFTER python typing
+            setTimeout(() => {
+                filledByWeighbridge = false;
+            }, 400);
+        }
+    });
 });
 </script>
 @endpush

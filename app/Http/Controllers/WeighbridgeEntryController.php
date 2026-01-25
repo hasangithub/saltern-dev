@@ -150,7 +150,9 @@ class WeighbridgeEntryController extends Controller
         . "{$membership->owner->name_with_initial}\n"
         . "{$waikal}\n"
         . "{$buyer->full_name}\n"
-        . "{$initialWeight}kg\n";
+        . "{$initialWeight}kg\n"
+        . "Vehicle No: {$vehicleNumber}\n"
+        . "Vehicle coming to collect salt.";
     
         $this->smsService->sendSms($ownerPhone, $smsCommon);
        
@@ -367,7 +369,7 @@ class WeighbridgeEntryController extends Controller
 
        // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
        return redirect()
-       ->route('weighbridge_entries.create')
+       ->route('weighbridge.initial.create')
        ->with('success', 'Entry created successfully. Printing invoice...')
        ->with('print_entry_id', $entry->id);
     }
