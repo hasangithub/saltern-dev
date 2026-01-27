@@ -71,13 +71,13 @@
     }
 
     .footer {
-        margin-top: 16px;
+        margin-top: 10px;
     }
 
     .signature {
         float: right;
         text-align: center;
-        margin-top: 15px;
+        margin-top: 10px;
     }
 
     .line {
