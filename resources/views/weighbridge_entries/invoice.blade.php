@@ -61,12 +61,13 @@
     
 
 <div class="details">
-    <p><strong>Service Charge:</strong> <span class="amount-right">Rs.
-            {{ number_format($entry->total_amount, 2) }}</span></p>
-    @php
+        @php
     $loanPaid = $totalPaid;
     $totalPayable = $entry->total_amount + $loanPaid;
     @endphp
+    <p><strong>Service Charge:</strong> <span class="amount-right">Rs.
+            {{ number_format($entry->total_amount, 2) }}</span></p>
+
     @if($loanPaid > 0)
 
     <p><strong>Loan Paid:</strong> <span class="amount-right">Rs.
