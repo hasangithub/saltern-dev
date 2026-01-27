@@ -3,7 +3,7 @@
 {{-- Customize layout sections --}}
 
 @section('subtitle', 'Welcome')
-@section('content_header_title', 'Weighbridge Entry')
+@section('content_header_title', 'Private Weighbridge Entry')
 @section('content_header_subtitle', 'Welcome')
 
 {{-- Content body: main page content --}}
@@ -41,10 +41,19 @@ textarea.form-control:focus {
                     <h3 class="card-title">Create First Weight # {{$nextSerialNo}}</h3>
                 </div>
                 <div class="card-body">
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <div class="row">
                         <div class="col-md-6">
-                            <form id="weighbridge_form" action="{{ route('weighbridge.initial.store') }}" method="POST"
-                                autocomplete="off">
+                            <form id="weighbridge_form" action="{{ route('private-weighbridge-entries.store') }}"
+                                method="POST" autocomplete="off">
                                 @csrf
                                 <div class="form-group row">
                                     <label for="transaction_date" class="col-sm-3 col-form-label">Date</label>
@@ -53,55 +62,15 @@ textarea.form-control:focus {
                                             class="form-control" value="{{ date('Y-m-d') }}">
                                     </div>
                                 </div>
+
                                 <div class="form-group row">
-                                    <label for="culture" class="col-sm-3 col-form-label">Culture</label>
+                                    <label for="customer_name" class="col-sm-3 col-form-label">Customer Name</label>
                                     <div class="col-sm-9">
-                                        <select id="culture" name="culture" class="form-control" required tabindex="1">
-                                            <option value="">-- Select culture --</option>
-                                            <option value="Ag Salt">Ag Salt</option>
-                                            <option value="yala">Yala</option>
-                                            <option value="maha">Maha</option>
-                                        </select>
+                                        <input type="text" name="customer_name" id="customer_name"
+                                            class="form-control" value="">
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label for="side_id" class="col-sm-3 col-form-label">Side</label>
-                                    <div class="col-sm-9">
-                                        <select id="side_id" name="side_id" class="form-control" required tabindex="2">
-                                            <option value="">-- Select Side --</option>
-                                            @foreach ($sides as $side)
-                                            <option value="{{ $side->id }}">{{ ucfirst($side->name) }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="yahai_id" class="col-sm-3 col-form-label">Yahai</label>
-                                    <div class="col-sm-9">
-                                        <select id="yahai_id" name="yahai_id" class="form-control" required
-                                            tabindex="3">
-                                            <option value="">-- Select Yahai --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="saltern_id" class="col-sm-3 col-form-label">Waikal No</label>
-                                    <div class="col-sm-9">
-                                        <select id="saltern_id" name="saltern_id" class="form-control" required
-                                            tabindex="4">
-                                            <option value="">-- Select Waikal No --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="owner_full_name" class="col-sm-3 col-form-label">Owner</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="membership_name" id="membership_name"
-                                            class="form-control" required readonly>
-                                        <input type="hidden" name="membership_id" id="membership_id"
-                                            class="form-control" required>
-                                    </div>
-                                </div>
+
                                 <div class="form-group row">
                                     <label for="buyer_id" class="col-sm-3 col-form-label">Buyer</label>
                                     <div class="col-sm-9">
@@ -114,6 +83,7 @@ textarea.form-control:focus {
                                         </select>
                                     </div>
                                 </div>
+
                                 <div class="form-group row">
                                     <label for="vehicle_id" class="col-sm-3 col-form-label">Vehicle ID</label>
                                     <div class="col-sm-9">
@@ -121,11 +91,12 @@ textarea.form-control:focus {
                                             required tabindex="6">
                                     </div>
                                 </div>
+
                                 <div class="form-group row">
-                                    <label for="initial_weight" class="col-sm-3 col-form-label">1st Weight</label>
+                                    <label for="first_weight" class="col-sm-3 col-form-label">1st Weight</label>
                                     <div class="col-sm-9">
                                         <div class="input-group">
-                                            <input type="text" name="initial_weight" id="initial_weight"
+                                            <input type="text" name="first_weight" id="first_weight"
                                                 class="form-control" required tabindex="7" value="">
 
                                             <button type="button" id="clear_weight"
@@ -133,7 +104,6 @@ textarea.form-control:focus {
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Save
@@ -161,7 +131,7 @@ textarea.form-control:focus {
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const form = document.querySelector("#weighbridge_form");
-    const initialWeight = document.getElementById('initial_weight');
+    const initialWeight = document.getElementById('first_weight');
     const submitBtn = form.querySelector('button[type="submit"]');
 
     const clearBtn = document.getElementById('clear_weight');
@@ -214,111 +184,18 @@ document.addEventListener("DOMContentLoaded", function() {
             focusable[nextIndex].focus();
         }
     });
-
-    // ---------------------
-    // Dropdown AJAX handling
-    // ---------------------
-    function clearMembershipDetails() {
-        $('#membership_id').val('');
-        $('#membership_name').val('');
-    }
-
-    $('#side_id').change(function() {
-        const sideId = $(this).val();
-        clearMembershipDetails();
-        $('#yahai_id').prop('disabled', true).empty().append('<option value="">Select Yahai</option>');
-        $('#saltern_id').prop('disabled', true).empty().append(
-            '<option value="">Select Saltern</option>');
-
-        if (sideId) {
-            $.ajax({
-                url: "{{ route('get.yahai') }}",
-                type: "GET",
-                data: {
-                    side_id: sideId
-                },
-                success: function(response) {
-                    response.yahais.forEach(yahai => {
-                        $('#yahai_id').append(
-                            `<option value="${yahai.id}">${yahai.name}</option>`
-                        );
-                    });
-                    $('#yahai_id').prop('disabled', false);
-                }
-            });
-        }
-    });
-
-    $('#yahai_id').change(function() {
-        const yahaiId = $(this).val();
-        $('#saltern_id').prop('disabled', true).empty().append(
-            '<option value="">Select Saltern</option>');
-        clearMembershipDetails();
-
-        if (yahaiId) {
-            $.ajax({
-                url: "{{ route('get.saltern') }}",
-                type: "GET",
-                data: {
-                    yahai_id: yahaiId
-                },
-                success: function(response) {
-                    response.salterns.forEach(saltern => {
-                        $('#saltern_id').append(
-                            `<option value="${saltern.id}">${saltern.name}</option>`
-                        );
-                    });
-                    $('#saltern_id').prop('disabled', false);
-                }
-            });
-        }
-    });
-
-    $('#saltern_id').change(function() {
-        const salternId = $(this).val();
-        clearMembershipDetails();
-
-        if (salternId) {
-            $.ajax({
-                url: "{{ route('get.membership', '') }}/" + salternId,
-                type: "GET",
-                success: function(response) {
-                    if (response.status === 'success') {
-                        $('#membership_id').val(response.membership.id);
-                        $('#membership_name').val(response.owner.name_with_initial);
-                    } else {
-                        alert('No membership found for this saltern');
-                    }
-                }
-            });
-        }
-    });
-
-    // ---------------------
-    // Success session alert & print
-    // ---------------------
-    @if(session('success'))
-        @if(session('print_type') === 'second')
-        if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
-            window.open("{{ route('weighbridge_entries.invoice', session('print_entry_id')) }}",
-                "_blank");
-        }
-        @else
-        if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
-            window.open("{{ route('weighbridge_entries.invoicePrintFirst', session('print_entry_id')) }}",
-                "_blank");
-        }
-        @endif
-   
-    @endif
 });
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const weightInput = document.getElementById("initial_weight");
+    const weightInput = document.getElementById("first_weight");
 
     // Laravel → JS flag
-    const manualEnabled = {{ $manualEnabled ? 'true' : 'false' }};
+    const manualEnabled = {
+        {
+            $manualEnabled ? 'true' : 'false'
+        }
+    };
 
     let filledByWeighbridge = false;
 

@@ -49,6 +49,7 @@ use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\StaffLoanRepaymentController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\PrivateWeighbridgeEntryController;
 
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
@@ -91,6 +92,12 @@ Route::get('/weighbridge/final/{entry}/edit', [WeighbridgeEntryController::class
 
 Route::post('/weighbridge/final/{entry}/update', [WeighbridgeEntryController::class, 'finalUpdate'])
     ->name('weighbridge.final.update');
+
+
+
+Route::resource('private-weighbridge-entries', PrivateWeighbridgeEntryController::class);
+Route::get('/private-weighbridge-entries/{entry}/invoice', [PrivateWeighbridgeEntryController::class, 'invoice'])->name('private_weighbridge_entries.invoice');
+
 
     Route::get('refunds', [ServiceChargeRefundController::class, 'index'])->name('refunds.index');
     Route::post('refunds/preview', [ServiceChargeRefundController::class, 'preview'])->name('refunds.preview');

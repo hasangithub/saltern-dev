@@ -10,6 +10,16 @@
             <td>{{ $entry->id }}</td>
         </tr>
         <tr>
+            <td><strong>First Weight Datetime:</strong></td>
+            <td>{{ \Carbon\Carbon::parse($entry->transaction_date . ' ' . $entry->first_weight_time)->format('Y-m-d h:i A') }}</td>
+        </tr>
+        @if($entry->tare_weight > 0)
+        <tr>
+            <td><strong>Second Weight Datetime:</strong></td>
+            <td>{{ \Carbon\Carbon::parse($entry->transaction_date . ' ' . $entry->second_weight_time)->format('Y-m-d h:i A') }}</td>
+        </tr>
+        @endif
+        <tr>
             <td><strong>Owner:</strong></td>
             <td>{{ $entry->membership->owner->name_with_initial ?? '-' }}</td>
         </tr>
@@ -30,6 +40,14 @@
             <td>{{ $entry->vehicle_id }}</td>
         </tr>
         <tr>
+            <td><strong>First Weight:</strong></td>
+            <td>{{ number_format($entry->initial_weight, 2) }} kg</td>
+        </tr>
+        <tr>
+            <td><strong>Second Weight:</strong></td>
+            <td>{{ number_format($entry->tare_weight, 2) }} kg</td>
+        </tr>
+        <tr>
             <td><strong>Net Weight:</strong></td>
             <td>{{ number_format($entry->net_weight, 2) }} kg</td>
         </tr>
@@ -37,12 +55,10 @@
             <td><strong>No. of Bags:</strong></td>
             <td>{{ $entry->bags_count ?? '-' }}</td>
         </tr>
-        <tr>
-            <td><strong>Date of Distribution:</strong></td>
-            <td>{{ \Carbon\Carbon::parse($entry->transaction_date)->format('Y-m-d') }}</td>
-        </tr>
     </table>
 </div>
+@if ($mode === 'list')
+    
 
 <div class="details">
     <p><strong>Service Charge:</strong> <span class="amount-right">Rs.
@@ -62,6 +78,8 @@
     <p><span class="amount-right">Rs.
             {{ number_format($totalPayable, 2) }}</span></p>
 </div>
+
+@endif
 
 <div class="footer">
     <div class="signature">

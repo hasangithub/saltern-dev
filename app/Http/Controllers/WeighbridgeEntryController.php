@@ -132,6 +132,7 @@ class WeighbridgeEntryController extends Controller
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
         $data['bag_price'] = $bagPrice;
         $data['status'] = 'approved';
+        $data['first_weight_time'] = now()->format('H:i:s');
  
          
         $entry = WeighbridgeEntry::create($data);
@@ -150,14 +151,16 @@ class WeighbridgeEntryController extends Controller
         . "{$membership->owner->name_with_initial}\n"
         . "{$waikal}\n"
         . "{$buyer->full_name}\n"
-        . "{$initialWeight}kg\n";
-    
+        . "Ready to load.";
+        // . "Vehicle No: {$vehicleNumber}\n"
+        
         $this->smsService->sendSms($ownerPhone, $smsCommon);
        
        // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
        return redirect()
        ->route('weighbridge.initial.create')
        ->with('success', 'First weight created successfully. Printing...')
+       ->with('print_type', 'first')
        ->with('print_entry_id', $entry->id);
     }
 
@@ -214,6 +217,7 @@ class WeighbridgeEntryController extends Controller
         $entry->membership_id = $validated['membership_id'];
         $entry->bag_price     = $bagPrice;
         $entry->status        = 'approved';
+        $entry->second_weight_time = now()->format('H:i:s');
 
         $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
 
@@ -367,8 +371,9 @@ class WeighbridgeEntryController extends Controller
 
        // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
        return redirect()
-       ->route('weighbridge_entries.create')
+       ->route('weighbridge.initial.create')
        ->with('success', 'Entry created successfully. Printing invoice...')
+       ->with('print_type', 'second')
        ->with('print_entry_id', $entry->id);
     }
 
@@ -635,11 +640,12 @@ class WeighbridgeEntryController extends Controller
                             ->with('success', 'Weighbridge entry and related loan repayment deleted.');
         }
 
-        public function invoice(WeighbridgeEntry $entry)
+        public function invoice(WeighbridgeEntry $entry, Request $request)
         {
+            $mode = $request->query('mode');
             $repayment = OwnerLoanRepayment::where('weighbridge_entry_id', $entry->id)->get();
             $totalPaid = $repayment->sum('amount');
-            $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true,  'repayment' => $repayment, 'totalPaid' => $totalPaid])
+            $pdf = Pdf::loadView('weighbridge_entries.invoice', ['entry' => $entry, 'from_pdf' => true,  'repayment' => $repayment, 'totalPaid' => $totalPaid, 'mode'=> $mode])
             ->setPaper('A6', 'portrait')
             ->setOptions([
                 'defaultFont' => 'times',

@@ -1,5 +1,5 @@
 <td>
-    <a href="{{ route('weighbridge_entries.invoice', $entry->id) }}" target="_blank" class="btn btn-primary btn-sm">
+    <a href="{{ route('weighbridge_entries.invoice', $entry->id) }}?mode=list" target="_blank" class="btn btn-primary btn-sm">
         Print
     </a>
     <a href="{{ route('weighbridge_entries.show', $entry->id) }}" class="btn btn-default btn-xs">
