@@ -132,6 +132,7 @@ class WeighbridgeEntryController extends Controller
         $data['transaction_date'] = $validated['transaction_date'] ?? date("Y-m-d");
         $data['bag_price'] = $bagPrice;
         $data['status'] = 'approved';
+        $data['first_weight_time'] = now()->format('H:i:s');
  
          
         $entry = WeighbridgeEntry::create($data);
@@ -150,10 +151,9 @@ class WeighbridgeEntryController extends Controller
         . "{$membership->owner->name_with_initial}\n"
         . "{$waikal}\n"
         . "{$buyer->full_name}\n"
-        . "{$initialWeight}kg\n"
-        . "Vehicle No: {$vehicleNumber}\n"
-        . "Vehicle coming to collect salt.";
-    
+        . "Ready to load.";
+        // . "Vehicle No: {$vehicleNumber}\n"
+        
         $this->smsService->sendSms($ownerPhone, $smsCommon);
        
        // return redirect()->route('weighbridge_entries.index')->with('success', 'Weighbridge entry created successfully.');
@@ -217,6 +217,7 @@ class WeighbridgeEntryController extends Controller
         $entry->membership_id = $validated['membership_id'];
         $entry->bag_price     = $bagPrice;
         $entry->status        = 'approved';
+        $entry->second_weight_time = now()->format('H:i:s');
 
         $netWeight = $validated['tare_weight'] - $validated['initial_weight'];
 

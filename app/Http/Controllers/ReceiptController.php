@@ -11,6 +11,7 @@ use App\Models\WeighbridgeEntry;
 use App\Models\OwnerLoan;
 use App\Models\OwnerLoanRepayment;
 use App\Models\PaymentMethod;
+use App\Models\PrivateWeighbridgeEntry;
 use App\Models\Receipt;
 use App\Models\ReceiptDetail;
 use App\Models\SubLedger;
@@ -297,6 +298,7 @@ public function store(Request $request)
         
 
         OtherIncome::whereIn('id', $otherIncomeIds)->update(['status' => 'paid']);
+        PrivateWeighbridgeEntry::whereIn('other_income_id', $otherIncomeIds)->update(['is_paid' => 1]);
     }
 
     return redirect()->route('receipts.create')->with('success', 'Payment Receipt created successfully.');

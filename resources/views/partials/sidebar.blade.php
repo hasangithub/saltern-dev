@@ -105,6 +105,30 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
+                        Private Weighbridge
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('private-weighbridge-entries.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-weight"></i>
+                                <p>Private Weighbridge</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('private-weighbridge-entries.create') }}" class="nav-link">
+                                <i class="nav-icon fas fa-weight"></i>
+                                <p>First Weight</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
                             Loans
                             <i class="right fas fa-angle-left"></i>
                         </p>
