@@ -107,7 +107,7 @@ class PrivateWeighbridgeEntryController extends Controller
 
         $incomeData['buyer_id'] = $privateWeighbridgeEntry->buyer_id;
         $incomeData['amount'] = $privateWeighbridgeEntry->amount;
-        $incomeData['description'] = ''; 
+        $incomeData['description'] = 'Private Weighing'; 
         $incomeData['income_category_id'] = 165; 
         $incomeData['received_date'] = date("Y-m-d"); 
 
