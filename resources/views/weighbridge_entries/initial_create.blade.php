@@ -140,6 +140,48 @@ textarea.form-control:focus {
                                 </button>
                             </form>
                         </div>
+                        <div class="row">
+
+                            <!-- Pending Weighbridge -->
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card border-warning shadow-sm">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-warning font-weight-bold">
+                                            <i class="fa fa-truck"></i> Pending Weighbridge
+                                        </h6>
+
+                                        <h2 class="text-dark">
+                                            {{ $pendingCount }}
+                                        </h2>
+
+                                        <small class="text-muted">
+                                            Vehicles waiting for second weight
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Private Weigh Pending (Same design) -->
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card border-warning shadow-sm">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-warning font-weight-bold">
+                                            <i class="fa fa-balance-scale"></i> Private Weigh Pending
+                                        </h6>
+
+                                        <h2 class="text-dark">
+                                            {{ $privateWeighPendingCount }}
+                                        </h2>
+
+                                        <small class="text-muted">
+                                            Approved · Second Weight Pending
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -298,18 +340,18 @@ document.addEventListener("DOMContentLoaded", function() {
     // Success session alert & print
     // ---------------------
     @if(session('success'))
-        @if(session('print_type') === 'second')
-        if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
-            window.open("{{ route('weighbridge_entries.invoice', session('print_entry_id')) }}",
-                "_blank");
-        }
-        @else
-        if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
-            window.open("{{ route('weighbridge_entries.invoicePrintFirst', session('print_entry_id')) }}",
-                "_blank");
-        }
-        @endif
-   
+    @if(session('print_type') === 'second')
+    if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
+        window.open("{{ route('weighbridge_entries.invoice', session('print_entry_id')) }}",
+            "_blank");
+    }
+    @else
+    if (confirm("{{ session('success') }}\n\nDo you want to print the invoice?")) {
+        window.open("{{ route('weighbridge_entries.invoicePrintFirst', session('print_entry_id')) }}",
+            "_blank");
+    }
+    @endif
+
     @endif
 });
 </script>
@@ -318,7 +360,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const weightInput = document.getElementById("initial_weight");
 
     // Laravel → JS flag
-    const manualEnabled = {{ $manualEnabled ? 'true' : 'false' }};
+    const manualEnabled = {
+        {
+            $manualEnabled ? 'true' : 'false'
+        }
+    };
 
     let filledByWeighbridge = false;
 
