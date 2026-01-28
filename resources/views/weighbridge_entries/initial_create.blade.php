@@ -140,48 +140,42 @@ textarea.form-control:focus {
                                 </button>
                             </form>
                         </div>
-                        <div class="row">
+                        <div class="col-md-6">
+                            <div class="row justify-content-end">
 
-                            <!-- Pending Weighbridge -->
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card border-warning shadow-sm">
-                                    <div class="card-body text-center">
-                                        <h6 class="text-warning font-weight-bold">
-                                            <i class="fa fa-truck"></i> Pending Weighbridge
-                                        </h6>
+                                <!-- Weighbridge Pending -->
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <div class="card border-warning shadow-sm">
+                                        <div class="card-body p-2 text-center">
+                                            <small class="text-warning font-weight-bold">
+                                                <i class="fa fa-truck"></i> Weighbridge Pending
+                                            </small>
 
-                                        <h2 class="text-dark">
-                                            {{ $pendingCount }}
-                                        </h2>
-
-                                        <small class="text-muted">
-                                            Vehicles waiting for second weight
-                                        </small>
+                                            <h5 class="mb-0 text-dark">
+                                                {{ $pendingCount }}
+                                            </h5>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Private Weigh Pending (Same design) -->
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card border-warning shadow-sm">
-                                    <div class="card-body text-center">
-                                        <h6 class="text-warning font-weight-bold">
-                                            <i class="fa fa-balance-scale"></i> Private Weigh Pending
-                                        </h6>
+                                <!-- Private Weigh Pending -->
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <div class="card border-warning shadow-sm">
+                                        <div class="card-body p-2 text-center">
+                                            <small class="text-warning font-weight-bold">
+                                                <i class="fa fa-balance-scale"></i> Private Weigh Pending
+                                            </small>
 
-                                        <h2 class="text-dark">
-                                            {{ $privateWeighPendingCount }}
-                                        </h2>
-
-                                        <small class="text-muted">
-                                            Approved · Second Weight Pending
-                                        </small>
+                                            <h5 class="mb-0 text-dark">
+                                                {{ $privateWeighPendingCount }}
+                                            </h5>
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
 
                         </div>
-
                     </div>
                 </div>
             </div>
