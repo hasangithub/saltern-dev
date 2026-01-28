@@ -15,6 +15,7 @@ use App\Models\WeighbridgeEntry;
 use App\Models\Yahai;
 use App\Models\OwnerLoan;
 use App\Models\OwnerLoanRepayment;
+use App\Models\PrivateWeighbridgeEntry;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -107,8 +108,17 @@ class WeighbridgeEntryController extends Controller
         $ledgers = Ledger::all();
         $memberships = Membership::all();
         $nextSerialNo = WeighbridgeEntry::max('id') + 1;
+        $pendingCount = WeighbridgeEntry::where('status', 'approved')
+        ->whereNull('tare_weight')
+        ->count();
+        $privateWeighPendingCount = PrivateWeighbridgeEntry::where('status', 'completed')
+    ->where(function ($q) {
+        $q->whereNull('second_weight')
+          ->orWhere('second_weight', 0);
+    })
+    ->count();
 
-        return view('weighbridge_entries.initial_create', compact('owners', 'buyers', 'memberships', 'nextSerialNo', 'sides', 'ledgers'));
+        return view('weighbridge_entries.initial_create', compact('owners', 'buyers', 'memberships', 'nextSerialNo', 'sides', 'ledgers', 'pendingCount', 'privateWeighPendingCount'));
     }
 
     public function initialStore(Request $request)

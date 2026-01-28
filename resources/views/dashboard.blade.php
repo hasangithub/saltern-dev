@@ -15,7 +15,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{ number_format($totalServiceChargeToday, 2) }}</h3>
+                    <!-- <h3>{{ number_format($totalServiceChargeToday, 2) }}</h3> -->
                     <p>Service Charge (Today)</p>
                 </div>
                 <div class="icon">
@@ -40,7 +40,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ number_format($totalServiceChargeWeek, 2) }}</h3>
+                    <!-- <h3>{{ number_format($totalServiceChargeWeek, 2) }}</h3> -->
                     <p>Service Charge (This Week)</p>
                 </div>
                 <div class="icon">
