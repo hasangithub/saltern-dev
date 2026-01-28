@@ -41,8 +41,22 @@ class WeighbridgeEntryController extends Controller
     public function data()
     {
         $entries = WeighbridgeEntry::with([
-            'buyer', 'membership.owner', 'membership.saltern.yahai', 'loanRepayments', 'receipt'
-        ])->orderBy('id', 'desc');
+            'buyer',
+            'membership.owner',
+            'membership.saltern.yahai',
+            'loanRepayments',
+            'receipt'
+        ])
+        ->orderByRaw("
+            CASE 
+                WHEN status = 'approved'
+                 AND (tare_weight IS NULL OR tare_weight = 0)
+                THEN 0
+                ELSE 1
+            END
+        ")
+        ->orderBy('id', 'desc');
+    
     
         return DataTables::eloquent($entries)
             ->addColumn('turn_no', fn($entry) => optional($entry)->turn_no)
