@@ -37,8 +37,12 @@ textarea.form-control:focus {
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
-                <div class="card-header">
-                    <h3 class="card-title">Create First Weight # {{$nextSerialNo}}</h3>
+                <div class="card-header border-left border-warning">
+                    <h6 class="mb-0">
+                        <i class="fa fa-balance-scale text-warning"></i>
+                        Add First Weight
+                        <small class="text-muted">| Entry #{{ $nextSerialNo }}</small>
+                    </h6>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -144,7 +148,7 @@ textarea.form-control:focus {
                             <div class="row justify-content-end">
 
                                 <!-- Weighbridge Pending -->
-                                <div class="col-md-3 col-sm-6 mb-2">
+                                <div class="col-md-4 col-sm-6 mb-2">
                                     <div class="card border-warning shadow-sm">
                                         <div class="card-body p-2 text-center">
                                             <small class="text-warning font-weight-bold">
@@ -159,7 +163,7 @@ textarea.form-control:focus {
                                 </div>
 
                                 <!-- Private Weigh Pending -->
-                                <div class="col-md-3 col-sm-6 mb-2">
+                                <div class="col-md-4 col-sm-6 mb-2">
                                     <div class="card border-warning shadow-sm">
                                         <div class="card-body p-2 text-center">
                                             <small class="text-warning font-weight-bold">
