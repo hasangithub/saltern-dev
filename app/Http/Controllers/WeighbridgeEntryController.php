@@ -125,7 +125,7 @@ class WeighbridgeEntryController extends Controller
         $pendingCount = WeighbridgeEntry::where('status', 'approved')
         ->whereNull('tare_weight')
         ->count();
-        $privateWeighPendingCount = PrivateWeighbridgeEntry::where('status', 'completed')
+        $privateWeighPendingCount = PrivateWeighbridgeEntry::where('status', 'pending')
     ->where(function ($q) {
         $q->whereNull('second_weight')
           ->orWhere('second_weight', 0);
