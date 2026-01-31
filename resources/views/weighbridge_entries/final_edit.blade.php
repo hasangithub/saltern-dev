@@ -37,8 +37,12 @@ textarea.form-control:focus {
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
-                <div class="card-header">
-                    <h3 class="card-title">Add 2nd weight entry# {{$data->id}}</h3>
+                <div class="card-header border-left border-warning">
+                    <h6 class="mb-0">
+                        <i class="fa fa-balance-scale text-warning"></i>
+                        Add Second Weight
+                        <small class="text-muted">| Entry #{{ $data->id }}</small>
+                    </h6>
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -168,10 +172,11 @@ textarea.form-control:focus {
                                     <label for="tare_weight" class="col-sm-3 col-form-label">2nd Weight</label>
                                     <div class="col-sm-9">
                                         <div class="input-group">
-                                            <input type="text" name="tare_weight" id="tare_weight"
-                                                class="form-control" required tabindex="8">
+                                            <input type="text" name="tare_weight" id="tare_weight" class="form-control"
+                                                required tabindex="8">
 
-                                            <button type="button" id="clear_weight" class="btn btn-sm  btn-outline-secondary">
+                                            <button type="button" id="clear_weight"
+                                                class="btn btn-sm  btn-outline-secondary">
                                                 Clear
                                             </button>
                                         </div>
@@ -473,7 +478,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const weightInput = document.getElementById("tare_weight");
 
     // Laravel → JS flag
-    const manualEnabled = {{ $manualEnabled ? 'true' : 'false' }};
+    const manualEnabled = {
+        {
+            $manualEnabled ? 'true' : 'false'
+        }
+    };
 
     let filledByWeighbridge = false;
 

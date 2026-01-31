@@ -150,8 +150,8 @@ textarea.form-control:focus {
                                 <!-- Weighbridge Pending -->
                                 <div class="col-md-4 col-sm-6 mb-2">
                                     <div class="card border-warning shadow-sm">
-                                        <div class="card-body p-2 text-center">
-                                            <small class="text-warning font-weight-bold">
+                                        <div class="card-body p-4 text-center">
+                                            <small class="text-danger font-weight-bold">
                                                 <i class="fa fa-truck"></i> Weighbridge Pending
                                             </small>
 
@@ -165,8 +165,8 @@ textarea.form-control:focus {
                                 <!-- Private Weigh Pending -->
                                 <div class="col-md-4 col-sm-6 mb-2">
                                     <div class="card border-warning shadow-sm">
-                                        <div class="card-body p-2 text-center">
-                                            <small class="text-warning font-weight-bold">
+                                        <div class="card-body p-4 text-center">
+                                            <small class="text-danger font-weight-bold">
                                                 <i class="fa fa-balance-scale"></i> Private Weigh Pending
                                             </small>
 

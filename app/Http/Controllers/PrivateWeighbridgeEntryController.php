@@ -24,7 +24,14 @@ class PrivateWeighbridgeEntryController extends Controller
     public function index()
     {
         $entries = PrivateWeighbridgeEntry::with(['buyer'])
-            ->get();
+    ->orderByRaw("
+        CASE 
+            WHEN status = 'pending' THEN 0
+            ELSE 1
+        END
+    ")
+    ->orderBy('id', 'desc')
+    ->get();
 
         return view('private_weighbridge_entries.index', compact('entries'));
     }
