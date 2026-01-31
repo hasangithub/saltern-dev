@@ -109,7 +109,9 @@
 @push('js')
 <script>
 $(document).ready(function() {
-    $('#ownersTable').DataTable();
+    $('#ownersTable').DataTable({
+        ordering: false, // 🔴 IMPORTANT
+    });
 
     // ---------------------
     // Success session alert & print
