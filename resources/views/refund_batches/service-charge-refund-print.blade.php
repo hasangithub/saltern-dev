@@ -16,7 +16,10 @@
                 <th>Saltern</th>
                 <th>Owner</th>
                 <th>Voucher ID</th>
-                <th class="text-right">Refund Amount</th>
+                <th>Bank</th>
+                <th>Chq No</th>
+                <th class="text-right">30% Amount</th>
+                <th class="text-right">Signature</th>
             </tr>
         </thead>
         <tbody>
@@ -29,19 +32,23 @@
             @foreach($refunds as $refund)
                 <tr>
                     <td>{{ $salternName }}</td>
-                    <td>{{ optional($refund->memberships->owner)->name ?? '-' }}</td>
+                    <td>{{ optional($refund->memberships->owner)->name_with_initial ?? '-' }}</td>
                     <td>{{ $refund->voucher_id ?? '-' }}</td>
+                    <td>{{ $refund->voucher->bank->name ?? '-' }}</td>
+                    <td>{{ $refund->voucher->cheque_no ?? '-' }}</td>
                     <td class="text-right">{{ number_format($refund->total_amount,2) }}</td>
+                    <td></td>
                 </tr>
             @endforeach
         @endforeach
 
         {{-- ONLY Yahai Total (no saltern subtotal) --}}
         <tr class="yahai-total">
-            <td colspan="3"><strong>Total for {{ $yahaiName }}</strong></td>
+            <td colspan="5"><strong>Total for {{ $yahaiName }}</strong></td>
             <td class="text-right">
                 <strong>{{ number_format($salterns->flatten()->sum('total_amount'),2) }}</strong>
             </td>
+            <td></td>
         </tr>
 
         </tbody>
@@ -49,9 +56,5 @@
 
     <div class="page-break"></div>
 @endforeach
-
-<p style="font-weight:bold; text-align:right;">
-    Grand Total: {{ number_format($batch->serviceChargeRefunds->sum('total_amount'),2) }}
-</p>
 
 @endsection('content')
