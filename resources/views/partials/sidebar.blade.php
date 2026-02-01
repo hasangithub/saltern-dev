@@ -81,7 +81,7 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
-                        Weighbridge
+                            Weighbridge
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -105,7 +105,7 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>
-                        Private Weighbridge
+                            Private Weighbridge
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -307,6 +307,12 @@
                                 <p>Inventory</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reports.refund.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-file-contract text-info"></i>
+                                <p>ServiceCharge Refund</p>
+                            </a>
+                        </li>
 
                     </ul>
                 </li>
@@ -351,17 +357,34 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('refunds.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-weight"></i>
-                        <p>Refunds</p>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-money-check-alt"></i>
+                        <p>
+                            Refunds
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('vouchers.refund.create') }}" class="nav-link">
-                        <i class="nav-icon fas fa-weight"></i>
-                        <p>Refund Voucher</p>
-                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('refund-batches.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-weight"></i>
+                                <p>New Refunds</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('refunds.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-weight"></i>
+                                <p>Refunds</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('vouchers.refund.create') }}" class="nav-link">
+                                <i class="nav-icon fas fa-weight"></i>
+                                <p>Refund Voucher</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">

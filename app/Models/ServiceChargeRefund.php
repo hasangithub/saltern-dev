@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceChargeRefund extends Model
 {
     protected $fillable = [
+        'refund_batch_id',
         'membership_id',
         'total_service_charge',
         'refund_amount',

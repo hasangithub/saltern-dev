@@ -50,6 +50,7 @@ use App\Http\Controllers\StaffLoanRepaymentController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\PrivateWeighbridgeEntryController;
+use App\Http\Controllers\ServiceChargeRefundBatchController;
 
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
@@ -109,7 +110,26 @@ Route::get('/private-weighbridge-entries/{entry}/invoice', [PrivateWeighbridgeEn
         Route::get('refund/create', [VoucherController::class, 'createRefundVoucher'])->name('vouchers.refund.create');
         Route::post('refund/store', [VoucherController::class, 'storeRefundVoucher'])->name('vouchers.refund.store');
     });
-    
+
+    Route::prefix('service-charge-refunds')->group(function () {
+        Route::get('/', [ServiceChargeRefundBatchController::class, 'index'])
+        ->name('refund-batches.index');
+
+    Route::post('/', [ServiceChargeRefundBatchController::class, 'store'])
+        ->name('refund-batches.store');
+
+    Route::get('/{batch}', [ServiceChargeRefundBatchController::class, 'show'])
+        ->name('refund-batches.show');
+
+    Route::get('/{batch}/load', [ServiceChargeRefundBatchController::class, 'loadServiceCharges'])
+        ->name('refund-batches.load');
+
+    Route::post('/{batch}/approve', [ServiceChargeRefundBatchController::class, 'approve'])
+        ->name('refund-batches.approve');
+
+    Route::post('/{batch}/post', [ServiceChargeRefundBatchController::class, 'post'])
+        ->name('refund-batches.post');
+    });
     
     Route::resource('other_incomes', OtherIncomeController::class);
     Route::resource('expenses', ExpenseController::class);
@@ -155,7 +175,11 @@ Route::get('/private-weighbridge-entries/{entry}/invoice', [PrivateWeighbridgeEn
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
     Route::get('/ledger-report/export', [ReportController::class, 'exportLedgerReport'])->name('ledger.report.export');
     Route::post('/reports/ledger/pdf', [ReportController::class, 'generateLedgerPdf'])->name('reports.ledger.pdf');
-
+    Route::get('/reports/annual-production',[ReportController::class, 'annualProductionReport'])->name('reports.annual-production');
+    Route::get('/annual-production-report/print', [ReportController::class, 'printAnnualProduction'])->name('annual-production.report.print');
+    Route::get('/reports/refund-report', [ReportController::class, 'indexRefund'])->name('reports.refund.index');
+    Route::get('/reports/refund-report/generate', [ReportController::class, 'generateRefund'])->name('refund.report.generate');
+    Route::get('/reports/refund-report/print', [ReportController::class, 'printRefund'])->name('refund.report.print');
 
     Route::resource('sub-account-groups',SubAccountGroupController::class);
     Route::resource('ledgers',LedgerController::class);

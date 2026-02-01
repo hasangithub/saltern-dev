@@ -108,7 +108,7 @@
 
             <table style="width: 100%; font-size: 12px; margin-bottom: 10px; border:0px solid;">
                 <tr>
-                    @if($fromDate)
+                    @if(@$fromDate)
                     <td style="text-align: left;">
                         <strong>For:</strong>
                         {{ $fromDate }} to {{ $toDate }}

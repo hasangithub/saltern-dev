@@ -126,6 +126,47 @@ $toDate = now()->format('Y-m-d');
             </div>
         </div>
 
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Annual Production Report</h3>
+                </div>
+
+                <form action="{{ route('reports.annual-production') }}" method="GET">
+                    <div class="card-body">
+                        <div class="row">
+
+                            {{-- Yahai --}}
+                            <div class="col-md-3">
+                                <label>Yahai</label>
+                                <select name="yahai_id" id="annual_yahai_id" class="form-control" required>
+                                    <option value="">Select Yahai</option>
+                                    @foreach($yahaies as $yahai)
+                                    <option value="{{ $yahai->id }}">{{ $yahai->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Member --}}
+                            <div class="col-md-4">
+                                <label>Member</label>
+                                <select name="membership_id" id="annual_membership_id" class="form-control select2"
+                                    required>
+                                    <option value="">Select Member</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-success">
+                            View Annual Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 @stop
@@ -176,4 +217,37 @@ $(document).ready(function() {
     });
 });
 </script>
+<script>
+$('#annual_yahai_id').change(function () {
+    const yahaiId = $(this).val();
+
+    $('#annual_membership_id')
+        .prop('disabled', true)
+        .empty()
+        .append('<option value="">Select Member</option>');
+
+    if (yahaiId) {
+        $.ajax({
+            url: "{{ route('get.reports.saltern') }}",
+            type: "GET",
+            data: { yahai_id: yahaiId },
+            success: function (response) {
+                response.salterns.forEach(saltern => {
+                    if (saltern.memberships) {
+                        saltern.memberships.forEach(membership => {
+                            $('#annual_membership_id').append(
+                                `<option value="${membership.id}">
+                                    ${saltern.name} - ${membership.owner?.name_with_initial ?? 'No Owner'}
+                                </option>`
+                            );
+                        });
+                    }
+                });
+                $('#annual_membership_id').prop('disabled', false);
+            }
+        });
+    }
+});
+</script>
+
 @endpush
