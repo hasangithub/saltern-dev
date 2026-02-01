@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Ledger Report</title>
+    <title>Reports</title>
     <style>
     @page {
         margin: 0.5cm;
