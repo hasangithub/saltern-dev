@@ -36,7 +36,7 @@
                     <td>{{ $refund->voucher_id ?? '-' }}</td>
                     <td>{{ $refund->voucher->bank->name ?? '-' }}</td>
                     <td>{{ $refund->voucher->cheque_no ?? '-' }}</td>
-                    <td class="text-right">{{ number_format($refund->total_amount,2) }}</td>
+                    <td class="text-right">{{ number_format($refund->refund_amount,2) }}</td>
                     <td></td>
                 </tr>
             @endforeach
@@ -46,7 +46,7 @@
         <tr class="yahai-total">
             <td colspan="5"><strong>Total for {{ $yahaiName }}</strong></td>
             <td class="text-right">
-                <strong>{{ number_format($salterns->flatten()->sum('total_amount'),2) }}</strong>
+                <strong>{{ number_format($salterns->flatten()->sum('refund_amount'),2) }}</strong>
             </td>
             <td></td>
         </tr>
