@@ -13,13 +13,13 @@
     <table>
         <thead>
             <tr>
-                <th>Saltern</th>
-                <th>Owner</th>
-                <th>Voucher ID</th>
-                <th>Bank</th>
-                <th>Chq No</th>
-                <th class="text-right">30% Amount</th>
-                <th class="text-right">Signature</th>
+                <th style="width:40px;">Saltern</th>
+                <th style="width:40px;">Owner</th>
+                <th style="width:40px;">Voucher ID</th>
+                <th style="width:40px;">Bank</th>
+                <th style="width:40px;">Chq No</th>
+                <th style="width:40px;" class="text-right">30% Amount</th>
+                <th style="width:40px;" class="text-right">Signature</th>
             </tr>
         </thead>
         <tbody>
