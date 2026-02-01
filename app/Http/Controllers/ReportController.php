@@ -1453,6 +1453,7 @@ public function annualProductionReport(Request $request)
         SUM(CASE WHEN culture = "maha" THEN bags_count ELSE 0 END) as maha,
         SUM(bags_count) as total
     ')
+    ->where('membership_id', $request->membership_id)
     ->whereYear('transaction_date', '>=', 2025)
     ->where('status', 'approved')
     ->groupBy('membership_id', DB::raw('YEAR(transaction_date)'))
