@@ -82,6 +82,13 @@ $toDate = now()->format('Y-m-d');
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="show_30_percent"
+                                    id="show_30_percent" value="1" {{ request('show_30_percent') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="show_30_percent">
+                                    Show 30% Service Charge Details
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">
@@ -218,7 +225,7 @@ $(document).ready(function() {
 });
 </script>
 <script>
-$('#annual_yahai_id').change(function () {
+$('#annual_yahai_id').change(function() {
     const yahaiId = $(this).val();
 
     $('#annual_membership_id')
@@ -230,8 +237,10 @@ $('#annual_yahai_id').change(function () {
         $.ajax({
             url: "{{ route('get.reports.saltern') }}",
             type: "GET",
-            data: { yahai_id: yahaiId },
-            success: function (response) {
+            data: {
+                yahai_id: yahaiId
+            },
+            success: function(response) {
                 response.salterns.forEach(saltern => {
                     if (saltern.memberships) {
                         saltern.memberships.forEach(membership => {

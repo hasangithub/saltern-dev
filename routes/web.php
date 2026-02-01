@@ -180,6 +180,7 @@ Route::get('/private-weighbridge-entries/{entry}/invoice', [PrivateWeighbridgeEn
     Route::get('/reports/refund-report', [ReportController::class, 'indexRefund'])->name('reports.refund.index');
     Route::get('/reports/refund-report/generate', [ReportController::class, 'generateRefund'])->name('refund.report.generate');
     Route::get('/reports/refund-report/print', [ReportController::class, 'printRefund'])->name('refund.report.print');
+    Route::get('service-charge-refunds/{id}/print', [ReportController::class, 'printServiceChargeRefund'])->name('service-charge-refund.print'); // print report
 
     Route::resource('sub-account-groups',SubAccountGroupController::class);
     Route::resource('ledgers',LedgerController::class);

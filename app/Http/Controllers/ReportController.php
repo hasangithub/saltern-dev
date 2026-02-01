@@ -711,6 +711,7 @@ class ReportController extends Controller
         $buyers = Buyer::all();
         $fromDate = $request->from_date;
         $toDate = $request->to_date;
+        $show30 = $request->has('show_30_percent'); // true or false
 
         $entries = collect();
 
@@ -731,7 +732,7 @@ class ReportController extends Controller
                 ->get();
         }
 
-        $pdf = Pdf::loadView('reports.production.owner-production-print', compact('yahaies', 'owners', 'buyers', 'entries', 'fromDate', 'toDate'))
+        $pdf = Pdf::loadView('reports.production.owner-production-print', compact('yahaies', 'owners', 'buyers', 'entries', 'fromDate', 'toDate', 'show30'))
         ->setPaper('a4', 'portrait');
 
         return $pdf->stream('owner-production-report.pdf');
@@ -1465,5 +1466,31 @@ public function annualProductionReport(Request $request)
             ->setPaper('a4', 'portrait');
 
         return $pdf->stream('annual-production-report.pdf');
+    }
+
+    public function printServiceChargeRefund($id)
+    {
+        $batch = RefundBatch::with([
+            'serviceChargeRefunds.memberships.saltern.yahai',
+            'serviceChargeRefunds.memberships.owner'
+        ])->findOrFail($id);
+    
+        // group refunds by Yahai -> Saltern -> Membership
+        $grouped = $batch->serviceChargeRefunds
+            ->sortBy(fn($r) => $r->memberships->saltern->yahai->id) // Yahai order
+            ->groupBy(fn($r) => $r->memberships->saltern->yahai->id) // group by Yahai
+            ->map(function ($yahaiGroup) {
+                return $yahaiGroup
+                    ->sortBy(fn($r) => $r->memberships->saltern->id) // Saltern order
+                    ->groupBy(fn($r) => $r->memberships->saltern->id); // group by Saltern
+            });
+            
+         // Pass data to Blade PDF view
+    $pdf = PDF::loadView('refund_batches.service-charge-refund-print', [
+        'batch' => $batch,
+        'grouped' => $grouped
+    ])->setPaper('legal', 'landscape'); // or 'landscape'
+
+    return $pdf->stream("Refund_Batch_{$batch->id}.pdf");
     }
 }

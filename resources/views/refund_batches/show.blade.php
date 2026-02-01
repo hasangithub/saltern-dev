@@ -5,7 +5,11 @@
 @section('subtitle', 'Welcome')
 @section('content_header_title', 'Owners')
 @section('content_header_subtitle', 'Welcome')
-
+@section('page-buttons')
+<a href="{{ route('service-charge-refund.print', $batch->id) }}" class="btn btn-primary" target="_blank">
+    <i class="fas fa-print"></i> Print
+</a>
+@endsection
 {{-- Content body: main page content --}}
 
 @section('content_body')
