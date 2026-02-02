@@ -93,13 +93,16 @@
                     </div>
                 </div>
                 @if($pendingServiceCharges->count())
-                <h5>Pending Service Charges</h5>
+                <h5>Pending Service Charges
+                    <input type="checkbox" class="select-all" data-target="service">
+                    <small class="text-muted">(Select All)</small>
+                </h5>
                 <table class="table table-sm nowrap table-hover">
 
                     @foreach($pendingServiceCharges as $entry)
                     <tr>
                         <td>
-                            <input type="checkbox" name="service_entry_ids[]" class="payment-checkbox"
+                            <input type="checkbox" name="service_entry_ids[]" class="payment-checkbox service-checkbox"
                                 value="{{ $entry->id }}" data-amount="{{ $entry->total_amount }}">
                             <strong>Entry #{{ $entry->id }}</strong>
                         </td>
@@ -125,12 +128,15 @@
                 @endif
 
                 @if($pendingLoanRepayments->count())
-                <h5>Pending Loan Repayments</h5>
+                <h5>Pending Loan Repayments
+                    <input type="checkbox" class="select-all" data-target="loan">
+                    <small class="text-muted">(Select All)</small>
+                </h5>
                 <table class="table table-sm nowrap table-hover">
                     @foreach($pendingLoanRepayments as $repayment)
                     <tr>
                         <td>
-                            <input type="checkbox" name="repayment_ids[]" class="payment-checkbox"
+                            <input type="checkbox" name="repayment_ids[]" class="payment-checkbox loan-checkbox"
                                 value="{{ $repayment->id }}" data-amount="{{ $repayment->amount }}">
                             <strong>Loan# {{$repayment->owner_loan_id}}
                                 Repayment #{{ $repayment->id }} </strong>
@@ -154,12 +160,15 @@
                 @endif
 
                 @if($pendingOtherIncomes->count())
-                <h5>Pending Other Incomes</h5>
+                <h5>Pending Other Incomes
+                    <input type="checkbox" class="select-all" data-target="other">
+                    <small class="text-muted">(Select All)</small>
+                </h5>
                 <table class="table table-sm nowrap table-hover">
                     @foreach($pendingOtherIncomes as $pendingOtherIncome)
                     <tr>
                         <td>
-                            <input type="checkbox" name="otherincome_ids[]" class="payment-checkbox"
+                            <input type="checkbox" name="otherincome_ids[]" class="payment-checkbox other-checkbox"
                                 value="{{ $pendingOtherIncome->id }}" data-amount="{{ $pendingOtherIncome->amount }}">
                             <strong>OtherIncome #{{ $pendingOtherIncome->id }}</strong>
                         </td>
@@ -256,6 +265,23 @@ $(document).ready(function() {
         });
         $('#totalAmount').text(total.toFixed(2));
     }
+
+    // Select All logic
+    $('.select-all').change(function() {
+        let target = $(this).data('target');
+
+        if (target === 'service') {
+            $('.service-checkbox').prop('checked', this.checked);
+        }
+        if (target === 'loan') {
+            $('.loan-checkbox').prop('checked', this.checked);
+        }
+        if (target === 'other') {
+            $('.other-checkbox').prop('checked', this.checked);
+        }
+
+        calculateTotal();
+    });
 
 
     // Calculate on page load

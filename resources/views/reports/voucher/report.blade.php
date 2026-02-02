@@ -1,5 +1,5 @@
 @extends('layout.report_a4')
-@section('section-title', 'Owner Loan Yahai wise')
+@section('section-title', 'Voucher details')
 @section('content')
 
 <div style="text-align: right; font-weight: bold; margin-bottom: 10px;">
@@ -8,7 +8,7 @@
 <table>
     <thead>
         <tr>
-            <th>#</th>
+            <th>VId</th>
             <th>Voucher Name</th>
             <th>Payment Method</th>
             <th>Bank</th>
@@ -21,7 +21,7 @@
     <tbody>
         @foreach($vouchers as $index => $voucher)
         <tr>
-            <td>{{ $index + 1 }}</td>
+            <td>{{ $voucher->id }}</td>
             <td>{{ $voucher->name }}</td>
             <td>{{ $voucher->paymentMethod->name ?? '-' }}</td>
             <td>{{ $voucher->bank->name ?? '-' }}</td>
