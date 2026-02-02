@@ -17,16 +17,88 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Validation\Rule;
 use App\Models\ServiceChargeRefund;
-
+use App\Models\WeighbridgeEntry;
+use Yajra\DataTables\Facades\DataTables;
 
 class VoucherController extends Controller
 {
     public function index(Request $request)
     {
-        $memberships = Voucher::with(['paymentMethod', 'bank'])->get();
-
-        return view('vouchers.index', compact('memberships'));
+        return view('vouchers.index');
     }
+
+    public function data()
+    {
+        $entries = Voucher::with([
+            'paymentMethod',
+            'bank'
+        ])
+        ->orderBy('id', 'desc');
+    
+    
+        return DataTables::of($entries)
+
+        ->editColumn('created_at', function ($row) {
+            return $row->created_at->format('Y-m-d');
+        })
+
+        ->editColumn('name', function ($row) {
+            return '<span class="d-inline-block text-truncate" style="max-width:150px;" title="'.$row->name.'">'
+                . e($row->name) .
+                '</span>';
+        })
+
+        ->editColumn('description', function ($row) {
+            return '<div style="max-width:200px; line-height:1.2em; max-height:2.4em; overflow:hidden; white-space:normal; cursor:pointer;"
+                    title="'.e($row->description).'"
+                    ondblclick="navigator.clipboard.writeText(this.innerText).then(() => alert(\'Copied!\'+this.innerText))">'
+                    . e($row->description) .
+                   '</div>';
+        })
+
+        ->addColumn('bank', function ($row) {
+            if ($row->bank_sub_ledger_id && $row->bank) {
+                return $row->bank->name . ' / ' . $row->cheque_no . ' / ' . $row->cheque_date;
+            }
+            return '-';
+        })
+
+        ->filterColumn('bank', function($query, $keyword) {
+            $query->whereHas('bank', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            });
+        })
+
+        ->addColumn('ledger', function ($row) {
+            $ledger = optional($row->ledger)->name ?? '-';
+            $sub = optional(optional($row->ledger)->subLedgers)->name ?? '-';
+            return $ledger . ' - ' . $sub;
+        })
+
+        ->filterColumn('ledger', function($query, $keyword) {
+            $query->whereHas('ledger', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                  ->orWhereHas('subLedgers', function($q2) use ($keyword) {
+                      $q2->where('name', 'like', "%{$keyword}%");
+                  });
+            });
+        })
+
+        ->addColumn('action', function ($row) {
+            return '
+            <a href="'.route('vouchers.print', $row->id).'" class="btn btn-sm btn-primary" target="_blank">
+                <i class="fa fa-print"></i> Print
+            </a>
+            <a href="'.route('vouchers.show', $row->id).'" class="btn btn-default btn-xs">
+                <i class="fas fa-eye"></i> View
+            </a>
+            ';
+        })
+
+        ->rawColumns(['name','description','bank','ledger','action'])
+        ->make(true);
+    }
+
 
     public function create()
     {

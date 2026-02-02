@@ -6,8 +6,7 @@
 @section('content_header_title', 'Vouchers')
 @section('content_header_subtitle', 'Welcome')
 @section('page-buttons')
-<a href="{{ route('vouchers.create') }}" class="btn btn-success ml-auto"> <i
-                            class="fas fa-plus"></i> Create Voucher</a>
+<a href="{{ route('vouchers.create') }}" class="btn btn-success ml-auto"> <i class="fas fa-plus"></i> Create Voucher</a>
 @endsection
 {{-- Content body: main page content --}}
 
@@ -23,10 +22,10 @@
                     </div>
                     @endif
                     <div class="table-responsive">
-                        <table id="membershipsTable" class="table table-sm nowrap table-hover" style="width:100%">
+                        <table id="voucher-table" class="table table-sm nowrap table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>VId</th>
+                                    <th>VoucherId</th>
                                     <th>Date</th>
                                     <th>Name</th>
                                     <th>Amount</th>
@@ -37,47 +36,6 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach($memberships as $membership)
-                                <tr>
-                                    <td>{{ $membership->id }}</td>
-                                    <td>{{ $membership->created_at->format('Y-m-d') }}</td>
-                                    <td><span class="d-inline-block text-truncate" style="max-width: 150px;"
-                                            title="{{ $membership->name }}">{{ $membership->name }}</span></td>
-                                    <td>{{ $membership->amount }}</td>
-                                    <td>
-                                        <div style="max-width:200px; line-height:1.2em; max-height:2.4em; overflow:hidden; white-space:normal; cursor:pointer;"
-                                            title="{{ $membership->description }}"
-                                            ondblclick="navigator.clipboard.writeText(this.innerText).then(() => alert('Copied!'+this.innerText))">
-                                            {{ $membership->description }}
-                                        </div>
-                                    </td>
-                                    <td> @if ($membership->bank_sub_ledger_id)
-                                        {{ $membership->bank->name }} / {{ $membership->cheque_no }} /
-                                        {{ $membership->cheque_date }}
-                                        @else
-
-                                        @endif
-                                    </td>
-                                    <td>
-                                        {{ optional($membership->ledger)->name ?? '-' }} -
-                                        {{ optional(optional($membership->ledger)->subLedgers)->name ?? '-' }}
-                                    </td>
-
-                                    <td>{{ $membership->status }}</td>
-                                    <td>
-                                        <a href="{{ route('vouchers.print', $membership->id) }}"
-                                            class="btn btn-sm btn-primary" target="_blank">
-                                            <i class="fa fa-print"></i> Print
-                                        </a>
-                                        <a href="{{ route('vouchers.show', $membership->id) }}"
-                                            class="btn btn-default btn-xs">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -97,14 +55,46 @@
 {{-- Push extra scripts --}}
 
 @push('js')
+
 <script>
 $(document).ready(function() {
-    $('#membershipsTable').DataTable({
-        order: [
-            [0, 'desc']
-        ],
-        pageLength: 100,
-        autoWidth: true,
+    $('#voucher-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ordering: false, // disables column sorting
+        searching: true, // disables search filter
+        pageLength: 50,
+        ajax: '{{ route("vouchers.data") }}',
+        columns: [{
+                data: 'id'
+            },
+            {
+                data: 'created_at'
+            },
+            {
+                data: 'name'
+            },
+            {
+                data: 'amount'
+            },
+            {
+                data: 'description'
+            },
+            {
+                data: 'bank'
+            },
+            {
+                data: 'ledger'
+            },
+            {
+                data: 'status'
+            },
+            {
+                data: 'action',
+                orderable: false,
+                searchable: false
+            }
+        ]
     });
 });
 </script>
