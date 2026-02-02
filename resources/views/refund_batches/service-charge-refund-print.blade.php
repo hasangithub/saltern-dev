@@ -1,4 +1,4 @@
-@extends('layout.legal')
+@extends('layout.a4_landscape')
 @section('section-title', ' Service Charge Refund')
 @section('content')
 
