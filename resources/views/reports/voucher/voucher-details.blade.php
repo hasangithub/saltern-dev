@@ -31,6 +31,7 @@
                     <table class="table table-bordered table-sm">
                         <thead>
                             <tr>
+                                <th>Vid</th>
                                 <th>Date</th>
                                 <th>Name</th>
                                 <th>Bank</th>
@@ -43,6 +44,7 @@
                         <tbody>
                             @foreach ($vouchers as $voucher)
                             <tr>
+                                <td>{{$voucher->id}}</td>
                                 <td>{{ $voucher->created_at->format('Y-m-d') }}</td>
                                 <td>{{ $voucher->name }}</td>
                                 <td>{{ optional($voucher->bank)->name }}</td>
@@ -54,7 +56,7 @@
                             </tr>
                             @endforeach
                             <tr class="fw-bold">
-                                <td colspan="5" class="text-end">Total</td>
+                                <td colspan="6" class="text-end">Total</td>
                                 <td class="text-end">
                                     {{ number_format($vouchers->sum('amount'), 2) }}
                                 </td>
