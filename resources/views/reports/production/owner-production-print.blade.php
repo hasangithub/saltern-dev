@@ -26,15 +26,6 @@
             <div class="col-md-4 col-sm-6">
                 <strong>Membership No:</strong> {{ $firstMembership?->membership_no ?? 'N/A' }}
             </div>
-            <div class="col-md-4 col-sm-6">
-                <strong>From:</strong> {{ request('from_date') }}
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <strong>To:</strong> {{ request('to_date') }}
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <strong>Printed:</strong> {{ \Carbon\Carbon::now()->format('Y-m-d') }}
-            </div>
         </div>
         <div class="card-body table-responsive">
             <table class="table table-sm">
