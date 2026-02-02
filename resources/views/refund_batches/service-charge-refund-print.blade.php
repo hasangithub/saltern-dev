@@ -20,7 +20,7 @@
                 <th style="width:30px;">Voucher ID</th>
                 <th style="width:40px;">Bank</th>
                 <th style="width:30px;">Chq No</th>
-                <th style="width:30px;" class="text-right">30% Amount</th>
+                <th style="width:20px;" class="text-right">30% Amount</th>
                 <th style="width:40px;" class="text-right">Signature</th>
             </tr>
         </thead>
