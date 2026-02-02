@@ -1490,7 +1490,7 @@ public function annualProductionReport(Request $request)
     $pdf = PDF::loadView('refund_batches.service-charge-refund-print', [
         'batch' => $batch,
         'grouped' => $grouped
-    ])->setPaper('legal', 'landscape'); // or 'landscape'
+    ])->setPaper('a4', 'landscape'); // or 'landscape'
 
     return $pdf->stream("Refund_Batch_{$batch->id}.pdf");
     }

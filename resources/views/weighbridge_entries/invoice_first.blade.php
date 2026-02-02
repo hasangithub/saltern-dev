@@ -41,10 +41,4 @@
     </table>
 </div>
 
-<div class="footer">
-    <div class="signature">
-        <div class="line"></div>
-        <p>Cashier</p>
-    </div>
-</div>
 @endsection
