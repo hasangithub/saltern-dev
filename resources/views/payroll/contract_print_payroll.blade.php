@@ -133,9 +133,9 @@
                     <th style="width:20px;">Hours</th>
                     <th style="width:40px;">Amounts</th>
 
-                    @if($isTemporarySecurity)
-                    <th colspan="2" style="width:40px;">8 Hours Duty</th>
-                    @endif
+                   
+                    <th colspan="2" style="width:35px;">8 Hours Duty</th>
+                
                     <th  colspan="2" style="width:40px;">12 Hours Duty</th>
                     @if($isTemporarySecurity)    
                     <th colspan="2" style="width:40px;">Poovarsan kuda 150 Payments</th>
@@ -176,10 +176,10 @@
 
                     <td class="text-right">{{ number_format($payroll->overtime_hours ?? 0,1) }}</td>
                     <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0,2) }}</td>
-                    @if($isTemporarySecurity)
+                   
                     <td  style="width:20px;" class="text-right">{{ fmod($payroll->eight_hours_duty_hours, 1) == 0 ? (int)$payroll->eight_hours_duty_hours : number_format($payroll->eight_hours_duty_hours, 2, '.', '') }}</td>
                     <td  style="width:20px;" class="text-right">{{ number_format($payroll->eight_hours_duty_amount ?? 0,2) }}</td>
-                    @endif
+                
                     <td  style="width:20px;" class="text-right">{{ fmod($payroll->extra_half_days, 1) == 0 ? (int)$payroll->extra_half_days : number_format($payroll->extra_half_days, 2, '.', '') }}</td>
                     <td  style="width:20px;" class="text-right">{{ number_format($payroll->extra_half_days_amount ?? 0,2) }}</td>
                     @if($isTemporarySecurity)  
@@ -228,10 +228,10 @@
                     {{ number_format($batch->payrolls->sum('overtime_hours'),2) }}</td>
                 <td style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('overtime_amount'),2) }}</td>
-                @if($isTemporarySecurity)
+               
                 <td colspan="2" style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('eight_hours_duty_amount'),2) }}</td>
-                @endif
+                
                 <td colspan="2" style="width:40px;" class="text-right">
                     {{ number_format($batch->payrolls->sum('extra_half_days_amount'),2) }}</td>
                 @if($isTemporarySecurity)    
