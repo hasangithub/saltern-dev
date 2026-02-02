@@ -9,6 +9,37 @@
 {{-- Content body: main page content --}}
 
 @section('content_body')
+<style>
+/* Stylish Total Selected badge */
+#totalAmount {
+    font-weight: 700;
+    color: #198754;
+    /* Bootstrap success green */
+    font-size: 16px;
+}
+
+/* Make the label look like a small badge box */
+.total-box {
+    background: #f0f9f4;
+    border: 1px solid #cfe8d8;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+/* Stylish page heading */
+.page-title {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* Make buyer name stand out */
+.buyer-name {
+    color: #0d6efd;
+    /* Bootstrap primary */
+    font-weight: 800;
+    font-size: 1.05em;
+}
+</style>
 <div class="container-fluid">
     <div class="card">
         @if ($errors->any())
@@ -26,7 +57,9 @@
         </div>
         @endif
         <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
-            <h5 class="mb-2 mb-md-0">Pendings - {{$buyerName}}</h5>
+            <h5 class="mb-2 mb-md-0 page-title">
+                Pendings – <span class="buyer-name">{{ $buyerName }}</span>
+            </h5>
 
             <form method="GET" action="{{ route('receipts.create') }}" class="form-inline">
                 <select name="buyer_id" id="buyer_id" class="form-control form-control-sm mr-2"
@@ -40,8 +73,9 @@
                 </select>
             </form>
 
-            <strong class="text-muted small mt-2 mt-md-0">Total Selected: Rs. <span
-                    id="totalAmount">0.00</span></strong>
+            <strong class="mt-2 mt-md-0 total-box">
+                Total Selected: Rs. <span id="totalAmount">0.00</span>
+            </strong>
         </div>
 
 
@@ -263,7 +297,7 @@ $(document).ready(function() {
                 total += amount;
             }
         });
-        $('#totalAmount').text(total.toFixed(2));
+        $('#totalAmount').text(total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
 
     // Select All logic
