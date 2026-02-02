@@ -24,6 +24,7 @@ use App\Models\ReceiptDetail;
 use App\Exports\LedgerReportExport;
 use App\Models\Inventory;
 use App\Models\Place;
+use App\Models\RefundBatch;
 use App\Models\StaffLoan;
 use App\Models\User;
 use App\Services\StaffLoanReportService;
@@ -31,6 +32,13 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
+    public function indexRefund(Request $request)
+    {
+        $yahaies = Yahai::all();
+    
+        return view('reports.refund.index', compact('yahaies'));
+    }
+
 
     public function indexTrialBalance(Request $request)
     {
@@ -672,6 +680,30 @@ class ReportController extends Controller
         return view('reports.production.result', compact('yahaies', 'owners', 'buyers', 'entries'));
     }
 
+    public function generateRefund(Request $request)
+    {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
+
+        $entries = collect();
+
+        if ($request->filled('yahai_id')) {
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai', 'serviceChargeRefund'])
+                ->whereHas('membership.saltern', function ($query) use ($request) {
+                    $query->where('yahai_id', $request->yahai_id);
+                })
+                ->when($request->membership_id, function ($query) use ($request) {
+                    $query->whereHas('membership', function ($q) use ($request) {
+                        $q->where('id', $request->membership_id);
+                    });
+                })
+                ->get();
+        }
+
+        return view('reports.refund.result', compact('yahaies', 'owners', 'buyers', 'entries'));
+    }
+
     public function printOwnerProduction (Request $request)
     {
         $yahaies = Yahai::all();
@@ -679,6 +711,7 @@ class ReportController extends Controller
         $buyers = Buyer::all();
         $fromDate = $request->from_date;
         $toDate = $request->to_date;
+        $show30 = $request->has('show_30_percent'); // true or false
 
         $entries = collect();
 
@@ -699,7 +732,34 @@ class ReportController extends Controller
                 ->get();
         }
 
-        $pdf = Pdf::loadView('reports.production.owner-production-print', compact('yahaies', 'owners', 'buyers', 'entries', 'fromDate', 'toDate'))
+        $pdf = Pdf::loadView('reports.production.owner-production-print', compact('yahaies', 'owners', 'buyers', 'entries', 'fromDate', 'toDate', 'show30'))
+        ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('owner-production-report.pdf');
+    }
+
+    public function printRefund (Request $request)
+    {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
+
+        $entries = collect();
+
+        if ($request->filled('yahai_id')) {
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai', 'serviceChargeRefund'])
+                ->whereHas('membership.saltern', function ($query) use ($request) {
+                    $query->where('yahai_id', $request->yahai_id);
+                })
+                ->when($request->membership_id, function ($query) use ($request) {
+                    $query->whereHas('membership', function ($q) use ($request) {
+                        $q->where('id', $request->membership_id);
+                    });
+                })
+                ->get();
+        }
+
+        $pdf = Pdf::loadView('reports.refund.refund-print', compact('yahaies', 'owners', 'buyers', 'entries'))
         ->setPaper('a4', 'portrait');
 
         return $pdf->stream('owner-production-report.pdf');
@@ -1360,5 +1420,78 @@ class ReportController extends Controller
             ->setPaper('a4', 'portrait');
 
         return $pdf->stream('all-production-report.pdf');
+    }
+
+public function annualProductionReport(Request $request)
+    {
+        $report = DB::table('weighbridge_entries')
+            ->selectRaw('
+                YEAR(transaction_date) as year,
+                SUM(CASE WHEN culture = "Ag Salt" THEN bags_count ELSE 0 END) as ag_salte,
+                SUM(CASE WHEN culture = "yala" THEN bags_count ELSE 0 END) as yala,
+                SUM(CASE WHEN culture = "maha" THEN bags_count ELSE 0 END) as maha,
+                SUM(bags_count) as total
+            ')
+            ->where('membership_id', $request->membership_id)
+            ->whereYear('transaction_date', '>=', 2025)
+            ->where('status', 'approved')   // important
+            ->groupBy(DB::raw('YEAR(transaction_date)'))
+            ->orderBy('year')
+            ->get();
+
+        return view('reports.production.annual-production', compact('report'));
+    }
+    
+    public function printAnnualProduction(Request $request)
+    { 
+        $report = WeighbridgeEntry::with('membership')
+    ->selectRaw('
+        membership_id,
+        YEAR(transaction_date) as year,
+        SUM(CASE WHEN culture = "Ag Salt" THEN bags_count ELSE 0 END) as ag_salt,
+        SUM(CASE WHEN culture = "yala" THEN bags_count ELSE 0 END) as yala,
+        SUM(CASE WHEN culture = "maha" THEN bags_count ELSE 0 END) as maha,
+        SUM(bags_count) as total
+    ')
+    ->where('membership_id', $request->membership_id)
+    ->whereYear('transaction_date', '>=', 2025)
+    ->where('status', 'approved')
+    ->groupBy('membership_id', DB::raw('YEAR(transaction_date)'))
+    ->orderBy('membership_id')
+    ->orderBy('year')
+    ->get();
+        //$report = json_decode(json_encode($report), true);
+
+
+        $pdf = Pdf::loadView('reports.production.annual-production-print', compact('report'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('annual-production-report.pdf');
+    }
+
+    public function printServiceChargeRefund($id)
+    {
+        $batch = RefundBatch::with([
+            'serviceChargeRefunds.memberships.saltern.yahai',
+            'serviceChargeRefunds.memberships.owner'
+        ])->findOrFail($id);
+    
+        // group refunds by Yahai -> Saltern -> Membership
+        $grouped = $batch->serviceChargeRefunds
+            ->sortBy(fn($r) => $r->memberships->saltern->yahai->id) // Yahai order
+            ->groupBy(fn($r) => $r->memberships->saltern->yahai->id) // group by Yahai
+            ->map(function ($yahaiGroup) {
+                return $yahaiGroup
+                    ->sortBy(fn($r) => $r->memberships->saltern->id) // Saltern order
+                    ->groupBy(fn($r) => $r->memberships->saltern->id); // group by Saltern
+            });
+            
+         // Pass data to Blade PDF view
+    $pdf = PDF::loadView('refund_batches.service-charge-refund-print', [
+        'batch' => $batch,
+        'grouped' => $grouped
+    ])->setPaper('legal', 'landscape'); // or 'landscape'
+
+    return $pdf->stream("Refund_Batch_{$batch->id}.pdf");
     }
 }

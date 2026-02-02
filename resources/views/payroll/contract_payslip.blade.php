@@ -141,7 +141,7 @@
                 </td>
                 <td class="text-right">{{ number_format($payroll->overtime_amount ?? 0, 2) }}</td>
             </tr>
-            @if($isTemporarySecurity)    
+           
             <tr>
                 <td>8 Hours Duty Payment</td>
                 <td>
@@ -156,7 +156,7 @@
                 </td>
                 <td class="text-right">{{ number_format($payroll->eight_hours_duty_amount, 2) }}</td>
             </tr>
-            @endif
+           
             <tr>
                 <td>12 Hours Duty Payment</td>
                 <td>

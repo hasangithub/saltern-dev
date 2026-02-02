@@ -119,7 +119,7 @@ class WeighbridgeEntry extends Model
         return number_format($this->net_weight, 2) . ' kg';
     }
 
-    public function refundBatch()
+    public function serviceChargeRefund()
     {
         return $this->belongsTo(ServiceChargeRefund::class, 'refund_id');
     }

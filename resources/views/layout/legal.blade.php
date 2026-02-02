@@ -3,16 +3,16 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Ledger Report</title>
+    <title>Reports</title>
     <style>
     @page {
         margin: 0.5cm;
-        size: A4 portrait;
+        size: legal landscape;
     }
 
     body {
         font-family: sans-serif;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.5;
     }
 
