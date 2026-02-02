@@ -27,6 +27,8 @@
         padding: 4px 0;
     }
 
+    .page-break { page-break-after: always; }
+
     table {
         width: 100%;
         border-collapse: collapse;
