@@ -1,5 +1,5 @@
 @extends('layout.report_a4')
-@section('section-title', 'Owner Loan Yahai wise')
+@section('section-title', 'Voucher details')
 @section('content')
 
 <div style="text-align: right; font-weight: bold; margin-bottom: 10px;">
