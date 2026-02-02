@@ -39,4 +39,9 @@ class ServiceChargeRefund extends Model
     {
         return $this->hasMany(WeighbridgeEntry::class, 'refund_id');
     }
+
+    public function refundBatch()
+    {
+        return $this->belongsTo(RefundBatch::class, 'refund_batch_id');
+    }
 }

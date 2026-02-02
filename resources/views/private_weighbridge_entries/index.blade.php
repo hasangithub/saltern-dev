@@ -77,7 +77,7 @@
                                         </a>
                                         @endif
                                         @if($e->status === 'completed')
-                                        <a href="{{ route('private_weighbridge_entries.invoice', $e) }}" target="_blank"
+                                        <a href="{{ route('private_weighbridge_entries.invoice', $e) }}?mode=list" target="_blank"
                                             class="btn btn-sm btn-warning">
                                             Print
                                         </a>

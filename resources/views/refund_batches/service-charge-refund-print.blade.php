@@ -6,9 +6,11 @@
     @php
         $firstRefund = $salterns->first()->first();
         $yahaiName = optional($firstRefund->memberships->saltern->yahai)->name ?? 'Unknown Yahai';
+        $batchName = optional($firstRefund->refund_batch)->name ?? '';
     @endphp
 
     <h3>Yahai: {{ $yahaiName }}</h3>
+    <h3>Batch: {{ $batchName }}</h3>
 
     <table>
         <thead>
