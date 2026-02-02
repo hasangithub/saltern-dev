@@ -70,6 +70,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('saltern',SalternController::class);
 
     Route::get('/weighbridge-test/data', [WeighbridgeEntryController::class, 'data'])->name('weighbridge_entries.data');
+    Route::get('/voucher/data', [VoucherController::class, 'data'])->name('vouchers.data');
 
     Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
     Route::get('/weighbridge/entries/create', [WeighbridgeEntryController::class, 'create'])->name('weighbridge_entries.create');
