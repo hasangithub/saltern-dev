@@ -15,7 +15,7 @@
     <table>
         <thead>
             <tr>
-                <th style="width:30px;">Saltern</th>
+                <th style="width:20px;">Saltern</th>
                 <th style="width:40px;">Owner</th>
                 <th style="width:30px;">Voucher ID</th>
                 <th style="width:40px;">Bank</th>
