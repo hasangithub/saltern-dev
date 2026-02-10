@@ -99,7 +99,9 @@ Route::post('/weighbridge/final/{entry}/update', [WeighbridgeEntryController::cl
 
 Route::resource('private-weighbridge-entries', PrivateWeighbridgeEntryController::class);
 Route::get('/private-weighbridge-entries/{entry}/invoice', [PrivateWeighbridgeEntryController::class, 'invoice'])->name('private_weighbridge_entries.invoice');
-
+Route::get('/private-weighbridge-entries/{id}/cancel', 
+    [PrivateWeighbridgeEntryController::class, 'cancel']
+)->name('private-weighbridge-entries.cancel');
 
     Route::get('refunds', [ServiceChargeRefundController::class, 'index'])->name('refunds.index');
     Route::post('refunds/preview', [ServiceChargeRefundController::class, 'preview'])->name('refunds.preview');

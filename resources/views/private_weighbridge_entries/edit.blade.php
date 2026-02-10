@@ -139,6 +139,10 @@ textarea.form-control:focus {
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Save
                                 </button>
+
+                                <button type="button" class="btn btn-danger" id="cancelBtn">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -159,7 +163,26 @@ textarea.form-control:focus {
 {{-- Push extra scripts --}}
 
 @push('js')
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.7/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.7/dist/sweetalert2.min.js"></script>
 <script>
+document.getElementById('cancelBtn').addEventListener('click', function () {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will cancel this weighbridge entry!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, cancel it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Redirect to cancel route
+            window.location.href = "{{ route('private-weighbridge-entries.cancel', $privateWeighbridgeEntry->id) }}";
+        }
+    });
+});
+
 document.addEventListener("DOMContentLoaded", function() {
     const form = document.querySelector("#weighbridge_form");
     const initialWeightInput = document.getElementById('first_weight'); // readonly

@@ -258,4 +258,18 @@ class PrivateWeighbridgeEntryController extends Controller
 
         //return view('weighbridge_entries.invoice', compact('entry'));
     }
+
+    public function cancel($id)
+    {
+        $entry = PrivateWeighbridgeEntry::findOrFail($id);
+
+        $entry->update([
+            'status' => 'cancelled'
+        ]);
+
+        return redirect()
+            ->route('private-weighbridge-entries.index')
+            ->with('success', 'Entry cancelled successfully.');
+    }
+
 }
