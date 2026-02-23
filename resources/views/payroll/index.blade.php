@@ -16,6 +16,36 @@
 
     @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
 
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>Select Pay Period</strong>
+        </div>
+
+        <div class="card-body">
+            <form method="GET" action="{{ route('payroll.batches.index') }}">
+                <div class="row align-items-end">
+
+                    <div class="col-md-4">
+                        <label>Pay Period</label>
+                        <select name="period" class="form-control">
+                            @foreach($periods as $period)
+                            <option value="{{ $period }}" {{ $currentPeriod == $period ? 'selected' : '' }}>
+                                {{ \Carbon\Carbon::createFromFormat('Y-m', $period)->format('F Y') }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">
+                            Filter
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Payroll Batches</h3>

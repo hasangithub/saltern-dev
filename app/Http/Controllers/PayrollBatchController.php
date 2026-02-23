@@ -21,13 +21,25 @@ use Carbon\Carbon;
 
 class PayrollBatchController extends Controller
 {
-    public function index()
+    
+    public function index(Request $request)
     {
-        $batches = PayrollBatch::with('payrollTemplate')->where('is_visible', true)->withCount('payrolls')
+        $periods = PayrollBatch::where('is_visible', true)
+                    ->select('pay_period')
+                    ->distinct()
+                    ->orderByDesc('pay_period')
+                    ->pluck('pay_period');
+    
+        $currentPeriod = $request->period ?? $periods->first();
+    
+        $batches = PayrollBatch::with('payrollTemplate')
+            ->where('is_visible', true)
+            ->where('pay_period', $currentPeriod)
+            ->withCount('payrolls')
             ->orderByDesc('pay_period')
             ->get();
-
-        return view('payroll.index', compact('batches'));
+    
+        return view('payroll.index', compact('batches', 'periods', 'currentPeriod'));
     }
 
     public function create()
