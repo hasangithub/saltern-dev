@@ -11,7 +11,7 @@
 
     .table th:nth-child(2),
     .table td:nth-child(2) {
-        width: 35%;
+        width: 70%;
     }
 
     .table th:nth-child(3),
@@ -20,8 +20,7 @@
     .table td:nth-child(4),
     .table th:nth-child(5),
     .table td:nth-child(5) {
-        width: 16%;
-        text-align: right;
+        width: 15%;
     }
 
     .totals-row {
