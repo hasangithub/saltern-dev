@@ -3,11 +3,25 @@
 @section('content')
 
 @section('custom-css')
-    .table td:first-child,
-    .table td:nth-child(2),
-    .table th:first-child,
-    .table th:nth-child(2) {
-    <!-- text-align: left; -->
+/* Fix column widths */
+    .table th:nth-child(1),
+    .table td:nth-child(1) {
+        width: 15%;
+    }
+
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+        width: 35%;
+    }
+
+    .table th:nth-child(3),
+    .table td:nth-child(3),
+    .table th:nth-child(4),
+    .table td:nth-child(4),
+    .table th:nth-child(5),
+    .table td:nth-child(5) {
+        width: 16%;
+        text-align: right;
     }
 
     .totals-row {
