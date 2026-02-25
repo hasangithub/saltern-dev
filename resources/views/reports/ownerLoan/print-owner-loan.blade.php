@@ -90,7 +90,8 @@ background-color: #f1f1f1;
             </tr>
             @endforeach
             <tr class="totals-row">
-                <td colspan="2">Total</td>
+                <td></td>
+                <td>Total</td>
                 <td class="text-right">{{ number_format($totalDebit, 2) }}</td>
                 <td class="text-right">{{ number_format($totalCredit, 2) }}</td>
                 <td class="text-right">{{ number_format($finalBalance, 2) }}</td>
