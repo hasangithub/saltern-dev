@@ -216,12 +216,12 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="{{ route('attendance.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
                                 <p>Attendances</p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="{{ route('payroll.batches.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-water"></i>
