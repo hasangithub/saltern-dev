@@ -7,7 +7,7 @@
     .table td:nth-child(2),
     .table th:first-child,
     .table th:nth-child(2) {
-    text-align: left;
+    <!-- text-align: left; -->
     }
 
     .totals-row {
