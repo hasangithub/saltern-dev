@@ -42,7 +42,11 @@
                     <tr>
                         <td>{{ optional($inventory->date_of_purchase)->format('Y-m-d') }}</td>
                         <td>{{ $inventory->voucher_id }}</td>
-                        <td>{{ $inventory->name }}</td>
+                        <td class="text-truncate-name" data-toggle="tooltip" title="{{ $inventory->name }}">
+
+                            {{ \Illuminate\Support\Str::limit($inventory->name, 15) }}
+
+                        </td>
                         <td>{{ $inventory->place?->name }}</td>
                         <td>{{ $inventory->stock_code }}</td>
                         <td>{{ $inventory->qty }}</td>
