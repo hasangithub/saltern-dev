@@ -56,7 +56,11 @@
                             {{ \Illuminate\Support\Str::limit($inventory->description, 15) }}
 
                         </td>
-                        <td>{{ $inventory->replacedInventory?->name ?? '-' }}</td>
+                        <td class="text-truncate-replaced" data-toggle="tooltip" title="{{ $inventory->replacedInventory?->name ?? '-' }}">
+
+                            {{ \Illuminate\Support\Str::limit($inventory->replacedInventory?->name ?? '-', 15) }}
+
+                        </td>
                         <td>
                             @if($inventory->warranty_from && $inventory->warranty_to)
                             {{ $inventory->warranty_from->format('Y-m-d') }} -
