@@ -47,7 +47,11 @@
                         <td>{{ $inventory->stock_code }}</td>
                         <td>{{ $inventory->qty }}</td>
                         <td>{{ number_format($inventory->amount, 2) }}</td>
-                        <td>{{ $inventory->description }}</td>
+                        <td class="text-truncate-desc" data-toggle="tooltip" title="{{ $inventory->description }}">
+
+                            {{ \Illuminate\Support\Str::limit($inventory->description, 40) }}
+
+                        </td>
                         <td>{{ $inventory->replacedInventory?->name ?? '-' }}</td>
                         <td>
                             @if($inventory->warranty_from && $inventory->warranty_to)
@@ -100,7 +104,7 @@
             order: [
                 [0, 'desc']
             ],
-            pageLength: 100
+            pageLength: 25
         });
     });
     </script>
