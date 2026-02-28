@@ -49,7 +49,7 @@
                         <td>{{ number_format($inventory->amount, 2) }}</td>
                         <td class="text-truncate-desc" data-toggle="tooltip" title="{{ $inventory->description }}">
 
-                            {{ \Illuminate\Support\Str::limit($inventory->description, 40) }}
+                            {{ \Illuminate\Support\Str::limit($inventory->description, 15) }}
 
                         </td>
                         <td>{{ $inventory->replacedInventory?->name ?? '-' }}</td>
