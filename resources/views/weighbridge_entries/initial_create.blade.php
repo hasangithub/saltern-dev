@@ -107,6 +107,13 @@ textarea.form-control:focus {
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label for="membership_phone_number" class="col-sm-3 col-form-label">Owner Phone Number</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="membership_phone_number" id="membership_phone_number"
+                                            class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label for="buyer_id" class="col-sm-3 col-form-label">Buyer</label>
                                     <div class="col-sm-9">
                                         <select name="buyer_id" id="buyer_id" class="form-control" required
@@ -261,6 +268,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function clearMembershipDetails() {
         $('#membership_id').val('');
         $('#membership_name').val('');
+        $('#membership_phone_number').val('');
     }
 
     $('#side_id').change(function() {
@@ -326,6 +334,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (response.status === 'success') {
                         $('#membership_id').val(response.membership.id);
                         $('#membership_name').val(response.owner.name_with_initial);
+                        $('#membership_phone_number').val(response.owner.phone_number);
                     } else {
                         alert('No membership found for this saltern');
                     }
