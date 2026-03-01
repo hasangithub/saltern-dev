@@ -95,7 +95,8 @@
                         <th class="text-right">{{ $totalBags }}</th>
                         <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
                         <th class="text-right">{{ number_format($totalServiceCharge30, 2) }}</th>
-                        <th class="text-right" colspan="2"></th>
+                        <th class="text-right"></th>
+                        <th class="text-right">{{ number_format($totalRefund, 2) }}</th>
                         <th class="text-right">{{ number_format($totalServiceCharge30 -  $totalRefund, 2)}}</th>
                     </tr>
                 </tfoot>
