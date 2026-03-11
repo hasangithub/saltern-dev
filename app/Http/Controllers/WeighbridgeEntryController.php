@@ -211,6 +211,12 @@ class WeighbridgeEntryController extends Controller
     {
         $entry = WeighbridgeEntry::findOrFail($entryId);
 
+        // Capture previous membership & owner BEFORE updating
+        $previousMembershipId = $entry->membership_id;
+        $previousMembership = $entry->membership; // relationship assumed
+        $previousOwnerPhone = $previousMembership?->owner?->phone_number;
+        $previousOwnerName = $previousMembership?->owner?->name_with_initial;
+
         $validated =  $request->validate([
             'vehicle_id' => 'required|string',
             'culture' => 'required|string',
@@ -256,6 +262,16 @@ class WeighbridgeEntryController extends Controller
             ->get();
 
         $entry->save();
+
+        // If membership changed
+        if ($previousMembershipId != $validated['membership_id'] && !empty($previousOwnerPhone)) {
+
+             $cancelSms = date('Y-m-d') . "\n"
+                . "Vehicle: " . $validated['vehicle_id'] . "\n"
+                . "Load Cancelled.";
+
+            $this->smsService->sendSms($previousOwnerPhone, $cancelSms);
+        }
 
         $weighbridgeEntryId = $entryId;
 
