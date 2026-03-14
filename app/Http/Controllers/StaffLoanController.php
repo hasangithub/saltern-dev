@@ -95,6 +95,7 @@ class StaffLoanController extends Controller
 
         $ownerLoan = StaffLoan::create([
             'user_id' => $validated['user_id'],
+            'loan_type' => $validated['loan_type'],
             'requested_amount'  => $validated['loan_amount'],
             'approved_amount'  => $validated['loan_type_oldnew']  === 'old' ? $validated['loan_amount'] : null,
             'purpose'       => $validated['purpose'] ?? null,
