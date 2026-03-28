@@ -45,7 +45,9 @@ public function create(Request $request)
             $buyerId = $buyer->id;
             
             // Get pending weighbridge service charges
-            $pendingServiceCharges = WeighbridgeEntry::where('buyer_id', $buyer->id)->where('is_service_charge_paid', 0)
+            $pendingServiceCharges = WeighbridgeEntry::where('buyer_id', $buyer->id)->where('is_service_charge_paid', 0) 
+            ->whereNotNull('total_amount')
+            ->where('total_amount', '>', 0)
                 ->get();
 
             // Get pending owner loans assigned to this buyer
