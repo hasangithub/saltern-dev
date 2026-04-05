@@ -21,6 +21,9 @@
                 </div>
 
                 <div class="card-body">
+                    @if(session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
                     @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
@@ -77,11 +80,23 @@
                                         </a>
                                         @endif
                                         @if($e->status === 'completed')
-                                        <a href="{{ route('private_weighbridge_entries.invoice', $e) }}?mode=list" target="_blank"
-                                            class="btn btn-sm btn-warning">
+                                        <a href="{{ route('private_weighbridge_entries.invoice', $e) }}?mode=list"
+                                            target="_blank" class="btn btn-sm btn-warning">
                                             Print
                                         </a>
                                         @endif
+
+                                        @role('admin')
+                                        <form action="{{ route('private-weighbridge-entries.destroy', $e->id) }}"
+                                            method="POST" style="display:inline;"
+                                            onsubmit="return confirm('Are you sure you want to delete this entry {{ $e->id }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </button>
+                                        </form>
+                                        @endrole
                                     </td>
                                 </tr>
                                 @endforeach

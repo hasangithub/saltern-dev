@@ -15,6 +15,7 @@ use App\Models\ReceiptDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PrivateWeighbridgeEntryController extends Controller
 {
@@ -236,10 +237,40 @@ class PrivateWeighbridgeEntryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
+    public function destroy($id)
+{
+    try {
+
+        DB::transaction(function () use ($id) {
+
+            $entry = PrivateWeighbridgeEntry::findOrFail($id);
+
+            // ✅ Delete related other_income ONLY if exists
+            if (!empty($entry->other_income_id)) {
+
+                $otherIncome = OtherIncome::find($entry->other_income_id);
+
+                if ($otherIncome) {
+                    $otherIncome->deleted_by = auth('web')->id();
+                    $otherIncome->save();
+                    $otherIncome->delete();
+                }
+            }
+
+            // ✅ Delete main entry
+            $entry->deleted_by = auth('web')->id();
+            $entry->save();
+            $entry->delete();
+        });
+
+        return redirect()->route('private-weighbridge-entries.index')
+            ->with('success', 'Weighbridge entry deleted.');
+
+    } catch (\Exception $e) {
+        return redirect()->back()
+        ->with('error', 'Delete failed! ');
     }
+}
 
     public function invoice(PrivateWeighbridgeEntry $entry, Request $request)
     {

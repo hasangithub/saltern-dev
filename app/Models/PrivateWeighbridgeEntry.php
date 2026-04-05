@@ -3,10 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PrivateWeighbridgeEntry extends Model
 {
     protected $table = 'private_weighbridge_entries';
+
+    use SoftDeletes;
+
+    protected $dates = ['deleted_at'];
 
     protected $fillable = [
         'vehicle_id',
@@ -23,6 +28,7 @@ class PrivateWeighbridgeEntry extends Model
         'created_by',
         'updated_by',
         'status',
+        'deleted_by'
     ];
 
     public function buyer()
