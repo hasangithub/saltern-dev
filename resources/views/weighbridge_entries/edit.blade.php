@@ -53,6 +53,16 @@
                             </select>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="culture" class="col-sm-3 col-form-label">Culture</label>
+                            <select id="culture" name="culture" class="form-control" required tabindex="1">
+                                    <option value="">-- Select culture --</option>
+                                    <option value="Ag Salt" {{ $entry->culture == 'Ag Salt' ? 'selected' : '' }}>Ag Salt</option>
+                                    <option value="yala" {{ $entry->culture == 'yala' ? 'selected' : '' }}>Yala</option>
+                                    <option value="maha" {{ $entry->culture == 'maha' ? 'selected' : '' }}>Maha</option>
+                                </select>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Update Entry</button>
                         <a href="{{ route('weighbridge_entries.index') }}" class="btn btn-secondary">Cancel</a>
                     </form>
