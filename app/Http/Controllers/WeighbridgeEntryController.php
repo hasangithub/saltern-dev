@@ -731,12 +731,14 @@ class WeighbridgeEntryController extends Controller
             $request->validate([
                 'vehicle_id' => 'required|string|max:100',
                 'buyer_id' => 'required|exists:buyers,id',
+                'culture' => 'required',
             ]);
 
             $entry = WeighbridgeEntry::findOrFail($id);
             $entry->update($request->only([
                 'vehicle_id',
-                'buyer_id'
+                'buyer_id',
+                'culture'
             ]));
 
             return redirect()->route('weighbridge_entries.index')->with('success', 'Entry updated successfully.');
