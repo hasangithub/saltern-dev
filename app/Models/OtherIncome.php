@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OtherIncome extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'received_date',
         'income_category_id',
@@ -14,6 +17,7 @@ class OtherIncome extends Model
         'name',
         'description',
         'status',
+        'deleted_by'
     ];
 
     public function incomeCategory()
