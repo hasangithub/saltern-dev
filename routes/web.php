@@ -304,8 +304,11 @@ Route::middleware(['auth:owner'])->group(function () {
 
 });
 
+Route::middleware(['auth:web'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
+});
 Route::resource('owner-loans', OwnerLoanController::class);
-Route::get('/', [DashboardController::class, 'index'])->name('home');
+
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/owner/dashboard', [DashboardController::class, 'ownerIndex'])->name('owner.dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
@@ -384,8 +387,3 @@ Route::post('/password/email', [ForgotPasswordController::class, 'sendLink'])->n
 
 Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
-
-
-
-
-
