@@ -306,10 +306,10 @@ Route::middleware(['auth:owner'])->group(function () {
 
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 Route::resource('owner-loans', OwnerLoanController::class);
 
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/owner/dashboard', [DashboardController::class, 'ownerIndex'])->name('owner.dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
 Route::resource('staff-loan-repayments', StaffLoanRepaymentController::class);
