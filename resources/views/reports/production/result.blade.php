@@ -91,6 +91,7 @@
                                             <th class="text-right">Bags</th>
                                             <th class="text-right">Tons</th>
                                             <th class="text-right">Service Charge 30%</th>
+                                            <th class="text-right">Loan Paid</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -99,16 +100,19 @@
                                         $totalBags = 0;
                                         $totalAmount = 0;
                                         $totalServiceCharge30 = 0;
+                                        $loanPaid = 0;
+                                        $totalLoanPaid=0;
                                         @endphp
                                         @foreach($entries as $entry)
-                                        @php
-                                        $totalNetWeight += $entry->net_weight;
-                                        $totalBags += $entry->bags_count;
-                                        $totalAmount += $entry->total_amount;
-                                        $serviceCharge30 = round($entry->total_amount *
-                                        ($entry->owner_share_percentage/100), 2);
-                                        $totalServiceCharge30 += $serviceCharge30;
-                                        @endphp
+                                            @php
+                                                $totalNetWeight += $entry->net_weight;
+                                                $totalBags += $entry->bags_count;
+                                                $totalAmount += $entry->total_amount;
+                                                $serviceCharge30 = round($entry->total_amount *
+                                                ($entry->owner_share_percentage/100), 2);
+                                                $totalServiceCharge30 += $serviceCharge30;
+                                                $totalLoanPaid += round($entry->loanRepayments->sum('amount'),2); 
+                                            @endphp
                                         <tr>
                                             <td>{{ $entry->transaction_date }}</td>
                                             <td>{{ $entry->buyer->full_name ?? '-' }}</td>
@@ -118,6 +122,7 @@
                                             <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}
                                             </td>
                                             <td class="text-right">{{ number_format($serviceCharge30, 2) }}</td>
+                                            <td class="text-right">{{ number_format($entry->loanRepayments->sum('amount'),2) }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -128,6 +133,7 @@
                                             <th class="text-right">{{ $totalBags }}</th>
                                             <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
                                             <th class="text-right">{{ number_format($totalServiceCharge30, 2) }}</th>
+                                            <th class="text-right">{{ number_format($totalLoanPaid, 2) }}</th>
                                         </tr>
                                     </tfoot>
                                 </table>

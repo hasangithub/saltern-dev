@@ -40,6 +40,9 @@
                         @if($show30)
                         <th class="text-right">30% Service Charge</th>
                         @endif
+                        @if($showLoanPaid)
+                        <th class="text-right">Loan Paid</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -48,6 +51,8 @@
                     $totalBags = 0;
                     $totalAmount = 0;
                     $totalServiceCharge30 = 0;
+                    $loanPaid = 0;
+                    $totalLoanPaid = 0;
                     @endphp
                     @foreach($entries as $entry)
                     @php
@@ -57,6 +62,7 @@
                     $serviceCharge30 = round($entry->total_amount *
                     ($entry->owner_share_percentage/100), 2);
                     $totalServiceCharge30 += $serviceCharge30;
+                    $totalLoanPaid += round($entry->loanRepayments->sum('amount'),2); 
                     @endphp
                     <tr>
                         <td>{{ $entry->transaction_date }}</td>
@@ -71,6 +77,11 @@
                         {{ number_format($serviceCharge30, 2) }}
                         </td>
                         @endif
+                        @if($showLoanPaid)
+                        <td class="text-right">
+                        {{ number_format($entry->loanRepayments->sum('amount'),2) }}
+                        </td>
+                        @endif
                     </tr>
                     @endforeach
                 </tbody>
@@ -82,6 +93,9 @@
                         <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
                         @if($show30)
                         <th class="text-right">{{ number_format($totalServiceCharge30, 2) }}</th>
+                        @endif
+                        @if($showLoanPaid)
+                        <th class="text-right">{{ number_format($totalLoanPaid, 2) }}</th>
                         @endif
                     </tr>
                 </tfoot>

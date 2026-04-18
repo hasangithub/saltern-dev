@@ -89,6 +89,13 @@ $toDate = now()->format('Y-m-d');
                                     Show 30% Service Charge Details
                                 </label>
                             </div>
+                            <div class="form-check mb-3 ml-2">
+                                <input class="form-check-input" type="checkbox" name="show_loan_paid"
+                                    id="show_loan_paid" value="1" {{ request('show_loan_paid') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="show_loan_paid">
+                                    Show Loan Paid Details
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">

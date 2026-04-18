@@ -661,7 +661,7 @@ class ReportController extends Controller
         $entries = collect();
 
         if ($request->filled('from_date') && $request->filled('to_date') && $request->filled('yahai_id')) {
-            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai', 'loanRepayments'])
                 ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
                 ->whereHas('membership.saltern', function ($query) use ($request) {
                     $query->where('yahai_id', $request->yahai_id);
@@ -712,11 +712,12 @@ class ReportController extends Controller
         $fromDate = $request->from_date;
         $toDate = $request->to_date;
         $show30 = $request->has('show_30_percent'); // true or false
+        $showLoanPaid = $request->has('show_loan_paid'); // true or false
 
         $entries = collect();
 
         if ($request->filled('from_date') && $request->filled('to_date') && $request->filled('yahai_id')) {
-            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai', 'loanRepayments'])
                 ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
                 ->whereHas('membership.saltern', function ($query) use ($request) {
                     $query->where('yahai_id', $request->yahai_id);
@@ -732,7 +733,7 @@ class ReportController extends Controller
                 ->get();
         }
 
-        $pdf = Pdf::loadView('reports.production.owner-production-print', compact('yahaies', 'owners', 'buyers', 'entries', 'fromDate', 'toDate', 'show30'))
+        $pdf = Pdf::loadView('reports.production.owner-production-print', compact('yahaies', 'owners', 'buyers', 'entries', 'fromDate', 'toDate', 'show30', 'showLoanPaid'))
         ->setPaper('a4', 'portrait');
 
         return $pdf->stream('owner-production-report.pdf');
@@ -1473,7 +1474,8 @@ public function annualProductionReport(Request $request)
     {
         $batch = RefundBatch::with([
             'serviceChargeRefunds.memberships.saltern.yahai',
-            'serviceChargeRefunds.memberships.owner'
+            'serviceChargeRefunds.memberships.owner',
+            'serviceChargeRefunds.refund_batch'
         ])->findOrFail($id);
     
         // group refunds by Yahai -> Saltern -> Membership

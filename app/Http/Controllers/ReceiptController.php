@@ -53,7 +53,10 @@ public function create(Request $request)
             // Get pending owner loans assigned to this buyer
             $pendingLoanRepayments = OwnerLoanRepayment::where('buyer_id', $buyer->id)->where('status', 'pending')->get();
 
-            $pendingOtherIncomes = OtherIncome::where('buyer_id', $buyer->id)->where('status', 'pending')->get();
+            $pendingOtherIncomes = OtherIncome::with('privateWeighbridge')
+            ->where('buyer_id', $buyer->id)
+            ->where('status', 'pending')
+            ->get();
         }
     }
 

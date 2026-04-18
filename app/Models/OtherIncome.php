@@ -41,4 +41,9 @@ class OtherIncome extends Model
             'receipt_id'      // Local key on ReceiptDetails
         )->where('entry_type', 'other_income');
     }
+
+    public function privateWeighbridge()
+    {
+        return $this->hasOne(PrivateWeighbridgeEntry::class, 'other_income_id');
+    }
 }
