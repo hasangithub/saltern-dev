@@ -216,7 +216,7 @@
                             {{$pendingOtherIncome->incomeCategory->name}}
                         </td>
                         <td>
-                            {{$pendingOtherIncome->description}}
+                            {{ optional($pendingOtherIncome->privateWeighbridge)->vehicle_id ? optional($pendingOtherIncome->privateWeighbridge)->vehicle_id . ' - ' : '-' }}{{$pendingOtherIncome->description}}
                         </td>
                     </tr>
                     @endforeach
@@ -297,7 +297,10 @@ $(document).ready(function() {
                 total += amount;
             }
         });
-        $('#totalAmount').text(total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        $('#totalAmount').text(total.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }));
     }
 
     // Select All logic
