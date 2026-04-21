@@ -66,7 +66,15 @@
                                     <td>{{ $e->amount ?? '-' }}</td>
                                     <td>
                                         @if($e->is_paid)
-                                        <span class="badge bg-success">Paid</span>
+                                        <span class="badge bg-success">
+                                            @if(optional($e->receipt)->id)
+                                            <a href="{{ route('receipts.show', $e->receipt->id) }}" target="_blank"
+                                                class="text-white">
+                                                Paid {{ $e->receipt->id }}
+                                            </a> @else
+                                           Paid 
+                                            @endif
+                                        </span>
                                         @else
                                         <span class="badge bg-warning">Unpaid</span>
                                         @endif
@@ -125,6 +133,7 @@
 <script>
 $(document).ready(function() {
     $('#ownersTable').DataTable({
+        pageLength: 50,
         ordering: false, // 🔴 IMPORTANT
     });
 
