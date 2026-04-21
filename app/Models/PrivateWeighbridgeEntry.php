@@ -35,4 +35,16 @@ class PrivateWeighbridgeEntry extends Model
     {
         return $this->belongsTo(Buyer::class);
     }
+
+    public function receipt()
+    {
+        return $this->hasOneThrough(
+            \App\Models\Receipt::class,
+            \App\Models\ReceiptDetail::class,
+            'entry_id',
+            'id',
+            'other_income_id',
+            'receipt_id'
+        )->where('entry_type', 'other_income');
+    }
 }
