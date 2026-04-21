@@ -133,6 +133,7 @@
 <script>
 $(document).ready(function() {
     $('#ownersTable').DataTable({
+        pageLength: 50,
         ordering: false, // 🔴 IMPORTANT
     });
 
