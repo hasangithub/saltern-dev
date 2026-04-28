@@ -7,10 +7,10 @@
     <thead>
         <tr>
             <th>Date</th>
-            <th>Owner</th>
-            <th>Culture</th>
             <th>Vehicle</th>
+            <th>Owner</th>
             <th>Saltern</th>
+            <th>Culture</th>
             <th class="text-right">Net Weight (kg)</th>
             <th class="text-right">Bags</th>
             <th class="text-right">Tons</th>
@@ -33,10 +33,10 @@
         @endphp
         <tr>
             <td>{{ $entry->transaction_date }}</td>
-            <td>{{ $entry->owner->name_with_initial }}</td>
-            <td>{{ $entry->culture}}</td>
             <td>{{ $entry->vehicle_id}}</td>
+            <td>{{ $entry->owner->name_with_initial }}</td>
             <td>{{ $entry->membership->saltern->yahai->name . '-' . $entry->membership->saltern->name }}</td>
+            <td>{{ $entry->culture}}</td>
             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
             <td class="text-right">{{ $entry->bags_count }}</td>
             <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}
