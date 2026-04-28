@@ -78,6 +78,8 @@
                                             <th>Date</th>
                                             <th>Owner</th>
                                             <th>Culture</th>
+                                            <th>Vehicle</th>
+                                            <th>Saltern</th>
                                             <th class="text-right">Net Weight (kg)</th>
                                             <th class="text-right">Bags</th>
                                             <th class="text-right">Tons</th>
@@ -102,6 +104,8 @@
                                             <td>{{ $entry->transaction_date }}</td>
                                             <td>{{ $entry->owner->name_with_initial }}</td>
                                             <td>{{ $entry->culture}}</td>
+                                            <td>{{ $entry->vehicle_id}}</td>
+                                            <td>{{ $entry->membership->saltern->yahai->name . '-' . $entry->membership->saltern->name }}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight, 2) }}</td>
                                             <td class="text-right">{{ $entry->bags_count }}</td>
                                             <td class="text-right">{{ number_format($entry->net_weight / 1000, 2) }}
@@ -112,7 +116,7 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th colspan="3">Total</th>
+                                            <th colspan="5">Total</th>
                                             <th class="text-right">{{ number_format($totalNetWeight, 2) }}</th>
                                             <th class="text-right">{{ $totalBags }}</th>
                                             <th class="text-right">{{ number_format($totalNetWeight / 1000, 2) }}</th>
