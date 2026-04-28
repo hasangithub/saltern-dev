@@ -155,6 +155,7 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
     Route::get('/production-report/generate', [ReportController::class, 'generateProduction'])->name('production.report.generate');
     Route::get('/all-production-report/generate', [ReportController::class, 'generateAllProduction'])->name('all-production.report.generate');
     Route::get('/all-production-report/print', [ReportController::class, 'printAllProduction'])->name('all-production.report.print');
+    Route::get('/buyer-production-report/print', [ReportController::class, 'printBuyerProduction'])->name('buyer-production.report.print');
     Route::get('/owner-production-report/print', [ReportController::class, 'printOwnerProduction'])->name('owner-production.report.print');
     Route::get('/production-report/buyerGenerate', [ReportController::class, 'generateBuyerProduction'])->name('production.report.buyerGenerate');
     Route::get('/reports/loan-trial-balance/detailed', [ReportController::class, 'yahaiWiseLoanTrialBalance'])->name('reports.loan-trial-balance.detailed');

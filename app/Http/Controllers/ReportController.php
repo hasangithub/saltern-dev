@@ -1423,6 +1423,38 @@ class ReportController extends Controller
         return $pdf->stream('all-production-report.pdf');
     }
 
+    public function printBuyerProduction(Request $request)
+    {
+        $yahaies = Yahai::all();
+        $owners = Membership::all();
+        $buyers = Buyer::all();
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+        $buyerName = null;
+
+        if ($request->buyer_id) {
+            $buyer = Buyer::find($request->buyer_id);
+            $buyerName = $buyer?->full_name; // or name field
+        }
+
+        $entries = collect();
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $entries = WeighbridgeEntry::with(['buyer', 'membership.owner', 'membership.saltern.yahai'])
+                ->whereBetween('transaction_date', [$request->from_date, $request->to_date])
+                ->when($request->buyer_id, function ($query) use ($request) {
+                    $query->where('buyer_id', $request->buyer_id);
+                })
+                ->get();
+        }
+
+        $pdf = Pdf::loadView('reports.production.buyer-production-print', compact('entries', 'fromDate', 'toDate', 'buyerName'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('buyer-production-report.pdf');
+    }
+
 public function annualProductionReport(Request $request)
     {
         $report = DB::table('weighbridge_entries')
