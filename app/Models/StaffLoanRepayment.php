@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StaffLoanRepayment extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'staff_loan_id', // References the loan
         'payroll_id',
@@ -14,6 +17,7 @@ class StaffLoanRepayment extends Model
         'payment_method',  // Method of payment (e.g., cash, bank transfer)
         'notes',           // Additional notes
         'status',
+        'deleted_by',
     ];
 
     public function staffLoan()
