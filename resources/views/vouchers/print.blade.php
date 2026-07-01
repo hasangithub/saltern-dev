@@ -85,7 +85,7 @@
                 PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD
             </h2>
             <p style="margin: 2px 0; font-size: 14px;">
-                Saltern Yard, Mannar Road, Puttalam
+                Saltern Complex, Mannar Road, Puttalam
             </p>
             <p style="margin: 2px 0; font-size: 14px;">
                 Tel: 032-2265260 / Email: pspwsl@gmail.com
