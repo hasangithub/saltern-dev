@@ -106,7 +106,7 @@
     <div class="content-wrapper">
         <div class="header">
             <div class="header-title">PUTTALAM SALT PRODUCERS WELFARE SOCIETY LTD</div>
-            <div class="sub-header"> Saltern Yard, Mannar Road, Puttalam</div>
+            <div class="sub-header"> Saltern Complex, Mannar Road, Puttalam</div>
             <div class="sub-header"> Tel: 032-2265260 / Email: pspwsl@gmail.com </div>
             <div class="section-divider"></div>
             <div class="section-title"> @yield('section-title')</div>
