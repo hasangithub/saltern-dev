@@ -872,22 +872,12 @@ class PayrollBatchController extends Controller
                     ->with('error', 'This payroll batch is already approved.');
             }
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | Calculate payroll totals
-        |--------------------------------------------------------------------------
-        */
+            //Calculate payroll totals
 
             $totalNetPay = $batch->payrolls->sum('net_pay');
             $totalEpf8 = $batch->payrolls->sum('epf_employee');
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | Create Journal
-        |--------------------------------------------------------------------------
-        */
+            // Create Journal
 
             $journal = JournalEntry::create([
                 'journal_date' => now()->toDateString(),
@@ -989,38 +979,17 @@ class PayrollBatchController extends Controller
 
             JournalDetail::insert($details);
 
-
-            /*
-        |--------------------------------------------------------------------------
-        | Update repayment status
-        |--------------------------------------------------------------------------
-        */
-
+            // Update repayment status
             $loanPayrollIds = $batch->payrolls->pluck('id');
-
 
             StaffLoanRepayment::whereIn('payroll_id', $loanPayrollIds)
                 ->update([
                     'status' => 'paid'
                 ]);
 
+            // Approve batch
+            $batch->update(['status' => 'approved']);
 
-            /*
-        |--------------------------------------------------------------------------
-        | Approve batch
-        |--------------------------------------------------------------------------
-        */
-
-            $batch->update([
-                'status' => 'approved'
-            ]);
-
-
-            /*
-        |--------------------------------------------------------------------------
-        | Prepare SMS data
-        |--------------------------------------------------------------------------
-        */
             DB::commit();
         } catch (\Exception $e) {
 
@@ -1035,15 +1004,7 @@ class PayrollBatchController extends Controller
                 ->with('error', 'Payroll approval failed.');
         }
 
-
-
-
-        /*
-    |--------------------------------------------------------------------------
-    | Send SMS after commit
-    |--------------------------------------------------------------------------
-    */
-
+        // Send SMS after commit
         foreach ($batch->payrolls as $payroll) {
 
             // Get loan deduction in this payroll only
@@ -1229,7 +1190,7 @@ class PayrollBatchController extends Controller
         return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
     }
 
-    public function contractApprove($id)
+    public function contractApproveBack($id)
     {
         $batch = PayrollBatch::findOrFail($id);
 
@@ -1326,6 +1287,175 @@ class PayrollBatchController extends Controller
         $loanPayrollIds = $batch->payrolls->pluck('id');
         StaffLoanRepayment::whereIn('payroll_id', $loanPayrollIds)
             ->update(['status' => 'paid']);
+
+        return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
+    }
+
+    public function contractApprove(int $id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $batch = PayrollBatch::findOrFail($id);
+
+            if ($batch->status !== 'draft') {
+                return redirect()->back()->with('error', 'This payroll batch is already approved.');
+            }
+
+            // Calculate totals
+            $totalNetPay = $batch->payrolls->sum('net_pay');
+            $payrollTemplate = $batch->PayrollTemplate->name;
+            $isTemporarySecurity = $payrollTemplate === 'Temporary Security';
+
+            $totalDeductions = [];
+            foreach ($batch->payrolls as $payroll) {
+                foreach ($payroll->deductions as $deduction) {
+                    $name = strtolower($deduction->component->name);
+                    $totalDeductions[$name] = ($totalDeductions[$name] ?? 0) + $deduction->amount;
+                }
+            }
+
+            // Create journal entry
+            $journal = JournalEntry::create([
+                'journal_date' => Carbon::now()->toDateString(),
+                'description' => $payrollTemplate . ' Payroll Batch #' . $batch->id,
+            ]);
+
+            $details = [];
+
+            // === Debit Entries 
+            $details[] = [
+                'journal_id' => $journal->id,
+                'ledger_id' => $isTemporarySecurity ? 112 : 110,
+                'sub_ledger_id' => null,
+                'debit_amount' => $totalNetPay,
+                'credit_amount' => null,
+                'description' => 'Net Pay for Payroll Batch #' . $batch->id,
+            ];
+
+            foreach (['salary advance', 'festival loan', 'loan', 'fine'] as $key) {
+                if (!empty($totalDeductions[$key])) {
+                    $details[] = [
+                        'journal_id' => $journal->id,
+                        'ledger_id' => $isTemporarySecurity ? 112 : 110,
+                        'sub_ledger_id' => null,
+                        'debit_amount' => $totalDeductions[$key],
+                        'credit_amount' => null,
+                        'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                    ];
+                }
+            }
+
+            // === Credit Entries (Batch-level totals) ===
+            $creditMap = [
+                'net_pay' => 179,
+                'salary advance' => 180,
+                'fine' => 111, // Security staff -  penalty
+                'loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+                'festival loan' => ['ledger_id' => 12, 'sub_ledger_id' => 116],
+            ];
+
+            // Net Pay
+            $details[] = [
+                'journal_id' => $journal->id,
+                'ledger_id' => $creditMap['net_pay'],
+                'sub_ledger_id' => null,
+                'debit_amount' => null,
+                'credit_amount' => $totalNetPay,
+                'description' => 'Net Pay for Payroll Batch #' . $batch->id,
+            ];
+
+            // Other deductions
+            foreach (['salary advance', 'festival loan', 'loan', 'fine'] as $key) {
+                if (!empty($totalDeductions[$key])) {
+                    $ledgerId = is_array($creditMap[$key]) ? $creditMap[$key]['ledger_id'] : $creditMap[$key];
+                    $subLedgerId = is_array($creditMap[$key]) ? $creditMap[$key]['sub_ledger_id'] : null;
+
+                    $details[] = [
+                        'journal_id' => $journal->id,
+                        'ledger_id' => $ledgerId,
+                        'sub_ledger_id' => $subLedgerId,
+                        'debit_amount' => null,
+                        'credit_amount' => $totalDeductions[$key],
+                        'description' => ucfirst(str_replace('_', ' ', $key)) . " for Payroll Batch #" . $batch->id,
+                    ];
+                }
+            }
+
+            // Bulk insert
+            JournalDetail::insert($details);
+
+            $loanPayrollIds = $batch->payrolls->pluck('id');
+            StaffLoanRepayment::whereIn('payroll_id', $loanPayrollIds)
+                ->update(['status' => 'paid']);
+
+            $batch->update(['status' => 'approved']);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // \Log::error('Payroll approval failed: ' . $e->getMessage());
+            return back()->with('error', 'Payroll approval failed.');
+        }
+
+                // Send SMS after commit
+        foreach ($batch->payrolls as $payroll) {
+
+            // Get loan deduction in this payroll only
+            $loanDeduction = $payroll->deductions
+                ->filter(function ($deduction) {
+                    return in_array(
+                        strtolower($deduction->component->name),
+                        ['loan', 'festival loan']
+                    );
+                })
+                ->sum('amount');
+
+
+            // Only send SMS if loan was deducted
+            if ($loanDeduction <= 0) {
+                continue;
+            }
+
+
+            // Calculate all loan outstanding for this employee
+            $outstandingLoan = $payroll->employee
+                ->staffLoans
+                ->whereIn('status', ['approved', 'active'])
+                ->sum(function ($loan) {
+
+                    $paidAmount = $loan->staffLoanRepayment
+                        ->where('status', 'paid')
+                        ->sum('amount');
+
+                    return $loan->approved_amount - $paidAmount;
+                });
+
+
+            $smsMessage =
+                now()->format('Y-m-d') . "\n" .
+                $payroll->employee->user->name . "\n" .
+                "Loan Deduction: Rs. " .
+                number_format($loanDeduction, 2) .
+                "\nLoan Outstanding: Rs. " .
+                number_format($outstandingLoan, 2);
+
+
+            try {
+
+                if ($payroll->employee->user->phone) {
+
+                    $this->smsService->sendSms(
+                        $payroll->employee->user->phone,
+                        $smsMessage
+                    );
+                }
+            } catch (\Exception $e) {
+
+                // \Log::error('Loan deduction SMS failed: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('payroll.batches.index')->with('success', 'Payroll batch approved successfully.');
     }
