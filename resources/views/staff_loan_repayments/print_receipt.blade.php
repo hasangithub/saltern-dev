@@ -13,32 +13,16 @@
             <td>{{ \Carbon\Carbon::parse($repayment->repayment_date)->format('Y-m-d') }}</td>
         </tr>
         <tr>
-            <td><strong>Buyer:</strong></td>
-            <td>{{ $repayment->buyer->full_name ?? '-' }}</td>
-        </tr>
-        <tr>
             <td><strong>Owner:</strong></td>
-            <td>{{ $repayment->ownerLoan->membership->owner->name_with_initial ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Yahai:</strong></td>
-            <td>{{ $repayment->ownerLoan->membership->saltern->yahai->name ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Waikal:</strong></td>
-            <td>{{ $repayment->ownerLoan->membership->saltern->name ?? '-' }}</td>
+            <td>{{ $repayment->staffLoan->user->name ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Loan ID:</strong></td>
-            <td>{{ $repayment->ownerLoan->id }}</td>
+            <td>{{ $repayment->staffLoan->id }}</td>
         </tr>
         <tr>
             <td><strong>Paid Amount:</strong></td>
             <td>Rs. {{ number_format($repayment->amount, 2) }}</td>
-        </tr>
-        <tr>
-            <td><strong>Outstanding Amount:</strong></td>
-            <td>Rs. {{ number_format($outstandingAmount, 2) }}</td>
         </tr>
     </table>
 </div>
