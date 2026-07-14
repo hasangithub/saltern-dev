@@ -1076,7 +1076,7 @@ class PayrollBatchController extends Controller
 
             $smsMessage =
                 now()->format('Y-m-d') . "\n" .
-                $payroll->employee->name . "\n" .
+                $payroll->employee->user->name . "\n" .
                 "Loan Deduction: Rs. " .
                 number_format($loanDeduction, 2) .
                 "\nLoan Outstanding: Rs. " .
@@ -1087,10 +1087,10 @@ class PayrollBatchController extends Controller
 
                 if ($payroll->employee->user->phone) {
 
-                    // $this->smsService->sendSms(
-                    //     $payroll->employee->user->phone,
-                    //     $smsMessage
-                    // );
+                    $this->smsService->sendSms(
+                        $payroll->employee->user->phone,
+                        $smsMessage
+                    );
                 }
             } catch (\Exception $e) {
 
