@@ -95,7 +95,7 @@ class StaffLoanRepaymentController extends Controller
         $repayment->load([
             'staffLoan',
         ]);
-        $membershipId = $repayment->ownerLoan->membership_id;
+        $membershipId = $repayment->staffLoan->user_id;
         $outstandingAmount = 0;
 
         $pdf = Pdf::loadView('staff_loan_repayments.print_receipt', [
