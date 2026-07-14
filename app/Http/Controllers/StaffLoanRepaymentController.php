@@ -90,7 +90,7 @@ class StaffLoanRepaymentController extends Controller
             ->with('success', 'Repayment recorded successfully!');
     }
 
-    public function printReceipt(StaffLoanRepayment $repayment)
+    public function printStaffReceipt(StaffLoanRepayment $repayment)
     {
         $repayment->load([
             'staffLoan',
