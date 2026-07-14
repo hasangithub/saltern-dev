@@ -1069,8 +1069,11 @@ class PayrollBatchController extends Controller
                 ->whereIn('status', ['approved', 'active'])
                 ->sum(function ($loan) {
 
-                    return $loan->approved_amount -
-                        $loan->staffLoanRepayment->sum('amount');
+                    $paidAmount = $loan->staffLoanRepayment
+                        ->where('status', 'paid')
+                        ->sum('amount');
+
+                    return $loan->approved_amount - $paidAmount;
                 });
 
 
