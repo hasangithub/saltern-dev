@@ -13,7 +13,7 @@
             <td>{{ \Carbon\Carbon::parse($repayment->repayment_date)->format('Y-m-d') }}</td>
         </tr>
         <tr>
-            <td><strong>Owner:</strong></td>
+            <td><strong>Employee Name:</strong></td>
             <td>{{ $repayment->staffLoan->user->name ?? '-' }}</td>
         </tr>
         <tr>
