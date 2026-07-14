@@ -24,9 +24,16 @@
             <td><strong>Paid Amount:</strong></td>
             <td>Rs. {{ number_format($repayment->amount, 2) }}</td>
         </tr>
-          <tr>
-            <td><strong>Description:</strong></td>
-            <td> {{ $repayment->notes ?? '-' }}</td>
+        <tr>
+            <td colspan="2">
+                <strong>Description</strong>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2" style="border:1px solid #ccc; padding:6px;">
+                {{ $repayment->notes ?? '-' }}
+            </td>
         </tr>
     </table>
 </div>
