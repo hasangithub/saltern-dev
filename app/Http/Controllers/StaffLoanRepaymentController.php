@@ -21,7 +21,6 @@ class StaffLoanRepaymentController extends Controller
         $this->smsService = $smsService;
     }
 
-
     public function index()
     {
         $repayments = StaffLoanRepayment::with(['staffLoan'])
