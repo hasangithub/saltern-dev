@@ -6,6 +6,7 @@ use App\Models\JournalDetail;
 use App\Models\JournalEntry;
 use App\Models\StaffLoan;
 use App\Models\StaffLoanRepayment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -87,5 +88,28 @@ class StaffLoanRepaymentController extends Controller
         // Return a response to show success
         return redirect()->route('staff-loan-repayments.create-for-loan', $loan->id)
             ->with('success', 'Repayment recorded successfully!');
+    }
+
+    public function printReceipt(StaffLoanRepayment $repayment)
+    {
+        $repayment->load([
+            'staffLoan',
+        ]);
+        $membershipId = $repayment->ownerLoan->membership_id;
+        $outstandingAmount = 0;
+
+        $pdf = Pdf::loadView('staff_loan_repayments.print_receipt', [
+            'repayment' => $repayment,
+            'outstandingAmount' => $outstandingAmount,
+            'from_pdf' => true
+        ])->setPaper('A6', 'portrait')
+            ->setOptions([
+                'defaultFont' => 'Times-Roman',
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'isFontSubsettingEnabled' => true,
+            ]);
+
+        return $pdf->stream("loan_repayment_receipt_{$repayment->id}.pdf");
     }
 }
