@@ -42,10 +42,13 @@
                                     <td>{{ $repayment->staff_loan_id  }}</td>
                                     <td>{{ $repayment->amount  }}</td>
                                     <td>{{ $repayment->status  }}</td>
-                                    <td><a href="{{ route('staff-loan-repayment.print', $repayment->id) }}"
+                                    <td>
+                                         @if($repayment->status == "paid")
+                                        <a href="{{ route('staff-loan-repayment.print', $repayment->id) }}"
                                             class="btn btn-sm btn-primary" target="_blank">
                                             <i class="fas fa-print"></i> Print
                                         </a>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
