@@ -17,6 +17,14 @@
             <td>{{ $repayment->staffLoan->user->name ?? '-' }}</td>
         </tr>
         <tr>
+            <td><strong>Department:</strong></td>
+            <td>{{ $repayment->staffLoan->user->employee->department ?? '-' }}</td>
+        </tr>
+         <tr>
+            <td><strong>Designation:</strong></td>
+            <td>{{ $repayment->staffLoan->user->employee->designation ?? '-' }}</td>
+        </tr>
+        <tr>
             <td><strong>Loan ID:</strong></td>
             <td>{{ $repayment->staffLoan->id }}</td>
         </tr>
