@@ -95,7 +95,7 @@
             </div>
         </div>
     </div>
-    @if ($outstandingBalance > 0)
+    @if ($outstandingBalance > 0  && $ownerLoan->is_migrated || $ownerLoan->voucher_id !== null)
     <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#repaymentModal">
         Add Repayment
     </button>

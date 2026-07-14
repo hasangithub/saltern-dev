@@ -108,6 +108,8 @@ class PayrollBatchController extends Controller
         $earningComponents = PayrollComponent::where('type', 'earning')->whereNotIn('name', ['Fixed Allowance'])->get();
         $deductionComponents = PayrollComponent::where('type', 'deduction')->whereNotIn('name', ['Union'])->orderBy('id')->get();
         $templateName = $batch->payrollTemplate->name ?? null;
+
+       
         // Pass to view
         return view('payroll.contract-edit', compact(
             'batch',
