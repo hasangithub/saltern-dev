@@ -957,7 +957,7 @@ class PayrollBatchController extends Controller
                 'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => $totalNetPay,
-                'description' => 'Net Pay for Payroll Batch #' . $batch->id,
+                'description' => 'Net Pay for Payroll Batch  N #' . $batch->id,
             ];
 
             $details[] = [
@@ -966,7 +966,7 @@ class PayrollBatchController extends Controller
                 'sub_ledger_id' => null,
                 'debit_amount' => null,
                 'credit_amount' => $totalEpf8,
-                'description' => 'EPF8 for Payroll Batch #' . $batch->id,
+                'description' => 'EPF8 for Payroll Batch N #' . $batch->id,
             ];
 
             // Other deductions
@@ -1021,23 +1021,6 @@ class PayrollBatchController extends Controller
         | Prepare SMS data
         |--------------------------------------------------------------------------
         */
-
-            foreach ($batch->payrolls as $payroll) {
-
-                $smsData[] = [
-
-                    'phone' => $payroll->employee->phone,
-
-                    'message' =>
-                    now()->format('Y-m-d') . "\n" .
-                        $payroll->employee->name . "\n" .
-                        "Salary Paid: Rs. " .
-                        number_format($payroll->net_pay, 2)
-
-                ];
-            }
-
-
             DB::commit();
         } catch (\Exception $e) {
 
@@ -1053,27 +1036,66 @@ class PayrollBatchController extends Controller
         }
 
 
+
+
         /*
     |--------------------------------------------------------------------------
     | Send SMS after commit
     |--------------------------------------------------------------------------
     */
 
-        foreach ($smsData as $sms) {
+        foreach ($batch->payrolls as $payroll) {
+
+            // Get loan deduction in this payroll only
+            $loanDeduction = $payroll->deductions
+                ->filter(function ($deduction) {
+                    return in_array(
+                        strtolower($deduction->component->name),
+                        ['loan', 'festival loan']
+                    );
+                })
+                ->sum('amount');
+
+
+            // Only send SMS if loan was deducted
+            if ($loanDeduction <= 0) {
+                continue;
+            }
+
+
+            // Calculate all loan outstanding for this employee
+            $outstandingLoan = $payroll->employee
+                ->staffLoans
+                ->whereIn('status', ['approved', 'active'])
+                ->sum(function ($loan) {
+
+                    return $loan->approved_amount -
+                        $loan->staffLoanRepayment->sum('amount');
+                });
+
+
+            $smsMessage =
+                now()->format('Y-m-d') . "\n" .
+                $payroll->employee->name . "\n" .
+                "Loan Deduction: Rs. " .
+                number_format($loanDeduction, 2) .
+                "\nLoan Outstanding: Rs. " .
+                number_format($outstandingLoan, 2);
+
 
             try {
 
-                if ($sms['phone']) {
+                if ($payroll->employee->user->phone) {
 
-                    $this->smsService->sendSms(
-                        $sms['phone'],
-                        $sms['message']
-                    );
+                    // $this->smsService->sendSms(
+                    //     $payroll->employee->user->phone,
+                    //     $smsMessage
+                    // );
                 }
             } catch (\Exception $e) {
 
                 // \Log::error(
-                //     'Payroll SMS failed: ' . $e->getMessage()
+                //     'Loan deduction SMS failed: ' . $e->getMessage()
                 // );
             }
         }
