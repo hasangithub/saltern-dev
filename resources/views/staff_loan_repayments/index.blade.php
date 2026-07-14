@@ -42,7 +42,14 @@
                                     <td>{{ $repayment->staff_loan_id  }}</td>
                                     <td>{{ $repayment->amount  }}</td>
                                     <td>{{ $repayment->status  }}</td>
-                                    <td></td>
+                                    <td>
+                                         @if($repayment->status == "paid")
+                                        <a href="{{ route('staff-loan-repayment.print', $repayment->id) }}"
+                                            class="btn btn-sm btn-primary" target="_blank">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                        @endif
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -67,13 +74,13 @@
 
 @push('js')
 <script>
-$(document).ready(function() {
-    $('#membershipsTable').DataTable({
-        order: [
-            [0, 'desc']
-        ],
-        pageLength: 50
+    $(document).ready(function() {
+        $('#membershipsTable').DataTable({
+            order: [
+                [0, 'desc']
+            ],
+            pageLength: 50
+        });
     });
-});
 </script>
 @endpush

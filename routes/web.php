@@ -216,6 +216,7 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
     Route::get('/reports/owner-loan/print', [ReportController::class, 'yahaiWiseLoanPrint'])->name('owner-loan.print');
     Route::get('/reports/staff-loan/print', [ReportController::class, 'staffLoanPrint'])->name('staff-loan.print');
     Route::get('/loan-repayment/{repayment}/print', [OwnerLoanRepaymentController::class, 'printReceipt'])->name('loan-repayment.print');
+    Route::get('/staff-loan-repayment/{repayment}/print', [StaffLoanRepaymentController::class, 'printStaffReceipt'])->name('staff-loan-repayment.print');
     Route::get('/vouchers/{voucher}/print', [VoucherController::class, 'printVoucher'])->name('vouchers.print');
 
     Route::get('/other-income/{income}/print', [OtherIncomeController::class, 'printOtherIncome'])->name('other-income.print');
