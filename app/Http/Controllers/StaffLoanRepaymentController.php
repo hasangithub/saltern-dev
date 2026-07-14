@@ -6,6 +6,7 @@ use App\Models\JournalDetail;
 use App\Models\JournalEntry;
 use App\Models\StaffLoan;
 use App\Models\StaffLoanRepayment;
+use App\Services\SmsService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -13,6 +14,14 @@ use Illuminate\Support\Facades\DB;
 
 class StaffLoanRepaymentController extends Controller
 {
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
+
     public function index()
     {
         $repayments = StaffLoanRepayment::with(['staffLoan'])
@@ -104,7 +113,24 @@ class StaffLoanRepaymentController extends Controller
          |-------------------------------------------------------
          */
 
-            // SmsService::sendLoanRepaymentReceipt($loan, $repayment);
+            $todayDate = now()->format('Y-m-d');
+
+            $smsMessage = "{$todayDate}\n"
+                . "{$repayment->staffLoan->user->name}\n"
+                . "Loan ID: {$repayment->staffLoan->id}\n"
+                . "Loan Paid: Rs. " . number_format($repayment->amount, 2);
+
+            try {
+
+                $staffPhone = $repayment->staffLoan->user->phone ?? null;
+
+                if (!empty($staffPhone)) {
+                    $this->smsService->sendSms($staffPhone, $smsMessage);
+                }
+            } catch (\Exception $e) {
+
+               // \Log::error('Staff loan repayment SMS failed: ' . $e->getMessage());
+            }
 
             return redirect()
                 ->route('staff-loan-repayments.create-for-loan', $loan->id)
