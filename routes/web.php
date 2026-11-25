@@ -50,7 +50,10 @@ use App\Http\Controllers\StaffLoanRepaymentController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\PrivateWeighbridgeEntryController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ServiceChargeRefundBatchController;
+use App\Http\Controllers\SystemLogController;
+use App\Http\Controllers\UserController;
 
 // User login
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
@@ -67,10 +70,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::resource('memberships', MembershipController::class);
     Route::resource('buyers', BuyerController::class);
     Route::resource('yahai', YahaiController::class);
-    Route::resource('saltern',SalternController::class);
+    Route::resource('saltern', SalternController::class);
 
     Route::get('/weighbridge-test/data', [WeighbridgeEntryController::class, 'data'])->name('weighbridge_entries.data');
     Route::get('/voucher/data', [VoucherController::class, 'data'])->name('vouchers.data');
+Route::get('/test-refund-cheque', [VoucherController::class, 'testPrintRefundCheque'])
+    ->name('test.refund.cheque');
 
     Route::get('/weighbridge/entries', [WeighbridgeEntryController::class, 'index'])->name('weighbridge_entries.index');
     Route::get('/weighbridge/entries/create', [WeighbridgeEntryController::class, 'create'])->name('weighbridge_entries.create');
@@ -82,26 +87,27 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/weighbridge-entries/{entry}/invoicePrintFirst', [WeighbridgeEntryController::class, 'invoicePrintFirst'])->name('weighbridge_entries.invoicePrintFirst');
     Route::get('/weighbridge/{id}/edit', [WeighbridgeEntryController::class, 'edit'])->name('weighbridge_entries.edit');
     Route::put('/weighbridge/{id}', [WeighbridgeEntryController::class, 'update'])->name('weighbridge_entries.update');
-    
+
     Route::get('/weighbridge/initial/create', [WeighbridgeEntryController::class, 'initialCreate'])
-    ->name('weighbridge.initial.create');
+        ->name('weighbridge.initial.create');
 
-Route::post('/weighbridge/initial/store', [WeighbridgeEntryController::class, 'initialStore'])
-    ->name('weighbridge.initial.store');
+    Route::post('/weighbridge/initial/store', [WeighbridgeEntryController::class, 'initialStore'])
+        ->name('weighbridge.initial.store');
 
-Route::get('/weighbridge/final/{entry}/edit', [WeighbridgeEntryController::class, 'finalEdit'])
-    ->name('weighbridge.final.edit');
+    Route::get('/weighbridge/final/{entry}/edit', [WeighbridgeEntryController::class, 'finalEdit'])
+        ->name('weighbridge.final.edit');
 
-Route::post('/weighbridge/final/{entry}/update', [WeighbridgeEntryController::class, 'finalUpdate'])
-    ->name('weighbridge.final.update');
+    Route::post('/weighbridge/final/{entry}/update', [WeighbridgeEntryController::class, 'finalUpdate'])
+        ->name('weighbridge.final.update');
 
 
 
-Route::resource('private-weighbridge-entries', PrivateWeighbridgeEntryController::class);
-Route::get('/private-weighbridge-entries/{entry}/invoice', [PrivateWeighbridgeEntryController::class, 'invoice'])->name('private_weighbridge_entries.invoice');
-Route::get('/private-weighbridge-entries/{id}/cancel', 
-    [PrivateWeighbridgeEntryController::class, 'cancel']
-)->name('private-weighbridge-entries.cancel');
+    Route::resource('private-weighbridge-entries', PrivateWeighbridgeEntryController::class);
+    Route::get('/private-weighbridge-entries/{entry}/invoice', [PrivateWeighbridgeEntryController::class, 'invoice'])->name('private_weighbridge_entries.invoice');
+    Route::get(
+        '/private-weighbridge-entries/{id}/cancel',
+        [PrivateWeighbridgeEntryController::class, 'cancel']
+    )->name('private-weighbridge-entries.cancel');
 
     Route::get('refunds', [ServiceChargeRefundController::class, 'index'])->name('refunds.index');
     Route::post('refunds/preview', [ServiceChargeRefundController::class, 'preview'])->name('refunds.preview');
@@ -116,24 +122,24 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
 
     Route::prefix('service-charge-refunds')->group(function () {
         Route::get('/', [ServiceChargeRefundBatchController::class, 'index'])
-        ->name('refund-batches.index');
+            ->name('refund-batches.index');
 
-    Route::post('/', [ServiceChargeRefundBatchController::class, 'store'])
-        ->name('refund-batches.store');
+        Route::post('/', [ServiceChargeRefundBatchController::class, 'store'])
+            ->name('refund-batches.store');
 
-    Route::get('/{batch}', [ServiceChargeRefundBatchController::class, 'show'])
-        ->name('refund-batches.show');
+        Route::get('/{batch}', [ServiceChargeRefundBatchController::class, 'show'])
+            ->name('refund-batches.show');
 
-    Route::get('/{batch}/load', [ServiceChargeRefundBatchController::class, 'loadServiceCharges'])
-        ->name('refund-batches.load');
+        Route::get('/{batch}/load', [ServiceChargeRefundBatchController::class, 'loadServiceCharges'])
+            ->name('refund-batches.load');
 
-    Route::post('/{batch}/approve', [ServiceChargeRefundBatchController::class, 'approve'])
-        ->name('refund-batches.approve');
+        Route::post('/{batch}/approve', [ServiceChargeRefundBatchController::class, 'approve'])
+            ->name('refund-batches.approve');
 
-    Route::post('/{batch}/post', [ServiceChargeRefundBatchController::class, 'post'])
-        ->name('refund-batches.post');
+        Route::post('/{batch}/post', [ServiceChargeRefundBatchController::class, 'post'])
+            ->name('refund-batches.post');
     });
-    
+
     Route::resource('other_incomes', OtherIncomeController::class);
     Route::resource('expenses', ExpenseController::class);
 
@@ -179,16 +185,18 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
     Route::get('/ledger-report/generate', [ReportController::class, 'generateLedger'])->name('ledger.report.generate');
     Route::get('/ledger-report/export', [ReportController::class, 'exportLedgerReport'])->name('ledger.report.export');
     Route::post('/reports/ledger/pdf', [ReportController::class, 'generateLedgerPdf'])->name('reports.ledger.pdf');
-    Route::get('/reports/annual-production',[ReportController::class, 'annualProductionReport'])->name('reports.annual-production');
+    Route::get('/reports/annual-production', [ReportController::class, 'annualProductionReport'])->name('reports.annual-production');
     Route::get('/annual-production-report/print', [ReportController::class, 'printAnnualProduction'])->name('annual-production.report.print');
     Route::get('/reports/refund-report', [ReportController::class, 'indexRefund'])->name('reports.refund.index');
     Route::get('/reports/refund-report/generate', [ReportController::class, 'generateRefund'])->name('refund.report.generate');
     Route::get('/reports/refund-report/print', [ReportController::class, 'printRefund'])->name('refund.report.print');
     Route::get('service-charge-refunds/{id}/print', [ReportController::class, 'printServiceChargeRefund'])->name('service-charge-refund.print'); // print report
+    Route::get('/reports/monthly-income-expense',[ReportController::class, 'monthlyIncomeExpense'])->name('reports.monthly-income-expense');
+    Route::get('/reports/yearly-income-expense',[ReportController::class, 'yearlyIncomeExpense'])->name('reports.yearly-income-expense');
 
-    Route::resource('sub-account-groups',SubAccountGroupController::class);
-    Route::resource('ledgers',LedgerController::class);
-    Route::resource('sub-ledgers',SubLedgerController::class);
+    Route::resource('sub-account-groups', SubAccountGroupController::class);
+    Route::resource('ledgers', LedgerController::class);
+    Route::resource('sub-ledgers', SubLedgerController::class);
     Route::resource('accounts', AccountGroupController::class);
     Route::post('/account-tree/update', [AccountGroupController::class, 'update'])->name('account-tree.update');
     Route::resource('journal-entries', JournalEntryController::class);
@@ -196,7 +204,7 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
     Route::put('vouchers/{voucher_id}/approve', [VoucherController::class, 'approve'])->name('voucher.approve');
     Route::get('/journal-entries-all/all', [JournalEntryController::class, 'indexAll'])->name('journal.all.index');
 
-        // Form display
+    // Form display
     Route::get('/admin/owner-loans/create', [OwnerLoanController::class, 'adminCreateOwnerLoan'])->name('admin.owner_loans.create');
     Route::post('/admin/owner-loans', [OwnerLoanController::class, 'adminStoreOwnerLoan'])->name('admin.owner_loans.store');
     Route::get('/admin/owner-loans/{id}/print', [OwnerLoanController::class, 'printApprovalForm'])->name('admin.owner-loans.print');
@@ -228,25 +236,25 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
     Route::post('/sms/send', [SmsController::class, 'sendSms'])->name('sms.send');
 
     Route::middleware(['role:manager'])->group(function () {
-        Route::get('/settings', [SettingController::class,'index'])->name('settings.index');
-        Route::post('/settings', [SettingController::class,'update'])->name('settings.update');
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
 
-    Route::get('test/',function() {
+    Route::get('test/', function () {
         return view('journal_entries.test');
     });
-    Route::get('test1/',function() {
+    Route::get('test1/', function () {
         return view('journal_entries.test1');
     });
 
-    Route::resource('employees', EmployeeController::class); 
+    Route::resource('employees', EmployeeController::class);
     Route::get('/leaves', [LeaveController::class, 'index'])->name('leave.index');
     Route::post('/leave/request', [LeaveController::class, 'requestLeave'])->name('leave.request');
     Route::get('/leave/approve/{id}', [LeaveController::class, 'approveLeave'])->name('leave.approve');
     Route::get('/leave/reject/{id}', [LeaveController::class, 'rejectLeave'])->name('leave.reject');
     Route::get('/leave/request', [LeaveController::class, 'createRequest'])->name('leave.create');
 
-    Route::prefix('payroll')->name('payroll.') ->middleware(['role:admin|hr_officer'])->group(function () {
+    Route::prefix('payroll')->name('payroll.')->middleware(['role:admin|hr_officer'])->group(function () {
         Route::get('/', [PayrollBatchController::class, 'index'])->name('batches.index');
         Route::get('/batches/create', [PayrollBatchController::class, 'create'])->name('batches.create');
         Route::post('/batches', [PayrollBatchController::class, 'store'])->name('batches.store'); // validates unique period, redirects to build
@@ -257,21 +265,21 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
         Route::post('/batches/{batch}/update', [PayrollBatchController::class, 'update'])->name('batches.update');
         Route::post('/batches/{batch}/contractUpdate', [PayrollBatchController::class, 'contractUpdate'])->name('batches.contractUpdate');
         Route::get('/{batch}/print', [PayrollBatchController::class, 'print'])
-        ->name('batches.print');
+            ->name('batches.print');
         Route::get('/{batch}/contractPrint', [PayrollBatchController::class, 'contractPrint'])
-        ->name('batches.contractPrint');
+            ->name('batches.contractPrint');
         Route::get('/batches/{batch}/show', [PayrollBatchController::class, 'show'])->name('batches.show');
         Route::get('/batches/{batch}/contractShow', [PayrollBatchController::class, 'contractShow'])->name('batches.contractShow');
         Route::post('/batches/{batch}/approve', [PayrollBatchController::class, 'approve'])
-    ->name('batches.approve');
-    Route::post('/batches/{batch}/contractApprove', [PayrollBatchController::class, 'contractApprove'])
-    ->name('batches.contractApprove');
-    Route::get('/batches/{id}/payslips', [PayrollBatchController::class, 'printPayslips'])
-    ->name('batches.payslips');
-    Route::get('/batches/{id}/contractPayslips', [PayrollBatchController::class, 'printContractPayslips'])
-    ->name('batches.contractPayslips');
-    Route::get('/batches/{id}/payrollSummary', [PayrollBatchController::class, 'printPayrollSummary'])
-    ->name('batches.printSummary');
+            ->name('batches.approve');
+        Route::post('/batches/{batch}/contractApprove', [PayrollBatchController::class, 'contractApprove'])
+            ->name('batches.contractApprove');
+        Route::get('/batches/{id}/payslips', [PayrollBatchController::class, 'printPayslips'])
+            ->name('batches.payslips');
+        Route::get('/batches/{id}/contractPayslips', [PayrollBatchController::class, 'printContractPayslips'])
+            ->name('batches.contractPayslips');
+        Route::get('/batches/{id}/payrollSummary', [PayrollBatchController::class, 'printPayrollSummary'])
+            ->name('batches.printSummary');
     });
 
     Route::resource('inventories', InventoryController::class);
@@ -279,38 +287,47 @@ Route::get('/private-weighbridge-entries/{id}/cancel',
 
 
 
-Route::prefix('stock')->group(function () {
-    Route::get('/', [StockController::class, 'index'])->name('stock.index');
-    Route::post('/item', [StockController::class, 'storeItem'])->name('stock.storeItem');
-    Route::get('/item/{id}', [StockController::class, 'showItem'])->name('stock.showItem');
-    Route::post('/item/{id}/transaction', [StockController::class, 'storeTransaction'])->name('stock.storeTransaction');
-    Route::put('/item/{id}/updateTransaction', [StockController::class, 'updateTransaction'])->name('stock.updateTransaction');
-
-});
-
-
+    Route::prefix('stock')->group(function () {
+        Route::get('/', [StockController::class, 'index'])->name('stock.index');
+        Route::post('/item', [StockController::class, 'storeItem'])->name('stock.storeItem');
+        Route::get('/item/{id}', [StockController::class, 'showItem'])->name('stock.showItem');
+        Route::post('/item/{id}/transaction', [StockController::class, 'storeTransaction'])->name('stock.storeTransaction');
+        Route::put('/item/{id}/updateTransaction', [StockController::class, 'updateTransaction'])->name('stock.updateTransaction');
+    });
 });
 
 
 Route::middleware(['auth:owner'])->group(function () {
-    Route::resource('productions', ProductionController::class);  
+    Route::resource('productions', ProductionController::class);
     Route::get('/owner/complaints/create', [OwnerComplaintController::class, 'create'])->name('owner.complaints.create');
     // Store a new complaint
     Route::post('/owner/complaints', [OwnerComplaintController::class, 'store'])->name('owner.complaints.store');
     // List all complaints
-    Route::get('/owner/complaints', [OwnerComplaintController::class, 'index'])->name('owner.complaints.index');  
+    Route::get('/owner/complaints', [OwnerComplaintController::class, 'index'])->name('owner.complaints.index');
 
     Route::get('my-loans', [OwnerLoanController::class, 'myLoans'])->name('owner.my-loans.index');
     Route::get('my-loans/{id}', [OwnerLoanController::class, 'showMyLoan'])->name('owner.my-loans.show');
-   
-
 });
 
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('roles', RoleController::class);
+
+      Route::get('/system-logs', [SystemLogController::class, 'index'])
+        ->name('system-logs.index');
+
+    Route::get('/system-logs/{activity}', [SystemLogController::class, 'show'])
+        ->name('system-logs.show');
+
+
+    Route::resource(
+        'users',
+        UserController::class
+    );
 });
 Route::resource('owner-loans', OwnerLoanController::class);
+Route::delete('/owner-loans/{ownerLoan}',[OwnerLoanController::class, 'adminDestroy'])->name('owner-loans.Fstaff-loans');
 
 Route::get('/owner/dashboard', [DashboardController::class, 'ownerIndex'])->name('owner.dashboard');
 Route::resource('owner-loan-repayments', OwnerLoanRepaymentController::class);
@@ -376,8 +393,10 @@ Route::prefix('admin/staff-loans')->group(function () {
     Route::get('/{loanId}', [StaffLoanController::class, 'show'])->name('admin.staff-loans.show');
 
     Route::put('/{loan_request}/approve', [StaffLoanController::class, 'approve'])->name('admin.staff-loan.approve');
-   
+
     Route::post('/admin/owner-loans', [StaffLoanController::class, 'adminStoreStaffLoan'])->name('admin.staff_loans.store');
+
+    Route::delete('/{staffLoan}',[StaffLoanController::class, 'staffDestroy'])->name('admin.staff-loans.staff-destroy');
 });
 
 

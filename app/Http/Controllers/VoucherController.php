@@ -33,70 +33,84 @@ class VoucherController extends Controller
             'paymentMethod',
             'bank'
         ])
-        ->orderBy('id', 'desc');
-    
-    
+            ->orderBy('id', 'desc');
+
+
         return DataTables::of($entries)
 
-        ->editColumn('created_at', function ($row) {
-            return $row->created_at->format('Y-m-d');
-        })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->format('Y-m-d');
+            })
 
-        ->editColumn('name', function ($row) {
-            return '<span class="d-inline-block text-truncate" style="max-width:150px;" title="'.$row->name.'">'
-                . e($row->name) .
-                '</span>';
-        })
+            ->editColumn('name', function ($row) {
+                return '<span class="d-inline-block text-truncate" style="max-width:150px;" title="' . $row->name . '">'
+                    . e($row->name) .
+                    '</span>';
+            })
 
-        ->editColumn('description', function ($row) {
-            return '<div style="max-width:200px; line-height:1.2em; max-height:2.4em; overflow:hidden; white-space:normal; cursor:pointer;"
-                    title="'.e($row->description).'"
+            ->editColumn('description', function ($row) {
+                return '<div style="max-width:200px; line-height:1.2em; max-height:2.4em; overflow:hidden; white-space:normal; cursor:pointer;"
+                    title="' . e($row->description) . '"
                     ondblclick="navigator.clipboard.writeText(this.innerText).then(() => alert(\'Copied!\'+this.innerText))">'
                     . e($row->description) .
-                   '</div>';
-        })
+                    '</div>';
+            })
 
-        ->addColumn('bank', function ($row) {
-            if ($row->bank_sub_ledger_id && $row->bank) {
-                return $row->bank->name . ' / ' . $row->cheque_no . ' / ' . $row->cheque_date;
-            }
-            return '-';
-        })
+            ->addColumn('bank', function ($row) {
+                if ($row->bank_sub_ledger_id && $row->bank) {
+                    return $row->bank->name . ' / ' . $row->cheque_no . ' / ' . $row->cheque_date;
+                }
+                return '-';
+            })
 
-        ->filterColumn('bank', function($query, $keyword) {
-            $query->whereHas('bank', function($q) use ($keyword) {
-                $q->where('name', 'like', "%{$keyword}%");
-            });
-        })
+            ->filterColumn('bank', function ($query, $keyword) {
+                $query->whereHas('bank', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%");
+                });
+            })
 
-        ->addColumn('ledger', function ($row) {
-            $ledger = optional($row->ledger)->name ?? '-';
-            $sub = optional(optional($row->ledger)->subLedgers)->name ?? '-';
-            return $ledger . ' - ' . $sub;
-        })
+            ->addColumn('ledger', function ($row) {
+                $ledger = optional($row->ledger)->name ?? '-';
+                $sub = optional(optional($row->ledger)->subLedgers)->name ?? '-';
+                return $ledger . ' - ' . $sub;
+            })
 
-        ->filterColumn('ledger', function($query, $keyword) {
-            $query->whereHas('ledger', function($q) use ($keyword) {
-                $q->where('name', 'like', "%{$keyword}%")
-                  ->orWhereHas('subLedgers', function($q2) use ($keyword) {
-                      $q2->where('name', 'like', "%{$keyword}%");
-                  });
-            });
-        })
+            ->filterColumn('ledger', function ($query, $keyword) {
+                $query->whereHas('ledger', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%")
+                        ->orWhereHas('subLedgers', function ($q2) use ($keyword) {
+                            $q2->where('name', 'like', "%{$keyword}%");
+                        });
+                });
+            })
 
-        ->addColumn('action', function ($row) {
-            return '
-            <a href="'.route('vouchers.print', $row->id).'" class="btn btn-sm btn-primary" target="_blank">
+            ->addColumn('action', function ($row) {
+                return '
+            <a href="' . route('vouchers.print', $row->id) . '" class="btn btn-sm btn-primary" target="_blank">
                 <i class="fa fa-print"></i> Print
             </a>
-            <a href="'.route('vouchers.show', $row->id).'" class="btn btn-default btn-xs">
+            <a href="' . route('vouchers.show', $row->id) . '" class="btn btn-default btn-xs">
                 <i class="fas fa-eye"></i> View
             </a>
-            ';
-        })
+            <form action="' . route('vouchers.destroy', $row->id) . '"
+              method="POST"
+              style="display:inline-block;"
+              onsubmit="return confirm(\'Are you sure you want to delete this voucher?\');">
 
-        ->rawColumns(['name','description','bank','ledger','action'])
-        ->make(true);
+            ' . csrf_field() . '
+            ' . method_field('DELETE') . '
+
+            <button type="submit"
+                    class="btn btn-danger btn-xs">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+
+        </form>
+            ';
+            })
+
+            ->rawColumns(['name', 'description', 'bank', 'ledger', 'action'])
+            ->make(true);
     }
 
 
@@ -109,11 +123,11 @@ class VoucherController extends Controller
         $ownerLoans = OwnerLoan::with('membership')->where('status', 'approved')->whereNull('voucher_id')->where('is_migrated', false)->get();
         $staffLoans = StaffLoan::with('user')->where('status', 'approved')->whereNull('voucher_id')->where('is_migrated', false)->get();
 
-        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers', 'ownerLoans', 'subAccounts','staffLoans'));
+        return view('vouchers.create', compact('paymentMethods', 'banks', 'ledgers', 'ownerLoans', 'subAccounts', 'staffLoans'));
     }
 
     public function store(Request $request)
-    { 
+    {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
@@ -128,12 +142,12 @@ class VoucherController extends Controller
             'owner_loan_id' => [
                 'nullable',
                 'exists:owner_loans,id',
-                Rule::prohibitedIf(fn () => $request->staff_loan_id !== null),
+                Rule::prohibitedIf(fn() => $request->staff_loan_id !== null),
             ],
             'staff_loan_id' => [
                 'nullable',
                 'exists:staff_loans,id',
-                Rule::prohibitedIf(fn () => $request->owner_loan_id !== null),
+                Rule::prohibitedIf(fn() => $request->owner_loan_id !== null),
             ],
             'ledger_id' => 'required_without_all:owner_loan_id,staff_loan_id',
             'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
@@ -143,7 +157,7 @@ class VoucherController extends Controller
 
         if ($request->filled('owner_loan_id')) {
             $ownerLoan = OwnerLoan::findOrFail($request->owner_loan_id);
-        
+
             $ownerLoan->update([
                 'voucher_id' => $voucher->id,
             ]);
@@ -151,7 +165,7 @@ class VoucherController extends Controller
 
         if ($request->filled('staff_loan_id')) {
             $staffLoan = StaffLoan::findOrFail($request->staff_loan_id);
-        
+
             $staffLoan->update([
                 'voucher_id' => $voucher->id,
             ]);
@@ -163,7 +177,7 @@ class VoucherController extends Controller
             $description .= " (Cheque No: " . $validated['cheque_no'] . ")";
         }
 
-        
+
         $journal = JournalEntry::create([
             'journal_date' => Carbon::now()->toDateString(), // YYYY-MM-DD
             'description' => $description,
@@ -178,7 +192,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => 115,
                     'debit_amount' => $validated['amount'],
                     'credit_amount' => null,
-                    'description' => "Voucher#".$voucher->id." Loan Disbursed to Owner#". $ownerLoan->membership->owner_id,
+                    'description' => "Voucher#" . $voucher->id . " Loan Disbursed to Owner#" . $ownerLoan->membership->owner_id,
                 ],
                 [
                     'journal_id' => $journal->id,
@@ -186,12 +200,10 @@ class VoucherController extends Controller
                     'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
                     'debit_amount' => null,
                     'credit_amount' => $validated['amount'],
-                    'description' => "Voucher#".$voucher->id,
+                    'description' => "Voucher#" . $voucher->id,
                 ],
             ];
-    
-
-        } elseif($request->filled('staff_loan_id')) {
+        } elseif ($request->filled('staff_loan_id')) {
             $details = [
                 [
                     'journal_id' => $journal->id,
@@ -199,7 +211,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => 116,
                     'debit_amount' => $validated['amount'],
                     'credit_amount' => null,
-                    'description' => "Voucher#".$voucher->id." Loan Disbursed to Staff#". $staffLoan->user_id,
+                    'description' => "Voucher#" . $voucher->id . " Loan Disbursed to Staff#" . $staffLoan->user_id,
                 ],
                 [
                     'journal_id' => $journal->id,
@@ -207,12 +219,10 @@ class VoucherController extends Controller
                     'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
                     'debit_amount' => null,
                     'credit_amount' => $validated['amount'],
-                    'description' => "Voucher#".$voucher->id,
+                    'description' => "Voucher#" . $voucher->id,
                 ],
             ];
-        } 
-        
-        else {
+        } else {
             $details = [
                 [
                     'journal_id' => $journal->id,
@@ -220,7 +230,7 @@ class VoucherController extends Controller
                     'sub_ledger_id' => $request->input('sub_ledger_id'),
                     'debit_amount' => $validated['amount'],
                     'credit_amount' => null,
-                    'description' => "Voucher#".$voucher->id." ".$validated['description'],
+                    'description' => "Voucher#" . $voucher->id . " " . $validated['description'],
                 ],
                 [
                     'journal_id' => $journal->id,
@@ -228,10 +238,9 @@ class VoucherController extends Controller
                     'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
                     'debit_amount' => null,
                     'credit_amount' => $validated['amount'],
-                    'description' => "Voucher#".$voucher->id." ".$validated['description'],
+                    'description' => "Voucher#" . $voucher->id . " " . $validated['description'],
                 ],
             ];
-    
         }
 
         JournalDetail::insert($details);
@@ -264,150 +273,302 @@ class VoucherController extends Controller
     }
 
     public function printVoucherReport(Request $request)
-{
-    $request->validate([
-        'from_date' => 'nullable|date',
-        'to_date' => 'nullable|date|after_or_equal:from_date',
-    ]);
-
-    $fromDate = Carbon::parse($request->from_date)->startOfDay();
-    $toDate = Carbon::parse($request->to_date)->endOfDay();
-
-    $query = Voucher::with(['paymentMethod', 'bank']);
-
-    if ($request->filled('from_date') && $request->filled('to_date')) {
-        $query->whereBetween('created_at', [
-            $fromDate,
-            $toDate
+    {
+        $request->validate([
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
+
+        $fromDate = Carbon::parse($request->from_date)->startOfDay();
+        $toDate = Carbon::parse($request->to_date)->endOfDay();
+
+        $query = Voucher::with(['paymentMethod', 'bank']);
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('created_at', [
+                $fromDate,
+                $toDate
+            ]);
+        }
+
+        $vouchers = $query->orderBy('created_at', 'desc')->get();
+
+        $totalAmount = $vouchers->sum('amount');
+
+        $pdf = Pdf::loadView('reports.voucher.report', [
+            'vouchers' => $vouchers,
+            'totalAmount' => $totalAmount,
+            'fromDate' => $request->from_date,
+            'toDate' => $request->to_date,
+        ])
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'defaultFont' => 'DejaVu Sans',
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+            ]);
+
+        return $pdf->stream('voucher-report.pdf');
     }
 
-    $vouchers = $query->orderBy('created_at', 'desc')->get();
+    public function printVoucher($id)
+    {
+        $voucher = Voucher::findOrFail($id);
 
-    $totalAmount = $vouchers->sum('amount');
+        $pdf = Pdf::loadView('vouchers.print', compact('voucher'))->setPaper('a4', 'portrait');
 
-    $pdf = Pdf::loadView('reports.voucher.report', [
-        'vouchers' => $vouchers,
-        'totalAmount' => $totalAmount,
-        'fromDate' => $request->from_date,
-        'toDate' => $request->to_date,
-    ])
-    ->setPaper('A4', 'portrait')
-    ->setOptions([
-        'defaultFont' => 'DejaVu Sans',
-        'isHtml5ParserEnabled' => true,
-        'isRemoteEnabled' => true,
-    ]);
-
-    return $pdf->stream('voucher-report.pdf');
-}
-
-public function printVoucher($id)
-{
-    $voucher = Voucher::findOrFail($id);
-
-    $pdf = Pdf::loadView('vouchers.print', compact('voucher'))->setPaper('a4', 'portrait');
-
-    return $pdf->stream("voucher_{$voucher->id}.pdf");
-}
-
-public function getSubledgerBalance($id)
-{
-    $balance = JournalDetail::where('sub_ledger_id', $id)
-        ->selectRaw('SUM(debit_amount) - SUM(credit_amount) as balance')
-        ->value('balance');
-
-    return response()->json(['balance' => $balance ?? 0]);
-}
-
-// Show form to create a refund voucher
-public function createRefundVoucher()
-{
-    $paymentMethods = PaymentMethod::all();
-    $banks = SubLedger::where('ledger_id', 11)->get();
-    $ledgers = Ledger::all();
-    $subAccounts = SubAccountGroup::all();
-
-    // Load only refunds not yet vouchered
-    $refunds = ServiceChargeRefund::with(['memberships.saltern.yahai', 'memberships.owner'])
-        ->whereNull('voucher_id')
-        ->get()
-        ->sortBy(function($refund) {
-            return $refund->memberships->saltern->yahai->name ?? '';
-        });
-
-    return view('vouchers.refund_create', compact('paymentMethods', 'banks', 'ledgers', 'subAccounts', 'refunds'));
-}
-
-// Store refund voucher
-public function storeRefundVoucher(Request $request)
-{
-    $validated = $request->validate([
-        'refund_id' => 'required|exists:service_charge_refunds,id',
-        'name' => 'required|string|max:255',
-        'address' => 'nullable|string|max:255',
-        'description' => 'required|string',
-        'payment_method_id' => 'required|exists:payment_methods,id',
-        'bank_sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
-        'cheque_no' => 'nullable|string|max:50',
-        'cheque_date' => 'nullable|date',
-        'amount' => 'required|numeric|min:0',
-        'note' => 'nullable|string',
-        'ledger_id' => 'required',
-        'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
-    ]);
-
-    // Create voucher
-    $voucher = Voucher::create($validated);
-
-    // Update refund record with voucher_id
-    $refund = ServiceChargeRefund::findOrFail($validated['refund_id']);
-    $refund->update(['voucher_id' => $voucher->id]);
-
-    // Journal entry
-    $description = "Refund Voucher#" . $voucher->id . " " . $validated['description'];
-    if ($validated['payment_method_id'] == 1 && !empty($validated['cheque_no'])) {
-        $description .= " (Cheque No: " . $validated['cheque_no'] . ")";
+        return $pdf->stream("voucher_{$voucher->id}.pdf");
     }
 
-    $journal = JournalEntry::create([
-        'journal_date' => now()->toDateString(),
-        'description' => $description,
-    ]);
+    public function getSubledgerBalance($id)
+    {
+        $balance = JournalDetail::where('sub_ledger_id', $id)
+            ->selectRaw('SUM(debit_amount) - SUM(credit_amount) as balance')
+            ->value('balance');
 
-    $membership = $refund->memberships;
-    $salternName = $membership->saltern->name ?? '-';
-    $yahaiName = $membership->saltern->yahai->name ?? '-';
-    $ownerName = $membership->owner->name_with_initial ?? '-';
+        return response()->json(['balance' => $balance ?? 0]);
+    }
 
-    $descriptionText = "Refund Voucher#{$voucher->id} | Membership#{$membership->id} | {$yahaiName} {$salternName} | {$ownerName}";
+    // Show form to create a refund voucher
+    public function createRefundVoucher()
+    {
+        $paymentMethods = PaymentMethod::all();
+        $banks = SubLedger::where('ledger_id', 11)->get();
+        $ledgers = Ledger::all();
+        $subAccounts = SubAccountGroup::all();
+
+        // Load only refunds not yet vouchered
+        $refunds = ServiceChargeRefund::with(['memberships.saltern.yahai', 'memberships.owner'])
+            ->whereNull('voucher_id')
+            ->get()
+            ->sortBy(function ($refund) {
+                return $refund->memberships->saltern->yahai->name ?? '';
+            });
+
+        return view('vouchers.refund_create', compact('paymentMethods', 'banks', 'ledgers', 'subAccounts', 'refunds'));
+    }
+
+    // Store refund voucher
+    public function storeRefundVoucher(Request $request)
+    {
+        dd($request);
+        $validated = $request->validate([
+            'refund_id' => 'required|exists:service_charge_refunds,id',
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'description' => 'required|string',
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'bank_sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+            'cheque_no' => 'nullable|string|max:50',
+            'cheque_date' => 'nullable|date',
+            'amount' => 'required|numeric|min:0',
+            'note' => 'nullable|string',
+            'ledger_id' => 'required',
+            'sub_ledger_id' => 'nullable|exists:sub_ledgers,id',
+        ]);
+
+        // Create voucher
+        $voucher = Voucher::create($validated);
+
+        // Update refund record with voucher_id
+        $refund = ServiceChargeRefund::findOrFail($validated['refund_id']);
+        $refund->update(['voucher_id' => $voucher->id]);
+
+        // Journal entry
+        $description = "Refund Voucher#" . $voucher->id . " " . $validated['description'];
+        if ($validated['payment_method_id'] == 1 && !empty($validated['cheque_no'])) {
+            $description .= " (Cheque No: " . $validated['cheque_no'] . ")";
+        }
+
+        $journal = JournalEntry::create([
+            'journal_date' => now()->toDateString(),
+            'description' => $description,
+        ]);
+
+        $membership = $refund->memberships;
+        $salternName = $membership->saltern->name ?? '-';
+        $yahaiName = $membership->saltern->yahai->name ?? '-';
+        $ownerName = $membership->owner->name_with_initial ?? '-';
+
+        $descriptionText = "Refund Voucher#{$voucher->id} | Membership#{$membership->id} | {$yahaiName} {$salternName} | {$ownerName}";
 
 
-    $details = [
-        [
-            'journal_id' => $journal->id,
-            'ledger_id' => $request->input('ledger_id'),
-            'sub_ledger_id' => $request->input('sub_ledger_id'),
-            'debit_amount' => $validated['amount'],
-            'credit_amount' => null,
-            'description' => $descriptionText,
-        ],
-        [
-            'journal_id' => $journal->id,
-            'ledger_id' => 11,
-            'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
-            'debit_amount' => null,
-            'credit_amount' => $validated['amount'],
-            'description' => $descriptionText,
-        ],
-    ];
+        $details = [
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => $request->input('ledger_id'),
+                'sub_ledger_id' => $request->input('sub_ledger_id'),
+                'debit_amount' => $validated['amount'],
+                'credit_amount' => null,
+                'description' => $descriptionText,
+            ],
+            [
+                'journal_id' => $journal->id,
+                'ledger_id' => 11,
+                'sub_ledger_id' => $validated['payment_method_id'] == 1 ? $validated['bank_sub_ledger_id'] : 103,
+                'debit_amount' => null,
+                'credit_amount' => $validated['amount'],
+                'description' => $descriptionText,
+            ],
+        ];
 
-    JournalDetail::insert($details);
+        JournalDetail::insert($details);
 
-    return redirect()->route('vouchers.refund.create')->with('success', 'Refund Voucher created successfully.');
-}
+        return redirect()->route('vouchers.refund.create')->with('success', 'Refund Voucher created successfully.');
+    }
 
+    public function destroy(int $id)
+    {
+        abort_unless(auth()->user()->can('vouchers.delete'), 403);
+        $voucher = Voucher::findOrFail($id);
 
+        if ($voucher->status !== 'pending') {
+            return redirect()
+                ->back()
+                ->with('error', 'Only pending vouchers can be deleted.');
+        }
 
+        $voucher->deleted_by = auth('web')->id();
+        $voucher->save();
 
+        $voucher->delete();
+
+        return redirect()
+            ->route('vouchers.index')
+            ->with('success', 'Voucher deleted successfully.');
+    }
+
+    public function testPrintRefundCheque(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'cheque_date' => 'required|date',
+            'amount' => 'required|numeric|gt:0',
+            'cheque_no' => 'nullable|string|max:50',
+        ]);
+
+        $amount = (float) $data['amount'];
+
+        // Normalize the amount to two decimal places.
+        $amount = round($amount, 2);
+
+        $rupees = (int) floor($amount);
+        $cents = (int) round(($amount - $rupees) * 100);
+
+        if ($cents === 100) {
+            $rupees++;
+            $cents = 0;
+        }
+
+        $amountWords = $this->amountToWords($rupees) . ' Rupees';
+
+        if ($cents > 0) {
+            $amountWords .= ' and ' . $this->amountToWords($cents) . ' Cents';
+        }
+
+        $amountWords .= ' Only';
+
+        // Consistent data structure for the Blade.
+        $cheque = (object) [
+            'name' => $data['name'],
+            'cheque_date' => $data['cheque_date'],
+            'cheque_no' => $data['cheque_no'] ?? null,
+            'amount' => $amount,
+        ];
+
+        $pdf = Pdf::loadView('vouchers.test-cheque', compact(
+            'cheque',
+            'amountWords'
+        ));
+
+        // 177mm x 88mm converted to PDF points.
+        $pdf->setPaper([0, 0, 501.73, 249.45]);
+
+        return $pdf->stream('test-refund-cheque.pdf');
+    }
+
+    private function amountToWords($amount)
+    {
+        $ones = [
+            0 => 'Zero',
+            1 => 'One',
+            2 => 'Two',
+            3 => 'Three',
+            4 => 'Four',
+            5 => 'Five',
+            6 => 'Six',
+            7 => 'Seven',
+            8 => 'Eight',
+            9 => 'Nine',
+            10 => 'Ten',
+            11 => 'Eleven',
+            12 => 'Twelve',
+            13 => 'Thirteen',
+            14 => 'Fourteen',
+            15 => 'Fifteen',
+            16 => 'Sixteen',
+            17 => 'Seventeen',
+            18 => 'Eighteen',
+            19 => 'Nineteen'
+        ];
+
+        $tens = [
+            2 => 'Twenty',
+            3 => 'Thirty',
+            4 => 'Forty',
+            5 => 'Fifty',
+            6 => 'Sixty',
+            7 => 'Seventy',
+            8 => 'Eighty',
+            9 => 'Ninety'
+        ];
+
+        $convert = function ($number) use (&$convert, $ones, $tens) {
+
+            if ($number < 20) {
+                return $ones[$number];
+            }
+
+            if ($number < 100) {
+                return $tens[intdiv($number, 10)] .
+                    (($number % 10) ? ' ' . $ones[$number % 10] : '');
+            }
+
+            if ($number < 1000) {
+                return $ones[intdiv($number, 100)] . ' Hundred' .
+                    (($number % 100) ? ' ' . $convert($number % 100) : '');
+            }
+
+            if ($number < 1000000) {
+                return $convert(intdiv($number, 1000)) . ' Thousand' .
+                    (($number % 1000) ? ' ' . $convert($number % 1000) : '');
+            }
+
+            if ($number < 1000000000) {
+                return $convert(intdiv($number, 1000000)) . ' Million' .
+                    (($number % 1000000) ? ' ' . $convert($number % 1000000) : '');
+            }
+
+            return $convert(intdiv($number, 1000000000)) . ' Billion' .
+                (($number % 1000000000) ? ' ' . $convert($number % 1000000000) : '');
+        };
+
+        $amount = round((float) $amount, 2);
+
+        $rupees = (int) floor($amount);
+        $cents = (int) round(($amount - $rupees) * 100);
+
+        if ($cents === 100) {
+            $rupees++;
+            $cents = 0;
+        }
+
+        $words = $convert($rupees) . ' Rupees';
+
+        if ($cents > 0) {
+            $words .= ' and ' . $convert($cents) . ' Cents';
+        }
+
+        return $words . ' Only';
+    }
 }
