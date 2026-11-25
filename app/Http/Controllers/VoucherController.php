@@ -460,10 +460,10 @@ class VoucherController extends Controller
             $cents = 0;
         }
 
-        $amountWords = $this->amountToWords($rupees) . ' Rupees';
+        $amountWords = $this->numberToWords($rupees) . ' Rupees';
 
         if ($cents > 0) {
-            $amountWords .= ' and ' . $this->amountToWords($cents) . ' Cents';
+            $amountWords .= ' and ' . $this->numberToWords($cents) . ' Cents';
         }
 
         $amountWords .= ' Only';
@@ -482,93 +482,59 @@ class VoucherController extends Controller
         ));
 
         // 177mm x 88mm converted to PDF points.
-        $pdf->setPaper([0, 0, 501.73, 249.45]);
+        $pdf->setPaper([0, 0, 249.45, 501.73]);
 
         return $pdf->stream('test-refund-cheque.pdf');
     }
 
-    private function amountToWords($amount)
-    {
-        $ones = [
-            0 => 'Zero',
-            1 => 'One',
-            2 => 'Two',
-            3 => 'Three',
-            4 => 'Four',
-            5 => 'Five',
-            6 => 'Six',
-            7 => 'Seven',
-            8 => 'Eight',
-            9 => 'Nine',
-            10 => 'Ten',
-            11 => 'Eleven',
-            12 => 'Twelve',
-            13 => 'Thirteen',
-            14 => 'Fourteen',
-            15 => 'Fifteen',
-            16 => 'Sixteen',
-            17 => 'Seventeen',
-            18 => 'Eighteen',
-            19 => 'Nineteen'
-        ];
-
-        $tens = [
-            2 => 'Twenty',
-            3 => 'Thirty',
-            4 => 'Forty',
-            5 => 'Fifty',
-            6 => 'Sixty',
-            7 => 'Seventy',
-            8 => 'Eighty',
-            9 => 'Ninety'
-        ];
-
-        $convert = function ($number) use (&$convert, $ones, $tens) {
-
-            if ($number < 20) {
-                return $ones[$number];
-            }
-
-            if ($number < 100) {
-                return $tens[intdiv($number, 10)] .
-                    (($number % 10) ? ' ' . $ones[$number % 10] : '');
-            }
-
-            if ($number < 1000) {
-                return $ones[intdiv($number, 100)] . ' Hundred' .
-                    (($number % 100) ? ' ' . $convert($number % 100) : '');
-            }
-
-            if ($number < 1000000) {
-                return $convert(intdiv($number, 1000)) . ' Thousand' .
-                    (($number % 1000) ? ' ' . $convert($number % 1000) : '');
-            }
-
-            if ($number < 1000000000) {
-                return $convert(intdiv($number, 1000000)) . ' Million' .
-                    (($number % 1000000) ? ' ' . $convert($number % 1000000) : '');
-            }
-
-            return $convert(intdiv($number, 1000000000)) . ' Billion' .
-                (($number % 1000000000) ? ' ' . $convert($number % 1000000000) : '');
-        };
-
-        $amount = round((float) $amount, 2);
-
-        $rupees = (int) floor($amount);
-        $cents = (int) round(($amount - $rupees) * 100);
-
-        if ($cents === 100) {
-            $rupees++;
-            $cents = 0;
-        }
-
-        $words = $convert($rupees) . ' Rupees';
-
-        if ($cents > 0) {
-            $words .= ' and ' . $convert($cents) . ' Cents';
-        }
-
-        return $words . ' Only';
+    private function numberToWords(int $number): string
+{
+    if ($number === 0) {
+        return 'Zero';
     }
+
+    $ones = [
+        '', 'One', 'Two', 'Three', 'Four', 'Five',
+        'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+        'Eleven', 'Twelve', 'Thirteen', 'Fourteen',
+        'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen',
+        'Nineteen',
+    ];
+
+    $tens = [
+        '', '', 'Twenty', 'Thirty', 'Forty',
+        'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety',
+    ];
+
+    $convert = function ($n) use (&$convert, $ones, $tens): string {
+        if ($n < 20) {
+            return $ones[$n];
+        }
+
+        if ($n < 100) {
+            return $tens[(int) ($n / 10)]
+                . ($n % 10 ? ' ' . $ones[$n % 10] : '');
+        }
+
+        if ($n < 1000) {
+            return $ones[(int) ($n / 100)] . ' Hundred'
+                . ($n % 100 ? ' ' . $convert($n % 100) : '');
+        }
+
+        if ($n < 1000000) {
+            return $convert((int) ($n / 1000)) . ' Thousand'
+                . ($n % 1000 ? ' ' . $convert($n % 1000) : '');
+        }
+
+        if ($n < 1000000000) {
+            return $convert((int) ($n / 1000000)) . ' Million'
+                . ($n % 1000000 ? ' ' . $convert($n % 1000000) : '');
+        }
+
+        return $convert((int) ($n / 1000000000)) . ' Billion'
+            . ($n % 1000000000 ? ' ' . $convert($n % 1000000000) : '');
+    };
+
+    return $convert($number);
+}
 }
